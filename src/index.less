@@ -1,0 +1,67 @@
+@size: 80em;
+@fontSize: 14px;
+
+#__pageSpy {
+  font-size: @fontSize;
+  .page-spy-logo {
+    position: fixed;
+    left: (20em / @fontSize);
+    bottom: (80em / @fontSize);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: (@size / @fontSize);
+    height: (@size / @fontSize);
+    font-size: (14em / @fontSize);
+    border-radius: (@size / @fontSize);
+    background-color: #fff;
+    box-shadow: 0px 3px 10px 3px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 13000;
+  }
+  .page-spy-modal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: all ease-out 0.3s;
+    z-index: 13000;
+    &.show {
+      opacity: 1;
+    }
+  }
+  .page-spy-content {
+    max-width: (300em / @fontSize);
+    background-color: #fafafa;
+    border-radius: (4em / @fontSize);
+    text-align: center;
+    &__info {
+      padding: (24em / @fontSize) (16em / @fontSize);
+      font-size: (16em / @fontSize);
+      line-height: 1.5;
+      text-align: left;
+      color: #202124;
+      letter-spacing: 2px;
+      > p {
+        margin: 0;
+        padding: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+    &__ok {
+      padding: (8em / @fontSize) 0;
+      border-top: 1px solid #eee;
+      font-size: (16em / @fontSize);
+      color: rgb(5, 145, 245);
+      line-height: 1.5;
+    }
+  }
+}

@@ -1,0 +1,6 @@
+*.config.?[jt]s
+.eslintrc.js
+dist/
+tests/
+types/
+modernizr.js
