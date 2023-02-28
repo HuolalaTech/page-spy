@@ -3,7 +3,7 @@ import type { InitConfig } from 'types';
 const defaultBase = () => {
   const host = document.currentScript?.baseURI;
   if (!host) return '';
-  return new URL(host).origin;
+  return new URL(host).host;
 };
 
 const defaultTitle = () => document.title;

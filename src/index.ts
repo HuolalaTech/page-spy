@@ -100,9 +100,8 @@ export default class PageSpy {
   }
 
   async createNewConnection() {
-    const { createRoom, getRoomUrl } = this.request;
-    const { data } = await createRoom(this.project);
-    const roomUrl = await getRoomUrl({
+    const { data } = await this.request.createRoom(this.project);
+    const roomUrl = await this.request.getRoomUrl({
       address: data.address,
       name: `client:${getRandomId()}`,
       userId: 'Client',

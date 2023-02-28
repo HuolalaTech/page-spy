@@ -20,3 +20,7 @@ export * as SpySystem from './lib/system';
 export * as SpyNetwork from './lib/network';
 export * as SpyStorage from './lib/storage';
 export * as SpyPage from './lib/page';
+
+class PageSpy {}
+
+export default PageSpy;

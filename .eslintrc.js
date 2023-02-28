@@ -10,5 +10,6 @@ module.exports = {
     'import/prefer-default-export': 'off',
     indent: 'off',
     '@typescript-eslint/indent': 'off',
+    'no-case-declarations': 'off',
   },
 };

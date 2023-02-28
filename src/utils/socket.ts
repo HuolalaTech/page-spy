@@ -123,13 +123,13 @@ class SocketStore {
       this.socket.addEventListener('message', (evt) => {
         const result = JSON.parse(evt.data) as SpySocket.Event;
         const { type } = result;
-        const { data, from, to, selfConnection } = result.content;
-        const { address } = result.content.connection;
         switch (type) {
           case 'connect':
+            const { selfConnection } = result.content;
             this.socketConnection = selfConnection;
             break;
           case 'join':
+            const { address } = result.content.connection;
             if (
               this.socketConnection &&
               this.socketConnection.address !== address
@@ -138,6 +138,7 @@ class SocketStore {
             }
             break;
           case 'send':
+            const { data, from, to } = result.content;
             if (to.address !== this.socketConnection?.address) return;
             this.dispatchEvent(data.type as SpyMessage.InteractiveType, {
               source: data,
