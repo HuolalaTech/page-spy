@@ -30,9 +30,9 @@ export class Content {
     const { content = {}, onOk = () => {} } = this.options;
     const { name = '--', address = '--', project = '--' } = content;
     const contentText = `
-      <p>System: ${name}</p>
-      <p>Device ID: <span style="font-family: 'Monaco'">${address}</span></p>
-      <p>Group: <span style="font-family: 'Monaco'">${project}</span></p>
+      <p><b>System:</b> ${name}</p>
+      <p><b>Device ID:</b> <span style="font-family: 'Monaco'">${address}</span></p>
+      <p><b>Group:</b> <span style="font-family: 'Monaco'">${project}</span></p>
     `;
 
     /* info */

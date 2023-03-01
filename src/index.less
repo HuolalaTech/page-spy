@@ -37,7 +37,7 @@
     }
   }
   .page-spy-content {
-    max-width: (300em / @fontSize);
+    max-width: (400em / @fontSize);
     background-color: #fafafa;
     border-radius: (4em / @fontSize);
     text-align: center;
@@ -54,6 +54,12 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        b {
+          display: inline-block;
+          width: 100px;
+          text-align: right;
+          margin-right: 10px;
+        }
       }
     }
     &__ok {

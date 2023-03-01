@@ -48,6 +48,7 @@
     "eslint": "^7.26.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-plugin-import": "^2.27.5",
     "git-cz": "^4.7.6",
     "jest": "^27.5.1",
     "jest-canvas-mock": "^2.3.1",
