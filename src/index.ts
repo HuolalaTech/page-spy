@@ -30,21 +30,30 @@ export default class PageSpy {
 
   private plugins: Record<string, PageSpyPlugin> = {};
 
+  // System info: <os>-<browser>:<browserVersion>
   private name = '';
 
+  // Room address
   private address = '';
 
+  // Completed websocket room url
   private roomUrl = '';
-
-  private project = '';
 
   private request: Request;
 
+  // Room group
+  private project = 'default';
+
+  // Debug client url origin
+  private clientHost = '';
+
   constructor(init: InitConfig) {
     const config = mergeConfig(init);
+    const { api, clientHost } = config;
 
-    this.request = new Request(config.api);
-    this.project = config.project || 'page-spy-dev';
+    this.request = new Request(api);
+    this.clientHost = clientHost;
+
     const root = document.getElementById(Identifier);
     if (root) {
       console.error('PageSpy has been inited.');
@@ -193,7 +202,8 @@ export default class PageSpy {
     const content = new Content({
       content: {
         name: this.name,
-        address: this.address.slice(0, 4),
+        address: this.address,
+        clientHost: this.clientHost,
         project: this.project,
       },
       onOk: () => {

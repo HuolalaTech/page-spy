@@ -1,14 +1,15 @@
 export interface InitConfig {
   /**
-   * The server base url.
+   * The server base url. For example, "example.com".
    * - Create room: `${api}/room/create`
    * - Filter romm: `${api}/room/list`
    */
   api?: string;
   /**
-   * String literal which group connections by.
+   * Client host. Form example, "https://example.com".
+   *
    */
-  project?: string;
+  clientHost?: string;
 }
 
 export * as SpySocket from './lib/socket-event';

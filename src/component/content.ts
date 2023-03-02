@@ -28,12 +28,15 @@ export class Content {
 
   render() {
     const { content = {}, onOk = () => {} } = this.options;
-    const { name = '--', address = '--', project = '--' } = content;
+    const { name = '--', address = '--', clientHost } = content;
     const contentText = `
       <p><b>System:</b> ${name}</p>
-      <p><b>Device ID:</b> <span style="font-family: 'Monaco'">${address}</span></p>
-      <p><b>Group:</b> <span style="font-family: 'Monaco'">${project}</span></p>
-    `;
+      <p><b>Device ID:</b> <span style="font-family: 'Monaco'">${address.slice(
+        0,
+        4,
+      )}</span></p>
+      `;
+    // <p><b>Group:</b> <span style="font-family: 'Monaco'">${project}</span></p>
 
     /* info */
     const info = document.createElement('div');
@@ -45,7 +48,8 @@ export class Content {
     button.textContent = 'Copy';
     button.onclick = (e) => {
       e.stopPropagation();
-      const copyResult = copy(`${address}`);
+      const text = `${clientHost}/devtools?version=${name}&address=${address}`;
+      const copyResult = copy(text);
       if (copyResult) {
         alert('Copy successfully!');
         onOk();

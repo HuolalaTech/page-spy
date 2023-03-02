@@ -1,16 +1,20 @@
 import type { InitConfig } from 'types';
 
+const scriptLink = document.currentScript?.baseURI;
+
 const defaultBase = () => {
-  const host = document.currentScript?.baseURI;
-  if (!host) return '';
-  return new URL(host).host;
+  if (!scriptLink) return '';
+  return new URL(scriptLink).host;
 };
 
-const defaultTitle = () => document.title;
+const defaultClientHost = () => {
+  if (!scriptLink) return '';
+  return new URL(scriptLink).origin;
+};
 
 const defaultConfig: Required<InitConfig> = {
   api: defaultBase(),
-  project: defaultTitle(),
+  clientHost: defaultClientHost(),
 };
 
 export const mergeConfig = (config: InitConfig): Required<InitConfig> => ({
