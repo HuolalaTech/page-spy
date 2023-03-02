@@ -701,7 +701,8 @@
     ),
     Modernizr.addTest('arrow', function () {
       try {
-        eval('()=>{}');
+        var eval2 = eval;
+        eval2('()=>{}');
       } catch (e) {
         return !1;
       }
@@ -709,7 +710,8 @@
     }),
     Modernizr.addTest('es6class', function () {
       try {
-        eval('class A{}');
+        var eval2 = eval;
+        eval2('class A{}');
       } catch (e) {
         return !1;
       }
@@ -788,7 +790,8 @@
     }),
     Modernizr.addTest('restparameters', function () {
       try {
-        eval('function f(...rest) {}');
+        var eval2 = eval;
+        eval2('function f(...rest) {}');
       } catch (e) {
         return !1;
       }
@@ -796,7 +799,8 @@
     }),
     Modernizr.addTest('spreadarray', function () {
       try {
-        eval('(function f(){})(...[1])');
+        var eval2 = eval;
+        eval2('(function f(){})(...[1])');
       } catch (e) {
         return !1;
       }
@@ -804,7 +808,8 @@
     }),
     Modernizr.addTest('stringtemplate', function () {
       try {
-        return '-1-' === eval('(function(){var a=1; return `-${a}-`;})()');
+        var eval2 = eval;
+        return '-1-' === eval2('(function(){var a=1; return `-${a}-`;})()');
       } catch (e) {
         return !1;
       }
@@ -847,7 +852,8 @@
     ),
     Modernizr.addTest('restdestructuringarray', function () {
       try {
-        eval('var [...rest]=[1]');
+        var eval2 = eval;
+        eval2('var [...rest]=[1]');
       } catch (e) {
         return !1;
       }
@@ -855,7 +861,8 @@
     }),
     Modernizr.addTest('restdestructuringobject', function () {
       try {
-        eval('var {...rest}={a:1}');
+        var eval2 = eval;
+        eval2('var {...rest}={a:1}');
       } catch (e) {
         return !1;
       }
@@ -863,7 +870,8 @@
     }),
     Modernizr.addTest('spreadobject', function () {
       try {
-        eval('var a={...{b:1}}');
+        var eval2 = eval;
+        eval2('var a={...{b:1}}');
       } catch (e) {
         return !1;
       }
