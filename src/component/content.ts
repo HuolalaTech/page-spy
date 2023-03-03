@@ -28,7 +28,7 @@ export class Content {
 
   render() {
     const { content = {}, onOk = () => {} } = this.options;
-    const { name = '--', address = '--', clientHost } = content;
+    const { name = '--', address = '--', clientOrigin } = content;
     const contentText = `
       <p><b>System:</b> ${name}</p>
       <p><b>Device ID:</b> <span style="font-family: 'Monaco'">${address.slice(
@@ -48,7 +48,7 @@ export class Content {
     button.textContent = 'Copy';
     button.onclick = (e) => {
       e.stopPropagation();
-      const text = `${clientHost}/devtools?version=${name}&address=${address}`;
+      const text = `${clientOrigin}/devtools?version=${name}&address=${address}`;
       const copyResult = copy(text);
       if (copyResult) {
         alert('Copy successfully!');

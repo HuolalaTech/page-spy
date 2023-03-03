@@ -45,14 +45,14 @@ export default class PageSpy {
   private project = 'default';
 
   // Debug client url origin
-  private clientHost = '';
+  private clientOrigin = '';
 
   constructor(init: InitConfig) {
     const config = mergeConfig(init);
-    const { api, clientHost } = config;
+    const { api, clientOrigin } = config;
 
     this.request = new Request(api);
-    this.clientHost = clientHost;
+    this.clientOrigin = clientOrigin;
 
     const root = document.getElementById(Identifier);
     if (root) {
@@ -203,7 +203,7 @@ export default class PageSpy {
       content: {
         name: this.name,
         address: this.address,
-        clientHost: this.clientHost,
+        clientOrigin: this.clientOrigin,
         project: this.project,
       },
       onOk: () => {

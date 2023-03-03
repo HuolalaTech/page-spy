@@ -7,14 +7,14 @@ const defaultBase = () => {
   return new URL(scriptLink).host;
 };
 
-const defaultClientHost = () => {
+const defaultClientOrigin = () => {
   if (!scriptLink) return '';
   return new URL(scriptLink).origin;
 };
 
 const defaultConfig: Required<InitConfig> = {
   api: defaultBase(),
-  clientHost: defaultClientHost(),
+  clientOrigin: defaultClientOrigin(),
 };
 
 export const mergeConfig = (config: InitConfig): Required<InitConfig> => ({

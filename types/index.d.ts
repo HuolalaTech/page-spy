@@ -9,7 +9,7 @@ export interface InitConfig {
    * Client host. Form example, "https://example.com".
    *
    */
-  clientHost?: string;
+  clientOrigin?: string;
 }
 
 export * as SpySocket from './lib/socket-event';
