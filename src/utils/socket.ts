@@ -155,12 +155,15 @@ class SocketStore {
               to,
             });
             break;
+          case 'error':
+            this.reconnectable = false;
+            this.connectOffline();
+            break;
           case 'join':
           case 'ping':
           case 'leave':
           case 'close':
           case 'message':
-          case 'error':
           default:
             break;
         }
