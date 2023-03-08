@@ -32,17 +32,22 @@ class SocketStore {
   // websocket instance
   socket: WebSocket | null = null;
 
+  socketUrl: string = '';
+
   socketConnection: SpySocket.Connection | null = null;
 
-  pingTimer: number | null = null;
+  timer: number | null = null;
 
   reconnectTimes = 3;
 
   // messages store
   messages: (SpySocket.BrodcastEvent | SpySocket.UnicastEvent)[] = [];
 
+  // Don't try to reconnect if error occupied
+  reconnectable: boolean = true;
+
   // indicated connected  whether or not
-  isInited: boolean = false;
+  connectionStatus: boolean = false;
 
   // events center
   events: Record<SpyMessage.InteractiveType, SocketEventCallback[]> = {
@@ -50,12 +55,14 @@ class SocketStore {
     debug: [],
     'atom-detail': [],
     'atom-getter': [],
+    'debugger-online': [],
   };
 
   constructor() {
     this.addListener('debug', SocketStore.handleDebugger);
     this.addListener('atom-detail', SocketStore.handleResolveAtom);
     this.addListener('atom-getter', SocketStore.handleAtomPropertyGetter);
+    this.addListener('debugger-online', this.handleFlushBuffer);
   }
 
   init(url: string) {
@@ -64,41 +71,46 @@ class SocketStore {
         throw Error('WebSocket 连接 URL 不可缺省');
       }
       this.socket = new WebSocket(url);
+      this.socketUrl = url;
       this.socket.addEventListener('open', () => {
-        this.isInited = true;
-        this.keepConnect();
+        this.connectOnline();
         this.peelMessage();
       });
       this.socket.addEventListener('close', () => {
-        this.isInited = false;
-        if (this.pingTimer) {
-          window.clearInterval(this.pingTimer);
-        }
-        this.tryReconnect();
+        this.connectOffline();
       });
       this.socket.addEventListener('error', () => {
-        this.isInited = false;
-        this.socket = null;
-        throw Error('WebSocket 连接失败');
+        this.reconnectable = false;
+        this.connectOffline();
+        throw new Error('WebSocket connect fail');
       });
     } catch (e: any) {
       alert(`[PageSpy] ${e.message}`);
     }
   }
 
+  connectOnline() {
+    this.connectionStatus = true;
+    this.reconnectTimes = 3;
+    this.pingConnect();
+  }
+
+  connectOffline() {
+    this.socket = null;
+    this.connectionStatus = false;
+    this.socketConnection = null;
+    this.clearPing();
+    if (!this.reconnectable) {
+      return;
+    }
+    this.tryReconnect();
+  }
+
   tryReconnect() {
     if (this.reconnectTimes > 0) {
       this.reconnectTimes -= 1;
-      if (this.socket!.readyState !== WebSocket.OPEN) {
-        setTimeout(() => {
-          this.init(this.socket!.url);
-        }, 1000);
-      }
+      this.init(this.socketUrl);
     } else {
-      this.socket = null;
-      if (this.pingTimer) {
-        window.clearInterval(this.pingTimer);
-      }
       sessionStorage.setItem(
         'page-spy-room',
         JSON.stringify({ usable: false }),
@@ -107,14 +119,20 @@ class SocketStore {
     }
   }
 
-  keepConnect() {
-    this.pingTimer = window.setInterval(() => {
+  pingConnect() {
+    this.timer = window.setInterval(() => {
       if (this.socket?.readyState !== WebSocket.OPEN) return;
       this.send({
         type: 'ping',
         content: null,
       });
     }, 10000);
+  }
+
+  clearPing() {
+    if (this.timer) {
+      window.clearInterval(this.timer);
+    }
   }
 
   // get the data which we expected from nested structure of the message
@@ -128,15 +146,6 @@ class SocketStore {
             const { selfConnection } = result.content;
             this.socketConnection = selfConnection;
             break;
-          case 'join':
-            const { address } = result.content.connection;
-            if (
-              this.socketConnection &&
-              this.socketConnection.address !== address
-            ) {
-              this.sendBuffer(result.content.connection);
-            }
-            break;
           case 'send':
             const { data, from, to } = result.content;
             if (to.address !== this.socketConnection?.address) return;
@@ -146,6 +155,7 @@ class SocketStore {
               to,
             });
             break;
+          case 'join':
           case 'ping':
           case 'leave':
           case 'close':
@@ -173,39 +183,36 @@ class SocketStore {
     });
   }
 
-  /**
-   * unicast
-   * @param msg message
-   * @param to target address
-   */
   unicastMessage(msg: SpyMessage.MessageItem, to: SpySocket.Connection) {
     const message = makeUnicastMessage(msg, this.socketConnection!, to);
     this.send(message);
   }
 
-  /**
-   * boradcast
-   * @param msg message
-   */
   broadcastMessage(msg: SpyMessage.MessageItem, isCache: boolean = false) {
     const message = makeBroadcastMessage(msg);
     this.send(message, isCache);
   }
 
-  private sendBuffer(to: SpySocket.Connection) {
-    this.messages.forEach(
-      (msg: SpySocket.BrodcastEvent | SpySocket.UnicastEvent) => {
+  handleFlushBuffer(message: SocketEvent<{ latestId: string }>) {
+    const { latestId } = message.source.data;
+
+    const msgIndex = this.messages.findIndex(
+      (i) => i.content.data.data.id === latestId,
+    );
+
+    this.messages
+      .slice(msgIndex + 1)
+      .forEach((msg: SpySocket.BrodcastEvent | SpySocket.UnicastEvent) => {
         const data = {
           type: 'send',
           content: {
             data: msg.content.data,
             from: this.socketConnection!,
-            to,
+            to: message.from,
           },
         } as const;
         this.send(data, true);
-      },
-    );
+      });
   }
 
   // run excutable code which received from remote and send back the result
@@ -284,7 +291,7 @@ class SocketStore {
   }
 
   send(msg: SpySocket.ClientEvent, isCache: boolean = false) {
-    if (this.isInited) {
+    if (this.connectionStatus) {
       try {
         this.socket?.send(stringifyData(msg));
       } catch (e) {
@@ -299,9 +306,10 @@ class SocketStore {
   }
 
   close() {
-    if (this.pingTimer) {
-      window.clearInterval(this.pingTimer);
+    if (this.timer) {
+      window.clearInterval(this.timer);
     }
+    this.reconnectable = false;
     this.socket?.close();
   }
 }

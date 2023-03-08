@@ -47,6 +47,8 @@ export default class PageSpy {
   // Debug client url origin
   private clientOrigin = '';
 
+  private socketStore = socketStore;
+
   constructor(init: InitConfig) {
     const config = mergeConfig(init);
     const { api, clientOrigin } = config;
