@@ -101,6 +101,10 @@ class SocketStore {
     this.socketConnection = null;
     this.clearPing();
     if (!this.reconnectable) {
+      sessionStorage.setItem(
+        'page-spy-room',
+        JSON.stringify({ usable: false }),
+      );
       return;
     }
     this.tryReconnect();
@@ -111,10 +115,8 @@ class SocketStore {
       this.reconnectTimes -= 1;
       this.init(this.socketUrl);
     } else {
-      sessionStorage.setItem(
-        'page-spy-room',
-        JSON.stringify({ usable: false }),
-      );
+      this.reconnectable = false;
+      this.connectOffline();
       console.log('[PageSpy] Reconnect failed.');
     }
   }
