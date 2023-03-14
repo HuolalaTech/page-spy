@@ -1,3 +1,5 @@
+@primary-color: #9a62e4;
+@gradient: linear-gradient(45deg, #efdfff, #4e00b1 52%, #3d0c7c);
 @size: 80em;
 @fontSize: 14px;
 
@@ -15,7 +17,7 @@
     font-size: (14em / @fontSize);
     border-radius: (@size / @fontSize);
     background-color: #fff;
-    box-shadow: 0px 3px 10px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 4px 8px 2px rgba(0, 0, 0, 0.2);
     cursor: pointer;
     z-index: 13000;
   }
@@ -66,8 +68,10 @@
       padding: (8em / @fontSize) 0;
       border-top: 1px solid #eee;
       font-size: (16em / @fontSize);
-      color: rgb(5, 145, 245);
       line-height: 1.5;
+      color: transparent;
+      background-clip: text;
+      background-image: @gradient;
     }
   }
 }

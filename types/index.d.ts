@@ -1,13 +1,14 @@
 export interface InitConfig {
   /**
    * The server base url. For example, "example.com".
-   * - Create room: `${api}/room/create`
-   * - Filter romm: `${api}/room/list`
+   * - Create room: `https://${api}/room/create`
+   * - Filter room: `https://${api}/room/list`
+   * - Join WebSocket room: `wss://${api}/ws/room/join`
    */
   api?: string;
+
   /**
    * Client host. Form example, "https://example.com".
-   *
    */
   clientOrigin?: string;
 }

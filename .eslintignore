@@ -1,4 +1,5 @@
-*.config.?[jt]s
+*.config.[jt]s
+*.config.mjs
 .eslintrc.js
 dist/
 tests/

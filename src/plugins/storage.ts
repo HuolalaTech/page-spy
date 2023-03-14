@@ -17,7 +17,7 @@ export class StoragePlugin implements PageSpyPlugin {
 
     const session = { ...sessionStorage };
     Object.keys(session).forEach((key) => {
-      const value = local[key];
+      const value = session[key];
       sendStorageItem({ type: 'session', action: 'get', key, value });
     });
 

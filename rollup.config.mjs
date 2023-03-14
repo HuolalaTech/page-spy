@@ -44,10 +44,6 @@ export default {
       format: 'iife',
       name: 'PageSpy',
     },
-    {
-      file: pkg.module,
-      format: 'es',
-    },
   ],
   plugins,
 };

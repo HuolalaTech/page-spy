@@ -24,11 +24,16 @@ import { mergeConfig } from './utils/config';
 const Identifier = '__pageSpy';
 
 export default class PageSpy {
-  private root: HTMLElement | null = null;
+  root: HTMLElement | null = null;
 
-  private version = pkg.version;
+  version = pkg.version;
 
-  private plugins: Record<string, PageSpyPlugin> = {};
+  plugins: Record<string, PageSpyPlugin> = {};
+
+  config: Required<InitConfig> = {
+    api: '',
+    clientOrigin: '',
+  };
 
   // System info: <os>-<browser>:<browserVersion>
   private name = '';
@@ -49,9 +54,9 @@ export default class PageSpy {
 
   private socketStore = socketStore;
 
-  constructor(init: InitConfig) {
-    const config = mergeConfig(init);
-    const { api, clientOrigin } = config;
+  constructor(init: InitConfig = {}) {
+    this.config = mergeConfig(init);
+    const { api, clientOrigin } = this.config;
 
     this.request = new Request(api);
     this.clientOrigin = clientOrigin;
@@ -151,10 +156,10 @@ export default class PageSpy {
           }
           this.render();
         } else {
-          timer = setTimeout(pollingDocument, 1);
+          timer = window.setTimeout(pollingDocument, 1);
         }
       };
-      timer = setTimeout(pollingDocument, 1);
+      timer = window.setTimeout(pollingDocument, 1);
     }
   }
 
