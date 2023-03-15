@@ -8,5 +8,9 @@ module.exports = {
     '^src/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less|svg|png|jpg)$': '<rootDir>/tests/mock/assets.js',
   },
-  setupFiles: ['jest-canvas-mock'],
+  globals: {
+    TextEncoder: require('util').TextEncoder,
+    TextDecoder: require('util').TextDecoder,
+  },
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts', 'jest-canvas-mock'],
 };

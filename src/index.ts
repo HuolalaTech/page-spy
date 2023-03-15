@@ -36,23 +36,23 @@ export default class PageSpy {
   };
 
   // System info: <os>-<browser>:<browserVersion>
-  private name = '';
+  name = '';
 
   // Room address
-  private address = '';
+  address = '';
 
   // Completed websocket room url
-  private roomUrl = '';
+  roomUrl = '';
 
-  private request: Request;
+  request: Request;
 
   // Room group
-  private project = 'default';
+  project = 'default';
 
   // Debug client url origin
-  private clientOrigin = '';
+  clientOrigin = '';
 
-  private socketStore = socketStore;
+  socketStore = socketStore;
 
   constructor(init: InitConfig = {}) {
     this.config = mergeConfig(init);
@@ -199,6 +199,7 @@ export default class PageSpy {
     const logo = document.createElement('div');
     logo.className = 'page-spy-logo';
     const img = document.createElement('img');
+    img.alt = 'PageSpy Logo';
     img.src = logoUrl;
     img.width = 50;
     img.height = 50;

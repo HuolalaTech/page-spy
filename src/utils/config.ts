@@ -1,6 +1,6 @@
 import type { InitConfig } from 'types';
 
-const scriptLink = document.currentScript?.baseURI;
+const scriptLink = (document.currentScript as HTMLScriptElement)?.src;
 
 const defaultBase = () => {
   if (!scriptLink) return '';
@@ -12,12 +12,12 @@ const defaultClientOrigin = () => {
   return new URL(scriptLink).origin;
 };
 
-const defaultConfig: Required<InitConfig> = {
+const defaultConfig = () => ({
   api: defaultBase(),
   clientOrigin: defaultClientOrigin(),
-};
+});
 
 export const mergeConfig = (config: InitConfig): Required<InitConfig> => ({
-  ...defaultConfig,
+  ...defaultConfig(),
   ...config,
 });
