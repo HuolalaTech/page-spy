@@ -18,6 +18,7 @@ export class Content {
     };
     /* root */
     const root = document.createElement('div');
+    root.dataset.testid = 'content';
     root.className = ['page-spy-content', args.className].join(' ');
     root.onclick = (e) => {
       e.stopPropagation();
@@ -44,6 +45,7 @@ export class Content {
     info.innerHTML = contentText;
     /* bottom button */
     const button = document.createElement('div');
+    button.dataset.testid = 'copy-button';
     button.className = 'page-spy-content__ok';
     button.textContent = 'Copy';
     button.onclick = (e) => {

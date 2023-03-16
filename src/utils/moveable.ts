@@ -11,7 +11,7 @@ function getPosition(evt: TouchEvent | MouseEvent): Touch | MouseEvent {
 
 /* eslint-disable no-param-reassign */
 export function moveable(el: HTMLElement) {
-  let rect = el.getBoundingClientRect();
+  let rect: DOMRect;
   const critical = {
     xAxis: 0,
     yAxis: 0,
@@ -35,8 +35,18 @@ export function moveable(el: HTMLElement) {
     } else if (resultY > critical.yAxis) {
       resultY = critical.yAxis;
     }
+
     el.style.left = `${resultX}px`;
     el.style.top = `${resultY}px`;
+  }
+  function end() {
+    touch.x = 0;
+    touch.y = 0;
+    document.removeEventListener('mousemove', move);
+    document.removeEventListener('mouseup', end);
+
+    document.removeEventListener('touchmove', move);
+    document.removeEventListener('touchend', end);
   }
   function start(evt: TouchEvent | MouseEvent) {
     evt.preventDefault();
@@ -49,16 +59,12 @@ export function moveable(el: HTMLElement) {
     touch.x = clientX;
     touch.y = clientY;
     document.addEventListener('mousemove', move, false);
-  }
-  function end() {
-    touch.x = 0;
-    touch.y = 0;
-    document.removeEventListener('mousemove', move);
-  }
-  el.addEventListener('mousedown', start, false);
-  el.addEventListener('mouseup', end, false);
+    document.addEventListener('mouseup', end, false);
 
+    document.addEventListener('touchmove', move, false);
+    document.addEventListener('touchend', end, false);
+  }
+
+  el.addEventListener('mousedown', start, false);
   el.addEventListener('touchstart', start, false);
-  el.addEventListener('touchmove', move, false);
-  el.addEventListener('touchend', end, false);
 }

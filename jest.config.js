@@ -2,15 +2,14 @@
  * @type {import("ts-jest/dist/types").InitialOptionsTsJest}
  */
 module.exports = {
+  collectCoverage: true,
+  coverageProvider: 'v8',
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   moduleNameMapper: {
     '^src/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less|svg|png|jpg)$': '<rootDir>/tests/mock/assets.js',
-  },
-  globals: {
-    TextEncoder: require('util').TextEncoder,
-    TextDecoder: require('util').TextDecoder,
+    modernizr: '<rootDir>/tests/mock/modernizr.js',
   },
   setupFilesAfterEnv: ['<rootDir>/tests/setup.ts', 'jest-canvas-mock'],
 };

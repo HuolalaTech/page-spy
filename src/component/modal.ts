@@ -9,6 +9,7 @@ export class Modal {
   constructor(args: ModalParams = {}) {
     const { className = '', el = 'div' } = args;
     const modal = document.createElement(el);
+    modal.dataset.testid = 'modal';
     modal.className = ['page-spy-modal', className].join(' ');
     modal.style.display = 'none';
     modal.onclick = (e) => {
