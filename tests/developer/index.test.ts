@@ -7,13 +7,6 @@ import PagePlugin from 'src/plugins/page';
 import { StoragePlugin } from 'src/plugins/storage';
 import { SpyConsole } from 'types';
 
-// 开发者视角测试什么？
-// - new PageSpy() 传参与否对应的行为分别是什么 ✅
-// - 实例化成功后做了哪些事情
-//   - 加载插件 ✅
-//   - 包装原生api ✅
-//   - 创建房间 ✅
-
 describe('new PageSpy([config])', () => {
   it('Parse `document.currentScript.src` by default to initialize the configuration', () => {
     const sdk = new SDK();
