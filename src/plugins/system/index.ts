@@ -2,7 +2,7 @@ import type PageSpyPlugin from 'src/plugins/index';
 import { getRandomId } from 'src/utils';
 import socketStore from 'src/utils/socket';
 import { makeMessage, MESSAGE_TYPE } from 'src/utils/message';
-import { getOS, getBrowser } from 'src/utils/ua';
+import { parseUserAgent } from 'src/utils/ua';
 import '../../deps/modernizr';
 import { computeResult } from './feature';
 
@@ -30,9 +30,8 @@ export default class SystemPlugin implements PageSpyPlugin {
       makeMessage(MESSAGE_TYPE.system, {
         id,
         system: {
-          os: getOS(),
           ua: navigator.userAgent,
-          browser: getBrowser(),
+          ...parseUserAgent(),
         },
         features,
       }),

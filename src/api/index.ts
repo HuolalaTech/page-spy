@@ -1,4 +1,4 @@
-import { getBrowser, getOS } from 'src/utils/ua';
+import { combineName, parseUserAgent } from 'src/utils/ua';
 
 interface TResponse<T> {
   code: string;
@@ -23,9 +23,8 @@ export default class Request {
   }
 
   createRoom(project: string): Promise<TResponse<TCreateRoom>> {
-    const os = getOS();
-    const browser = getBrowser();
-    const name = `${os}-${browser}`;
+    const device = parseUserAgent();
+    const name = combineName(device);
     return fetch(
       `https://${this.base}/room/create?name=${name}&group=${project}`,
       {
