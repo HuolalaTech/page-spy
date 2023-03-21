@@ -1,34 +1,8 @@
 import type { SpyMessage, SpySocket } from 'types';
-import { getRandomId } from '.';
+import { getRandomId } from '../index';
+import * as SERVER_MESSAGE_TYPE from './server-type';
 
-export const SERVER_MESSAGE_TYPE = {
-  connect: 'connect',
-  join: 'join',
-  leave: 'leave',
-  close: 'close',
-  message: 'message',
-  send: 'send',
-  error: 'error',
-} as const;
-
-export const MESSAGE_TYPE = {
-  /**
-   * Just message
-   */
-  connect: 'connect',
-  console: 'console',
-  system: 'system',
-  network: 'network',
-  page: 'page',
-  storage: 'storage',
-  /**
-   * Interactive: some type which sended by developer and need to reply something
-   */
-  debug: 'debug',
-  refresh: 'refresh',
-  'atom-detail': 'atom-detail',
-  'atom-getter': 'atom-getter',
-} as const;
+export * as DEBUG_MESSAGE_TYPE from './debug-type';
 
 export function makeMessage(
   type: SpyMessage.MessageType,
@@ -54,7 +28,7 @@ export function makeUnicastMessage(
   to: SpySocket.Connection,
 ): SpySocket.UnicastEvent {
   return {
-    type: SERVER_MESSAGE_TYPE.send,
+    type: SERVER_MESSAGE_TYPE.SEND,
     content: {
       data: msg,
       from,
@@ -67,7 +41,7 @@ export function makeBroadcastMessage(
   msg: SpyMessage.MessageItem,
 ): SpySocket.BrodcastEvent {
   return {
-    type: SERVER_MESSAGE_TYPE.message,
+    type: SERVER_MESSAGE_TYPE.MESSAGE,
     content: {
       data: msg,
     },

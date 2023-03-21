@@ -1,4 +1,5 @@
-import { makeMessage, MESSAGE_TYPE } from 'src/utils/message';
+import atom from 'src/utils/atom';
+import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
 import socketStore from 'src/utils/socket';
 import type PageSpyPlugin from './index';
 
@@ -25,7 +26,7 @@ export default class ErrorPlugin implements PageSpyPlugin {
       (evt: Event) => {
         if (!(evt instanceof ErrorEvent)) {
           ErrorPlugin.sendMessage(
-            `ResourceLoadError: Cannot load resource of (${
+            `Resource Load Error: Cannot load resource of (${
               (evt.target! as any).src
             })`,
           );
@@ -38,21 +39,16 @@ export default class ErrorPlugin implements PageSpyPlugin {
     window.addEventListener(
       'unhandledrejection',
       (evt: PromiseRejectionEvent) => {
-        ErrorPlugin.sendMessage(evt.reason.stack);
+        ErrorPlugin.sendMessage(evt.reason);
       },
     );
   }
 
   static sendMessage(data: any) {
     // Treat `error` data as `console`
-    const message = makeMessage(MESSAGE_TYPE.console, {
+    const message = makeMessage(DEBUG_MESSAGE_TYPE.CONSOLE, {
       logType: 'error',
-      logs: [
-        {
-          type: 'error',
-          value: data,
-        },
-      ],
+      logs: [atom.transformToAtom(data)],
       time: Date.now(),
       url: window.location.href,
     });

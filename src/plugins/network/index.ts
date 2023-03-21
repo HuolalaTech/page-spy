@@ -1,5 +1,5 @@
 // eslint-disable no-case-declarations
-import { makeMessage, MESSAGE_TYPE } from 'src/utils/message';
+import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
 import socketStore from 'src/utils/socket';
 import { blob2base64 } from 'src/utils/blob';
 import {
@@ -466,7 +466,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
       this.reqList[id] = req;
     }
     const message = makeMessage(
-      MESSAGE_TYPE.network,
+      DEBUG_MESSAGE_TYPE.NETWORK,
       {
         ...req,
       },

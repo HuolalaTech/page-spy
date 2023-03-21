@@ -1,4 +1,4 @@
-import { makeMessage, MESSAGE_TYPE } from 'src/utils/message';
+import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
 import type { SpyStorage } from 'types';
 import type PageSpyPlugin from './index';
 import socketStore from '../utils/socket';
@@ -63,7 +63,7 @@ export class StoragePlugin implements PageSpyPlugin {
     key = '',
     value = '',
   }: SpyStorage.DataItem) {
-    const data = makeMessage(MESSAGE_TYPE.storage, {
+    const data = makeMessage(DEBUG_MESSAGE_TYPE.STORAGE, {
       type,
       action,
       key,

@@ -155,18 +155,3 @@ export function getValueType(value: any) {
   }
   return typeof value;
 }
-
-// eslint-disable-next-line consistent-return
-export function retryWithTimes(fn: (...args: any[]) => any, times: number = 1) {
-  if (times <= 0) {
-    throw Error(
-      `retryWithTimes(${fn.name}) cannot execute with ${times} times`,
-    );
-  }
-  try {
-    const result = fn();
-    return result;
-  } catch (e) {
-    retryWithTimes(fn, times - 1);
-  }
-}

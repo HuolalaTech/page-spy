@@ -1,7 +1,7 @@
 import type PageSpyPlugin from 'src/plugins/index';
 import { getRandomId } from 'src/utils';
 import socketStore from 'src/utils/socket';
-import { makeMessage, MESSAGE_TYPE } from 'src/utils/message';
+import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
 import { parseUserAgent } from 'src/utils/ua';
 import '../../deps/modernizr';
 import { computeResult } from './feature';
@@ -27,7 +27,7 @@ export default class SystemPlugin implements PageSpyPlugin {
     const id = getRandomId();
     const features = await computeResult();
     socketStore.broadcastMessage(
-      makeMessage(MESSAGE_TYPE.system, {
+      makeMessage(DEBUG_MESSAGE_TYPE.SYSTEM, {
         id,
         system: {
           ua: navigator.userAgent,

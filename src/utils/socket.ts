@@ -1,12 +1,13 @@
 import { getRandomId, stringifyData } from 'src/utils';
 import {
-  MESSAGE_TYPE,
+  DEBUG_MESSAGE_TYPE,
   makeMessage,
   makeBroadcastMessage,
   makeUnicastMessage,
 } from 'src/utils/message';
 import type { SpyMessage, SpySocket } from 'types';
 import atom from './atom';
+import { ROOM_SESSION_KEY } from './constants';
 
 interface SocketEvent<T = any> {
   source: {
@@ -28,7 +29,7 @@ interface GetterMember {
   instanceId: string; // 当前实例的 id
 }
 
-class SocketStore {
+export class SocketStore {
   // websocket instance
   socket: WebSocket | null = null;
 
@@ -68,7 +69,7 @@ class SocketStore {
   init(url: string) {
     try {
       if (!url) {
-        throw Error('WebSocket 连接 URL 不可缺省');
+        throw Error('[PageSpy] WebSocket url cannot be empty');
       }
       this.socket = new WebSocket(url);
       this.socketUrl = url;
@@ -80,9 +81,7 @@ class SocketStore {
         this.connectOffline();
       });
       this.socket.addEventListener('error', () => {
-        this.reconnectable = false;
         this.connectOffline();
-        throw new Error('WebSocket connect fail');
       });
     } catch (e: any) {
       alert(`[PageSpy] ${e.message}`);
@@ -102,7 +101,7 @@ class SocketStore {
     this.clearPing();
     if (!this.reconnectable) {
       sessionStorage.setItem(
-        'page-spy-room',
+        ROOM_SESSION_KEY,
         JSON.stringify({ usable: false }),
       );
       return;
@@ -226,8 +225,8 @@ class SocketStore {
     reply: (data: any) => void,
   ) {
     const { type, data } = source;
-    if (type === MESSAGE_TYPE.debug) {
-      const originMsg = makeMessage(MESSAGE_TYPE.console, {
+    if (type === DEBUG_MESSAGE_TYPE.DEBUG) {
+      const originMsg = makeMessage(DEBUG_MESSAGE_TYPE.CONSOLE, {
         logType: 'debug-origin',
         logs: [
           {
@@ -241,13 +240,13 @@ class SocketStore {
       try {
         // eslint-disable-next-line no-new-func, @typescript-eslint/no-implied-eval
         const result = new Function(`return ${data}`)();
-        const evalMsg = makeMessage(MESSAGE_TYPE.console, {
+        const evalMsg = makeMessage(DEBUG_MESSAGE_TYPE.CONSOLE, {
           logType: 'debug-eval',
           logs: [atom.transformToAtom(result)],
         });
         reply(evalMsg);
       } catch (err) {
-        const errMsg = makeMessage(MESSAGE_TYPE.console, {
+        const errMsg = makeMessage(DEBUG_MESSAGE_TYPE.CONSOLE, {
           logType: 'error',
           logs: [
             {
@@ -266,7 +265,7 @@ class SocketStore {
     reply: (data: any) => void,
   ) {
     const { type, data } = source;
-    if (type === MESSAGE_TYPE['atom-detail']) {
+    if (type === DEBUG_MESSAGE_TYPE.ATOM_DETAIL) {
       const atomData = atom.get(data) || {};
       const msg = makeMessage(`atom-detail-${data}`, atomData, false);
       reply(msg);
@@ -278,7 +277,7 @@ class SocketStore {
     reply: (data: any) => void,
   ) {
     const { type, data } = source;
-    if (type === MESSAGE_TYPE['atom-getter']) {
+    if (type === DEBUG_MESSAGE_TYPE.ATOM_GETTER) {
       const { id, parentId, key, instanceId } = data;
       const instance = atom.getOrigin(instanceId);
       const current = atom.getOrigin(parentId);
@@ -311,9 +310,7 @@ class SocketStore {
   }
 
   close() {
-    if (this.timer) {
-      window.clearInterval(this.timer);
-    }
+    this.clearPing();
     this.reconnectable = false;
     this.socket?.close();
   }

@@ -20,6 +20,7 @@ import { moveable } from './utils/moveable';
 import './index.less';
 import logoUrl from './assets/logo.svg';
 import { mergeConfig } from './utils/config';
+import { ROOM_SESSION_KEY } from './utils/constants';
 
 const Identifier = '__pageSpy';
 
@@ -93,7 +94,7 @@ export default class PageSpy {
   }
 
   async initConnection() {
-    const roomCache = sessionStorage.getItem('page-spy-room');
+    const roomCache = sessionStorage.getItem(ROOM_SESSION_KEY);
     if (roomCache === null) {
       await this.createNewConnection();
     } else {
@@ -117,7 +118,7 @@ export default class PageSpy {
 
   async createNewConnection() {
     const { data } = await this.request.createRoom(this.project);
-    const roomUrl = await this.request.getRoomUrl({
+    const roomUrl = this.request.getRoomUrl({
       address: data.address,
       name: `client:${getRandomId()}`,
       userId: 'Client',
@@ -166,7 +167,7 @@ export default class PageSpy {
   refreshRoomInfo() {
     this.saveSession();
     const timerId = setInterval(() => {
-      const latestRoomInfo = sessionStorage.getItem('page-spy-room');
+      const latestRoomInfo = sessionStorage.getItem(ROOM_SESSION_KEY);
       if (latestRoomInfo !== null) {
         const { usable } = JSON.parse(latestRoomInfo);
         if (usable === false) {
@@ -188,7 +189,7 @@ export default class PageSpy {
       usable: true,
       project,
     });
-    sessionStorage.setItem('page-spy-room', roomInfo);
+    sessionStorage.setItem(ROOM_SESSION_KEY, roomInfo);
   }
 
   render() {

@@ -1,4 +1,4 @@
-import { makeMessage, MESSAGE_TYPE } from 'src/utils/message';
+import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
 import socketStore from 'src/utils/socket';
 import type { SpyConsole } from 'types';
 import atom from 'src/utils/atom';
@@ -28,7 +28,7 @@ export default class ConsolePlugin implements PageSpyPlugin {
       this.console[data.logType](...data.logs);
       // eslint-disable-next-line no-param-reassign
       data.logs = data.logs.map((log) => atom.transformToAtom(log));
-      const log = makeMessage(MESSAGE_TYPE.console, {
+      const log = makeMessage(DEBUG_MESSAGE_TYPE.CONSOLE, {
         time: Date.now(),
         ...data,
       });
