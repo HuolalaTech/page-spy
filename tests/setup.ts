@@ -32,3 +32,5 @@ Object.defineProperty(document, 'currentScript', {
 global.navigator.sendBeacon = jest.fn<boolean, any>((...args: any) => {
   return true;
 });
+
+window.alert = () => {};

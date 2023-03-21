@@ -6,7 +6,9 @@ import {
   waitFor,
 } from '@testing-library/dom';
 import copy from 'copy-to-clipboard';
-jest.mock('copy-to-clipboard');
+jest.mock('copy-to-clipboard', () =>
+  jest.fn().mockImplementation((text: string) => true),
+);
 
 const rootId = '#__pageSpy';
 beforeAll(() => {
@@ -92,6 +94,7 @@ describe('Render PageSpy', () => {
       const copyButton = getByTestId(html, 'copy-button');
       const isVisible = expect(copyButton).not.toBe(null);
       fireEvent.click(copyButton);
+
       const copied = expect(copy).toHaveBeenCalledWith(
         `${config.clientOrigin}/devtools?version=${sdk.name}&address=${sdk.address}`,
       );

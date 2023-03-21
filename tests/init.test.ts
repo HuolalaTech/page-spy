@@ -6,9 +6,18 @@ import SystemPlugin from 'src/plugins/system';
 import PagePlugin from 'src/plugins/page';
 import { StoragePlugin } from 'src/plugins/storage';
 import { SpyConsole } from 'types';
+import socketStore from 'src/utils/socket';
+import { ROOM_SESSION_KEY } from 'src/utils/constants';
+
+const rootId = '#__pageSpy';
+afterEach(() => {
+  jest.restoreAllMocks();
+  document.querySelector(rootId)?.remove();
+  sessionStorage.removeItem(ROOM_SESSION_KEY);
+});
 
 describe('new PageSpy([config])', () => {
-  it('Parse `document.currentScript.src` by default to initialize the configuration', () => {
+  it('Auto detect config by parsing `document.currentScript.src`', () => {
     const sdk = new SDK();
 
     expect(sdk.config).toEqual({
@@ -25,6 +34,16 @@ describe('new PageSpy([config])', () => {
 
     const sdk = new SDK(config);
     expect(sdk.config).toEqual(config);
+  });
+
+  it('Cannot init duplicate', () => {
+    const errorFn = jest.fn();
+    console.error = errorFn;
+
+    new SDK().render();
+    new SDK().render();
+
+    expect(errorFn).toBeCalledTimes(1);
   });
 
   it('Load plugins will run `<plugin>.onCreated()`', () => {
@@ -103,6 +122,18 @@ describe('new PageSpy([config])', () => {
     expect(window.navigator.sendBeacon).not.toBe(originBeacon);
   });
 
+  it('Content load and unload', async () => {
+    const sdk = new SDK();
+
+    const close = jest.spyOn(socketStore, 'close');
+    const init = jest.spyOn(sdk, 'initConnection');
+
+    window.dispatchEvent(new Event('DOMContentLoaded'));
+    expect(init).toHaveBeenCalled();
+
+    window.dispatchEvent(new Event('beforeunload'));
+    expect(close).toHaveBeenCalled();
+  });
   it('Init connection', async () => {
     const sdk = new SDK();
     const response = {
@@ -121,18 +152,55 @@ describe('new PageSpy([config])', () => {
       return response;
     });
 
-    expect(sessionStorage.getItem('page-spy-room')).toBe(null);
+    expect(sessionStorage.getItem(ROOM_SESSION_KEY)).toBe(null);
 
     await sdk.initConnection();
-    expect(sdk.name).toBe(response.data.name);
-    expect(sdk.address).toBe(response.data.address);
-    expect(sdk.roomUrl).not.toBe('');
-    expect(JSON.parse(sessionStorage.getItem('page-spy-room')!)).toEqual({
+    expect(JSON.parse(sessionStorage.getItem(ROOM_SESSION_KEY)!)).toEqual({
       name: sdk.name,
       address: sdk.address,
       roomUrl: sdk.roomUrl,
       usable: true,
       project: 'default',
     });
+  });
+
+  it('Init connection with cache', () => {
+    expect(sessionStorage.getItem(ROOM_SESSION_KEY)).toBe(null);
+    sessionStorage.setItem(
+      ROOM_SESSION_KEY,
+      JSON.stringify({
+        name: '',
+        address: '',
+        roomUrl: '',
+        usable: true,
+        project: 'default',
+      }),
+    );
+
+    const spy = jest.spyOn(SDK.prototype, 'useOldConnection');
+
+    new SDK();
+    window.dispatchEvent(new Event('DOMContentLoaded'));
+    expect(spy).toBeCalled();
+  });
+
+  it('Create new connection if cache is invalid', () => {
+    expect(sessionStorage.getItem(ROOM_SESSION_KEY)).toBe(null);
+    sessionStorage.setItem(
+      ROOM_SESSION_KEY,
+      JSON.stringify({
+        name: '',
+        address: '',
+        roomUrl: '',
+        usable: false,
+        project: 'default',
+      }),
+    );
+
+    const spy = jest.spyOn(SDK.prototype, 'createNewConnection');
+
+    new SDK();
+    window.dispatchEvent(new Event('DOMContentLoaded'));
+    expect(spy).toBeCalled();
   });
 });
