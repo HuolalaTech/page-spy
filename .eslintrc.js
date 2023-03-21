@@ -12,5 +12,6 @@ module.exports = {
     '@typescript-eslint/indent': 'off',
     'no-case-declarations': 'off',
     'func-names': 'off',
+    'no-plusplus': 'off',
   },
 };

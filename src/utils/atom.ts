@@ -120,8 +120,7 @@ class Atom {
       const entries: Record<string, any> = {};
       let index = 0;
       for (const v of data) {
-        index += 1;
-        entries[index] = v;
+        entries[index++] = v;
       }
       entries.size = data.size;
       result['[[Entries]]'] = this.transformToAtom(entries);
@@ -130,8 +129,7 @@ class Atom {
       const entries: Record<string, any> = {};
       let index = 0;
       for (const [k, v] of data.entries()) {
-        index += 1;
-        entries[index] = {
+        entries[index++] = {
           key: k,
           value: v,
         };
