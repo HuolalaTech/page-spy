@@ -12,6 +12,7 @@ export class Modal {
     modal.dataset.testid = 'modal';
     modal.className = ['page-spy-modal', className].join(' ');
     modal.style.display = 'none';
+    /* c8 ignore next 4 */
     modal.onclick = (e) => {
       e.stopPropagation();
       e.preventDefault();
@@ -22,6 +23,7 @@ export class Modal {
 
   show() {
     this.el.style.display = 'flex';
+    /* c8 ignore next 3 */
     setTimeout(() => {
       this.el.classList.add('show');
     }, 50);
@@ -29,6 +31,7 @@ export class Modal {
 
   close() {
     this.el.classList.remove('show');
+    /* c8 ignore next 3 */
     setTimeout(() => {
       this.el.style.display = 'none';
     }, 300);

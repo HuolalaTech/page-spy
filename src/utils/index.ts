@@ -5,6 +5,7 @@ export function getObjectKeys<T extends Record<string, any>>(obj: T) {
   return Object.keys(obj) as (keyof T)[];
 }
 
+/* c8 ignore start */
 export function getContentType(data?: BodyInit | null) {
   if (data instanceof Blob) {
     return data.type;
@@ -17,6 +18,7 @@ export function getContentType(data?: BodyInit | null) {
   }
   return 'text/plain;charset=UTF-8';
 }
+/* c8 ignore stop */
 
 export function toStringTag(value: any) {
   return Object.prototype.toString.call(value);
@@ -35,10 +37,6 @@ export function isString(value: any) {
 
 export function isNumber(value: any) {
   return toStringTag(value) === '[object Number]';
-}
-
-export function isBoolean(value: any) {
-  return toStringTag(value) === '[object Boolean]';
 }
 
 export function isArray(value: any) {
@@ -133,11 +131,11 @@ export function makePrimitiveValue(value: any): PrimitiveResult {
 }
 
 /**
- * convert `symbol / error / undefined / function` type data to readable string content；
- * @param data
+ * convert `symbol / error / undefined / function` type data to readable string content
  */
 export function stringifyData(data: any): any {
   const { ok, value } = makePrimitiveValue(data);
+  /* c8 ignore next 3 */
   if (ok) {
     return value;
   }

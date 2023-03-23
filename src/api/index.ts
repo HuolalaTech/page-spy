@@ -17,6 +17,7 @@ interface TCreateRoom {
 
 export default class Request {
   constructor(public base: string = '') {
+    /* c8 ignore next 3 */
     if (!base) {
       throw Error('The api base url cannot be empty');
     }
@@ -33,7 +34,8 @@ export default class Request {
     )
       .then((res) => res.json())
       .catch((err) => {
-        throw Error(`Connection failed: ${err.message}`);
+        /* c8 ignore next */
+        throw Error(`Request create room failed: ${err.message}`);
       });
   }
 

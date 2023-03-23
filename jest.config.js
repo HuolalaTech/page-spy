@@ -8,8 +8,8 @@ module.exports = {
   testEnvironment: 'jsdom',
   moduleNameMapper: {
     '^src/(.*)$': '<rootDir>/src/$1',
-    '\\.(css|less|svg|png|jpg)$': '<rootDir>/tests/mock/assets.js',
-    modernizr: '<rootDir>/tests/mock/modernizr.js',
+    '\\.(css|less|svg|png|jpg)$': '<rootDir>/tests/__mocks__/assets.js',
+    modernizr: '<rootDir>/tests/__mocks__/modernizr.js',
   },
   setupFilesAfterEnv: ['<rootDir>/tests/setup.ts', 'jest-canvas-mock'],
 };

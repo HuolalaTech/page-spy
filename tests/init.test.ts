@@ -20,6 +20,7 @@ describe('new PageSpy([config])', () => {
   it('Auto detect config by parsing `document.currentScript.src`', () => {
     const sdk = new SDK();
 
+    // The config value inited from /tests/setup.ts
     expect(sdk.config).toEqual({
       api: 'example.com',
       clientOrigin: 'https://example.com',

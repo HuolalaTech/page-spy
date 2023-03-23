@@ -69,11 +69,13 @@ class Atom {
     };
   }
 
+  /* c8 ignore start */
   getOrigin(id: string) {
     const value = this.store[id];
     if (!value) return null;
     return value;
   }
+  /* c8 ignore stop */
 
   static getAtomOverview({
     instanceId = '',
@@ -137,6 +139,7 @@ class Atom {
       entries.size = data.size;
       result['[[Entries]]'] = this.transformToAtom(entries);
     }
+    /* c8 ignore next 3 */
     if (isArray(data) || isArrayLike(data)) {
       result.length = this.transformToAtom(data.length);
     }

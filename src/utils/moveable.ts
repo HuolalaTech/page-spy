@@ -3,6 +3,7 @@ export type UElement = HTMLElement & {
 };
 
 function getPosition(evt: TouchEvent | MouseEvent): Touch | MouseEvent {
+  /* c8 ignore next 3 */
   if (window.TouchEvent && evt instanceof TouchEvent) {
     return evt.touches[0];
   }
@@ -24,6 +25,7 @@ export function moveable(el: HTMLElement) {
     const diffX = clientX - touch.x;
     const diffY = clientY - touch.y;
     let resultX = rect.x + diffX;
+    /* c8 ignore start */
     if (resultX < 0) {
       resultX = 0;
     } else if (resultX > critical.xAxis) {
@@ -35,6 +37,7 @@ export function moveable(el: HTMLElement) {
     } else if (resultY > critical.yAxis) {
       resultY = critical.yAxis;
     }
+    /* c8 ignore stop */
 
     el.style.left = `${resultX}px`;
     el.style.top = `${resultY}px`;

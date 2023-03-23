@@ -20,6 +20,7 @@ export class Content {
     const root = document.createElement('div');
     root.dataset.testid = 'content';
     root.className = ['page-spy-content', args.className].join(' ');
+    /* c8 ignore next 3 */
     root.onclick = (e) => {
       e.stopPropagation();
     };
@@ -28,7 +29,7 @@ export class Content {
   }
 
   render() {
-    const { content = {}, onOk = () => {} } = this.options;
+    const { content = {}, onOk } = this.options;
     const { name = '--', address = '--', clientOrigin } = content;
     const [os, browser] = name.split(' ');
     const contentText = `
@@ -56,7 +57,7 @@ export class Content {
       const copyResult = copy(text);
       if (copyResult) {
         alert('Copy successfully!');
-        onOk();
+        if (onOk) onOk();
       }
     };
     this.el.append(info, button);

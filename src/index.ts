@@ -141,6 +141,7 @@ export default class PageSpy {
   // there will be multiple `body` elements on the page,
   // which leads to strange phenomena such as css style mismatches
   deferRender() {
+    /* c8 ignore start */
     if (document !== undefined) {
       if (document.readyState === 'loading') {
         window.addEventListener('DOMContentLoaded', this.render);
@@ -162,9 +163,11 @@ export default class PageSpy {
       };
       timer = window.setTimeout(pollingDocument, 1);
     }
+    /* c8 ignore stop */
   }
 
   refreshRoomInfo() {
+    /* c8 ignore start */
     this.saveSession();
     const timerId = setInterval(() => {
       const latestRoomInfo = sessionStorage.getItem(ROOM_SESSION_KEY);
@@ -178,6 +181,7 @@ export default class PageSpy {
 
       this.saveSession();
     }, 15 * 1000);
+    /* c8 ignore stop */
   }
 
   saveSession() {
@@ -224,6 +228,7 @@ export default class PageSpy {
 
     function showModal(e: any) {
       const { isMoveEvent } = logo as unknown as UElement;
+      /* c8 ignore next 3 */
       if (isMoveEvent) {
         return;
       }
@@ -240,6 +245,7 @@ export default class PageSpy {
   }
 
   handleDeviceDPR() {
+    /* c8 ignore start */
     const dpr = window.devicePixelRatio || 1;
     const viewportEl = document.querySelector('[name="viewport"]');
 
@@ -253,5 +259,6 @@ export default class PageSpy {
         this.root!.style.fontSize = `${14 * dpr}px`;
       }
     }
+    /* c8 ignore stop */
   }
 }

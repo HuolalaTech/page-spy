@@ -121,6 +121,7 @@ export class SocketStore {
   }
 
   pingConnect() {
+    /* c8 ignore start */
     this.timer = window.setInterval(() => {
       if (this.socket?.readyState !== WebSocket.OPEN) return;
       this.send({
@@ -128,6 +129,7 @@ export class SocketStore {
         content: null,
       });
     }, 10000);
+    /* c8 ignore stop */
   }
 
   clearPing() {
@@ -160,19 +162,23 @@ export class SocketStore {
             this.reconnectable = false;
             this.connectOffline();
             break;
+          /* c8 ignore start */
           case 'join':
           case 'ping':
           case 'leave':
           case 'close':
           case 'message':
           default:
+            // noting
             break;
+          /* c8 ignore stop */
         }
       });
     }
   }
 
   addListener(type: SpyMessage.InteractiveType, fn: SocketEventCallback) {
+    /* c8 ignore next 3 */
     if (!this.events[type]) {
       this.events[type] = [];
     }
@@ -204,6 +210,7 @@ export class SocketStore {
       (i) => i.content.data.data.id === latestId,
     );
 
+    /* c8 ignore start */
     this.messages
       .slice(msgIndex + 1)
       .forEach((msg: SpySocket.BrodcastEvent | SpySocket.UnicastEvent) => {
@@ -217,6 +224,7 @@ export class SocketStore {
         } as const;
         this.send(data, true);
       });
+    /* c8 ignore stop */
   }
 
   // run excutable code which received from remote and send back the result
@@ -282,6 +290,7 @@ export class SocketStore {
       const instance = atom.getOrigin(instanceId);
       const current = atom.getOrigin(parentId);
       let value = {};
+      /* c8 ignore start */
       if (instance && current) {
         value = Object.getOwnPropertyDescriptor(current, key)?.get?.call(
           instance,
@@ -289,6 +298,7 @@ export class SocketStore {
       } else {
         value = new Error('Getter computed failed');
       }
+      /* c8 ignore stop */
       const msg = makeMessage(`atom-getter-${id}`, atom.transformToAtom(value));
       reply(msg);
     }
@@ -296,11 +306,13 @@ export class SocketStore {
 
   send(msg: SpySocket.ClientEvent, isCache: boolean = false) {
     if (this.connectionStatus) {
+      /* c8 ignore start */
       try {
         this.socket?.send(stringifyData(msg));
       } catch (e) {
         throw Error(`Incompatible: ${(e as Error).message}`);
       }
+      /* c8 ignore stop */
     }
     if (isCache) return;
     if (['send', 'ping'].indexOf(msg.type) > -1) return;

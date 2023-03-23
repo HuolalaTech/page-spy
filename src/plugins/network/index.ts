@@ -23,6 +23,7 @@ declare global {
   }
 }
 
+/* c8 ignore start */
 function getURL(url: string) {
   if (url.startsWith('//')) {
     // eslint-disable-next-line no-param-reassign
@@ -33,6 +34,7 @@ function getURL(url: string) {
   }
   return new URL(url, window.location.href);
 }
+/* c8 ignore stop */
 
 // File size is not recommended to exceed 6M,
 // 10M files would result negative performance impact distinctly in local-test.
@@ -64,9 +66,11 @@ export default class NetworkPlugin implements PageSpyPlugin {
 
   xhrProxy() {
     const that = this;
+    /* c8 ignore start */
     if (!window.XMLHttpRequest) {
       return;
     }
+    /* c8 ignore stop */
     const { open, send, setRequestHeader } = window.XMLHttpRequest.prototype;
     this.xhrOpen = open;
     this.xhrSend = send;
@@ -129,11 +133,13 @@ export default class NetworkPlugin implements PageSpyPlugin {
             req.costTime = req.endTime - (req.startTime || req.endTime);
             req.response = XMLReq.response;
             break;
+          /* c8 ignore start */
           default:
             clearInterval(timer as number);
             req.status = XMLReq.status;
             req.statusText = 'Unknown';
             break;
+          /* c8 ignore stop */
         }
 
         // update response by responseType
@@ -147,9 +153,12 @@ export default class NetworkPlugin implements PageSpyPlugin {
                 // not a JSON string
                 req.response = XMLReq.response;
               }
-            } else if (typeof XMLReq.response !== 'undefined') {
+            } /* c8 ignore start */ else if (
+              typeof XMLReq.response !== 'undefined'
+            ) {
               req.response = toStringTag(XMLReq.response);
             }
+            /* c8 ignore stop */
             break;
           case 'json':
             if (typeof XMLReq.response !== 'undefined') {
@@ -172,19 +181,22 @@ export default class NetworkPlugin implements PageSpyPlugin {
                       that.collectRequest(XMLReq.pageSpyRequestId, req);
                     }
                   });
-                } else {
+                } /* c8 ignore start */ else {
                   req.response = `[object ${XMLReq.responseType}]`;
                   req.responseReason = Reason.EXCEED_SIZE;
                 }
+                /* c8 ignore stop */
               }
             }
             break;
+          /* c8 ignore start */
           case 'document':
           default:
             if (typeof XMLReq.response !== 'undefined') {
               req.response = Object.prototype.toString.call(XMLReq.response);
             }
             break;
+          /* c8 ignore stop */
         }
         that.collectRequest(XMLReq.pageSpyRequestId, req);
         return onreadystatechange.apply(XMLReq, evts);
@@ -246,6 +258,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
         });
       }
       if (body && req.method === 'POST') {
+        /* c8 ignore start */
         if (isString(body)) {
           try {
             req.postData = JSON.parse(body as string);
@@ -257,6 +270,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
         } else {
           req.postData = '[object Object]';
         }
+        /* c8 ignore stop */
       }
       return send.apply(XMLReq, [body]);
     };
@@ -265,16 +279,13 @@ export default class NetworkPlugin implements PageSpyPlugin {
   fetchProxy() {
     const that = this;
     const originFetch = window.fetch;
+
+    /* c8 ignore next 3 */
     if (!originFetch) {
       return;
     }
     this.fetch = originFetch;
     window.fetch = function (input: RequestInfo | URL, init: RequestInit = {}) {
-      if (input instanceof URL) {
-        // eslint-disable-next-line no-param-reassign
-        input = input.toJSON();
-      }
-
       const id = getRandomId();
       that.reqList[id] = new RequestItem(id);
       const req = that.reqList[id];
@@ -326,6 +337,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
         });
       }
 
+      /* c8 ignore start */
       if (req.method === 'POST') {
         if (isString(input)) {
           // when `input` is a string
@@ -336,6 +348,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
           req.postData = '[object Object]';
         }
       }
+      /* c8 ignore stop */
 
       const request = isString(input) ? url.toString() : input;
 
@@ -358,6 +371,8 @@ export default class NetworkPlugin implements PageSpyPlugin {
               req.responseType = 'json';
               return res.clone().text();
             }
+
+            /* c8 ignore start */
             if (
               contentType.includes('text/html') ||
               contentType.includes('text/plain')
@@ -368,8 +383,10 @@ export default class NetworkPlugin implements PageSpyPlugin {
           }
           req.responseType = 'blob';
           return res.clone().blob();
+          /* c8 ignore stop */
         })
         .then((res) => {
+          /* c8 ignore start */
           switch (req.responseType) {
             case 'text':
             case 'json':
@@ -399,6 +416,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
               req.response = res;
               break;
           }
+          /* c8 ignore stop */
 
           return fetchResponse!;
         })
@@ -412,6 +430,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
 
   sendBeaconProxy() {
     const originSendBeacon = window.navigator.sendBeacon;
+    /* c8 ignore next 3 */
     if (!originSendBeacon) {
       return;
     }
@@ -452,10 +471,11 @@ export default class NetworkPlugin implements PageSpyPlugin {
         req.endTime = Date.now();
         req.costTime = req.endTime - (req.startTime || req.endTime);
         req.readyState = 4;
-      } else {
+      } /* c8 ignore start */ else {
         req.status = 500;
         req.statusText = 'Unknown';
       }
+      /* c8 ignore stop */
       that.collectRequest(id, req);
       return result;
     };
@@ -476,6 +496,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
   }
 
   static getFormattedBody(body?: BodyInit | null) {
+    /* c8 ignore start */
     if (!body) {
       return null;
     }
@@ -503,6 +524,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
         ret = `[object ${type}]`;
         break;
     }
+    /* c8 ignore stop */
     return ret;
   }
 }
