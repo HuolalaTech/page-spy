@@ -15,19 +15,30 @@ interface TCreateRoom {
   tags: Record<string, any>;
 }
 
+const resolveProtocol = () => {
+  const { protocol } = new URL(document.currentScript?.baseURI || '');
+  if (protocol.startsWith('https')) {
+    return ['https://', 'wss://'];
+  }
+  return ['http://', 'ws://'];
+};
+
 export default class Request {
+  protocol: string[] = [];
+
   constructor(public base: string = '') {
     /* c8 ignore next 3 */
     if (!base) {
       throw Error('The api base url cannot be empty');
     }
+    this.protocol = resolveProtocol();
   }
 
   createRoom(project: string): Promise<TResponse<TCreateRoom>> {
     const device = parseUserAgent();
     const name = combineName(device);
     return fetch(
-      `https://${this.base}/room/create?name=${name}&group=${project}`,
+      `${this.protocol[0]}${this.base}/room/create?name=${name}&group=${project}`,
       {
         method: 'GET',
       },
@@ -49,6 +60,6 @@ export default class Request {
       }
       return acc + kv;
     }, '');
-    return `wss://${this.base}/ws/room/join?${params}`;
+    return `${this.protocol[1]}${this.base}/ws/room/join?${params}`;
   }
 }
