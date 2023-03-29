@@ -81,6 +81,7 @@ export class SocketStore {
         this.connectOffline();
       });
       this.socket.addEventListener('error', () => {
+        this.reconnectTimes = 0;
         this.reconnectable = false;
         this.connectOffline();
       });
@@ -324,6 +325,8 @@ export class SocketStore {
 
   close() {
     this.clearPing();
+    this.reconnectTimes = 0;
+    this.reconnectable = false;
     this.socket?.close();
   }
 }
