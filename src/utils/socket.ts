@@ -8,6 +8,7 @@ import {
 import type { SpyMessage, SpySocket } from 'types';
 import atom from './atom';
 import { ROOM_SESSION_KEY } from './constants';
+import * as SERVER_MESSAGE_TYPE from './message/server-type';
 
 interface SocketEvent<T = any> {
   source: {
@@ -143,15 +144,17 @@ export class SocketStore {
   // get the data which we expected from nested structure of the message
   private peelMessage() {
     if (this.socket) {
+      const { CONNECT, MESSAGE, ERROR, JOIN, PING, LEAVE, CLOSE, BROADCAST } =
+        SERVER_MESSAGE_TYPE;
       this.socket.addEventListener('message', (evt) => {
         const result = JSON.parse(evt.data) as SpySocket.Event;
         const { type } = result;
         switch (type) {
-          case 'connect':
+          case CONNECT:
             const { selfConnection } = result.content;
             this.socketConnection = selfConnection;
             break;
-          case 'send':
+          case MESSAGE:
             const { data, from, to } = result.content;
             if (to.address !== this.socketConnection?.address) return;
             this.dispatchEvent(data.type as SpyMessage.InteractiveType, {
@@ -160,16 +163,16 @@ export class SocketStore {
               to,
             });
             break;
-          case 'error':
+          case ERROR:
             this.reconnectable = false;
             this.connectOffline();
             break;
           /* c8 ignore start */
-          case 'join':
-          case 'ping':
-          case 'leave':
-          case 'close':
-          case 'message':
+          case JOIN:
+          case PING:
+          case LEAVE:
+          case CLOSE:
+          case BROADCAST:
           default:
             // noting
             break;
@@ -217,7 +220,7 @@ export class SocketStore {
       .slice(msgIndex + 1)
       .forEach((msg: SpySocket.BrodcastEvent | SpySocket.UnicastEvent) => {
         const data = {
-          type: 'send',
+          type: SERVER_MESSAGE_TYPE.MESSAGE,
           content: {
             data: msg.content.data,
             from: this.socketConnection!,
@@ -317,7 +320,14 @@ export class SocketStore {
       /* c8 ignore stop */
     }
     if (isCache) return;
-    if (['send', 'ping'].indexOf(msg.type) > -1) return;
+    if (
+      [SERVER_MESSAGE_TYPE.MESSAGE, SERVER_MESSAGE_TYPE.PING].indexOf(
+        msg.type,
+      ) > -1
+    ) {
+      return;
+    }
+
     this.messages.push(
       msg as Exclude<SpySocket.ClientEvent, SpySocket.PingEvent>,
     );

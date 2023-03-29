@@ -28,7 +28,7 @@ export function makeUnicastMessage(
   to: SpySocket.Connection,
 ): SpySocket.UnicastEvent {
   return {
-    type: SERVER_MESSAGE_TYPE.SEND,
+    type: SERVER_MESSAGE_TYPE.MESSAGE,
     content: {
       data: msg,
       from,
@@ -41,7 +41,7 @@ export function makeBroadcastMessage(
   msg: SpyMessage.MessageItem,
 ): SpySocket.BrodcastEvent {
   return {
-    type: SERVER_MESSAGE_TYPE.MESSAGE,
+    type: SERVER_MESSAGE_TYPE.BROADCAST,
     content: {
       data: msg,
     },

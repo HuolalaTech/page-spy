@@ -38,9 +38,9 @@ export default class Request {
     const device = parseUserAgent();
     const name = combineName(device);
     return fetch(
-      `${this.protocol[0]}${this.base}/room/create?name=${name}&group=${project}`,
+      `${this.protocol[0]}${this.base}/api/v1/room/create?name=${name}&group=${project}`,
       {
-        method: 'GET',
+        method: 'POST',
       },
     )
       .then((res) => res.json())
@@ -60,6 +60,6 @@ export default class Request {
       }
       return acc + kv;
     }, '');
-    return `${this.protocol[1]}${this.base}/ws/room/join?${params}`;
+    return `${this.protocol[1]}${this.base}/api/v1/ws/room/join?${params}`;
   }
 }
