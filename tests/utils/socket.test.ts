@@ -7,6 +7,7 @@ import {
   ErrorEvent,
   JoinEvent,
 } from 'types/lib/socket-event';
+import * as SERVER_MESSAGE_TYPE from 'src/utils/message/server-type';
 
 // Mock micro task delay
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
@@ -66,9 +67,11 @@ describe('Socket store', () => {
       address: '<hash>',
     };
 
+    const { CONNECT, ERROR, MESSAGE } = SERVER_MESSAGE_TYPE;
+
     // `Connect` type message
     const connectMsg: ConnectEvent = {
-      type: 'connect',
+      type: CONNECT,
       content: {
         roomConnections: [sdkConnection, debugConnection],
         selfConnection: sdkConnection,
@@ -83,7 +86,7 @@ describe('Socket store', () => {
       DEBUG_MESSAGE_TYPE;
     [DEBUG, ATOM_DETAIL, ATOM_GETTER, DEBUGGER_ONLINE]
       .map((type) => ({
-        type: 'send',
+        type: MESSAGE,
         content: {
           data: { type, data: '--', role: 'debugger' },
           from: debugConnection,
@@ -94,7 +97,7 @@ describe('Socket store', () => {
 
     // `Error` type message
     const errMsg: ErrorEvent = {
-      type: 'error',
+      type: ERROR,
       content: {
         code: '',
         message: 'boom',

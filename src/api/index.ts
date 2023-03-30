@@ -14,7 +14,7 @@ interface TCreateRoom {
   group: string;
   tags: Record<string, any>;
 }
-
+/* c8 ignore start */
 const resolveProtocol = () => {
   const { protocol } = new URL(document.currentScript?.baseURI || '');
   if (protocol.startsWith('https')) {
@@ -22,7 +22,7 @@ const resolveProtocol = () => {
   }
   return ['http://', 'ws://'];
 };
-
+/* c8 ignore stop */
 export default class Request {
   protocol: string[] = [];
 

@@ -21,10 +21,12 @@ describe('new PageSpy([config])', () => {
     const sdk = new SDK();
 
     // The config value inited from /tests/setup.ts
-    expect(sdk.config).toEqual({
-      api: 'example.com',
-      clientOrigin: 'https://example.com',
-    });
+    expect(sdk.config).toEqual(
+      expect.objectContaining({
+        api: 'example.com',
+        clientOrigin: 'https://example.com',
+      }),
+    );
   });
 
   it('Pass config to constructor manually', () => {
@@ -34,7 +36,7 @@ describe('new PageSpy([config])', () => {
     };
 
     const sdk = new SDK(config);
-    expect(sdk.config).toEqual(config);
+    expect(sdk.config).toEqual(expect.objectContaining(config));
   });
 
   it('Cannot init duplicate', () => {

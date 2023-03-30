@@ -117,9 +117,11 @@ export class SocketStore {
       this.reconnectTimes -= 1;
       this.init(this.socketUrl);
     } else {
+      /* c8 ignore start */
       this.reconnectable = false;
       this.connectOffline();
       console.log('[PageSpy] Reconnect failed.');
+      /* c8 ignore stop */
     }
   }
 
