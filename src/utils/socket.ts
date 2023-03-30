@@ -116,13 +116,12 @@ export class SocketStore {
     if (this.reconnectTimes > 0) {
       this.reconnectTimes -= 1;
       this.init(this.socketUrl);
-    } else {
-      /* c8 ignore start */
+    } /* c8 ignore start */ else {
       this.reconnectable = false;
       this.connectOffline();
       console.log('[PageSpy] Reconnect failed.');
-      /* c8 ignore stop */
     }
+    /* c8 ignore stop */
   }
 
   pingConnect() {
