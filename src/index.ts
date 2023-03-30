@@ -31,10 +31,7 @@ export default class PageSpy {
 
   plugins: Record<string, PageSpyPlugin> = {};
 
-  config: Required<InitConfig> = {
-    api: '',
-    clientOrigin: '',
-  };
+  config: Required<InitConfig>;
 
   // System info: <os>-<browser>:<browserVersion>
   name = '';
@@ -47,20 +44,11 @@ export default class PageSpy {
 
   request: Request;
 
-  // Room group
-  project = 'default';
-
-  // Debug client url origin
-  clientOrigin = '';
-
   socketStore = socketStore;
 
   constructor(init: InitConfig = {}) {
     this.config = mergeConfig(init);
-    const { api, clientOrigin } = this.config;
-
-    this.request = new Request(api);
-    this.clientOrigin = clientOrigin;
+    this.request = new Request(this.config.api);
 
     const root = document.getElementById(Identifier);
     if (root) {
@@ -105,7 +93,7 @@ export default class PageSpy {
         usable,
         project: prev,
       } = JSON.parse(roomCache);
-      if (!usable || this.project !== prev) {
+      if (!usable || this.config.project !== prev) {
         await this.createNewConnection();
       } else {
         this.name = name;
@@ -117,7 +105,7 @@ export default class PageSpy {
   }
 
   async createNewConnection() {
-    const { data } = await this.request.createRoom(this.project);
+    const { data } = await this.request.createRoom(this.config.project);
     const roomUrl = this.request.getRoomUrl({
       address: data.address,
       name: `client:${getRandomId()}`,
@@ -185,13 +173,13 @@ export default class PageSpy {
   }
 
   saveSession() {
-    const { name, address, roomUrl, project } = this;
+    const { name, address, roomUrl } = this;
     const roomInfo = JSON.stringify({
       name,
       address,
       roomUrl,
       usable: true,
-      project,
+      project: this.config.project,
     });
     sessionStorage.setItem(ROOM_SESSION_KEY, roomInfo);
   }
@@ -216,8 +204,8 @@ export default class PageSpy {
       content: {
         name: this.name,
         address: this.address,
-        clientOrigin: this.clientOrigin,
-        project: this.project,
+        clientOrigin: this.config.clientOrigin,
+        project: this.config.project,
       },
       onOk: () => {
         modal.close();
