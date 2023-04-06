@@ -14,9 +14,7 @@
     "debug",
     "remote",
     "inspect",
-    "console",
-    "element",
-    ""
+    "devtools"
   ],
   "files": [
     "dist"
