@@ -1,7 +1,7 @@
 {
   "name": "@huolala-tech/page-spy",
-  "version": "0.0.1",
-  "description": "A developer tools for debug remote web page.",
+  "version": "1.0.0",
+  "description": "A developer tool for debugging remote web page.",
   "main": "dist/index.min.js",
   "types": "dist/types/index.d.ts",
   "license": "MIT",
@@ -32,6 +32,7 @@
     "lint:fix": "eslint --ext .js,.ts --fix ./src",
     "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,md,json}'",
     "commit": "git-cz",
+    "prepublishOnly": "yarn test && yarn build",
     "release:major": "standard-version --release-as major",
     "release:minor": "standard-version --release-as minor",
     "release:patch": "standard-version --release-as patch"
