@@ -8,7 +8,7 @@ English | [中文](./README_CN.md)
 
 <h1 align="center">PageSpy</h1>
 
-> A developer tools for debug remote web page.
+> A developer tool for debugging remote web page.
 
 ## What's this
 
