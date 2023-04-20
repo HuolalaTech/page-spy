@@ -60,6 +60,10 @@ export class SocketStore {
     'debugger-online': [],
   };
 
+  // Don't try to reconnect and close immediately
+  // when user refresh the page.
+  closeImmediately: boolean = false;
+
   constructor() {
     this.addListener('debug', SocketStore.handleDebugger);
     this.addListener('atom-detail', SocketStore.handleResolveAtom);
@@ -79,6 +83,7 @@ export class SocketStore {
         this.peelMessage();
       });
       this.socket.addEventListener('close', () => {
+        if (this.closeImmediately) return;
         this.connectOffline();
       });
       this.socket.addEventListener('error', () => {
@@ -336,8 +341,7 @@ export class SocketStore {
 
   close() {
     this.clearPing();
-    this.reconnectTimes = 0;
-    this.reconnectable = false;
+    this.closeImmediately = true;
     this.socket?.close();
   }
 }
