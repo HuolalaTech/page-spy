@@ -83,7 +83,6 @@ export class SocketStore {
         this.peelMessage();
       });
       this.socket.addEventListener('close', () => {
-        if (this.closeImmediately) return;
         this.connectOffline();
       });
       this.socket.addEventListener('error', () => {
@@ -107,6 +106,12 @@ export class SocketStore {
     this.connectionStatus = false;
     this.socketConnection = null;
     this.clearPing();
+
+    if (this.closeImmediately) return;
+    this.tryReconnect();
+  }
+
+  tryReconnect() {
     if (!this.reconnectable) {
       sessionStorage.setItem(
         ROOM_SESSION_KEY,
@@ -114,16 +119,11 @@ export class SocketStore {
       );
       return;
     }
-    this.tryReconnect();
-  }
-
-  tryReconnect() {
     if (this.reconnectTimes > 0) {
       this.reconnectTimes -= 1;
       this.init(this.socketUrl);
     } /* c8 ignore start */ else {
       this.reconnectable = false;
-      this.connectOffline();
       console.log('[PageSpy] Reconnect failed.');
     }
     /* c8 ignore stop */
