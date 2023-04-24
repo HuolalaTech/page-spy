@@ -101,6 +101,9 @@ export function makePrimitiveValue(value: any): PrimitiveResult {
   if (value === undefined) {
     return primitive(stringify(value));
   }
+  if (value === null) {
+    return primitive(value);
+  }
   if (isNumber(value)) {
     if (value === -Infinity || value === Infinity || Number.isNaN(value)) {
       return primitive(stringify(value));
@@ -121,7 +124,7 @@ export function makePrimitiveValue(value: any): PrimitiveResult {
       ok: false,
     };
   }
-  if (!(value instanceof Object || value instanceof Array)) {
+  if (!(value instanceof Object || typeof value === 'object')) {
     return primitive(value);
   }
   return {
