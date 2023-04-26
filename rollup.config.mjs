@@ -25,8 +25,8 @@ const plugins = [
     plugins: [autoprefixer()],
   }),
   babel({
-    exclude: 'node_modules/**',
-    babelHelpers: 'runtime',
+    exclude: ['node_modules/**', /deps\/modernizr/],
+    babelHelpers: 'bundled',
     extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx'],
   }),
   uglify(),

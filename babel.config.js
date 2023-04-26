@@ -1,11 +1,12 @@
 module.exports = {
-  presets: ['@babel/env', '@babel/preset-typescript'],
-  plugins: [
+  presets: [
     [
-      '@babel/plugin-transform-runtime',
+      '@babel/env',
       {
-        corejs: false,
+        useBuiltIns: 'usage',
+        corejs: '3.30',
       },
     ],
+    '@babel/preset-typescript',
   ],
 };
