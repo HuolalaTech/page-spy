@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.4](https://github.com/HuolalaTech/page-spy/compare/v1.0.3...v1.0.4) (2023-04-27)
+
+### Features
+
+- add location info on PagePlugin ([f2fbd58](https://github.com/HuolalaTech/page-spy/commit/f2fbd5815a9c3b5f4b6ce3904e8e8bbd9257f06b))
+
 ### [1.0.3](https://github.com/HuolalaTech/page-spy/compare/v1.0.2...v1.0.3) (2023-04-24)
 
 ### Bug Fixes
