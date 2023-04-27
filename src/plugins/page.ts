@@ -24,6 +24,7 @@ export default class PagePlugin implements PageSpyPlugin {
     const originHtml = document.documentElement.outerHTML;
     const msg = makeMessage(DEBUG_MESSAGE_TYPE.PAGE, {
       html: originHtml,
+      location: window.location,
     });
     return msg;
   }
