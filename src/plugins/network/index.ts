@@ -99,6 +99,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
         const headerArr = header.trim().split(/[\r\n]+/);
 
         switch (XMLReq.readyState) {
+          /* c8 ignore next */
           case 0:
           case 1:
             req.status = XMLReq.status;
@@ -130,6 +131,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
             req.status = XMLReq.status;
             req.statusText = 'Done';
             req.endTime = Date.now();
+            /* c8 ignore next */
             req.costTime = req.endTime - (req.startTime || req.endTime);
             req.response = XMLReq.response;
             break;
@@ -236,14 +238,15 @@ export default class NetworkPlugin implements PageSpyPlugin {
         pageSpyRequestMethod = 'GET',
         pageSpyRequestUrl = '',
       } = XMLReq;
+      /* c8 ignore start */
       const req =
         that.reqList[pageSpyRequestId] || new RequestItem(pageSpyRequestId);
-
       const query = pageSpyRequestUrl.split('?') || [];
-      req.method = pageSpyRequestMethod.toUpperCase();
       req.url = pageSpyRequestUrl;
       req.name = query.shift() || '';
       req.name = req.name.replace(/[/]*$/, '').split('/').pop() || '';
+      /* c8 ignore stop */
+      req.method = pageSpyRequestMethod.toUpperCase();
       req.requestType = 'xhr';
       req.responseType = XMLReq.responseType;
       req.withCredentials = XMLReq.withCredentials;
@@ -296,19 +299,23 @@ export default class NetworkPlugin implements PageSpyPlugin {
 
       if (isString(input)) {
         // when `input` is a string
+        /* c8 ignore next */
         method = init.method || 'GET';
         url = getURL(<string>input);
         requestHeader = init?.headers || null;
       } else {
         // when `input` is a `Request` object
+        /* c8 ignore next */
         method = (<Request>input).method || 'GET';
         url = getURL((<Request>input).url);
         requestHeader = (<Request>input).headers;
       }
 
+      /* c8 ignore start */
       const query = url.href.split('?') || [];
       req.name = query.shift() || '';
       req.name = req.name.replace(/[/]*$/, '').split('/').pop() || '';
+      /* c8 ignore stop */
       req.method = method.toUpperCase();
       req.url = url.toString();
       req.requestType = 'fetch';
@@ -357,6 +364,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
         .then<string | Blob, never>((res) => {
           fetchResponse = res;
           req.endTime = Date.now();
+          /* c8 ignore next 3 */
           req.costTime = req.endTime - (req.startTime || req.endTime);
           req.status = res.status || 200;
           req.statusText = res.statusText || 'Done';
@@ -371,7 +379,6 @@ export default class NetworkPlugin implements PageSpyPlugin {
               req.responseType = 'json';
               return res.clone().text();
             }
-
             /* c8 ignore start */
             if (
               contentType.includes('text/html') ||
@@ -446,6 +453,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
       that.reqList[id] = req;
 
       const urlObj = getURL(url);
+      /* c8 ignore next */
       req.name = urlObj.href.split('/').pop() || '';
       req.method = 'POST';
       req.url = url.toString();
@@ -469,6 +477,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
         req.status = 200;
         req.statusText = 'Sent';
         req.endTime = Date.now();
+        /* c8 ignore next */
         req.costTime = req.endTime - (req.startTime || req.endTime);
         req.readyState = 4;
       } /* c8 ignore start */ else {

@@ -1,4 +1,10 @@
 [page-spy-web]: https://github.com/HuolalaTech/page-spy-web.git 'page-spy-web'
+[coveralls-image]: https://coveralls.io/repos/github/HuolalaTech/page-spy/badge.svg?branch=main
+[coveralls-url]: https://coveralls.io/github/HuolalaTech/page-spy?branch=main
+[npm-image]: https://img.shields.io/npm/v/@huolala-tech/page-spy
+[npm-url]: https://www.npmjs.com/package/@huolala-tech/page-spy
+[minified-image]: https://img.shields.io/bundlephobia/min/@huolala-tech/page-spy
+[minified-url]: https://unpkg.com/browse/@huolala-tech/page-spy/dist/index.min.js
 
 [English](./README.md) | 中文
 
@@ -6,7 +12,12 @@
   <img src="./logo.svg" height="120" />
 </p>
 
-<h1 align="center">PageSpy</h1>
+<h1 align="center">
+PageSpy
+
+[![Coverage Status][coveralls-image]][coveralls-url] [![NPM Package][npm-image]][npm-url] [![Minified size][minified-image]][minified-url]
+
+</h1>
 
 > 一款远程调试网页的工具。
 
