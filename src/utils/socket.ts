@@ -162,12 +162,13 @@ export class SocketStore {
             break;
           case MESSAGE:
             const { data, from, to } = result.content;
-            if (to.address !== this.socketConnection?.address) return;
-            this.dispatchEvent(data.type as SpyMessage.InteractiveType, {
-              source: data,
-              from,
-              to,
-            });
+            if (to.address === this.socketConnection?.address) {
+              this.dispatchEvent(data.type as SpyMessage.InteractiveType, {
+                source: data,
+                from,
+                to,
+              });
+            }
             break;
           case ERROR:
             this.reconnectable = false;
@@ -325,18 +326,19 @@ export class SocketStore {
       }
       /* c8 ignore stop */
     }
-    if (isCache) return;
-    if (
-      [SERVER_MESSAGE_TYPE.MESSAGE, SERVER_MESSAGE_TYPE.PING].indexOf(
-        msg.type,
-      ) > -1
-    ) {
-      return;
-    }
+    if (!isCache) {
+      if (
+        [SERVER_MESSAGE_TYPE.MESSAGE, SERVER_MESSAGE_TYPE.PING].indexOf(
+          msg.type,
+        ) > -1
+      ) {
+        return;
+      }
 
-    this.messages.push(
-      msg as Exclude<SpySocket.ClientEvent, SpySocket.PingEvent>,
-    );
+      this.messages.push(
+        msg as Exclude<SpySocket.ClientEvent, SpySocket.PingEvent>,
+      );
+    }
   }
 
   close() {

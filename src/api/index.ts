@@ -53,6 +53,7 @@ export default class Request {
   getRoomUrl(args: Record<string, string | number> = {}) {
     const params = Object.keys(args).reduce((acc, cur, index, arr) => {
       const val = args[cur];
+      /* c8 ignore next */
       if (val == null) return acc;
       let kv = `${cur}=${val}`;
       if (index < arr.length - 1) {

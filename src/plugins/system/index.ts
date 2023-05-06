@@ -6,6 +6,7 @@ import { parseUserAgent } from 'src/utils/ua';
 import '../../deps/modernizr';
 import { computeResult } from './feature';
 
+/* c8 ignore start */
 window.Modernizr.addTest(
   'finally',
   Modernizr.promises && !!Promise.prototype.finally,
@@ -14,6 +15,7 @@ window.Modernizr.addTest(
   'iframe',
   Modernizr.sandbox && Modernizr.seamless && Modernizr.srcdoc,
 );
+/* c8 ignore stop */
 
 export default class SystemPlugin implements PageSpyPlugin {
   name: string;

@@ -22,6 +22,7 @@ const resolveConfig = () => {
 };
 
 export const mergeConfig = (config: InitConfig): Required<InitConfig> => ({
+  /* c8 ignore next */
   ...(resolveConfig() || defaultConfig),
   ...config,
 });
