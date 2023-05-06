@@ -20,9 +20,9 @@ jobs:
         with:
           node-version: 16.x
 
-      - name: npm install, yarn test
+      - name: yarn install, yarn test
         run: |
-          npm install
+          yarn install
           yarn test
 
       - name: Coveralls
