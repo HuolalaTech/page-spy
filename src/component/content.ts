@@ -30,7 +30,7 @@ export class Content {
 
   render() {
     const { content = {}, onOk } = this.options;
-    const { name = '--', address = '--', clientOrigin } = content;
+    const { name = '--', address = '--', clientOrigin, project } = content;
     const [os, browser] = name.split(' ');
     const contentText = `
       <p><b>Device ID:</b> <span style="font-family: 'Monaco'">${address.slice(
@@ -39,8 +39,8 @@ export class Content {
       )}</span></p>
       <p><b>System:</b> ${os}</p>
       <p><b>Browser:</b> ${browser}</p>
+      <p><b>Project:</b> ${project}</p>
       `;
-    // <p><b>Group:</b> <span style="font-family: 'Monaco'">${project}</span></p>
 
     /* info */
     const info = document.createElement('div');
