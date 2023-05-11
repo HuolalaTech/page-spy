@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.5](https://github.com/HuolalaTech/page-spy/compare/v1.0.4...v1.0.5) (2023-05-11)
+
+### Features
+
+- show 'project' field and fix viewport size ([581b65b](https://github.com/HuolalaTech/page-spy/commit/581b65be296dc2d7501b17b5eeff2775a2311174))
+
 ### [1.0.4](https://github.com/HuolalaTech/page-spy/compare/v1.0.3...v1.0.4) (2023-04-27)
 
 ### Features
