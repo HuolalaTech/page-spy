@@ -10,26 +10,39 @@ export class StoragePlugin implements PageSpyPlugin {
   onCreated() {
     const { sendStorageItem, initStorageProxy } = StoragePlugin;
     const local = { ...localStorage };
-    Object.keys(local).forEach((key) => {
-      const value = local[key];
-      sendStorageItem({ type: 'local', action: 'get', key, value });
+    Object.keys(local).forEach((name) => {
+      const value = local[name];
+      sendStorageItem({ type: 'local', action: 'get', name, value });
     });
 
     const session = { ...sessionStorage };
-    Object.keys(session).forEach((key) => {
-      const value = session[key];
-      sendStorageItem({ type: 'session', action: 'get', key, value });
+    Object.keys(session).forEach((name) => {
+      const value = session[name];
+      sendStorageItem({ type: 'session', action: 'get', name, value });
     });
 
-    document.cookie.split('; ').forEach((item) => {
-      const [key, value] = item.split('=');
-      sendStorageItem({
-        type: 'cookie',
-        action: 'get',
-        key,
-        value,
+    if (window.cookieStore) {
+      const sendCookie = () => {
+        window.cookieStore.getAll().then((cookies) => {
+          cookies.forEach((cookie) => {
+            sendStorageItem({ type: 'cookie', action: 'get', ...cookie });
+          });
+        });
+      };
+      sendCookie();
+      window.cookieStore.addEventListener('change', sendCookie);
+    } else {
+      document.cookie.split('; ').forEach((item) => {
+        const [name, value] = item.split('=');
+        sendStorageItem({
+          type: 'cookie',
+          action: 'get',
+          name,
+          value,
+        });
       });
-    });
+    }
+
     initStorageProxy();
   }
 
@@ -43,32 +56,22 @@ export class StoragePlugin implements PageSpyPlugin {
       sendStorageItem({ type, action });
       return clear.call(this);
     };
-    Storage.prototype.removeItem = function (key: string) {
+    Storage.prototype.removeItem = function (name: string) {
       const action = 'remove';
       const type = getStorageType(this);
-      sendStorageItem({ type, action, key });
-      return removeItem.call(this, key);
+      sendStorageItem({ type, action, name });
+      return removeItem.call(this, name);
     };
-    Storage.prototype.setItem = function (key: string, value: string) {
+    Storage.prototype.setItem = function (name: string, value: string) {
       const action = 'set';
       const type = getStorageType(this);
-      sendStorageItem({ type, action, key, value });
-      return setItem.call(this, key, value);
+      sendStorageItem({ type, action, name, value });
+      return setItem.call(this, name, value);
     };
   }
 
-  static sendStorageItem({
-    type,
-    action,
-    key = '',
-    value = '',
-  }: SpyStorage.DataItem) {
-    const data = makeMessage(DEBUG_MESSAGE_TYPE.STORAGE, {
-      type,
-      action,
-      key,
-      value,
-    });
+  static sendStorageItem(info: Omit<SpyStorage.DataItem, 'id'>) {
+    const data = makeMessage(DEBUG_MESSAGE_TYPE.STORAGE, info);
     socketStore.broadcastMessage(data);
   }
 
