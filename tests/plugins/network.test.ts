@@ -20,7 +20,7 @@ afterEach(() => {
 
 describe('Network plugin', () => {
   it('Wrap XMLHttpRequest prototype and add `onreadystatechange` on instance', (done) => {
-    const fakeUrl = 'https://jsonplaceholder.typicode.com/posts';
+    const fakeUrl = 'http://localhost:6677/posts';
     const openSpy = jest.spyOn(XMLHttpRequest.prototype, 'open');
     const setHeaderSpy = jest.spyOn(
       XMLHttpRequest.prototype,
@@ -59,7 +59,7 @@ describe('Network plugin', () => {
   it('XHR json responseType', (done) => {
     new NetworkPlugin().xhrProxy();
 
-    const fakeUrl = 'https://jsonplaceholder.typicode.com/posts/1';
+    const fakeUrl = 'http://localhost:6677/posts/1';
     const xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
     xhr.open('GET', fakeUrl);
@@ -79,7 +79,7 @@ describe('Network plugin', () => {
   it('XHR blob responseType', (done) => {
     new NetworkPlugin().xhrProxy();
 
-    const fakeUrl = 'https://jsonplaceholder.typicode.com/posts/1';
+    const fakeUrl = 'http://localhost:6677/posts/1';
     const xhr = new XMLHttpRequest();
     xhr.responseType = 'blob';
     xhr.open('GET', fakeUrl);
@@ -103,7 +103,7 @@ describe('Network plugin', () => {
   it('XHR arrarybuffer responseType', (done) => {
     new NetworkPlugin().xhrProxy();
 
-    const fakeUrl = 'https://jsonplaceholder.typicode.com/posts/1';
+    const fakeUrl = 'http://localhost:6677/posts/1';
     const xhr = new XMLHttpRequest();
     xhr.responseType = 'arraybuffer';
     xhr.open('GET', fakeUrl);
@@ -127,7 +127,9 @@ describe('Network plugin', () => {
     new NetworkPlugin().fetchProxy();
     expect(window.fetch).not.toBe(fetchSpy);
 
-    const fakeUrl = 'https://jsonplaceholder.typicode.com/posts/1';
+    const fakeUrl = 'http://localhost:6677/posts/1';
+    console.log(window.location.href);
+
     const res = await fetch(fakeUrl, {
       method: 'GET',
       credentials: 'include',
@@ -162,8 +164,7 @@ describe('Network plugin', () => {
     new NetworkPlugin().sendBeaconProxy();
     expect(window.navigator.sendBeacon).not.toBe(sendBeaconSpy);
 
-    const fakeUrl =
-      'https://jsonplaceholder.typicode.com/posts?search-for=test';
+    const fakeUrl = 'http://localhost:6677/posts?search-for=test';
     const body = { title: 'PageSpy', body: 'XHR Test' };
     const bodyStringify = JSON.stringify(body);
     navigator.sendBeacon(fakeUrl, bodyStringify);
