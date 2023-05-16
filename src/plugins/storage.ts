@@ -25,7 +25,14 @@ export class StoragePlugin implements PageSpyPlugin {
       const sendCookie = () => {
         window.cookieStore.getAll().then((cookies) => {
           cookies.forEach((cookie) => {
-            sendStorageItem({ type: 'cookie', action: 'get', ...cookie });
+            const data = { type: 'cookie', action: 'get', ...cookie } as Omit<
+              SpyStorage.DataItem,
+              'id'
+            >;
+            if (!data.domain) {
+              data.domain = window.location.hostname;
+            }
+            sendStorageItem(data);
           });
         });
       };

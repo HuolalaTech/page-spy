@@ -36,7 +36,7 @@ type CookieStoreValue = {
 interface CookieStore extends EventTarget {
   delete(name: OptionName | string): Promise<void>;
   get(name: OptionName | string): Promise<null | CookieStoreValue>;
-  getAll(): Promise<CookieStore[]>;
+  getAll(): Promise<CookieStoreValue[]>;
   set(name: string, value: string): Promise<void>;
   set(name: OptionName): Promise<void>;
 }
