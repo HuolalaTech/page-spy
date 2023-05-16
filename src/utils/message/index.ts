@@ -4,17 +4,14 @@ import * as SERVER_MESSAGE_TYPE from './server-type';
 
 export * as DEBUG_MESSAGE_TYPE from './debug-type';
 
-export function makeMessage(
-  type: SpyMessage.MessageType,
-  data: Record<string, any>,
-  needId: boolean = true,
-): SpyMessage.MessageItem {
+export function makeMessage<
+  T extends SpyMessage.MessageType,
+  D extends Record<string, any>,
+>(type: T, data: D, needId: boolean = true): SpyMessage.MessageItem<T, D> {
   const result = {
+    ...(needId && { id: getRandomId() }),
     ...data,
   };
-  if (needId) {
-    result.id = getRandomId();
-  }
   return {
     role: 'client',
     type,

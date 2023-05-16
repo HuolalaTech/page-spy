@@ -20,8 +20,8 @@ export type InteractiveType =
 
 export type MessageType = DataType | InteractiveType;
 
-export interface MessageItem {
+export interface MessageItem<T = MessageType, D = any> {
   role: 'client' | 'debugger';
-  type: MessageType;
-  data: any;
+  type: T;
+  data: D;
 }

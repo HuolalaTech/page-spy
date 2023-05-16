@@ -4,6 +4,7 @@ import socketStore from 'src/utils/socket';
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
 import { parseUserAgent } from 'src/utils/ua';
 import '../../deps/modernizr';
+import { SpySystem } from 'types';
 import { computeResult } from './feature';
 
 /* c8 ignore start */
@@ -36,7 +37,8 @@ export default class SystemPlugin implements PageSpyPlugin {
           ...parseUserAgent(),
         },
         features,
-      }),
+      } as SpySystem.DataItem),
+      false,
     );
   }
 }

@@ -1,9 +1,11 @@
 /* eslint-disable no-restricted-syntax */
 
+import { SpyDevice } from 'types';
+
 interface DeviceInfo {
-  osName: string;
+  osName: SpyDevice.OS;
   osVersion: string;
-  browserName: string;
+  browserName: SpyDevice.Browser;
   browserVersion: string;
 }
 
@@ -30,9 +32,9 @@ const platforms = {
 export function parseUserAgent(
   uaString: string = window.navigator.userAgent,
 ): DeviceInfo {
-  let osName = 'Unknown';
+  let osName: SpyDevice.OS = 'Unknown';
   let osVersion = 'Unknown';
-  let browserName = 'Unknown';
+  let browserName: SpyDevice.Browser = 'Unknown';
   let browserVersion = 'Unknown';
 
   // 判断操作系统
@@ -41,7 +43,7 @@ export function parseUserAgent(
       const reg = platforms[platform as keyof typeof platforms];
       const match = uaString.match(reg);
       if (match) {
-        osName = platform;
+        osName = platform as SpyDevice.OS;
         osVersion = match[1]?.replaceAll('_', '.');
         break;
       }
@@ -53,7 +55,7 @@ export function parseUserAgent(
     if (Object.prototype.hasOwnProperty.call(browsers, browser)) {
       const match = uaString.match(browsers[browser as keyof typeof browsers]);
       if (match) {
-        browserName = browser;
+        browserName = browser as SpyDevice.Browser;
         // eslint-disable-next-line prefer-destructuring
         browserVersion = match[1];
         break;
