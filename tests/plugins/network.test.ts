@@ -1,5 +1,7 @@
 import NetworkPlugin from 'src/plugins/network';
-import '../server/index';
+import startServer from '../server/index';
+
+const stopServer = startServer();
 
 const {
   open: originOpen,
@@ -18,6 +20,7 @@ afterEach(() => {
   window.fetch = originFetch;
   window.navigator.sendBeacon = originSendBeacon;
 });
+afterAll(stopServer);
 
 describe('Network plugin', () => {
   it('Wrap XMLHttpRequest prototype and add `onreadystatechange` on instance', (done) => {
