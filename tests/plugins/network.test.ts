@@ -1,4 +1,5 @@
 import NetworkPlugin from 'src/plugins/network';
+import '../server/index';
 
 const {
   open: originOpen,
