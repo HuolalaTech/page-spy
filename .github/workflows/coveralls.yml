@@ -23,9 +23,9 @@ jobs:
       - name: yarn install, yarn test
         run: |
           yarn install
-          ./node_modules/.bin/pm2 restart tests/server/index.js
+          ./node_modules/.bin/pm2 restart ./tests/server/index.js
           yarn test
-          ./node_modules/.bin/pm2 stop tests/server/index.js
+          ./node_modules/.bin/pm2 stop ./tests/server/index.js
 
       - name: Coveralls
         uses: coverallsapp/github-action@v2
