@@ -25,10 +25,16 @@ app.get('/posts/:id', (_, res) => {
   res.send(data[0]);
 });
 
-try {
-  app.listen(6677, () => {
+const startServer = () => {
+  const server = app.listen(6677, () => {
     console.log('Test server is RUNNING at http://localhost:6677');
   });
-} catch (e) {
-  console.log(`Test server start failed. \n${e.message}`);
-}
+  server.unref();
+  return () => {
+    server.close((err) => {
+      console.log('Http server closed.');
+    });
+  };
+};
+
+module.exports = startServer;
