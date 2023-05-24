@@ -30,7 +30,12 @@ const startServer = () => {
     console.log('Test server is RUNNING at http://localhost:6677');
   });
   server.unref();
-  return server.close;
+  return () => {
+    server.close((err) => {
+      console.log('Http server closed.');
+      process.exit(err ? 1 : 0);
+    });
+  };
 };
 
 module.exports = startServer;
