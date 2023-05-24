@@ -33,7 +33,6 @@ const startServer = () => {
   return () => {
     server.close((err) => {
       console.log('Http server closed.');
-      process.exit(err ? 1 : 0);
     });
   };
 };
