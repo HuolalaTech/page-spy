@@ -15,30 +15,35 @@ interface TCreateRoom {
   tags: Record<string, any>;
 }
 /* c8 ignore start */
-const resolveProtocol = () => {
-  const { protocol } = new URL(document.currentScript?.baseURI || '');
-  if (protocol.startsWith('https')) {
-    return ['https://', 'wss://'];
+const resolvedProtocol = (() => {
+  try {
+    const { protocol } = new URL(document.currentScript?.getAttribute('src')!);
+    if (protocol.startsWith('https')) {
+      return ['https://', 'wss://'];
+    }
+  } catch (e) {
+    console.error(e);
+    console.error(
+      '[PageSpy] Failed to resolve the protocol and fallback to [http://, ws://]',
+    );
   }
   return ['http://', 'ws://'];
-};
+})();
+
 /* c8 ignore stop */
 export default class Request {
-  protocol: string[] = [];
-
   constructor(public base: string = '') {
     /* c8 ignore next 3 */
     if (!base) {
       throw Error('The api base url cannot be empty');
     }
-    this.protocol = resolveProtocol();
   }
 
   createRoom(project: string): Promise<TResponse<TCreateRoom>> {
     const device = parseUserAgent();
     const name = combineName(device);
     return fetch(
-      `${this.protocol[0]}${this.base}/api/v1/room/create?name=${name}&group=${project}`,
+      `${resolvedProtocol[0]}${this.base}/api/v1/room/create?name=${name}&group=${project}`,
       {
         method: 'POST',
       },
@@ -61,6 +66,6 @@ export default class Request {
       }
       return acc + kv;
     }, '');
-    return `${this.protocol[1]}${this.base}/api/v1/ws/room/join?${params}`;
+    return `${resolvedProtocol[1]}${this.base}/api/v1/ws/room/join?${params}`;
   }
 }
