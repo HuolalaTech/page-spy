@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/HuolalaTech/page-spy/compare/v1.1.0-beta.1...v1.1.0) (2023-05-24)
+
+### Bug Fixes
+
+- resolve protocol ([#1](https://github.com/HuolalaTech/page-spy/issues/1)) ([4fbc609](https://github.com/HuolalaTech/page-spy/commit/4fbc609769936058807f25dfab4666d78297abfc)), closes [#3](https://github.com/HuolalaTech/page-spy/issues/3)
+
 ### [1.0.5](https://github.com/HuolalaTech/page-spy/compare/v1.0.4...v1.0.5) (2023-05-11)
 
 ### Features
