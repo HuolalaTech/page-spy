@@ -81,22 +81,17 @@ export default class NetworkPlugin implements PageSpyPlugin {
       const method = args[0];
       const url = args[1];
       const id = getRandomId();
-      let timer: number | null = null;
 
       this.pageSpyRequestId = id;
       this.pageSpyRequestMethod = method;
       this.pageSpyRequestUrl = url;
 
-      const onreadystatechange = this.onreadystatechange || function () {};
-      const onReadyStateChange = function (...evts: any) {
+      XMLReq.addEventListener('readystatechange', () => {
         if (!that.reqList[id]) {
           that.reqList[id] = new RequestItem(id);
         }
         const req = that.reqList[id];
         req.readyState = XMLReq.readyState;
-
-        const header = XMLReq.getAllResponseHeaders() || '';
-        const headerArr = header.trim().split(/[\r\n]+/);
 
         switch (XMLReq.readyState) {
           /* c8 ignore next */
@@ -110,6 +105,8 @@ export default class NetworkPlugin implements PageSpyPlugin {
             break;
           // Header received
           case 2:
+            const header = XMLReq.getAllResponseHeaders() || '';
+            const headerArr = header.trim().split(/[\r\n]+/);
             req.status = XMLReq.status;
             req.statusText = 'Loading';
             req.responseHeader = {};
@@ -127,7 +124,6 @@ export default class NetworkPlugin implements PageSpyPlugin {
             break;
           // Done
           case 4:
-            clearInterval(timer as number);
             req.status = XMLReq.status;
             req.statusText = 'Done';
             req.endTime = Date.now();
@@ -137,7 +133,6 @@ export default class NetworkPlugin implements PageSpyPlugin {
             break;
           /* c8 ignore start */
           default:
-            clearInterval(timer as number);
             req.status = XMLReq.status;
             req.statusText = 'Unknown';
             break;
@@ -201,21 +196,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
           /* c8 ignore stop */
         }
         that.collectRequest(XMLReq.pageSpyRequestId, req);
-        return onreadystatechange.apply(XMLReq, evts);
-      };
-
-      XMLReq.onreadystatechange = onReadyStateChange;
-
-      // some 3rd-libraries will change XHR's default function
-      // so we use a timer to avoid lost tracking of readyState
-      let preState = -1;
-      timer = window.setInterval(() => {
-        // eslint-disable-next-line eqeqeq
-        if (preState != XMLReq.readyState) {
-          preState = XMLReq.readyState;
-          onReadyStateChange.call(XMLReq);
-        }
-      }, 10);
+      });
 
       return open.apply(XMLReq, args as any);
     };
