@@ -1,11 +1,12 @@
-export const blob2base64 = (blob: Blob, cb: (data: any) => void) => {
-  const fr = new FileReader();
-  fr.onload = (e) => {
-    cb(e.target?.result);
-  };
-  /* c8 ignore next 3 */
-  fr.onerror = () => {
-    cb(new Error('blob2convert: can not convert'));
-  };
-  fr.readAsDataURL(blob);
-};
+export const blob2base64Async = (blob: Blob) =>
+  new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onload = (e) => {
+      resolve(e.target?.result);
+    };
+    /* c8 ignore next 3 */
+    fr.onerror = () => {
+      reject(new Error('blob2base64Async: can not convert'));
+    };
+    fr.readAsDataURL(blob);
+  });
