@@ -9,7 +9,7 @@ import {
 import { blob2base64Async } from 'src/utils/blob';
 import NetworkProxyBase from './base';
 import RequestItem from './request-item';
-import { MAX_SIZE, Reason } from './common';
+import { MAX_SIZE, Reason, resolveUrlInfo } from './common';
 
 class XhrProxy extends NetworkProxyBase {
   xhrOpen: XMLHttpRequest['open'] | null = null;
@@ -126,25 +126,15 @@ class XhrProxy extends NetworkProxyBase {
       /* c8 ignore start */
       const req =
         that.reqMap[pageSpyRequestId] || new RequestItem(pageSpyRequestId);
-      const query = pageSpyRequestUrl.split('?') || [];
-      req.url = pageSpyRequestUrl;
-      req.name = query.shift() || '';
-      req.name = req.name.replace(/[/]*$/, '').split('/').pop() || '';
+      const urlInfo = resolveUrlInfo(pageSpyRequestUrl);
+      req.url = urlInfo.url;
+      req.name = urlInfo.name;
+      req.getData = urlInfo.query;
       /* c8 ignore stop */
       req.method = pageSpyRequestMethod.toUpperCase();
       req.requestType = 'xhr';
       req.responseType = XMLReq.responseType;
       req.withCredentials = XMLReq.withCredentials;
-
-      if (query.length > 0) {
-        req.name += `?${query}`;
-        req.getData = {};
-        const queryArr = query.join('?').split('&');
-        queryArr.forEach((item) => {
-          const [key, value] = item.split('=');
-          req.getData![key] = decodeURIComponent(value);
-        });
-      }
       if (body && req.method === 'POST') {
         /* c8 ignore start */
         if (isString(body)) {

@@ -1,6 +1,6 @@
 import { getRandomId, getContentType } from 'src/utils';
 import NetworkProxyBase from './base';
-import { getURL } from './common';
+import { resolveUrlInfo } from './common';
 import RequestItem from './request-item';
 
 export default class BeaconProxy extends NetworkProxyBase {
@@ -28,11 +28,11 @@ export default class BeaconProxy extends NetworkProxyBase {
       const req = new RequestItem(id);
       that.reqMap[id] = req;
 
-      const urlObj = getURL(url);
-      /* c8 ignore next */
-      req.name = urlObj.href.split('/').pop() || '';
+      const urlInfo = resolveUrlInfo(url);
+      req.url = urlInfo.url;
+      req.name = urlInfo.name;
+      req.getData = urlInfo.query;
       req.method = 'POST';
-      req.url = url.toString();
       req.status = 0;
       req.statusText = 'Pending';
       req.requestType = 'ping';
@@ -40,13 +40,6 @@ export default class BeaconProxy extends NetworkProxyBase {
       req.startTime = Date.now();
       req.postData = NetworkProxyBase.getFormattedBody(data);
       req.response = '';
-
-      if (urlObj.search) {
-        req.getData = {};
-        urlObj.searchParams.forEach((value, key) => {
-          (req.getData as Record<string, string>)[key] = value;
-        });
-      }
 
       const result = originSendBeacon.call(window.navigator, url, data);
       if (result) {

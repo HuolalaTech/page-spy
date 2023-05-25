@@ -5,7 +5,6 @@ export const Reason = {
   EXCEED_SIZE: 'Exceed maximum limit',
 };
 
-/* c8 ignore start */
 export function getURL(url: string) {
   if (url.startsWith('//')) {
     // eslint-disable-next-line no-param-reassign
@@ -16,4 +15,34 @@ export function getURL(url: string) {
   }
   return new URL(url, window.location.href);
 }
-/* c8 ignore stop */
+
+export function resolveUrlInfo(target: URL | string) {
+  try {
+    const { href, pathname, search, searchParams } = new URL(
+      target,
+      window.location.href,
+    );
+    const url = href;
+    let name = pathname.replace(/[/]*$/, '').split('/').pop() || '';
+    const query: Record<string, string> = {};
+    if (search) {
+      name += search;
+      searchParams.forEach((value, key) => {
+        query[key] = value;
+      });
+    }
+
+    return {
+      url,
+      name,
+      query,
+    };
+  } catch (e) {
+    console.error(e);
+    return {
+      url: 'Unknown',
+      name: 'Unknown',
+      query: null,
+    };
+  }
+}

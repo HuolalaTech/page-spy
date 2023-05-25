@@ -1,5 +1,6 @@
 import NetworkPlugin from 'src/plugins/network';
 import startServer from '../server/index';
+import { getURL, resolveUrlInfo } from 'src/plugins/network/proxy/common';
 
 const stopServer = startServer();
 
@@ -13,7 +14,6 @@ const { sendBeacon: originSendBeacon } = window.navigator;
 
 afterEach(() => {
   jest.restoreAllMocks();
-
   window.XMLHttpRequest.prototype.open = originOpen;
   window.XMLHttpRequest.prototype.setRequestHeader = originSetRequestHeader;
   window.XMLHttpRequest.prototype.send = originSend;
@@ -23,7 +23,24 @@ afterEach(() => {
 afterAll(stopServer);
 
 describe('Network plugin', () => {
-  it('Wrap XMLHttpRequest prototype and add `onreadystatechange` on instance', (done) => {
+  it('Normal browser context', () => {
+    const urlInfo = resolveUrlInfo('./foo?bar=bar');
+    expect(urlInfo).toEqual({
+      url: 'http://localhost/foo?bar=bar',
+      name: 'foo?bar=bar',
+      query: {
+        bar: 'bar',
+      },
+    });
+  });
+  it('Resolve url to URL object', () => {
+    expect(getURL('//example.com').protocol).toBe(window.location.protocol);
+    expect(getURL('http://example.com').href).toBe(
+      new URL('http://example.com').href,
+    );
+    expect(getURL('foo/bar').href).toBe('http://localhost/foo/bar');
+  });
+  it('Wrap XMLHttpRequest prototype', (done) => {
     const fakeUrl = 'http://localhost:6677/posts';
     const openSpy = jest.spyOn(XMLHttpRequest.prototype, 'open');
     const setHeaderSpy = jest.spyOn(
@@ -32,7 +49,7 @@ describe('Network plugin', () => {
     );
     const sendSpy = jest.spyOn(XMLHttpRequest.prototype, 'send');
 
-    new NetworkPlugin().xhrProxy();
+    new NetworkPlugin().onCreated();
     expect(XMLHttpRequest.prototype.open).not.toBe(openSpy);
     expect(XMLHttpRequest.prototype.setRequestHeader).not.toBe(setHeaderSpy);
     expect(XMLHttpRequest.prototype.send).not.toBe(sendSpy);
@@ -45,7 +62,6 @@ describe('Network plugin', () => {
     xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
     xhr.send(bodyStringify);
 
-    expect(xhr.onreadystatechange).not.toBeFalsy();
     expect(openSpy).toHaveBeenCalledWith('POST', fakeUrl);
     expect(setHeaderSpy).toHaveBeenCalledWith(
       'Content-Type',
@@ -61,7 +77,7 @@ describe('Network plugin', () => {
   });
 
   it('XHR json responseType', (done) => {
-    new NetworkPlugin().xhrProxy();
+    new NetworkPlugin().onCreated();
 
     const fakeUrl = 'http://localhost:6677/posts/1';
     const xhr = new XMLHttpRequest();
@@ -81,7 +97,7 @@ describe('Network plugin', () => {
   });
 
   it('XHR blob responseType', (done) => {
-    new NetworkPlugin().xhrProxy();
+    new NetworkPlugin().onCreated();
 
     const fakeUrl = 'http://localhost:6677/posts/1';
     const xhr = new XMLHttpRequest();
@@ -104,8 +120,8 @@ describe('Network plugin', () => {
     };
   });
 
-  it('XHR arrarybuffer responseType', (done) => {
-    new NetworkPlugin().xhrProxy();
+  it('XHR arraybuffer responseType', (done) => {
+    new NetworkPlugin().onCreated();
 
     const fakeUrl = 'http://localhost:6677/posts/1';
     const xhr = new XMLHttpRequest();
@@ -128,7 +144,7 @@ describe('Network plugin', () => {
   it('Wrap fetch request', async () => {
     const fetchSpy = jest.spyOn(window, 'fetch');
     expect(window.fetch).toBe(fetchSpy);
-    new NetworkPlugin().fetchProxy();
+    new NetworkPlugin().onCreated();
     expect(window.fetch).not.toBe(fetchSpy);
 
     const fakeUrl = 'http://localhost:6677/posts/1';
@@ -165,7 +181,7 @@ describe('Network plugin', () => {
   it('sendBeacon request', async () => {
     const sendBeaconSpy = jest.spyOn(window.navigator, 'sendBeacon');
     expect(window.navigator.sendBeacon).toBe(sendBeaconSpy);
-    new NetworkPlugin().sendBeaconProxy();
+    new NetworkPlugin().onCreated();
     expect(window.navigator.sendBeacon).not.toBe(sendBeaconSpy);
 
     const fakeUrl = 'http://localhost:6677/posts?search-for=test';

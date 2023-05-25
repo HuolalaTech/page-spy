@@ -1,6 +1,6 @@
 import { getRandomId, isString } from 'src/utils';
 import { blob2base64Async } from 'src/utils/blob';
-import { getURL, MAX_SIZE, Reason } from './common';
+import { getURL, MAX_SIZE, Reason, resolveUrlInfo } from './common';
 import RequestItem from './request-item';
 import NetworkProxyBase from './base';
 
@@ -34,7 +34,7 @@ export default class FetchProxy extends NetworkProxyBase {
         // when `input` is a string
         /* c8 ignore next */
         method = init.method || 'GET';
-        url = getURL(<string>input);
+        url = getURL(input);
         requestHeader = init?.headers || null;
       } else {
         // when `input` is a `Request` object
@@ -44,13 +44,12 @@ export default class FetchProxy extends NetworkProxyBase {
         requestHeader = (<Request>input).headers;
       }
 
-      /* c8 ignore start */
-      const query = url.href.split('?') || [];
-      req.name = query.shift() || '';
-      req.name = req.name.replace(/[/]*$/, '').split('/').pop() || '';
-      /* c8 ignore stop */
+      const urlInfo = resolveUrlInfo(url);
+      req.url = urlInfo.url;
+      req.name = urlInfo.name;
+      req.getData = urlInfo.query;
+
       req.method = method.toUpperCase();
-      req.url = url.toString();
       req.requestType = 'fetch';
       req.status = 0;
       req.statusText = 'Pending';
@@ -67,14 +66,6 @@ export default class FetchProxy extends NetworkProxyBase {
         });
       } else {
         req.requestHeader = requestHeader;
-      }
-
-      if (url.search) {
-        req.name += url.search;
-        req.getData = {};
-        url.searchParams.forEach((value, key) => {
-          req.getData![key] = value;
-        });
       }
 
       /* c8 ignore start */

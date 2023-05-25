@@ -15,12 +15,15 @@ declare global {
 export default class NetworkPlugin implements PageSpyPlugin {
   name = 'NetworkPlugin';
 
-  xhrProxy = new XhrProxy();
+  xhrProxy: XhrProxy | null = null;
 
-  fetchProxy = new FetchProxy();
+  fetchProxy: FetchProxy | null = null;
 
-  beaconProxy = new BeaconProxy();
+  beaconProxy: BeaconProxy | null = null;
 
-  // eslint-disable-next-line class-methods-use-this
-  onCreated() {}
+  onCreated() {
+    this.xhrProxy = new XhrProxy();
+    this.fetchProxy = new FetchProxy();
+    this.beaconProxy = new BeaconProxy();
+  }
 }

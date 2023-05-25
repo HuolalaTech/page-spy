@@ -31,7 +31,7 @@ export function hasOwnProperty(target: Object, key: string) {
 export function getPrototypeName(value: any) {
   return toStringTag(value).replace(/\[object (.*)\]/, '$1');
 }
-export function isString(value: any) {
+export function isString(value: unknown): value is string {
   return toStringTag(value) === '[object String]';
 }
 
