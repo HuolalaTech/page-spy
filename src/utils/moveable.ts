@@ -64,10 +64,10 @@ export function moveable(el: HTMLElement) {
     document.addEventListener('mousemove', move, false);
     document.addEventListener('mouseup', end, false);
 
-    document.addEventListener('touchmove', move, false);
+    document.addEventListener('touchmove', move, { capture: false, passive: false });
     document.addEventListener('touchend', end, false);
   }
 
   el.addEventListener('mousedown', start, false);
-  el.addEventListener('touchstart', start, false);
+  el.addEventListener('touchstart', start, { capture: false, passive: false });
 }
