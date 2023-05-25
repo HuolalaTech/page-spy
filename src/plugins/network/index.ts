@@ -56,7 +56,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
 
   sendBeacon: Navigator['sendBeacon'] | null = null;
 
-  reqList: Record<string, RequestItem> = {};
+  reqMap: Record<string, RequestItem> = {};
 
   onCreated() {
     this.xhrProxy();
@@ -87,10 +87,10 @@ export default class NetworkPlugin implements PageSpyPlugin {
       this.pageSpyRequestUrl = url;
 
       XMLReq.addEventListener('readystatechange', () => {
-        if (!that.reqList[id]) {
-          that.reqList[id] = new RequestItem(id);
+        if (!that.reqMap[id]) {
+          that.reqMap[id] = new RequestItem(id);
         }
-        const req = that.reqList[id];
+        const req = that.reqMap[id];
         req.readyState = XMLReq.readyState;
 
         switch (XMLReq.readyState) {
@@ -202,7 +202,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
     };
 
     window.XMLHttpRequest.prototype.setRequestHeader = function (key, value) {
-      const req = that.reqList[this.pageSpyRequestId];
+      const req = that.reqMap[this.pageSpyRequestId];
       if (req) {
         if (!req.requestHeader) {
           req.requestHeader = {};
@@ -221,7 +221,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
       } = XMLReq;
       /* c8 ignore start */
       const req =
-        that.reqList[pageSpyRequestId] || new RequestItem(pageSpyRequestId);
+        that.reqMap[pageSpyRequestId] || new RequestItem(pageSpyRequestId);
       const query = pageSpyRequestUrl.split('?') || [];
       req.url = pageSpyRequestUrl;
       req.name = query.shift() || '';
@@ -271,8 +271,8 @@ export default class NetworkPlugin implements PageSpyPlugin {
     this.fetch = originFetch;
     window.fetch = function (input: RequestInfo | URL, init: RequestInit = {}) {
       const id = getRandomId();
-      that.reqList[id] = new RequestItem(id);
-      const req = that.reqList[id];
+      that.reqMap[id] = new RequestItem(id);
+      const req = that.reqMap[id];
       let method = 'GET';
       let url: URL;
       let requestHeader: HeadersInit | null;
@@ -431,7 +431,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
     ) {
       const id = getRandomId();
       const req = new RequestItem(id);
-      that.reqList[id] = req;
+      that.reqMap[id] = req;
 
       const urlObj = getURL(url);
       /* c8 ignore next */
@@ -472,8 +472,8 @@ export default class NetworkPlugin implements PageSpyPlugin {
   }
 
   collectRequest(id: string, req: RequestItem) {
-    if (!this.reqList[id]) {
-      this.reqList[id] = req;
+    if (!this.reqMap[id]) {
+      this.reqMap[id] = req;
     }
     const message = makeMessage(
       DEBUG_MESSAGE_TYPE.NETWORK,
