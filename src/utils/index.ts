@@ -32,58 +32,61 @@ export function getPrototypeName(value: any) {
   return toStringTag(value).replace(/\[object (.*)\]/, '$1');
 }
 export function isString(value: unknown): value is string {
-  return toStringTag(value) === '[object String]';
+  return typeof value === 'string';
 }
 
-export function isNumber(value: any) {
-  return toStringTag(value) === '[object Number]';
+export function isNumber(value: unknown): value is number {
+  return typeof value === 'number';
 }
 
-export function isArray(value: any) {
-  return toStringTag(value) === '[object Array]';
-}
-
-export function isArrayLike(value: any) {
-  return value instanceof NodeList || value instanceof HTMLCollection;
-}
-
-export function isObjectLike(value: any) {
-  return typeof value === 'object' && value !== null;
-}
-
-export function isBigInt(value: any) {
+export function isBigInt(value: unknown): value is bigint {
   return toStringTag(value) === '[object BigInt]';
 }
 
-export function isPlainObject(value: any) {
+export function isArray(value: unknown): value is unknown[] {
+  return toStringTag(value) === '[object Array]';
+}
+
+export function isArrayLike(
+  value: unknown,
+): value is NodeList | HTMLCollection {
+  return value instanceof NodeList || value instanceof HTMLCollection;
+}
+
+export function isObjectLike(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+export function isPlainObject(
+  value: unknown,
+): value is Record<string, unknown> {
   if (!isObjectLike(value) || toStringTag(value) !== '[object Object]') {
     return false;
   }
   return true;
-  // let proto = value;
-  // while (Object.getPrototypeOf(proto) !== null) {
-  //   proto = Object.getPrototypeOf(proto);
-  // }
-  // return Object.getPrototypeOf(value) === proto;
 }
 
-export function isPrototype(data: any) {
+export function isPrototype(value: unknown): value is Object {
   if (
-    isObjectLike(data) &&
-    hasOwnProperty(data, 'constructor') &&
-    typeof data.constructor === 'function'
+    isObjectLike(value) &&
+    hasOwnProperty(value, 'constructor') &&
+    typeof value.constructor === 'function'
   ) {
     return true;
   }
   return false;
 }
 
-export function isBlob(data: any) {
-  return toStringTag(data) === '[object Blob]';
+export function isBlob(value: unknown): value is Blob {
+  return value instanceof Blob;
 }
 
-export function isArrayBuffer(data: any) {
-  return toStringTag(data) === '[object ArrayBuffer]';
+export function isArrayBuffer(value: unknown): value is ArrayBuffer {
+  return value instanceof ArrayBuffer;
+}
+
+export function isRequest(value: unknown): value is Request {
+  return value instanceof Request;
 }
 
 interface PrimitiveResult {
@@ -91,13 +94,13 @@ interface PrimitiveResult {
   value: any;
 }
 
-const stringify = (value: string) => `${value}`;
+const stringify = (value: any) => `${value}`;
 const primitive = (value: any) => ({
   ok: true,
   value,
 });
 
-export function makePrimitiveValue(value: any): PrimitiveResult {
+export function makePrimitiveValue(value: unknown): PrimitiveResult {
   if (value === undefined) {
     return primitive(stringify(value));
   }

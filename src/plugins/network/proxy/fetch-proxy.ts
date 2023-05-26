@@ -1,4 +1,4 @@
-import { getRandomId, isString } from 'src/utils';
+import { getRandomId, isRequest, isString } from 'src/utils';
 import { blob2base64Async } from 'src/utils/blob';
 import { getURL, MAX_SIZE, Reason, resolveUrlInfo } from './common';
 import RequestItem from './request-item';
@@ -26,22 +26,20 @@ export default class FetchProxy extends NetworkProxyBase {
       that.reqMap[id] = new RequestItem(id);
       const req = that.reqMap[id];
       let method = 'GET';
-      let url: URL;
-      let requestHeader: HeadersInit | null;
-      let fetchResponse: Response | null;
+      let url: URL = input as URL;
+      let requestHeader: HeadersInit | null = null;
+      let fetchResponse: Response | null = null;
 
       if (isString(input)) {
         // when `input` is a string
-        /* c8 ignore next */
         method = init.method || 'GET';
         url = getURL(input);
-        requestHeader = init?.headers || null;
-      } else {
+        requestHeader = init.headers || null;
+      } else if (isRequest(input)) {
         // when `input` is a `Request` object
-        /* c8 ignore next */
-        method = (<Request>input).method || 'GET';
-        url = getURL((<Request>input).url);
-        requestHeader = (<Request>input).headers;
+        method = input.method || 'GET';
+        url = getURL(input.url);
+        requestHeader = input.headers;
       }
 
       const urlInfo = resolveUrlInfo(url);
@@ -74,17 +72,13 @@ export default class FetchProxy extends NetworkProxyBase {
           // when `input` is a string
           req.postData = NetworkProxyBase.getFormattedBody(init?.body);
         } else {
-          // when `input` is a `Request` object
-          // cannot get real type of request's body, so just display "[object Object]"
           req.postData = '[object Object]';
         }
       }
       /* c8 ignore stop */
 
-      const request = isString(input) ? url.toString() : input;
-
       that.sendRequestItem(id, req);
-      const fetchInstance = originFetch(request, init);
+      const fetchInstance = originFetch(input, init);
       fetchInstance
         .then<string | Blob, never>((res) => {
           fetchResponse = res;
