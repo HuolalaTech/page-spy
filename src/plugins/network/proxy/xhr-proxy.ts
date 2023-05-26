@@ -11,6 +11,13 @@ import NetworkProxyBase from './base';
 import RequestItem from './request-item';
 import { MAX_SIZE, Reason, resolveUrlInfo } from './common';
 
+declare global {
+  interface XMLHttpRequest {
+    pageSpyRequestId: string;
+    pageSpyRequestMethod: string;
+    pageSpyRequestUrl: string;
+  }
+}
 class XhrProxy extends NetworkProxyBase {
   xhrOpen: XMLHttpRequest['open'] | null = null;
 
