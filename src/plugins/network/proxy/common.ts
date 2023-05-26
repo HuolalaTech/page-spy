@@ -10,7 +10,8 @@ export function getURL(url: string) {
     // eslint-disable-next-line no-param-reassign
     url = window.location.protocol + url;
   }
-  if (url.startsWith('http')) {
+
+  if (/^https?:\/\//i.test(url)) {
     return new URL(url);
   }
   return new URL(url, window.location.href);
