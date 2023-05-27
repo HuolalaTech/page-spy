@@ -4,12 +4,16 @@ import {
   toStringTag,
   isArrayBuffer,
   isBlob,
-  isPlainObject,
 } from 'src/utils';
 import { blob2base64Async } from 'src/utils/blob';
 import NetworkProxyBase from './base';
 import RequestItem from './request-item';
-import { MAX_SIZE, Reason, resolveUrlInfo } from './common';
+import {
+  MAX_SIZE,
+  Reason,
+  addContentTypeHeader,
+  resolveUrlInfo,
+} from './common';
 
 declare global {
   interface XMLHttpRequest {
@@ -71,15 +75,15 @@ class XhrProxy extends NetworkProxyBase {
             break;
           // Header received
           case XMLReq.HEADERS_RECEIVED:
-            const header = XMLReq.getAllResponseHeaders() || '';
-            const headerArr = header.trim().split(/[\r\n]+/);
             req.status = XMLReq.status;
             req.statusText = 'Loading';
+            const header = XMLReq.getAllResponseHeaders() || '';
+            const headerArr = header.trim().split(/[\r\n]+/);
             req.responseHeader = headerArr.reduce((acc, cur) => {
               const [headerKey, ...parts] = cur.split(': ');
-              acc[headerKey] = parts.join(': ');
+              acc.push([headerKey, parts.join(': ')]);
               return acc;
-            }, {} as Record<string, string>);
+            }, [] as [string, string][]);
             break;
           // Loading and download
           case XMLReq.LOADING:
@@ -116,9 +120,9 @@ class XhrProxy extends NetworkProxyBase {
       const req = that.reqMap[this.pageSpyRequestId];
       if (req) {
         if (!req.requestHeader) {
-          req.requestHeader = {};
+          req.requestHeader = [];
         }
-        (req.requestHeader as Record<string, string>)[key] = value;
+        req.requestHeader.push([key, value]);
       }
       return setRequestHeader.apply(this, [key, value]);
     };
@@ -142,20 +146,11 @@ class XhrProxy extends NetworkProxyBase {
       req.requestType = 'xhr';
       req.responseType = XMLReq.responseType;
       req.withCredentials = XMLReq.withCredentials;
-      if (body && req.method === 'POST') {
-        /* c8 ignore start */
-        if (isString(body)) {
-          try {
-            req.postData = JSON.parse(body as string);
-          } catch (e) {
-            req.postData = body as string;
-          }
-        } else if (isPlainObject(body)) {
-          req.postData = body as unknown as Record<string, string>;
-        } else {
-          req.postData = '[object Object]';
-        }
-        /* c8 ignore stop */
+      if (req.method === 'POST') {
+        req.requestHeader = addContentTypeHeader(req.requestHeader, body);
+        NetworkProxyBase.getFormattedBody(body).then((res) => {
+          req.postData = res;
+        });
       }
       return send.apply(XMLReq, [body]);
     };

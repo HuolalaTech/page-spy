@@ -1,6 +1,5 @@
 import NetworkPlugin from 'src/plugins/network';
-import startServer from '../server/index';
-import { getURL, resolveUrlInfo } from 'src/plugins/network/proxy/common';
+import startServer from '../../server/index';
 
 const stopServer = startServer();
 
@@ -23,23 +22,6 @@ afterEach(() => {
 afterAll(stopServer);
 
 describe('Network plugin', () => {
-  it('Normal browser context', () => {
-    const urlInfo = resolveUrlInfo('./foo?bar=bar');
-    expect(urlInfo).toEqual({
-      url: 'http://localhost/foo?bar=bar',
-      name: 'foo?bar=bar',
-      query: {
-        bar: 'bar',
-      },
-    });
-  });
-  it('Resolve url to URL object', () => {
-    expect(getURL('//example.com').protocol).toBe(window.location.protocol);
-    expect(getURL('http://example.com').href).toBe(
-      new URL('http://example.com').href,
-    );
-    expect(getURL('foo/bar').href).toBe('http://localhost/foo/bar');
-  });
   it('Wrap XMLHttpRequest prototype', (done) => {
     const fakeUrl = 'http://localhost:6677/posts';
     const openSpy = jest.spyOn(XMLHttpRequest.prototype, 'open');

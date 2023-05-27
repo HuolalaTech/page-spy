@@ -1,7 +1,7 @@
 import { SpyNetwork } from 'types';
 
 export default class RequestItem implements SpyNetwork.RequestInfo {
-  id: string = '';
+  id = '';
 
   name: string = '';
 
@@ -11,7 +11,7 @@ export default class RequestItem implements SpyNetwork.RequestInfo {
 
   requestType: 'xhr' | 'fetch' | 'ping' = 'xhr';
 
-  requestHeader: HeadersInit | null = null;
+  requestHeader: [string, string][] | null = null;
 
   status: number | string = 0;
 
@@ -25,7 +25,7 @@ export default class RequestItem implements SpyNetwork.RequestInfo {
 
   responseType: XMLHttpRequest['responseType'] = '';
 
-  responseHeader: Record<string, string> | null = null;
+  responseHeader: [string, string][] | null = null;
 
   startTime: number = 0;
 
@@ -33,9 +33,9 @@ export default class RequestItem implements SpyNetwork.RequestInfo {
 
   costTime: number = 0;
 
-  getData: Record<string, string> | null = null;
+  getData: [string, string][] | null = null;
 
-  postData: Record<string, string> | string | null = null;
+  postData: [string, string][] | string | null = null;
 
   withCredentials: boolean = false;
 

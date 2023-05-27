@@ -5,21 +5,6 @@ export function getObjectKeys<T extends Record<string, any>>(obj: T) {
   return Object.keys(obj) as (keyof T)[];
 }
 
-/* c8 ignore start */
-export function getContentType(data?: BodyInit | null) {
-  if (data instanceof Blob) {
-    return data.type;
-  }
-  if (data instanceof FormData) {
-    return 'multipart/form-data';
-  }
-  if (data instanceof URLSearchParams) {
-    return 'application/x-www-form-urlencoded;charset=UTF-8';
-  }
-  return 'text/plain;charset=UTF-8';
-}
-/* c8 ignore stop */
-
 export function toStringTag(value: any) {
   return Object.prototype.toString.call(value);
 }
@@ -28,9 +13,6 @@ export function hasOwnProperty(target: Object, key: string) {
   return Object.prototype.hasOwnProperty.call(target, key);
 }
 
-export function getPrototypeName(value: any) {
-  return toStringTag(value).replace(/\[object (.*)\]/, '$1');
-}
 export function isString(value: unknown): value is string {
   return typeof value === 'string';
 }
@@ -44,7 +26,7 @@ export function isBigInt(value: unknown): value is bigint {
 }
 
 export function isArray(value: unknown): value is unknown[] {
-  return toStringTag(value) === '[object Array]';
+  return value instanceof Array;
 }
 
 export function isArrayLike(
@@ -87,6 +69,30 @@ export function isArrayBuffer(value: unknown): value is ArrayBuffer {
 
 export function isRequest(value: unknown): value is Request {
   return value instanceof Request;
+}
+
+export function isURLSearchParams(value: unknown): value is URLSearchParams {
+  return value instanceof URLSearchParams;
+}
+
+export function isFormData(value: unknown): value is FormData {
+  return value instanceof FormData;
+}
+
+export function isFile(value: unknown): value is File {
+  return value instanceof File;
+}
+
+export function isHeaders(value: unknown): value is Headers {
+  return value instanceof Headers;
+}
+
+export function isDocument(value: unknown): value is Document {
+  return value instanceof Document;
+}
+
+export function isURL(value: unknown): value is URL {
+  return value instanceof URL;
 }
 
 interface PrimitiveResult {

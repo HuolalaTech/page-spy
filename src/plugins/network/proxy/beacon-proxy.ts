@@ -1,6 +1,6 @@
-import { getRandomId, getContentType } from 'src/utils';
+import { getRandomId } from 'src/utils';
 import NetworkProxyBase from './base';
-import { resolveUrlInfo } from './common';
+import { addContentTypeHeader, resolveUrlInfo } from './common';
 import RequestItem from './request-item';
 
 export default class BeaconProxy extends NetworkProxyBase {
@@ -36,9 +36,11 @@ export default class BeaconProxy extends NetworkProxyBase {
       req.status = 0;
       req.statusText = 'Pending';
       req.requestType = 'ping';
-      req.requestHeader = { 'Content-Type': getContentType(data) };
+      req.requestHeader = addContentTypeHeader(req.requestHeader, data);
       req.startTime = Date.now();
-      req.postData = NetworkProxyBase.getFormattedBody(data);
+      NetworkProxyBase.getFormattedBody(data).then((res) => {
+        req.postData = res;
+      });
       req.response = '';
 
       const result = originSendBeacon.call(window.navigator, url, data);

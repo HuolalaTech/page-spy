@@ -1,6 +1,17 @@
-import { getRandomId, isRequest, isString } from 'src/utils';
+import {
+  getRandomId,
+  isHeaders,
+  isObjectLike,
+  isString,
+  isURL,
+} from 'src/utils';
 import { blob2base64Async } from 'src/utils/blob';
-import { getURL, MAX_SIZE, Reason, resolveUrlInfo } from './common';
+import {
+  addContentTypeHeader,
+  MAX_SIZE,
+  Reason,
+  resolveUrlInfo,
+} from './common';
 import RequestItem from './request-item';
 import NetworkProxyBase from './base';
 
@@ -26,19 +37,19 @@ export default class FetchProxy extends NetworkProxyBase {
       that.reqMap[id] = new RequestItem(id);
       const req = that.reqMap[id];
       let method = 'GET';
-      let url: URL = input as URL;
+      let url: string | URL;
       let requestHeader: HeadersInit | null = null;
       let fetchResponse: Response | null = null;
 
-      if (isString(input)) {
+      if (isString(input) || isURL(input)) {
         // when `input` is a string
         method = init.method || 'GET';
-        url = getURL(input);
+        url = input;
         requestHeader = init.headers || null;
-      } else if (isRequest(input)) {
+      } else {
         // when `input` is a `Request` object
         method = input.method || 'GET';
-        url = getURL(input.url);
+        url = input.url;
         requestHeader = input.headers;
       }
 
@@ -57,25 +68,20 @@ export default class FetchProxy extends NetworkProxyBase {
         req.withCredentials = true;
       }
 
-      if (requestHeader instanceof Headers) {
-        req.requestHeader = {};
-        requestHeader.forEach((value, key) => {
-          (req.requestHeader as Record<string, string>)[key] = value;
-        });
+      if (isHeaders(requestHeader)) {
+        req.requestHeader = [...requestHeader.entries()];
+      } else if (isObjectLike(requestHeader)) {
+        req.requestHeader = Object.entries(requestHeader);
       } else {
         req.requestHeader = requestHeader;
       }
 
-      /* c8 ignore start */
       if (req.method === 'POST') {
-        if (isString(input)) {
-          // when `input` is a string
-          req.postData = NetworkProxyBase.getFormattedBody(init?.body);
-        } else {
-          req.postData = '[object Object]';
-        }
+        req.requestHeader = addContentTypeHeader(req.requestHeader, init.body);
+        NetworkProxyBase.getFormattedBody(init.body).then((res) => {
+          req.postData = res;
+        });
       }
-      /* c8 ignore stop */
 
       that.sendRequestItem(id, req);
       const fetchInstance = originFetch(input, init);
@@ -87,10 +93,7 @@ export default class FetchProxy extends NetworkProxyBase {
           req.costTime = req.endTime - (req.startTime || req.endTime);
           req.status = res.status || 200;
           req.statusText = res.statusText || 'Done';
-          req.responseHeader = {};
-          res.headers.forEach((value, key) => {
-            req.responseHeader![key] = value;
-          });
+          req.responseHeader = [...res.headers.entries()];
 
           const contentType = res.headers.get('content-type');
           if (contentType) {
