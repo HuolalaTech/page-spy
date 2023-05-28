@@ -12,6 +12,7 @@ import {
   MAX_SIZE,
   Reason,
   addContentTypeHeader,
+  getFormattedBody,
   resolveUrlInfo,
 } from './common';
 
@@ -148,8 +149,9 @@ class XhrProxy extends NetworkProxyBase {
       req.withCredentials = XMLReq.withCredentials;
       if (req.method === 'POST') {
         req.requestHeader = addContentTypeHeader(req.requestHeader, body);
-        NetworkProxyBase.getFormattedBody(body).then((res) => {
+        getFormattedBody(body).then((res) => {
           req.postData = res;
+          that.sendRequestItem(XMLReq.pageSpyRequestId, req);
         });
       }
       return send.apply(XMLReq, [body]);

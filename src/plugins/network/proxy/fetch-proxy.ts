@@ -8,6 +8,7 @@ import {
 import { blob2base64Async } from 'src/utils/blob';
 import {
   addContentTypeHeader,
+  getFormattedBody,
   MAX_SIZE,
   Reason,
   resolveUrlInfo,
@@ -78,8 +79,9 @@ export default class FetchProxy extends NetworkProxyBase {
 
       if (req.method === 'POST') {
         req.requestHeader = addContentTypeHeader(req.requestHeader, init.body);
-        NetworkProxyBase.getFormattedBody(init.body).then((res) => {
+        getFormattedBody(init.body).then((res) => {
           req.postData = res;
+          that.sendRequestItem(id, req);
         });
       }
 

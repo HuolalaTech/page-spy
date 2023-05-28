@@ -8,6 +8,7 @@ app.use(bodyParser.urlencoded({ extend: true }));
 app.use((req, res, next) => {
   res.header({
     'Access-Control-Allow-Origin': 'http://localhost',
+    'Access-Control-Allow-Headers': '*',
     'Access-Control-Allow-Credentials': true,
     'Content-Type': 'application/json',
   });

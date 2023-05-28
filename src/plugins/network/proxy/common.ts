@@ -5,7 +5,10 @@ import {
   isDocument,
   isFile,
   isFormData,
+  isString,
+  isTypedArray,
   isURLSearchParams,
+  toStringTag,
 } from 'src/utils';
 import { SpyNetwork } from 'types';
 
@@ -110,4 +113,40 @@ export function addContentTypeHeader(
     }
   }
   return [...headers, headerTuple];
+}
+
+/**
+ * FormData and USP are the only two types of request payload that can have the same key.
+ * SO, we store the postData with different structure:
+ * - FormData / USP: [string, string][]
+ * - Others: string. (Tips: the body maybe serialized json string, you can try to
+ *                    deserialize it as need)
+ */
+export async function getFormattedBody(body?: Document | BodyInit | null) {
+  if (!body) {
+    return null;
+  }
+  if (isURLSearchParams(body) || isFormData(body)) {
+    return formatEntries(body.entries());
+  }
+  if (isBlob(body)) {
+    return '[object Blob]';
+    // try {
+    //   const text = await body.text();
+    //   return text;
+    // } catch (e) {
+    //   return '[object Blob]';
+    // }
+  }
+  if (isTypedArray(body)) {
+    return '[object TypedArray]';
+  }
+  if (isDocument(body)) {
+    const text = new XMLSerializer().serializeToString(body);
+    return text;
+  }
+  if (isString(body)) {
+    return body;
+  }
+  return toStringTag(body);
 }

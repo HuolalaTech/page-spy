@@ -1,6 +1,10 @@
 import { getRandomId } from 'src/utils';
 import NetworkProxyBase from './base';
-import { addContentTypeHeader, resolveUrlInfo } from './common';
+import {
+  addContentTypeHeader,
+  getFormattedBody,
+  resolveUrlInfo,
+} from './common';
 import RequestItem from './request-item';
 
 export default class BeaconProxy extends NetworkProxyBase {
@@ -38,8 +42,9 @@ export default class BeaconProxy extends NetworkProxyBase {
       req.requestType = 'ping';
       req.requestHeader = addContentTypeHeader(req.requestHeader, data);
       req.startTime = Date.now();
-      NetworkProxyBase.getFormattedBody(data).then((res) => {
+      getFormattedBody(data).then((res) => {
         req.postData = res;
+        that.sendRequestItem(id, req);
       });
       req.response = '';
 
