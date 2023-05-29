@@ -13,6 +13,7 @@ declare module '*.svg' {
 
 interface CookieChangeEvent extends Event {
   changed: CookieStoreValue[];
+  deleted: CookieStoreValue[];
 }
 type OptionName = {
   name: string;

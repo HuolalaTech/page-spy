@@ -22,22 +22,43 @@ export class StoragePlugin implements PageSpyPlugin {
     });
 
     if (window.cookieStore) {
-      const sendCookie = () => {
-        window.cookieStore.getAll().then((cookies) => {
-          cookies.forEach((cookie) => {
-            const data = { type: 'cookie', action: 'get', ...cookie } as Omit<
-              SpyStorage.DataItem,
-              'id'
-            >;
-            if (!data.domain) {
-              data.domain = window.location.hostname;
-            }
+      window.cookieStore.getAll().then((cookies) => {
+        cookies.forEach((cookie) => {
+          const data: Omit<SpyStorage.DataItem, 'id'> = {
+            type: 'cookie',
+            action: 'get',
+            ...cookie,
+          };
+          if (!data.domain) {
+            data.domain = window.location.hostname;
+          }
+          sendStorageItem(data);
+        });
+      });
+      window.cookieStore.addEventListener('change', (e) => {
+        const { changed, deleted } = e as CookieChangeEvent;
+        if (changed.length > 0) {
+          changed.forEach((item) => {
+            const data: Omit<SpyStorage.DataItem, 'id'> = {
+              type: 'cookie',
+              action: 'set',
+              ...item,
+            };
+
             sendStorageItem(data);
           });
-        });
-      };
-      sendCookie();
-      window.cookieStore.addEventListener('change', sendCookie);
+        }
+        if (deleted.length > 0) {
+          deleted.forEach((item) => {
+            const data: Omit<SpyStorage.DataItem, 'id'> = {
+              type: 'cookie',
+              action: 'remove',
+              ...item,
+            };
+            sendStorageItem(data);
+          });
+        }
+      });
     } else {
       document.cookie.split('; ').forEach((item) => {
         const [name, value] = item.split('=');
