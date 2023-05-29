@@ -67,10 +67,6 @@ export function isArrayBuffer(value: unknown): value is ArrayBuffer {
   return value instanceof ArrayBuffer;
 }
 
-export function isRequest(value: unknown): value is Request {
-  return value instanceof Request;
-}
-
 export function isURLSearchParams(value: unknown): value is URLSearchParams {
   return value instanceof URLSearchParams;
 }

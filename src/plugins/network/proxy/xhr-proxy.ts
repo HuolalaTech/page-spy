@@ -4,6 +4,7 @@ import {
   toStringTag,
   isArrayBuffer,
   isBlob,
+  getObjectKeys,
 } from 'src/utils';
 import { blob2base64Async } from 'src/utils/blob';
 import NetworkProxyBase from './base';
@@ -37,11 +38,9 @@ class XhrProxy extends NetworkProxyBase {
 
   initProxyHandler() {
     const that = this;
-    /* c8 ignore start */
     if (!window.XMLHttpRequest) {
       return;
     }
-    /* c8 ignore stop */
     const { open, send, setRequestHeader } = window.XMLHttpRequest.prototype;
     this.xhrOpen = open;
     this.xhrSend = send;
@@ -96,20 +95,17 @@ class XhrProxy extends NetworkProxyBase {
             req.status = XMLReq.status;
             req.statusText = 'Done';
             req.endTime = Date.now();
-            /* c8 ignore next */
             req.costTime = req.endTime - (req.startTime || req.endTime);
             const formatResult = await that.formatResponse(XMLReq);
-            req.response = {
-              ...req.response,
-              ...formatResult,
-            };
+            getObjectKeys(formatResult).forEach((key) => {
+              req[key] = formatResult[key];
+            });
             break;
-          /* c8 ignore start */
+          /* c8 ignore next 4 */
           default:
             req.status = XMLReq.status;
             req.statusText = 'Unknown';
             break;
-          /* c8 ignore stop */
         }
         that.sendRequestItem(XMLReq.pageSpyRequestId, req);
       });
@@ -135,14 +131,12 @@ class XhrProxy extends NetworkProxyBase {
         pageSpyRequestMethod = 'GET',
         pageSpyRequestUrl = '',
       } = XMLReq;
-      /* c8 ignore start */
       const req =
         that.reqMap[pageSpyRequestId] || new RequestItem(pageSpyRequestId);
       const urlInfo = resolveUrlInfo(pageSpyRequestUrl);
       req.url = urlInfo.url;
       req.name = urlInfo.name;
       req.getData = urlInfo.query;
-      /* c8 ignore stop */
       req.method = pageSpyRequestMethod.toUpperCase();
       req.requestType = 'xhr';
       req.responseType = XMLReq.responseType;
@@ -160,7 +154,13 @@ class XhrProxy extends NetworkProxyBase {
 
   // eslint-disable-next-line class-methods-use-this
   async formatResponse(XMLReq: XMLHttpRequest) {
-    const result: Partial<RequestItem> = {};
+    const result: {
+      response: RequestItem['response'];
+      responseReason: RequestItem['responseReason'];
+    } = {
+      response: '',
+      responseReason: null,
+    } as const;
 
     // update response by responseType
     switch (XMLReq.responseType) {
@@ -173,12 +173,9 @@ class XhrProxy extends NetworkProxyBase {
             // not a JSON string
             result.response = XMLReq.response;
           }
-        } /* c8 ignore start */ else if (
-          typeof XMLReq.response !== 'undefined'
-        ) {
+        } else if (typeof XMLReq.response !== 'undefined') {
           result.response = toStringTag(XMLReq.response);
         }
-        /* c8 ignore stop */
         break;
       case 'json':
         if (typeof XMLReq.response !== 'undefined') {
@@ -203,22 +200,19 @@ class XhrProxy extends NetworkProxyBase {
                 result.response = await blob.text();
                 console.error(`[PageSpy]: ${e.message}`);
               }
-            } /* c8 ignore start */ else {
-              result.response = `[object ${XMLReq.responseType}]`;
+            } else {
+              result.response = '[object Blob]';
               result.responseReason = Reason.EXCEED_SIZE;
             }
-            /* c8 ignore stop */
           }
         }
         break;
-      /* c8 ignore start */
       case 'document':
       default:
         if (typeof XMLReq.response !== 'undefined') {
           result.response = Object.prototype.toString.call(XMLReq.response);
         }
         break;
-      /* c8 ignore stop */
     }
     return result;
   }

@@ -9,6 +9,7 @@ export default class NetworkProxyBase {
     if (!this.reqMap[id]) {
       this.reqMap[id] = req;
     }
+
     const message = makeMessage(
       DEBUG_MESSAGE_TYPE.NETWORK,
       {

@@ -48,6 +48,22 @@ describe('Network utilities', () => {
         query: [['bar', 'bar']],
       });
     });
+    it('Unknown wired location context', () => {
+      const originLocation = window.location;
+      Object.defineProperty(window, 'location', {
+        value: {
+          href: null,
+        },
+        writable: true,
+      });
+      const urlInfo = resolveUrlInfo('./foo?bar=bar');
+      expect(urlInfo).toEqual({
+        url: 'Unknown',
+        name: 'Unknown',
+        query: null,
+      });
+      window.location = originLocation;
+    });
     it('Format `Name` field', () => {
       [
         { received: 'https://exp.com', expected: 'exp.com' },

@@ -17,7 +17,6 @@ export default class BeaconProxy extends NetworkProxyBase {
 
   initProxyHandler() {
     const originSendBeacon = window.navigator.sendBeacon;
-    /* c8 ignore next 3 */
     if (!originSendBeacon) {
       return;
     }
@@ -53,14 +52,12 @@ export default class BeaconProxy extends NetworkProxyBase {
         req.status = 200;
         req.statusText = 'Sent';
         req.endTime = Date.now();
-        /* c8 ignore next */
         req.costTime = req.endTime - (req.startTime || req.endTime);
         req.readyState = 4;
-      } /* c8 ignore start */ else {
+      } else {
         req.status = 500;
         req.statusText = 'Unknown';
       }
-      /* c8 ignore stop */
       that.sendRequestItem(id, req);
       return result;
     };

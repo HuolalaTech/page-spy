@@ -13,7 +13,7 @@ import {
 import { SpyNetwork } from 'types';
 
 // 10M files would result negative performance impact distinctly in local-test.
-export const MAX_SIZE = 1024 * 1024 * 6;
+export const MAX_SIZE = 1024 * 1024 * 2;
 export const Reason = {
   EXCEED_SIZE: 'Exceed maximum limit',
 };

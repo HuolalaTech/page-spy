@@ -28,7 +28,6 @@ export default class FetchProxy extends NetworkProxyBase {
     const that = this;
     const originFetch = window.fetch;
 
-    /* c8 ignore next 3 */
     if (!originFetch) {
       return;
     }
@@ -40,7 +39,6 @@ export default class FetchProxy extends NetworkProxyBase {
       let method = 'GET';
       let url: string | URL;
       let requestHeader: HeadersInit | null = null;
-      let fetchResponse: Response | null = null;
 
       if (isString(input) || isURL(input)) {
         // when `input` is a string
@@ -49,7 +47,7 @@ export default class FetchProxy extends NetworkProxyBase {
         requestHeader = init.headers || null;
       } else {
         // when `input` is a `Request` object
-        method = input.method || 'GET';
+        method = input.method;
         url = input.url;
         requestHeader = input.headers;
       }
@@ -89,9 +87,7 @@ export default class FetchProxy extends NetworkProxyBase {
       const fetchInstance = originFetch(input, init);
       fetchInstance
         .then<string | Blob, never>((res) => {
-          fetchResponse = res;
           req.endTime = Date.now();
-          /* c8 ignore next 3 */
           req.costTime = req.endTime - (req.startTime || req.endTime);
           req.status = res.status || 200;
           req.statusText = res.statusText || 'Done';
@@ -103,7 +99,7 @@ export default class FetchProxy extends NetworkProxyBase {
               req.responseType = 'json';
               return res.clone().text();
             }
-            /* c8 ignore start */
+
             if (
               contentType.includes('text/html') ||
               contentType.includes('text/plain')
@@ -114,10 +110,8 @@ export default class FetchProxy extends NetworkProxyBase {
           }
           req.responseType = 'blob';
           return res.clone().blob();
-          /* c8 ignore stop */
         })
         .then(async (res) => {
-          /* c8 ignore start */
           switch (req.responseType) {
             case 'text':
             case 'json':
@@ -144,15 +138,10 @@ export default class FetchProxy extends NetworkProxyBase {
               }
               break;
             default:
-              req.response = res;
               break;
           }
-          /* c8 ignore stop */
-
-          return fetchResponse!;
         })
         .finally(() => {
-          fetchResponse = null;
           req.readyState = 4;
           that.sendRequestItem(id, req);
         });
