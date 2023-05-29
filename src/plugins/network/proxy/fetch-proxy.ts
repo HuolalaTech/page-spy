@@ -9,6 +9,7 @@ import { blob2base64Async } from 'src/utils/blob';
 import {
   addContentTypeHeader,
   getFormattedBody,
+  isOkStatusCode,
   MAX_SIZE,
   Reason,
   resolveUrlInfo,
@@ -93,6 +94,7 @@ export default class FetchProxy extends NetworkProxyBase {
           req.statusText = res.statusText || 'Done';
           req.responseHeader = [...res.headers.entries()];
 
+          if (isOkStatusCode(res.status)) return '';
           const contentType = res.headers.get('content-type');
           if (contentType) {
             if (contentType.includes('application/json')) {

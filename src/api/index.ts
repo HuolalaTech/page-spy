@@ -14,7 +14,7 @@ interface TCreateRoom {
   group: string;
   tags: Record<string, any>;
 }
-/* c8 ignore start */
+
 const resolvedProtocol = (() => {
   try {
     const { protocol } = new URL(document.currentScript?.getAttribute('src')!);
@@ -30,7 +30,6 @@ const resolvedProtocol = (() => {
   return ['http://', 'ws://'];
 })();
 
-/* c8 ignore stop */
 export default class Request {
   constructor(public base: string = '') {
     /* c8 ignore next 3 */

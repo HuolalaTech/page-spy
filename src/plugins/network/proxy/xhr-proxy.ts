@@ -14,6 +14,7 @@ import {
   Reason,
   addContentTypeHeader,
   getFormattedBody,
+  isOkStatusCode,
   resolveUrlInfo,
 } from './common';
 
@@ -162,6 +163,7 @@ class XhrProxy extends NetworkProxyBase {
       responseReason: null,
     } as const;
 
+    if (isOkStatusCode(XMLReq.status)) return result;
     // update response by responseType
     switch (XMLReq.responseType) {
       case '':

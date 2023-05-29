@@ -1,5 +1,3 @@
-// File size is not recommended to exceed 6M,
-
 import {
   isBlob,
   isDocument,
@@ -12,7 +10,8 @@ import {
 } from 'src/utils';
 import { SpyNetwork } from 'types';
 
-// 10M files would result negative performance impact distinctly in local-test.
+// File size is not recommended to exceed the MAX_SIZE,
+// big size files would result negative performance impact distinctly in local-test.
 export const MAX_SIZE = 1024 * 1024 * 2;
 export const Reason = {
   EXCEED_SIZE: 'Exceed maximum limit',
@@ -149,4 +148,8 @@ export async function getFormattedBody(body?: Document | BodyInit | null) {
     return body;
   }
   return toStringTag(body);
+}
+
+export function isOkStatusCode(status: number) {
+  return status >= 200 && status < 300;
 }
