@@ -163,8 +163,10 @@ class XhrProxy extends NetworkProxyBase {
       responseReason: null,
     } as const;
 
-    if (isOkStatusCode(XMLReq.status)) return result;
-    // update response by responseType
+    if (!isOkStatusCode(XMLReq.status)) return result;
+    // How to format the response is depend on XMLReq.responseType.
+    // The behavior is different with format fetch's response, which
+    // is depend on response.headers.get('content-type')
     switch (XMLReq.responseType) {
       case '':
       case 'text':

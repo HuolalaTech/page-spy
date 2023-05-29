@@ -151,5 +151,5 @@ export async function getFormattedBody(body?: Document | BodyInit | null) {
 }
 
 export function isOkStatusCode(status: number) {
-  return status >= 200 && status < 300;
+  return status >= 200 && status < 400;
 }
