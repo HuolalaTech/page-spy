@@ -66,17 +66,17 @@ describe('Network utilities', () => {
     });
     it('Format `Name` field', () => {
       [
-        { received: 'https://exp.com', expected: 'exp.com' },
-        { received: 'https://exp.com/', expected: 'exp.com' },
+        { received: 'https://exp.com', expected: 'exp.com/' },
+        { received: 'https://exp.com/', expected: 'exp.com/' },
         { received: 'https://exp.com/devtools', expected: 'devtools' },
-        { received: 'https://exp.com/devtools/', expected: 'devtools' },
+        { received: 'https://exp.com/devtools/', expected: 'devtools/' },
         {
           received: 'https://exp.com/devtools?version=Mac/10.15.7',
           expected: 'devtools?version=Mac/10.15.7',
         },
         {
           received: 'https://exp.com/devtools/?version=Mac/10.15.7',
-          expected: 'devtools?version=Mac/10.15.7',
+          expected: 'devtools/?version=Mac/10.15.7',
         },
       ].forEach(({ received, expected }) => {
         expect(resolveUrlInfo(received).name).toBe(expected);

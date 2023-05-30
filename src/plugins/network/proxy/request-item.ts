@@ -35,7 +35,12 @@ export default class RequestItem implements SpyNetwork.RequestInfo {
 
   getData: [string, string][] | null = null;
 
+  /**
+   * @deprecated please using `requestPayload`
+   */
   postData: [string, string][] | string | null = null;
+
+  requestPayload: [string, string][] | string | null = null;
 
   withCredentials: boolean = false;
 

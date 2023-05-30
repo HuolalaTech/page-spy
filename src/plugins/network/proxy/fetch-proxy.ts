@@ -76,10 +76,10 @@ export default class FetchProxy extends NetworkProxyBase {
         req.requestHeader = requestHeader;
       }
 
-      if (req.method === 'POST') {
+      if (req.method !== 'GET') {
         req.requestHeader = addContentTypeHeader(req.requestHeader, init.body);
         getFormattedBody(init.body).then((res) => {
-          req.postData = res;
+          req.requestPayload = res;
           that.sendRequestItem(id, req);
         });
       }

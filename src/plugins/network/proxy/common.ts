@@ -37,23 +37,16 @@ export function formatEntries(data: IterableIterator<[string, unknown]>) {
 
 export function resolveUrlInfo(target: URL | string) {
   try {
-    const { href, pathname, search, searchParams, hostname } = new URL(
-      target,
-      window.location.href,
-    );
+    const { href, searchParams } = new URL(target, window.location.href);
     const url = href;
     const query = [...searchParams.entries()];
-    // https://exp.com => "exp.com"
-    // https://exp.com/ => "exp.com"
+    // https://exp.com => "exp.com/"
+    // https://exp.com/ => "exp.com/"
     // https://exp.com/devtools => "devtools"
-    // https://exp.com/devtools/ => "devtools"
+    // https://exp.com/devtools/ => "devtools/"
     // https://exp.com/devtools?version=Mac/10.15.7 => "devtools?version=Mac/10.15.7"
-    // https://exp.com/devtools/?version=Mac/10.15.7 => "devtools?version=Mac/10.15.7"
-    let name = pathname.replace(/[/]*$/, '').split('/').pop() || '';
-    name += search;
-    if (name === '') {
-      name = hostname;
-    }
+    // https://exp.com/devtools/?version=Mac/10.15.7 => "devtools/?version=Mac/10.15.7"
+    const name = href.replace(/^.*?([^/]+)(\/)*(\?.*?)?$/, '$1$2$3') || '';
 
     return {
       url,
@@ -116,7 +109,7 @@ export function addContentTypeHeader(
 
 /**
  * FormData and USP are the only two types of request payload that can have the same key.
- * SO, we store the postData with different structure:
+ * SO, we store the request payload with different structure:
  * - FormData / USP: [string, string][]
  * - Others: string. (Tips: the body maybe serialized json string, you can try to
  *                    deserialize it as need)

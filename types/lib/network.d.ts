@@ -12,7 +12,7 @@ export interface RequestInfo {
    * 1. <Empty>: the property is unnecessary
    * 2. FormData: "multipart/form-data"
    * 3. URLSearchParams: "application/x-www-form-urlencoded;charset=UTF-8"
-   * 4. Blob: depened on the entity type, there are "text/plain", "image/png" etc.
+   * 4. Blob: depended on the entity type, there are "text/plain", "image/png" etc.
    * 5. String: "text/plain"
    * 6. Document: "application/xml"
    * 7. Others: "text/plain"
@@ -30,12 +30,16 @@ export interface RequestInfo {
   costTime: number;
   getData: [string, string][] | null;
   /**
-   * Base on the 'requestHeader' filed metioned above, FormData and USP
+   * @deprecated please using `requestPayload`
+   */
+  postData: [string, string][] | string | null;
+  /**
+   * Base on the 'requestHeader' field mentioned above, FormData and USP
    * are the only two types of request payload that can have the same key.
    * SO, we store the postData with different structure:
    * - FormData / USP: [string, string][]
    * - Others: string. (Tips: the body maybe serialized json string, you can try to deserialize it as need)
    */
-  postData: [string, string][] | string | null;
+  requestPayload: [string, string][] | string | null;
   withCredentials: boolean;
 }

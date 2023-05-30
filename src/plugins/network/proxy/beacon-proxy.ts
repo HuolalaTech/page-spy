@@ -42,7 +42,7 @@ export default class BeaconProxy extends NetworkProxyBase {
       req.requestHeader = addContentTypeHeader(req.requestHeader, data);
       req.startTime = Date.now();
       getFormattedBody(data).then((res) => {
-        req.postData = res;
+        req.requestPayload = res;
         that.sendRequestItem(id, req);
       });
       req.response = '';

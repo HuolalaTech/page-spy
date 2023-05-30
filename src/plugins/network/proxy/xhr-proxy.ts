@@ -142,10 +142,10 @@ class XhrProxy extends NetworkProxyBase {
       req.requestType = 'xhr';
       req.responseType = XMLReq.responseType;
       req.withCredentials = XMLReq.withCredentials;
-      if (req.method === 'POST') {
+      if (req.method !== 'GET') {
         req.requestHeader = addContentTypeHeader(req.requestHeader, body);
         getFormattedBody(body).then((res) => {
-          req.postData = res;
+          req.requestPayload = res;
           that.sendRequestItem(XMLReq.pageSpyRequestId, req);
         });
       }
@@ -183,7 +183,7 @@ class XhrProxy extends NetworkProxyBase {
         break;
       case 'json':
         if (typeof XMLReq.response !== 'undefined') {
-          result.response = JSON.stringify(XMLReq.response, null, 2);
+          result.response = XMLReq.response;
         }
         break;
       case 'blob':
