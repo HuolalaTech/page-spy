@@ -1,5 +1,6 @@
 import { StoragePlugin } from 'src/plugins/storage';
 
+// @ts-ignore
 const trigger = jest.spyOn(StoragePlugin, 'sendStorageItem');
 
 beforeEach(() => {

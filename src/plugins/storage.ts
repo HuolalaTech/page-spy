@@ -24,37 +24,21 @@ export class StoragePlugin implements PageSpyPlugin {
     if (window.cookieStore) {
       window.cookieStore.getAll().then((cookies) => {
         cookies.forEach((cookie) => {
-          const data: Omit<SpyStorage.DataItem, 'id'> = {
-            type: 'cookie',
-            action: 'get',
-            ...cookie,
-          };
-          if (!data.domain) {
-            data.domain = window.location.hostname;
-          }
+          const data = StoragePlugin.formatCookieInfo(cookie);
           sendStorageItem(data);
         });
       });
       window.cookieStore.addEventListener('change', (e) => {
         const { changed, deleted } = e as CookieChangeEvent;
         if (changed.length > 0) {
-          changed.forEach((item) => {
-            const data: Omit<SpyStorage.DataItem, 'id'> = {
-              type: 'cookie',
-              action: 'set',
-              ...item,
-            };
-
+          changed.forEach((cookie) => {
+            const data = StoragePlugin.formatCookieInfo(cookie, 'set');
             sendStorageItem(data);
           });
         }
         if (deleted.length > 0) {
-          deleted.forEach((item) => {
-            const data: Omit<SpyStorage.DataItem, 'id'> = {
-              type: 'cookie',
-              action: 'remove',
-              ...item,
-            };
+          deleted.forEach((cookie) => {
+            const data = StoragePlugin.formatCookieInfo(cookie, 'remove');
             sendStorageItem(data);
           });
         }
@@ -72,6 +56,21 @@ export class StoragePlugin implements PageSpyPlugin {
     }
 
     initStorageProxy();
+  }
+
+  private static formatCookieInfo(
+    cookie: CookieStoreValue,
+    action: SpyStorage.ActionType = 'get',
+  ) {
+    const result: Omit<SpyStorage.DataItem, 'id'> = {
+      type: 'cookie',
+      action,
+      ...cookie,
+    };
+    if (!result.domain) {
+      result.domain = window.location.hostname;
+    }
+    return result;
   }
 
   private static sendStorageItem(info: Omit<SpyStorage.DataItem, 'id'>) {
