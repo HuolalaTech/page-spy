@@ -88,17 +88,17 @@ describe('window.fetch proxy', () => {
     const np = new NetworkPlugin();
     np.onCreated();
     const { fetchProxy } = np;
-
-    const map = fetchProxy!.reqMap;
-    expect(Object.values(map).length).toBe(0);
+    expect(fetchProxy!.requestInfo.size).toBe(0);
 
     const bigFileUrl = `${apiPrefix}/big-file`;
     await fetch(bigFileUrl);
-    const reqList = Object.values(map);
     await sleep();
-    expect(reqList.length).toBe(1);
-    expect(reqList[0].response).toBe('[object Blob]');
-    expect(reqList[0].responseReason).toBe(Reason.EXCEED_SIZE);
+
+    const { freezedRequests, size } = fetchProxy!.requestInfo;
+    expect(size).toBe(1);
+    const current = Object.values(freezedRequests);
+    expect(current[0].response).toBe('[object Blob]');
+    expect(current[0].responseReason).toBe(Reason.EXCEED_SIZE);
   });
 
   it('The SDK record the request information', () => {
@@ -106,12 +106,34 @@ describe('window.fetch proxy', () => {
     np.onCreated();
     const { fetchProxy } = np;
     expect(fetchProxy).not.toBe(null);
-    expect(Object.keys(fetchProxy!.reqMap).length).toBe(0);
+    expect(fetchProxy!.requestInfo.size).toBe(0);
 
     const count = 5;
     Array.from({ length: count }).forEach((_, index) => {
       fetch(`${apiPrefix}/posts/${index}`);
     });
-    expect(Object.keys(fetchProxy!.reqMap).length).toBe(count);
+    expect(fetchProxy!.requestInfo.size).toBe(count);
+  });
+
+  it('The cached request items will be freed when no longer needed', async () => {
+    const np = new NetworkPlugin();
+    np.onCreated();
+    const { fetchProxy } = np;
+    expect(fetchProxy).not.toBe(null);
+    expect(fetchProxy!.requestInfo.size).toBe(0);
+
+    const res = await fetch(`${apiPrefix}/json`);
+    expect(fetchProxy!.requestInfo.size).toBe(1);
+
+    /**
+     * The `whatwg-fetch` relies on the setTimeout, the value wouldn't be resolved
+     * if we use `jest.useFakeTimers()`. So here we use the real timer.
+     *
+     * See: {@link https://github.com/jestjs/jest/issues/11103}
+     */
+    await sleep(3500);
+
+    // The previous request item now be freed after 3s.
+    expect(fetchProxy!.requestInfo.size).toBe(0);
   });
 });

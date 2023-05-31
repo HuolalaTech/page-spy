@@ -58,10 +58,7 @@ class XhrProxy extends NetworkProxyBase {
       this.pageSpyRequestUrl = url;
 
       XMLReq.addEventListener('readystatechange', async () => {
-        if (!that.reqMap[id]) {
-          that.reqMap[id] = new RequestItem(id);
-        }
-        const req = that.reqMap[id];
+        const req = that.getRequest(id);
         req.readyState = XMLReq.readyState;
 
         switch (XMLReq.readyState) {
@@ -115,7 +112,7 @@ class XhrProxy extends NetworkProxyBase {
     };
 
     window.XMLHttpRequest.prototype.setRequestHeader = function (key, value) {
-      const req = that.reqMap[this.pageSpyRequestId];
+      const req = that.getRequest(this.pageSpyRequestId);
       if (req) {
         if (!req.requestHeader) {
           req.requestHeader = [];
@@ -132,8 +129,7 @@ class XhrProxy extends NetworkProxyBase {
         pageSpyRequestMethod = 'GET',
         pageSpyRequestUrl = '',
       } = XMLReq;
-      const req =
-        that.reqMap[pageSpyRequestId] || new RequestItem(pageSpyRequestId);
+      const req = that.getRequest(pageSpyRequestId);
       const urlInfo = resolveUrlInfo(pageSpyRequestUrl);
       req.url = urlInfo.url;
       req.name = urlInfo.name;

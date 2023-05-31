@@ -5,7 +5,6 @@ import {
   getFormattedBody,
   resolveUrlInfo,
 } from './common';
-import RequestItem from './request-item';
 
 export default class BeaconProxy extends NetworkProxyBase {
   sendBeacon: Navigator['sendBeacon'] | null = null;
@@ -28,8 +27,7 @@ export default class BeaconProxy extends NetworkProxyBase {
       data?: BodyInit | null,
     ) {
       const id = getRandomId();
-      const req = new RequestItem(id);
-      that.reqMap[id] = req;
+      const req = that.getRequest(id);
 
       const urlInfo = resolveUrlInfo(url);
       req.url = urlInfo.url;
@@ -53,11 +51,11 @@ export default class BeaconProxy extends NetworkProxyBase {
         req.statusText = 'Sent';
         req.endTime = Date.now();
         req.costTime = req.endTime - (req.startTime || req.endTime);
-        req.readyState = 4;
       } else {
         req.status = 500;
         req.statusText = 'Unknown';
       }
+      req.readyState = 4;
       that.sendRequestItem(id, req);
       return result;
     };

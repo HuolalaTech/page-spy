@@ -14,7 +14,6 @@ import {
   Reason,
   resolveUrlInfo,
 } from './common';
-import RequestItem from './request-item';
 import NetworkProxyBase from './base';
 
 export default class FetchProxy extends NetworkProxyBase {
@@ -35,8 +34,7 @@ export default class FetchProxy extends NetworkProxyBase {
     this.fetch = originFetch;
     window.fetch = function (input: RequestInfo | URL, init: RequestInit = {}) {
       const id = getRandomId();
-      that.reqMap[id] = new RequestItem(id);
-      const req = that.reqMap[id];
+      const req = that.getRequest(id);
       let method = 'GET';
       let url: string | URL;
       let requestHeader: HeadersInit | null = null;

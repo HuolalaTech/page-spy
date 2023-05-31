@@ -142,8 +142,7 @@ describe('XMLHttpRequest proxy', () => {
     np.onCreated();
     const { xhrProxy } = np;
 
-    const map = xhrProxy!.reqMap;
-    expect(Object.values(map).length).toBe(0);
+    expect(xhrProxy?.requestInfo.size).toBe(0);
 
     const bigFileUrl = `${apiPrefix}/big-file`;
     const xhr = new XMLHttpRequest();
@@ -154,10 +153,11 @@ describe('XMLHttpRequest proxy', () => {
       if (xhr.readyState === 4) {
         if (xhr.status === 200) {
           await sleep();
-          const reqList = Object.values(map);
-          expect(reqList.length).toBe(1);
-          expect(reqList[0].response).toBe('[object Blob]');
-          expect(reqList[0].responseReason).toBe(Reason.EXCEED_SIZE);
+          const { freezedRequests, size } = xhrProxy!.requestInfo;
+          expect(size).toBe(1);
+          const current = Object.values(freezedRequests)[0];
+          expect(current.response).toBe('[object Blob]');
+          expect(current.responseReason).toBe(Reason.EXCEED_SIZE);
           done();
         }
       }
@@ -169,7 +169,7 @@ describe('XMLHttpRequest proxy', () => {
     np.onCreated();
     const { xhrProxy } = np;
     expect(xhrProxy).not.toBe(null);
-    expect(Object.keys(xhrProxy!.reqMap).length).toBe(0);
+    expect(xhrProxy!.requestInfo.size).toBe(0);
 
     const count = 5;
     Array.from({ length: count }).forEach((_, index) => {
@@ -177,6 +177,31 @@ describe('XMLHttpRequest proxy', () => {
       xhr.open('GET', `${apiPrefix}/posts/${index}`);
       xhr.send();
     });
-    expect(Object.keys(xhrProxy!.reqMap).length).toBe(count);
+    expect(xhrProxy!.requestInfo.size).toBe(count);
+  });
+
+  it('The cached request items will be freed when no longer needed', () => {
+    jest.useFakeTimers();
+    const np = new NetworkPlugin();
+    np.onCreated();
+    const { xhrProxy } = np;
+    expect(xhrProxy).not.toBe(null);
+    expect(xhrProxy!.requestInfo.size).toBe(0);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', `${apiPrefix}/posts`);
+    xhr.send();
+
+    expect(xhrProxy!.requestInfo.size).toBe(1);
+    xhr.addEventListener('readystatechange', async () => {
+      if (xhr.readyState === 4) {
+        jest.advanceTimersByTime(3500);
+        // We don't know which `readystatechange` first be activated,
+        // so let's sleep a while.
+        await sleep();
+        // The previous request item now be freed after 3s.
+        expect(xhrProxy!.requestInfo.size).toBe(0);
+      }
+    });
   });
 });
