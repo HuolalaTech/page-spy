@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/HuolalaTech/page-spy/compare/v1.1.0...v1.2.0) (2023-05-31)
+
+### ⚠ BREAKING CHANGES
+
+- The headers and getData structure have been changed to [string, string][]. The use of postData is now deprecated. Please use requestPayload instead, with a structure of [string, string][] | string.
+
+### Features
+
+- correct the delete last one cookie value and format the cookie ([#4](https://github.com/HuolalaTech/page-spy/issues/4)) ([059b777](https://github.com/HuolalaTech/page-spy/commit/059b7772b94f3a73070322032759f0016008ffce))
+- reorganize the network plugin structure ([#3](https://github.com/HuolalaTech/page-spy/issues/3)) ([aa199fb](https://github.com/HuolalaTech/page-spy/commit/aa199fba5cd7d547dec3e1d24875bbda833f9812))
+
+### Bug Fixes
+
+- 明确设置 touchstart/touchmove 事件的 passive 配置项 ([#2](https://github.com/HuolalaTech/page-spy/issues/2)) ([2e26cd1](https://github.com/HuolalaTech/page-spy/commit/2e26cd17980abc66be247749ee8476f68356484f))
+
 ## [1.1.0](https://github.com/HuolalaTech/page-spy/compare/v1.1.0-beta.1...v1.1.0) (2023-05-24)
 
 ### Bug Fixes
