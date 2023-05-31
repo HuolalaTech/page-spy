@@ -7,7 +7,6 @@ import '../../deps/modernizr';
 import { SpySystem } from 'types';
 import { computeResult } from './feature';
 
-/* c8 ignore start */
 window.Modernizr.addTest(
   'finally',
   Modernizr.promises && !!Promise.prototype.finally,
@@ -16,17 +15,16 @@ window.Modernizr.addTest(
   'iframe',
   Modernizr.sandbox && Modernizr.seamless && Modernizr.srcdoc,
 );
-/* c8 ignore stop */
 
 export default class SystemPlugin implements PageSpyPlugin {
-  name: string;
+  public name: string;
 
-  constructor() {
+  public constructor() {
     this.name = 'SystemPlugin';
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async onCreated() {
+  public async onCreated() {
     const id = getRandomId();
     const features = await computeResult();
     socketStore.broadcastMessage(

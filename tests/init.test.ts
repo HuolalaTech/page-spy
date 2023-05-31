@@ -80,11 +80,13 @@ describe('new PageSpy([config])', () => {
     expect(consoleKey.map((i) => console[i])).toEqual(originConsole);
 
     const cPlugin = new ConsolePlugin();
+    // @ts-ignore
     expect(Object.keys(cPlugin.console)).toHaveLength(0);
 
     // changed!
     cPlugin.onCreated();
     expect(consoleKey.map((i) => console[i])).not.toEqual(originConsole);
+    // @ts-ignore
     expect(Object.keys(cPlugin.console)).toHaveLength(4);
   });
 

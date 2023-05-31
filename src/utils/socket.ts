@@ -1,4 +1,4 @@
-import { getRandomId, stringifyData } from 'src/utils';
+import { getRandomId, psLog, stringifyData } from 'src/utils';
 import {
   DEBUG_MESSAGE_TYPE,
   makeMessage,
@@ -32,27 +32,23 @@ interface GetterMember {
 
 export class SocketStore {
   // websocket instance
-  socket: WebSocket | null = null;
+  private socket: WebSocket | null = null;
 
-  socketUrl: string = '';
+  public getSocket() {
+    return this.socket;
+  }
 
-  socketConnection: SpySocket.Connection | null = null;
+  private socketUrl: string = '';
 
-  timer: number | null = null;
+  private socketConnection: SpySocket.Connection | null = null;
 
-  reconnectTimes = 3;
+  private timer: number | null = null;
 
   // messages store
-  messages: (SpySocket.BrodcastEvent | SpySocket.UnicastEvent)[] = [];
-
-  // Don't try to reconnect if error occupied
-  reconnectable: boolean = true;
-
-  // indicated connected  whether or not
-  connectionStatus: boolean = false;
+  private messages: (SpySocket.BrodcastEvent | SpySocket.UnicastEvent)[] = [];
 
   // events center
-  events: Record<SpyMessage.InteractiveType, SocketEventCallback[]> = {
+  private events: Record<SpyMessage.InteractiveType, SocketEventCallback[]> = {
     refresh: [],
     debug: [],
     'atom-detail': [],
@@ -60,9 +56,17 @@ export class SocketStore {
     'debugger-online': [],
   };
 
+  // Don't try to reconnect if error occupied
+  private reconnectable: boolean = true;
+
+  private reconnectTimes = 3;
+
   // Don't try to reconnect and close immediately
   // when user refresh the page.
-  closeImmediately: boolean = false;
+  private closeImmediately: boolean = false;
+
+  // indicated connected  whether or not
+  public connectionStatus: boolean = false;
 
   constructor() {
     this.addListener('debug', SocketStore.handleDebugger);
@@ -71,7 +75,7 @@ export class SocketStore {
     this.addListener('debugger-online', this.handleFlushBuffer);
   }
 
-  init(url: string) {
+  public init(url: string) {
     try {
       if (!url) {
         throw Error('[PageSpy] WebSocket url cannot be empty');
@@ -95,13 +99,38 @@ export class SocketStore {
     }
   }
 
-  connectOnline() {
+  public addListener(
+    type: SpyMessage.InteractiveType,
+    fn: SocketEventCallback,
+  ) {
+    /* c8 ignore next 3 */
+    if (!this.events[type]) {
+      this.events[type] = [];
+    }
+    this.events[type].push(fn);
+  }
+
+  public broadcastMessage(
+    msg: SpyMessage.MessageItem,
+    isCache: boolean = false,
+  ) {
+    const message = makeBroadcastMessage(msg);
+    this.send(message, isCache);
+  }
+
+  public close() {
+    this.clearPing();
+    this.closeImmediately = true;
+    this.socket?.close();
+  }
+
+  private connectOnline() {
     this.connectionStatus = true;
     this.reconnectTimes = 3;
     this.pingConnect();
   }
 
-  connectOffline() {
+  private connectOffline() {
     this.socket = null;
     this.connectionStatus = false;
     this.socketConnection = null;
@@ -111,7 +140,7 @@ export class SocketStore {
     this.tryReconnect();
   }
 
-  tryReconnect() {
+  private tryReconnect() {
     if (!this.reconnectable) {
       sessionStorage.setItem(
         ROOM_SESSION_KEY,
@@ -124,12 +153,12 @@ export class SocketStore {
       this.init(this.socketUrl);
     } /* c8 ignore start */ else {
       this.reconnectable = false;
-      console.log('[PageSpy] Reconnect failed.');
+      psLog.warn('Websocket reconnect failed.');
     }
     /* c8 ignore stop */
   }
 
-  pingConnect() {
+  private pingConnect() {
     /* c8 ignore start */
     this.timer = window.setInterval(() => {
       if (this.socket?.readyState !== WebSocket.OPEN) return;
@@ -141,7 +170,7 @@ export class SocketStore {
     /* c8 ignore stop */
   }
 
-  clearPing() {
+  private clearPing() {
     if (this.timer) {
       window.clearInterval(this.timer);
     }
@@ -189,15 +218,7 @@ export class SocketStore {
     }
   }
 
-  addListener(type: SpyMessage.InteractiveType, fn: SocketEventCallback) {
-    /* c8 ignore next 3 */
-    if (!this.events[type]) {
-      this.events[type] = [];
-    }
-    this.events[type].push(fn);
-  }
-
-  dispatchEvent(type: SpyMessage.InteractiveType, data: SocketEvent) {
+  private dispatchEvent(type: SpyMessage.InteractiveType, data: SocketEvent) {
     this.events[type].forEach((fn) => {
       fn.call(this, data, (d: SpyMessage.MessageItem) => {
         this.unicastMessage(d, data.from);
@@ -205,17 +226,15 @@ export class SocketStore {
     });
   }
 
-  unicastMessage(msg: SpyMessage.MessageItem, to: SpySocket.Connection) {
+  private unicastMessage(
+    msg: SpyMessage.MessageItem,
+    to: SpySocket.Connection,
+  ) {
     const message = makeUnicastMessage(msg, this.socketConnection!, to);
     this.send(message);
   }
 
-  broadcastMessage(msg: SpyMessage.MessageItem, isCache: boolean = false) {
-    const message = makeBroadcastMessage(msg);
-    this.send(message, isCache);
-  }
-
-  handleFlushBuffer(message: SocketEvent<{ latestId: string }>) {
+  private handleFlushBuffer(message: SocketEvent<{ latestId: string }>) {
     const { latestId } = message.source.data;
 
     const msgIndex = this.messages.findIndex(
@@ -239,8 +258,8 @@ export class SocketStore {
     /* c8 ignore stop */
   }
 
-  // run excutable code which received from remote and send back the result
-  static handleDebugger(
+  // run executable code which received from remote and send back the result
+  private static handleDebugger(
     { source }: SocketEvent<string>,
     reply: (data: any) => void,
   ) {
@@ -280,7 +299,7 @@ export class SocketStore {
     }
   }
 
-  static handleResolveAtom(
+  private static handleResolveAtom(
     { source }: SocketEvent<string>,
     reply: (data: any) => void,
   ) {
@@ -292,7 +311,7 @@ export class SocketStore {
     }
   }
 
-  static handleAtomPropertyGetter(
+  private static handleAtomPropertyGetter(
     { source }: SocketEvent<GetterMember>,
     reply: (data: any) => void,
   ) {
@@ -316,7 +335,7 @@ export class SocketStore {
     }
   }
 
-  send(msg: SpySocket.ClientEvent, isCache: boolean = false) {
+  private send(msg: SpySocket.ClientEvent, isCache: boolean = false) {
     if (this.connectionStatus) {
       /* c8 ignore start */
       try {
@@ -339,12 +358,6 @@ export class SocketStore {
         msg as Exclude<SpySocket.ClientEvent, SpySocket.PingEvent>,
       );
     }
-  }
-
-  close() {
-    this.clearPing();
-    this.closeImmediately = true;
-    this.socket?.close();
   }
 }
 

@@ -5,11 +5,11 @@ import atom from 'src/utils/atom';
 import type PageSpyPlugin from './index';
 
 export default class ConsolePlugin implements PageSpyPlugin {
-  name: string = 'ConsolePlugin';
+  public name: string = 'ConsolePlugin';
 
-  console: Record<string, any> = {};
+  private console: Record<string, any> = {};
 
-  onCreated() {
+  public onCreated() {
     const type: SpyConsole.ProxyType[] = ['log', 'info', 'error', 'warn'];
     type.forEach((item) => {
       this.console[item] = window.console[item];
@@ -23,7 +23,7 @@ export default class ConsolePlugin implements PageSpyPlugin {
     });
   }
 
-  printLog(data: SpyConsole.DataItem) {
+  private printLog(data: SpyConsole.DataItem) {
     if (data.logs && data.logs.length) {
       this.console[data.logType](...data.logs);
       // eslint-disable-next-line no-param-reassign

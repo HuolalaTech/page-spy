@@ -1,6 +1,7 @@
 import { StoragePlugin } from 'src/plugins/storage';
 
 const trigger = jest.fn();
+// @ts-ignore
 jest.spyOn(StoragePlugin, 'sendStorageItem').mockImplementation(trigger);
 
 describe('Storage plugin', () => {

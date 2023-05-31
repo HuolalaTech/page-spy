@@ -5,21 +5,6 @@ export function getObjectKeys<T extends Record<string, any>>(obj: T) {
   return Object.keys(obj) as (keyof T)[];
 }
 
-/* c8 ignore start */
-export function getContentType(data?: BodyInit | null) {
-  if (data instanceof Blob) {
-    return data.type;
-  }
-  if (data instanceof FormData) {
-    return 'multipart/form-data';
-  }
-  if (data instanceof URLSearchParams) {
-    return 'application/x-www-form-urlencoded;charset=UTF-8';
-  }
-  return 'text/plain;charset=UTF-8';
-}
-/* c8 ignore stop */
-
 export function toStringTag(value: any) {
   return Object.prototype.toString.call(value);
 }
@@ -28,62 +13,110 @@ export function hasOwnProperty(target: Object, key: string) {
   return Object.prototype.hasOwnProperty.call(target, key);
 }
 
-export function getPrototypeName(value: any) {
-  return toStringTag(value).replace(/\[object (.*)\]/, '$1');
-}
-export function isString(value: any) {
-  return toStringTag(value) === '[object String]';
+export function isString(value: unknown): value is string {
+  return typeof value === 'string';
 }
 
-export function isNumber(value: any) {
-  return toStringTag(value) === '[object Number]';
+export function isNumber(value: unknown): value is number {
+  return typeof value === 'number';
 }
 
-export function isArray(value: any) {
-  return toStringTag(value) === '[object Array]';
-}
-
-export function isArrayLike(value: any) {
-  return value instanceof NodeList || value instanceof HTMLCollection;
-}
-
-export function isObjectLike(value: any) {
-  return typeof value === 'object' && value !== null;
-}
-
-export function isBigInt(value: any) {
+export function isBigInt(value: unknown): value is bigint {
   return toStringTag(value) === '[object BigInt]';
 }
 
-export function isPlainObject(value: any) {
+export function isArray(value: unknown): value is unknown[] {
+  return value instanceof Array;
+}
+
+export function isArrayLike(
+  value: unknown,
+): value is NodeList | HTMLCollection {
+  return value instanceof NodeList || value instanceof HTMLCollection;
+}
+
+export function isObjectLike(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+export function isPlainObject(
+  value: unknown,
+): value is Record<string, unknown> {
   if (!isObjectLike(value) || toStringTag(value) !== '[object Object]') {
     return false;
   }
   return true;
-  // let proto = value;
-  // while (Object.getPrototypeOf(proto) !== null) {
-  //   proto = Object.getPrototypeOf(proto);
-  // }
-  // return Object.getPrototypeOf(value) === proto;
 }
 
-export function isPrototype(data: any) {
+export function isPrototype(value: unknown): value is Object {
   if (
-    isObjectLike(data) &&
-    hasOwnProperty(data, 'constructor') &&
-    typeof data.constructor === 'function'
+    isObjectLike(value) &&
+    hasOwnProperty(value, 'constructor') &&
+    typeof value.constructor === 'function'
   ) {
     return true;
   }
   return false;
 }
 
-export function isBlob(data: any) {
-  return toStringTag(data) === '[object Blob]';
+export function isBlob(value: unknown): value is Blob {
+  return value instanceof Blob;
 }
 
-export function isArrayBuffer(data: any) {
-  return toStringTag(data) === '[object ArrayBuffer]';
+export function isArrayBuffer(value: unknown): value is ArrayBuffer {
+  return value instanceof ArrayBuffer;
+}
+
+export function isURLSearchParams(value: unknown): value is URLSearchParams {
+  return value instanceof URLSearchParams;
+}
+
+export function isFormData(value: unknown): value is FormData {
+  return value instanceof FormData;
+}
+
+export function isFile(value: unknown): value is File {
+  return value instanceof File;
+}
+
+export function isHeaders(value: unknown): value is Headers {
+  return value instanceof Headers;
+}
+
+export function isDocument(value: unknown): value is Document {
+  return value instanceof Document;
+}
+
+export function isURL(value: unknown): value is URL {
+  return value instanceof URL;
+}
+
+type TypedArray =
+  | Int8Array
+  | Uint8Array
+  | Uint8ClampedArray
+  | Int16Array
+  | Uint16Array
+  | Int32Array
+  | Uint32Array
+  | Float32Array
+  | Float64Array
+  | BigInt64Array
+  | BigUint64Array;
+export function isTypedArray(value: unknown): value is TypedArray {
+  return [
+    Int8Array,
+    Uint8Array,
+    Uint8ClampedArray,
+    Int16Array,
+    Uint16Array,
+    Int32Array,
+    Uint32Array,
+    Float32Array,
+    Float64Array,
+    BigInt64Array,
+    BigUint64Array,
+  ].includes(Object.getPrototypeOf(value).constructor);
 }
 
 interface PrimitiveResult {
@@ -91,13 +124,13 @@ interface PrimitiveResult {
   value: any;
 }
 
-const stringify = (value: string) => `${value}`;
+const stringify = (value: any) => `${value}`;
 const primitive = (value: any) => ({
   ok: true,
   value,
 });
 
-export function makePrimitiveValue(value: any): PrimitiveResult {
+export function makePrimitiveValue(value: unknown): PrimitiveResult {
   if (value === undefined) {
     return primitive(stringify(value));
   }
@@ -156,3 +189,25 @@ export function getValueType(value: any) {
   }
   return typeof value;
 }
+
+/**
+ * The methods are used for internal calls.
+ */
+interface PSLog {
+  log(message: string): void;
+  info(message: string): void;
+  warn(message: string): void;
+  error(message: string): void;
+}
+export const psLog = (['log', 'info', 'error', 'warn'] as const).reduce(
+  (result, method) => {
+    // eslint-disable-next-line no-param-reassign
+    result[method] = (message: string) => {
+      console[method](
+        `[PageSpy] [${method.toLocaleUpperCase()}]: ${message.toString()}`,
+      );
+    };
+    return result;
+  },
+  {} as PSLog,
+);

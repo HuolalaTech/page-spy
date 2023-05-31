@@ -1,3 +1,4 @@
+import { psLog } from 'src/utils';
 import { combineName, parseUserAgent } from 'src/utils/ua';
 
 interface TResponse<T> {
@@ -14,7 +15,7 @@ interface TCreateRoom {
   group: string;
   tags: Record<string, any>;
 }
-/* c8 ignore start */
+
 const resolvedProtocol = (() => {
   try {
     const { protocol } = new URL(document.currentScript?.getAttribute('src')!);
@@ -23,14 +24,13 @@ const resolvedProtocol = (() => {
     }
   } catch (e) {
     console.error(e);
-    console.error(
-      '[PageSpy] Failed to resolve the protocol and fallback to [http://, ws://]',
+    psLog.error(
+      'Failed to resolve the protocol and fallback to [http://, ws://]',
     );
   }
   return ['http://', 'ws://'];
 })();
 
-/* c8 ignore stop */
 export default class Request {
   constructor(public base: string = '') {
     /* c8 ignore next 3 */

@@ -2,23 +2,23 @@ import atom from 'src/utils/atom';
 
 // jest.mock('src/utils/atom.ts');
 beforeEach(() => {
-  atom.store = {};
-  atom.instanceStore = {};
+  atom.resetStore();
+  atom.resetInstanceStore();
 });
 
 describe('Atom', () => {
   it('Data would be cacehed after call atom.add([data])', () => {
     const data = {};
     atom.add(data);
-    expect(Object.keys(atom.store).length).toBe(1);
-    expect(Object.keys(atom.instanceStore).length).toBe(1);
-    expect(Object.values(atom.store)[0]).toBe(data);
+    expect(Object.keys(atom.getStore()).length).toBe(1);
+    expect(Object.keys(atom.getInstanceStore()).length).toBe(1);
+    expect(Object.values(atom.getStore())[0]).toBe(data);
   });
   it('Self-reference data is ok', () => {
     atom.add(window);
-    expect(Object.keys(atom.store).length).toBe(1);
-    expect(Object.keys(atom.instanceStore).length).toBe(1);
-    expect(Object.values(atom.store)[0]).toBe(window);
+    expect(Object.keys(atom.getStore()).length).toBe(1);
+    expect(Object.keys(atom.getInstanceStore()).length).toBe(1);
+    expect(Object.values(atom.getStore())[0]).toBe(window);
   });
 });
 
@@ -39,7 +39,7 @@ describe('Atom.get', () => {
       arrowFunc: () => {},
     };
     atom.add(data);
-    const atomId = Object.keys(atom.store)[0];
+    const atomId = Object.keys(atom.getStore())[0];
     const atomNode = atom.get(atomId);
     Object.keys(data).forEach((key) => {
       expect(atomNode).toHaveProperty(key);
@@ -51,7 +51,7 @@ describe('Atom.addExtraProperty', () => {
   it('[[PrimitiveValue]] prop added to `new String` data', () => {
     const data = new String('Hello, PageSpy');
     atom.add(data);
-    const atomId = Object.keys(atom.store)[0];
+    const atomId = Object.keys(atom.getStore())[0];
     const atomNode = atom.get(atomId);
     const atomNodeValue = atomNode!['[[PrimitiveValue]]'];
     expect(atomNode).not.toBeNull();
@@ -61,7 +61,7 @@ describe('Atom.addExtraProperty', () => {
   it('[[PrimitiveValue]] prop added to `new Number` data', () => {
     const data = new Number(520);
     atom.add(data);
-    const atomId = Object.keys(atom.store)[0];
+    const atomId = Object.keys(atom.getStore())[0];
     const atomNode = atom.get(atomId);
     const atomNodeValue = atomNode!['[[PrimitiveValue]]'];
     expect(atomNode).not.toBeNull();
@@ -71,7 +71,7 @@ describe('Atom.addExtraProperty', () => {
   it('[[PrimitiveValue]] prop added to `new Boolean` data', () => {
     const data = new Boolean(true);
     atom.add(data);
-    const atomId = Object.keys(atom.store)[0];
+    const atomId = Object.keys(atom.getStore())[0];
     const atomNode = atom.get(atomId);
     const atomNodeValue = atomNode!['[[PrimitiveValue]]'];
     expect(atomNode).not.toBeNull();
@@ -81,7 +81,7 @@ describe('Atom.addExtraProperty', () => {
   it('[[Entries]] prop added to `new Set` data', () => {
     const data = new Set([1, 2, 3, 1]);
     atom.add(data);
-    const atomId = Object.keys(atom.store)[0];
+    const atomId = Object.keys(atom.getStore())[0];
     const atomNode = atom.get(atomId);
     const atomNodeValue = atomNode!['[[Entries]]'];
     expect(atomNode).not.toBeNull();
@@ -90,7 +90,7 @@ describe('Atom.addExtraProperty', () => {
   it('[[Entries]] prop added to `new Map` data', () => {
     const data = new Map([[window, document]]);
     atom.add(data);
-    const atomId = Object.keys(atom.store)[0];
+    const atomId = Object.keys(atom.getStore())[0];
     const atomNode = atom.get(atomId);
     const atomNodeValue = atomNode!['[[Entries]]'];
     expect(atomNode).not.toBeNull();
@@ -99,7 +99,7 @@ describe('Atom.addExtraProperty', () => {
   it('[[Prototype]] prop added to prototype data except `Object.prototype` type', () => {
     const data = new Number(123);
     atom.add(data);
-    const atomId = Object.keys(atom.store)[0];
+    const atomId = Object.keys(atom.getStore())[0];
     const atomNode = atom.get(atomId);
     const atomNodeValue = atomNode!['[[Prototype]]'];
     expect(atomNode).not.toBeNull();
@@ -108,7 +108,7 @@ describe('Atom.addExtraProperty', () => {
   it('___proto___ prop added to `Object.prototype` data', () => {
     const data = Object.prototype;
     atom.add(data);
-    const atomId = Object.keys(atom.store)[0];
+    const atomId = Object.keys(atom.getStore())[0];
     const atomNode = atom.get(atomId);
     const atomNodeValue = atomNode!['___proto___'];
     expect(atomNode).not.toBeNull();
