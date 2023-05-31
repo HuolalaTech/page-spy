@@ -22,22 +22,27 @@ export class StoragePlugin implements PageSpyPlugin {
     });
 
     if (window.cookieStore) {
-      const sendCookie = () => {
-        window.cookieStore.getAll().then((cookies) => {
-          cookies.forEach((cookie) => {
-            const data = { type: 'cookie', action: 'get', ...cookie } as Omit<
-              SpyStorage.DataItem,
-              'id'
-            >;
-            if (!data.domain) {
-              data.domain = window.location.hostname;
-            }
+      window.cookieStore.getAll().then((cookies) => {
+        cookies.forEach((cookie) => {
+          const data = StoragePlugin.formatCookieInfo(cookie);
+          sendStorageItem(data);
+        });
+      });
+      window.cookieStore.addEventListener('change', (e) => {
+        const { changed, deleted } = e as CookieChangeEvent;
+        if (changed.length > 0) {
+          changed.forEach((cookie) => {
+            const data = StoragePlugin.formatCookieInfo(cookie, 'set');
             sendStorageItem(data);
           });
-        });
-      };
-      sendCookie();
-      window.cookieStore.addEventListener('change', sendCookie);
+        }
+        if (deleted.length > 0) {
+          deleted.forEach((cookie) => {
+            const data = StoragePlugin.formatCookieInfo(cookie, 'remove');
+            sendStorageItem(data);
+          });
+        }
+      });
     } else {
       document.cookie.split('; ').forEach((item) => {
         const [name, value] = item.split('=');
@@ -51,6 +56,21 @@ export class StoragePlugin implements PageSpyPlugin {
     }
 
     initStorageProxy();
+  }
+
+  private static formatCookieInfo(
+    cookie: CookieStoreValue,
+    action: SpyStorage.ActionType = 'get',
+  ) {
+    const result: Omit<SpyStorage.DataItem, 'id'> = {
+      type: 'cookie',
+      action,
+      ...cookie,
+    };
+    if (!result.domain) {
+      result.domain = window.location.hostname;
+    }
+    return result;
   }
 
   private static sendStorageItem(info: Omit<SpyStorage.DataItem, 'id'>) {

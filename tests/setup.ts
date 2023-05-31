@@ -33,4 +33,8 @@ global.navigator.sendBeacon = jest.fn<boolean, any>((...args: any) => {
   return true;
 });
 
+// mock window.alert
 window.alert = () => {};
+
+// mock window.cookieStore
+import './__mocks__/cookie-store';
