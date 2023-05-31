@@ -2,6 +2,7 @@ import NetworkPlugin from 'src/plugins/network';
 import startServer from '../../server/index';
 import data from '../../server/data.json';
 import { Reason } from 'src/plugins/network/proxy/common';
+import { computeRequestMapInfo } from './util';
 
 const port = 6688;
 const apiPrefix = `http://localhost:${port}`;
@@ -88,17 +89,17 @@ describe('window.fetch proxy', () => {
     const np = new NetworkPlugin();
     np.onCreated();
     const { fetchProxy } = np;
-    expect(fetchProxy!.requestInfo.size).toBe(0);
+    expect(computeRequestMapInfo(fetchProxy).size).toBe(0);
 
     const bigFileUrl = `${apiPrefix}/big-file`;
     await fetch(bigFileUrl);
     await sleep();
 
-    const { freezedRequests, size } = fetchProxy!.requestInfo;
+    const { freezedRequests, size } = computeRequestMapInfo(fetchProxy);
     expect(size).toBe(1);
     const current = Object.values(freezedRequests);
-    expect(current[0].response).toBe('[object Blob]');
-    expect(current[0].responseReason).toBe(Reason.EXCEED_SIZE);
+    expect(current[0]?.response).toBe('[object Blob]');
+    expect(current[0]?.responseReason).toBe(Reason.EXCEED_SIZE);
   });
 
   it('The SDK record the request information', () => {
@@ -106,13 +107,13 @@ describe('window.fetch proxy', () => {
     np.onCreated();
     const { fetchProxy } = np;
     expect(fetchProxy).not.toBe(null);
-    expect(fetchProxy!.requestInfo.size).toBe(0);
+    expect(computeRequestMapInfo(fetchProxy).size).toBe(0);
 
     const count = 5;
     Array.from({ length: count }).forEach((_, index) => {
       fetch(`${apiPrefix}/posts/${index}`);
     });
-    expect(fetchProxy!.requestInfo.size).toBe(count);
+    expect(computeRequestMapInfo(fetchProxy).size).toBe(count);
   });
 
   it('The cached request items will be freed when no longer needed', async () => {
@@ -120,10 +121,10 @@ describe('window.fetch proxy', () => {
     np.onCreated();
     const { fetchProxy } = np;
     expect(fetchProxy).not.toBe(null);
-    expect(fetchProxy!.requestInfo.size).toBe(0);
+    expect(computeRequestMapInfo(fetchProxy).size).toBe(0);
 
     const res = await fetch(`${apiPrefix}/json`);
-    expect(fetchProxy!.requestInfo.size).toBe(1);
+    expect(computeRequestMapInfo(fetchProxy).size).toBe(1);
 
     /**
      * The `whatwg-fetch` relies on the setTimeout, the value wouldn't be resolved
@@ -134,6 +135,6 @@ describe('window.fetch proxy', () => {
     await sleep(3500);
 
     // The previous request item now be freed after 3s.
-    expect(fetchProxy!.requestInfo.size).toBe(0);
+    expect(computeRequestMapInfo(fetchProxy).size).toBe(0);
   });
 });

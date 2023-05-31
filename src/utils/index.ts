@@ -189,3 +189,25 @@ export function getValueType(value: any) {
   }
   return typeof value;
 }
+
+/**
+ * The methods are used for internal calls.
+ */
+interface PSLog {
+  log(message: string): void;
+  info(message: string): void;
+  warn(message: string): void;
+  error(message: string): void;
+}
+export const psLog = (['log', 'info', 'error', 'warn'] as const).reduce(
+  (result, method) => {
+    // eslint-disable-next-line no-param-reassign
+    result[method] = (message: string) => {
+      console[method](
+        `[PageSpy] [${method.toLocaleUpperCase()}]: ${message.toString()}`,
+      );
+    };
+    return result;
+  },
+  {} as PSLog,
+);

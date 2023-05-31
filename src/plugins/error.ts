@@ -4,11 +4,11 @@ import socketStore from 'src/utils/socket';
 import type PageSpyPlugin from './index';
 
 export default class ErrorPlugin implements PageSpyPlugin {
-  name = 'ErrorPlugin';
+  public name = 'ErrorPlugin';
 
-  error: OnErrorEventHandler = null;
+  private error: OnErrorEventHandler = null;
 
-  onCreated() {
+  public onCreated() {
     const that = this;
     this.error = window.onerror;
 
@@ -35,7 +35,7 @@ export default class ErrorPlugin implements PageSpyPlugin {
       true,
     );
 
-    // Promise unhandleRejection Error
+    // Promise unhandledRejection Error
     window.addEventListener(
       'unhandledrejection',
       (evt: PromiseRejectionEvent) => {
@@ -44,7 +44,7 @@ export default class ErrorPlugin implements PageSpyPlugin {
     );
   }
 
-  static sendMessage(data: any) {
+  public static sendMessage(data: any) {
     // Treat `error` data as `console`
     const message = makeMessage(DEBUG_MESSAGE_TYPE.CONSOLE, {
       logType: 'error',

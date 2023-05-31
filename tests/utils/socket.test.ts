@@ -29,9 +29,10 @@ const fakeUrl = 'ws://localhost:1234';
 
 describe('Socket store', () => {
   it('Close, Reconnect', async () => {
+    // @ts-ignore
     const reconnect = jest.spyOn(client, 'tryReconnect');
     expect(client.connectionStatus).toBe(true);
-    client.socket?.close();
+    client.getSocket()?.close();
 
     await sleep();
     expect(reconnect).toHaveBeenCalledTimes(1);
@@ -39,11 +40,14 @@ describe('Socket store', () => {
   });
 
   it('Connect failed if reconnect over 3 times', async () => {
+    // @ts-ignore
     expect(client.reconnectTimes).toBe(3);
     server.close();
 
     await sleep(300);
+    // @ts-ignore
     expect(client.reconnectTimes).toBe(0);
+    // @ts-ignore
     expect(client.reconnectable).toBe(false);
   });
 
@@ -79,6 +83,7 @@ describe('Socket store', () => {
     };
     server.send(connectMsg);
     await sleep();
+    // @ts-ignore
     expect(client.socketConnection).toEqual(connectMsg.content.selfConnection);
 
     // `Send` type message

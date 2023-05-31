@@ -4,10 +4,10 @@ import type PageSpyPlugin from './index';
 import socketStore from '../utils/socket';
 
 export class StoragePlugin implements PageSpyPlugin {
-  name = 'StoragePlugin';
+  public name = 'StoragePlugin';
 
   // eslint-disable-next-line class-methods-use-this
-  onCreated() {
+  public onCreated() {
     const { sendStorageItem, initStorageProxy } = StoragePlugin;
     const local = { ...localStorage };
     Object.keys(local).forEach((name) => {
@@ -53,7 +53,12 @@ export class StoragePlugin implements PageSpyPlugin {
     initStorageProxy();
   }
 
-  static initStorageProxy() {
+  private static sendStorageItem(info: Omit<SpyStorage.DataItem, 'id'>) {
+    const data = makeMessage(DEBUG_MESSAGE_TYPE.STORAGE, info);
+    socketStore.broadcastMessage(data);
+  }
+
+  private static initStorageProxy() {
     const { getStorageType, sendStorageItem } = StoragePlugin;
     const { clear, removeItem, setItem } = Storage.prototype;
 
@@ -77,12 +82,7 @@ export class StoragePlugin implements PageSpyPlugin {
     };
   }
 
-  static sendStorageItem(info: Omit<SpyStorage.DataItem, 'id'>) {
-    const data = makeMessage(DEBUG_MESSAGE_TYPE.STORAGE, info);
-    socketStore.broadcastMessage(data);
-  }
-
-  static getStorageType(ins: Storage): SpyStorage.DataType {
+  private static getStorageType(ins: Storage): SpyStorage.DataType {
     if (ins === localStorage) return 'local';
     if (ins === sessionStorage) return 'session';
     return ins.constructor.name as any;

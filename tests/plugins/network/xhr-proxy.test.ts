@@ -2,6 +2,7 @@ import NetworkPlugin from 'src/plugins/network';
 import startServer from '../../server/index';
 import data from '../../server/data.json';
 import { Reason } from 'src/plugins/network/proxy/common';
+import { computeRequestMapInfo } from './util';
 
 const port = 6677;
 const apiPrefix = `http://localhost:${port}`;
@@ -141,8 +142,8 @@ describe('XMLHttpRequest proxy', () => {
     const np = new NetworkPlugin();
     np.onCreated();
     const { xhrProxy } = np;
-
-    expect(xhrProxy?.requestInfo.size).toBe(0);
+    expect(xhrProxy).not.toBe(null);
+    expect(computeRequestMapInfo(xhrProxy!).size).toBe(0);
 
     const bigFileUrl = `${apiPrefix}/big-file`;
     const xhr = new XMLHttpRequest();
@@ -153,11 +154,11 @@ describe('XMLHttpRequest proxy', () => {
       if (xhr.readyState === 4) {
         if (xhr.status === 200) {
           await sleep();
-          const { freezedRequests, size } = xhrProxy!.requestInfo;
+          const { freezedRequests, size } = computeRequestMapInfo(xhrProxy!);
           expect(size).toBe(1);
           const current = Object.values(freezedRequests)[0];
-          expect(current.response).toBe('[object Blob]');
-          expect(current.responseReason).toBe(Reason.EXCEED_SIZE);
+          expect(current?.response).toBe('[object Blob]');
+          expect(current?.responseReason).toBe(Reason.EXCEED_SIZE);
           done();
         }
       }
@@ -169,7 +170,7 @@ describe('XMLHttpRequest proxy', () => {
     np.onCreated();
     const { xhrProxy } = np;
     expect(xhrProxy).not.toBe(null);
-    expect(xhrProxy!.requestInfo.size).toBe(0);
+    expect(computeRequestMapInfo(xhrProxy).size).toBe(0);
 
     const count = 5;
     Array.from({ length: count }).forEach((_, index) => {
@@ -177,7 +178,7 @@ describe('XMLHttpRequest proxy', () => {
       xhr.open('GET', `${apiPrefix}/posts/${index}`);
       xhr.send();
     });
-    expect(xhrProxy!.requestInfo.size).toBe(count);
+    expect(computeRequestMapInfo(xhrProxy).size).toBe(count);
   });
 
   it('The cached request items will be freed when no longer needed', () => {
@@ -186,13 +187,13 @@ describe('XMLHttpRequest proxy', () => {
     np.onCreated();
     const { xhrProxy } = np;
     expect(xhrProxy).not.toBe(null);
-    expect(xhrProxy!.requestInfo.size).toBe(0);
+    expect(computeRequestMapInfo(xhrProxy).size).toBe(0);
 
     const xhr = new XMLHttpRequest();
     xhr.open('GET', `${apiPrefix}/posts`);
     xhr.send();
 
-    expect(xhrProxy!.requestInfo.size).toBe(1);
+    expect(computeRequestMapInfo(xhrProxy).size).toBe(1);
     xhr.addEventListener('readystatechange', async () => {
       if (xhr.readyState === 4) {
         jest.advanceTimersByTime(3500);
@@ -200,7 +201,7 @@ describe('XMLHttpRequest proxy', () => {
         // so let's sleep a while.
         await sleep();
         // The previous request item now be freed after 3s.
-        expect(xhrProxy!.requestInfo.size).toBe(0);
+        expect(computeRequestMapInfo(xhrProxy).size).toBe(0);
       }
     });
   });

@@ -1,7 +1,7 @@
 import PagePlugin from 'src/plugins/page';
 import { DEBUG_MESSAGE_TYPE } from 'src/utils/message';
 import socket from 'src/utils/socket';
-
+// @ts-ignore
 const trigger = jest.spyOn(PagePlugin, 'collectHtml');
 
 describe('Page plugin', () => {
@@ -12,6 +12,7 @@ describe('Page plugin', () => {
     window.dispatchEvent(new Event('load'));
     expect(trigger).toHaveBeenCalledTimes(1);
 
+    // @ts-ignore
     socket.dispatchEvent(DEBUG_MESSAGE_TYPE.REFRESH, {
       source: {
         type: DEBUG_MESSAGE_TYPE.REFRESH,

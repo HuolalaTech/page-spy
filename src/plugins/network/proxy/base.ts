@@ -1,58 +1,43 @@
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
 import socketStore from 'src/utils/socket';
+import { psLog } from 'src/utils';
 import RequestItem from './request-item';
 
-type RequestStore = Record<string, RequestItem>;
-interface RequestsInfo {
-  requests: RequestStore;
-  freezedRequests: RequestStore;
-  size: number;
-}
+type RequestStore = Record<string, RequestItem | null>;
 export default class NetworkProxyBase {
   private reqMap: RequestStore = Object.create(null);
 
-  get requestInfo(): RequestsInfo {
-    return {
-      /**
-       * The `requests` value is UNSTABLE!!!
-       * It maybe changed at any time.
-       *
-       * See: {@link NetworkProxyBase#deferDeleteRequest}
-       */
-      requests: this.reqMap,
-      // Because of reqMap may be changed at any time, we create a copy of it.
-      //
-      // NOTICE: The value simply represents the reqMap entity when printed.
-      freezedRequests: JSON.parse(JSON.stringify(this.reqMap)),
-      size: Object.keys(this.reqMap).length,
-    };
+  public getRequestMap() {
+    return this.reqMap;
   }
 
-  getRequest(id: string) {
-    let req = this.reqMap[id];
-    if (!req) {
-      req = new RequestItem(id);
-      this.setRequest(id, req);
-    }
+  protected getRequest(id: string) {
+    const req = this.reqMap[id];
     return req;
   }
 
-  setRequest(id: string, req: RequestItem) {
+  protected createRequest(id: string) {
+    if (!id) {
+      psLog.error('The "id" is required when init request object');
+      return false;
+    }
+    if (this.reqMap[id]) {
+      psLog.warn(
+        'The request object has been in store, disallow duplicate create',
+      );
+      return false;
+    }
+    this.reqMap[id] = new RequestItem(id);
+    return true;
+  }
+
+  protected setRequest(id: string, req: RequestItem) {
     if (!id || !req) return false;
     this.reqMap[id] = req;
     return true;
   }
 
-  deferDeleteRequest(id: string) {
-    const req = this.getRequest(id);
-    if (req && req.readyState === 4) {
-      setTimeout(() => {
-        delete this.reqMap[id];
-      }, 3000);
-    }
-  }
-
-  sendRequestItem(id: string, req: RequestItem) {
+  protected sendRequestItem(id: string, req: RequestItem) {
     if (!this.reqMap[id]) {
       this.reqMap[id] = req;
     }
@@ -66,5 +51,14 @@ export default class NetworkProxyBase {
     );
     socketStore.broadcastMessage(message);
     this.deferDeleteRequest(id);
+  }
+
+  private deferDeleteRequest(id: string) {
+    const req = this.getRequest(id);
+    if (req && req.readyState === 4) {
+      setTimeout(() => {
+        delete this.reqMap[id];
+      }, 3000);
+    }
   }
 }

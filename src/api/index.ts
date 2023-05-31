@@ -1,3 +1,4 @@
+import { psLog } from 'src/utils';
 import { combineName, parseUserAgent } from 'src/utils/ua';
 
 interface TResponse<T> {
@@ -23,8 +24,8 @@ const resolvedProtocol = (() => {
     }
   } catch (e) {
     console.error(e);
-    console.error(
-      '[PageSpy] Failed to resolve the protocol and fallback to [http://, ws://]',
+    psLog.error(
+      'Failed to resolve the protocol and fallback to [http://, ws://]',
     );
   }
   return ['http://', 'ws://'];

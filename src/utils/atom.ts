@@ -13,12 +13,28 @@ import {
 } from './index';
 
 class Atom {
-  store: Record<string, any> = {};
+  private store: Record<string, any> = {};
+
+  public getStore() {
+    return this.store;
+  }
+
+  public resetStore() {
+    this.store = {};
+  }
 
   // { __atomId: instanceId }
-  instanceStore: Record<string, string> = {};
+  private instanceStore: Record<string, string> = {};
 
-  transformToAtom(data: any): any {
+  public getInstanceStore() {
+    return this.instanceStore;
+  }
+
+  public resetInstanceStore() {
+    this.instanceStore = {};
+  }
+
+  public transformToAtom(data: any): any {
     const { value, ok } = makePrimitiveValue(data);
     if (ok) {
       return {
@@ -30,21 +46,7 @@ class Atom {
     return this.add(data);
   }
 
-  add(data: any, insId: string = ''): SpyAtom.Overview {
-    const id = getRandomId();
-    let instanceId = id;
-    // must provide the instance id if the `isPrototype(data)` return true,
-    // or else will occur panic when access the property along the proto chain
-    if (isPrototype(data)) {
-      instanceId = insId;
-    }
-    this.store[id] = data;
-    this.instanceStore[id] = instanceId;
-    const name = Atom.getSemanticValue(data);
-    return Atom.getAtomOverview({ atomId: id, value: name, instanceId });
-  }
-
-  get(id: string) {
+  public get(id: string) {
     const cacheData = this.store[id];
     const instanceId = this.instanceStore[id];
     if (!cacheData) return null;
@@ -70,14 +72,28 @@ class Atom {
   }
 
   /* c8 ignore start */
-  getOrigin(id: string) {
+  public getOrigin(id: string) {
     const value = this.store[id];
     if (!value) return null;
     return value;
   }
   /* c8 ignore stop */
 
-  static getAtomOverview({
+  public add(data: any, insId: string = ''): SpyAtom.Overview {
+    const id = getRandomId();
+    let instanceId = id;
+    // must provide the instance id if the `isPrototype(data)` return true,
+    // or else will occur panic when access the property along the proto chain
+    if (isPrototype(data)) {
+      instanceId = insId;
+    }
+    this.store[id] = data;
+    this.instanceStore[id] = instanceId;
+    const name = Atom.getSemanticValue(data);
+    return Atom.getAtomOverview({ atomId: id, value: name, instanceId });
+  }
+
+  private static getAtomOverview({
     instanceId = '',
     atomId,
     value,
@@ -96,7 +112,7 @@ class Atom {
     };
   }
 
-  static getSemanticValue(data: any) {
+  private static getSemanticValue(data: any) {
     if (isPlainObject(data)) {
       return 'Object {...}';
     }

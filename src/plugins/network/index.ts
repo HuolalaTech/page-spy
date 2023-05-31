@@ -5,15 +5,15 @@ import FetchProxy from './proxy/fetch-proxy';
 import BeaconProxy from './proxy/beacon-proxy';
 
 export default class NetworkPlugin implements PageSpyPlugin {
-  name = 'NetworkPlugin';
+  public name = 'NetworkPlugin';
 
-  xhrProxy: XhrProxy | null = null;
+  public xhrProxy: XhrProxy | null = null;
 
-  fetchProxy: FetchProxy | null = null;
+  public fetchProxy: FetchProxy | null = null;
 
-  beaconProxy: BeaconProxy | null = null;
+  public beaconProxy: BeaconProxy | null = null;
 
-  onCreated() {
+  public onCreated() {
     this.xhrProxy = new XhrProxy();
     this.fetchProxy = new FetchProxy();
     this.beaconProxy = new BeaconProxy();

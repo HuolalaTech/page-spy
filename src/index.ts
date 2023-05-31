@@ -12,7 +12,7 @@ import { StoragePlugin } from './plugins/storage';
 
 import socketStore from './utils/socket';
 import Request from './api';
-import { getRandomId } from './utils';
+import { getRandomId, psLog } from './utils';
 import pkg from '../package.json';
 
 import type { UElement } from './utils/moveable';
@@ -229,7 +229,7 @@ export default class PageSpy {
     moveable(logo);
     this.handleDeviceDPR();
 
-    console.log('[PageSpy] init success.');
+    psLog.log('Init success.');
   }
 
   handleDeviceDPR() {
