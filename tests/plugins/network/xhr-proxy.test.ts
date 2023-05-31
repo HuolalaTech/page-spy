@@ -182,7 +182,6 @@ describe('XMLHttpRequest proxy', () => {
   });
 
   it('The cached request items will be freed when no longer needed', () => {
-    jest.useFakeTimers();
     const np = new NetworkPlugin();
     np.onCreated();
     const { xhrProxy } = np;
@@ -196,10 +195,7 @@ describe('XMLHttpRequest proxy', () => {
     expect(computeRequestMapInfo(xhrProxy).size).toBe(1);
     xhr.addEventListener('readystatechange', async () => {
       if (xhr.readyState === 4) {
-        jest.advanceTimersByTime(3500);
-        // We don't know which `readystatechange` first be activated,
-        // so let's sleep a while.
-        await sleep();
+        await sleep(3500);
         // The previous request item now be freed after 3s.
         expect(computeRequestMapInfo(xhrProxy).size).toBe(0);
       }
