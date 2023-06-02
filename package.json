@@ -24,7 +24,6 @@
     "node": ">=10"
   },
   "scripts": {
-    "dev": "vite",
     "build": "rollup -c",
     "postbuild": "cp -R ./types ./dist",
     "build:watch": "rollup -c -w",
