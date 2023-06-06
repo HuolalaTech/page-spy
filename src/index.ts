@@ -63,10 +63,7 @@ export default class PageSpy {
       new PagePlugin(),
       new StoragePlugin(),
     );
-    window.addEventListener('DOMContentLoaded', async () => {
-      await this.initConnection();
-      this.deferRender();
-    });
+    this.init();
     window.addEventListener('beforeunload', () => {
       socketStore.close();
     });
@@ -81,7 +78,7 @@ export default class PageSpy {
     });
   }
 
-  async initConnection() {
+  async init() {
     const roomCache = sessionStorage.getItem(ROOM_SESSION_KEY);
     if (roomCache === null) {
       await this.createNewConnection();
@@ -102,6 +99,7 @@ export default class PageSpy {
         this.useOldConnection();
       }
     }
+    this.deferRender();
   }
 
   async createNewConnection() {
@@ -132,7 +130,7 @@ export default class PageSpy {
     /* c8 ignore start */
     if (document !== undefined) {
       if (document.readyState === 'loading') {
-        window.addEventListener('DOMContentLoaded', this.render);
+        window.addEventListener('DOMContentLoaded', this.render.bind(this));
       } else {
         this.render();
       }
