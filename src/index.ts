@@ -52,7 +52,7 @@ export default class PageSpy {
 
     const root = document.getElementById(Identifier);
     if (root) {
-      console.error('PageSpy has been inited.');
+      psLog.error('The widget element has rendered');
       return;
     }
     this.loadPlugins(
@@ -63,10 +63,7 @@ export default class PageSpy {
       new PagePlugin(),
       new StoragePlugin(),
     );
-    window.addEventListener('DOMContentLoaded', async () => {
-      await this.initConnection();
-      this.deferRender();
-    });
+    this.init();
     window.addEventListener('beforeunload', () => {
       socketStore.close();
     });
@@ -81,7 +78,7 @@ export default class PageSpy {
     });
   }
 
-  async initConnection() {
+  async init() {
     const roomCache = sessionStorage.getItem(ROOM_SESSION_KEY);
     if (roomCache === null) {
       await this.createNewConnection();
@@ -101,6 +98,10 @@ export default class PageSpy {
         this.roomUrl = roomUrl;
         this.useOldConnection();
       }
+    }
+    psLog.log('Plugins inited');
+    if (this.config.autoRender) {
+      this.render();
     }
   }
 
@@ -128,13 +129,13 @@ export default class PageSpy {
   // the browser will directly create a `body` element, and the final result is that
   // there will be multiple `body` elements on the page,
   // which leads to strange phenomena such as css style mismatches
-  deferRender() {
+  render() {
     /* c8 ignore start */
     if (document !== undefined) {
       if (document.readyState === 'loading') {
-        window.addEventListener('DOMContentLoaded', this.render);
+        window.addEventListener('DOMContentLoaded', this.render.bind(this));
       } else {
-        this.render();
+        this.startRender();
       }
     } else {
       // if document does not exist, wait for it
@@ -144,7 +145,7 @@ export default class PageSpy {
           if (timer) {
             clearTimeout(timer);
           }
-          this.render();
+          this.startRender();
         } else {
           timer = window.setTimeout(pollingDocument, 1);
         }
@@ -184,7 +185,7 @@ export default class PageSpy {
     sessionStorage.setItem(ROOM_SESSION_KEY, roomInfo);
   }
 
-  render() {
+  startRender() {
     const root = document.createElement('div');
     root.id = Identifier;
     this.root = root;
@@ -229,7 +230,7 @@ export default class PageSpy {
     moveable(logo);
     this.handleDeviceDPR();
 
-    psLog.log('Init success.');
+    psLog.log('Render success.');
   }
 
   handleDeviceDPR() {

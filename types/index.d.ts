@@ -15,6 +15,11 @@ export interface InitConfig {
    * Project name, used for group connections
    */
   project?: string;
+  /**
+   * Indicate whether auto render.
+   * @default true
+   */
+  autoRender?: boolean;
 }
 
 export * as SpyDevice from './lib/device';

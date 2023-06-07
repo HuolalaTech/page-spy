@@ -128,10 +128,10 @@ describe('new PageSpy([config])', () => {
   });
 
   it('Content load and unload', async () => {
-    const sdk = new SDK();
-
+    const init = jest.spyOn(SDK.prototype, 'init');
     const close = jest.spyOn(socketStore, 'close');
-    const init = jest.spyOn(sdk, 'initConnection');
+
+    new SDK();
 
     window.dispatchEvent(new Event('DOMContentLoaded'));
     expect(init).toHaveBeenCalled();
@@ -159,7 +159,7 @@ describe('new PageSpy([config])', () => {
 
     expect(sessionStorage.getItem(ROOM_SESSION_KEY)).toBe(null);
 
-    await sdk.initConnection();
+    await sdk.init();
     expect(JSON.parse(sessionStorage.getItem(ROOM_SESSION_KEY)!)).toEqual({
       name: sdk.name,
       address: sdk.address,
