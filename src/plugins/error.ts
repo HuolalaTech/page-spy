@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 import atom from 'src/utils/atom';
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
 import socketStore from 'src/utils/socket';
@@ -6,21 +7,49 @@ import type PageSpyPlugin from './index';
 export default class ErrorPlugin implements PageSpyPlugin {
   public name = 'ErrorPlugin';
 
-  private error: OnErrorEventHandler = null;
-
   public onCreated() {
-    const that = this;
-    this.error = window.onerror;
+    this.onUncaughtError();
+    this.onResourceLoadError();
+    this.onUnhandledRejectionError();
+  }
 
-    // Uncaught error
-    window.onerror = function (...args) {
-      ErrorPlugin.sendMessage(args[4]);
-      if (that.error) {
-        that.error.apply(window, args);
-      }
-    };
+  private onUncaughtError() {
+    const userErr = window.onerror;
+    // @ts-ignore
+    const isConfigurable = delete window.onerror;
+    if (!isConfigurable) return;
 
+    let errorHandler: (this: Window, ev: ErrorEvent) => any;
+    Object.defineProperty(window, 'onerror', {
+      // Normally, users would simply capture errors by assigning to 'window.onerror',
+      // but to avoid conflicts with the logic of other libraries, we specify
+      // 'configurable' as false here.
+      configurable: false,
+      enumerable: true,
+      get() {
+        return errorHandler;
+      },
+      set(fn: OnErrorEventHandler) {
+        window.removeEventListener('error', errorHandler);
+        errorHandler = (e: ErrorEvent) => {
+          ErrorPlugin.sendMessage(e.error?.stack || e.message);
+          fn?.apply(window, [
+            e.message,
+            e.filename,
+            e.lineno,
+            e.colno,
+            e.error,
+          ]);
+        };
+        window.addEventListener('error', errorHandler);
+      },
+    });
+    window.onerror = userErr;
+  }
+
+  private onResourceLoadError() {
     // Resource load failed
+    // Track the error on capture-phase
     window.addEventListener(
       'error',
       (evt: Event) => {
@@ -34,7 +63,9 @@ export default class ErrorPlugin implements PageSpyPlugin {
       },
       true,
     );
+  }
 
+  private onUnhandledRejectionError() {
     // Promise unhandledRejection Error
     window.addEventListener(
       'unhandledrejection',
