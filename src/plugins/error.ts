@@ -7,7 +7,12 @@ import type PageSpyPlugin from './index';
 export default class ErrorPlugin implements PageSpyPlugin {
   public name = 'ErrorPlugin';
 
+  public static hasInitd = false;
+
   public onCreated() {
+    if (ErrorPlugin.hasInitd) return;
+    ErrorPlugin.hasInitd = true;
+
     this.onUncaughtError();
     this.onResourceLoadError();
     this.onUnhandledRejectionError();

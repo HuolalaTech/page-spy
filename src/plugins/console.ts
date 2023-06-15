@@ -9,7 +9,13 @@ export default class ConsolePlugin implements PageSpyPlugin {
 
   private console: Record<string, any> = {};
 
-  public onCreated() {
+  public static hasInitd = false;
+
+  // eslint-disable-next-line class-methods-use-this
+  public async onCreated() {
+    if (ConsolePlugin.hasInitd) return;
+    ConsolePlugin.hasInitd = true;
+
     const type: SpyConsole.ProxyType[] = ['log', 'info', 'error', 'warn'];
     type.forEach((item) => {
       this.console[item] = window.console[item];
