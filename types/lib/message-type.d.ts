@@ -16,7 +16,8 @@ export type InteractiveType =
   | `atom-detail-${string}`
   | 'atom-getter'
   | `atom-getter-${string}`
-  | 'debugger-online';
+  | 'debugger-online'
+  | 'webrtc-connect';
 
 export type MessageType = DataType | InteractiveType;
 

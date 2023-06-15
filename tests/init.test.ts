@@ -6,8 +6,9 @@ import SystemPlugin from 'src/plugins/system';
 import PagePlugin from 'src/plugins/page';
 import { StoragePlugin } from 'src/plugins/storage';
 import { SpyConsole } from 'types';
-import socketStore from 'src/utils/socket';
+import socketStore from 'src/utils/connection/socket';
 import { ROOM_SESSION_KEY } from 'src/utils/constants';
+import { PageSpyConfig } from 'src/config';
 
 const rootId = '#__pageSpy';
 afterEach(() => {
@@ -20,8 +21,8 @@ describe('new PageSpy([config])', () => {
   it('Auto detect config by parsing `document.currentScript.src`', () => {
     const sdk = new SDK();
 
-    // The config value inited from /tests/setup.ts
-    expect(sdk.config).toEqual(
+    // The config value initd from /tests/setup.ts
+    expect(PageSpyConfig.get()).toEqual(
       expect.objectContaining({
         api: 'example.com',
         clientOrigin: 'https://example.com',
@@ -36,7 +37,7 @@ describe('new PageSpy([config])', () => {
     };
 
     const sdk = new SDK(config);
-    expect(sdk.config).toEqual(expect.objectContaining(config));
+    expect(PageSpyConfig.get()).toEqual(expect.objectContaining(config));
   });
 
   it('Cannot init duplicate', () => {

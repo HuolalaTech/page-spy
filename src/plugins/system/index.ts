@@ -1,6 +1,6 @@
 import type PageSpyPlugin from 'src/plugins/index';
 import { getRandomId } from 'src/utils';
-import socketStore from 'src/utils/socket';
+import socketStore from 'src/utils/connection/socket';
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
 import { parseUserAgent } from 'src/utils/ua';
 import '../../deps/modernizr';

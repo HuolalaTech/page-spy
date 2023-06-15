@@ -10,7 +10,7 @@ import SystemPlugin from './plugins/system';
 import PagePlugin from './plugins/page';
 import { StoragePlugin } from './plugins/storage';
 
-import socketStore from './utils/socket';
+import socketStore from './utils/connection/socket';
 import Request from './api';
 import { getRandomId, psLog } from './utils';
 import pkg from '../package.json';
@@ -19,7 +19,7 @@ import type { UElement } from './utils/moveable';
 import { moveable } from './utils/moveable';
 import './index.less';
 import logoUrl from './assets/logo.svg';
-import { mergeConfig } from './utils/config';
+import { PageSpyConfig } from './config';
 import { ROOM_SESSION_KEY } from './utils/constants';
 
 const Identifier = '__pageSpy';
@@ -30,8 +30,6 @@ export default class PageSpy {
   version = pkg.version;
 
   plugins: Record<string, PageSpyPlugin> = {};
-
-  config: Required<InitConfig>;
 
   // System info: <os>-<browser>:<browserVersion>
   name = '';
@@ -47,8 +45,8 @@ export default class PageSpy {
   socketStore = socketStore;
 
   constructor(init: InitConfig = {}) {
-    this.config = mergeConfig(init);
-    this.request = new Request(this.config.api);
+    PageSpyConfig.merge(init);
+    this.request = new Request(PageSpyConfig.get().api);
 
     const root = document.getElementById(Identifier);
     if (root) {
@@ -90,7 +88,7 @@ export default class PageSpy {
         usable,
         project: prev,
       } = JSON.parse(roomCache);
-      if (!usable || this.config.project !== prev) {
+      if (!usable || PageSpyConfig.get().project !== prev) {
         await this.createNewConnection();
       } else {
         this.name = name;
@@ -99,14 +97,14 @@ export default class PageSpy {
         this.useOldConnection();
       }
     }
-    psLog.log('Plugins inited');
-    if (this.config.autoRender) {
+    psLog.log('Plugins initialized');
+    if (PageSpyConfig.get().autoRender) {
       this.render();
     }
   }
 
   async createNewConnection() {
-    const { data } = await this.request.createRoom(this.config.project);
+    const { data } = await this.request.createRoom(PageSpyConfig.get().project);
     const roomUrl = this.request.getRoomUrl({
       address: data.address,
       name: `client:${getRandomId()}`,
@@ -180,7 +178,7 @@ export default class PageSpy {
       address,
       roomUrl,
       usable: true,
-      project: this.config.project,
+      project: PageSpyConfig.get().project,
     });
     sessionStorage.setItem(ROOM_SESSION_KEY, roomInfo);
   }
@@ -205,8 +203,8 @@ export default class PageSpy {
       content: {
         name: this.name,
         address: this.address,
-        clientOrigin: this.config.clientOrigin,
-        project: this.config.project,
+        clientOrigin: PageSpyConfig.get().clientOrigin,
+        project: PageSpyConfig.get().project,
       },
       onOk: () => {
         modal.close();

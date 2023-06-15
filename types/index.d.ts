@@ -20,6 +20,11 @@ export interface InitConfig {
    * @default true
    */
   autoRender?: boolean;
+  /**
+   * WebRTC configuration.
+   * @default null
+   */
+  webrtc?: RTCConfiguration | null;
 }
 
 export * as SpyDevice from './lib/device';
@@ -32,5 +37,6 @@ export * as SpySystem from './lib/system';
 export * as SpyNetwork from './lib/network';
 export * as SpyStorage from './lib/storage';
 export * as SpyPage from './lib/page';
+export * as SpyRTC from './lib/rtc';
 
 export default class PageSpy {}

@@ -5,10 +5,12 @@ import {
   makeBroadcastMessage,
   makeUnicastMessage,
 } from 'src/utils/message';
-import type { SpyMessage, SpySocket } from 'types';
-import atom from './atom';
-import { ROOM_SESSION_KEY } from './constants';
-import * as SERVER_MESSAGE_TYPE from './message/server-type';
+import type { SpyMessage, SpyRTC, SpySocket } from 'types';
+import { PageSpyConfig } from 'src/config';
+import atom from '../atom';
+import { ROOM_SESSION_KEY } from '../constants';
+import * as SERVER_MESSAGE_TYPE from '../message/server-type';
+import { isSupportRTC } from './rtc';
 
 interface SocketEvent<T = any> {
   source: {
@@ -45,7 +47,7 @@ export class SocketStore {
   private timer: number | null = null;
 
   // messages store
-  private messages: (SpySocket.BrodcastEvent | SpySocket.UnicastEvent)[] = [];
+  private messages: SpySocket.BrodcastEvent[] = [];
 
   // events center
   private events: Record<SpyMessage.InteractiveType, SocketEventCallback[]> = {
@@ -54,6 +56,7 @@ export class SocketStore {
     'atom-detail': [],
     'atom-getter': [],
     'debugger-online': [],
+    'webrtc-connect': [],
   };
 
   // Don't try to reconnect if error occupied
@@ -73,6 +76,7 @@ export class SocketStore {
     this.addListener('atom-detail', SocketStore.handleResolveAtom);
     this.addListener('atom-getter', SocketStore.handleAtomPropertyGetter);
     this.addListener('debugger-online', this.handleFlushBuffer);
+    this.addListener('webrtc-connect', SocketStore.handleWebRTCConnect);
   }
 
   public init(url: string) {
@@ -258,6 +262,34 @@ export class SocketStore {
     /* c8 ignore stop */
   }
 
+  private send(msg: SpySocket.ClientEvent, isCache: boolean = false) {
+    if (this.connectionStatus) {
+      /* c8 ignore start */
+      try {
+        this.socket?.send(stringifyData(msg));
+      } catch (e) {
+        throw Error(`Incompatible: ${(e as Error).message}`);
+      }
+      /* c8 ignore stop */
+    }
+    if (!isCache) {
+      if (
+        [SERVER_MESSAGE_TYPE.MESSAGE, SERVER_MESSAGE_TYPE.PING].indexOf(
+          msg.type,
+        ) > -1
+      ) {
+        return;
+      }
+
+      this.messages.push(
+        msg as Exclude<
+          SpySocket.ClientEvent,
+          SpySocket.PingEvent | SpySocket.UnicastEvent
+        >,
+      );
+    }
+  }
+
   // run executable code which received from remote and send back the result
   private static handleDebugger(
     { source }: SocketEvent<string>,
@@ -335,28 +367,41 @@ export class SocketStore {
     }
   }
 
-  private send(msg: SpySocket.ClientEvent, isCache: boolean = false) {
-    if (this.connectionStatus) {
-      /* c8 ignore start */
-      try {
-        this.socket?.send(stringifyData(msg));
-      } catch (e) {
-        throw Error(`Incompatible: ${(e as Error).message}`);
-      }
-      /* c8 ignore stop */
-    }
-    if (!isCache) {
-      if (
-        [SERVER_MESSAGE_TYPE.MESSAGE, SERVER_MESSAGE_TYPE.PING].indexOf(
-          msg.type,
-        ) > -1
-      ) {
-        return;
-      }
+  private static handleWebRTCConnect(
+    { source }: SocketEvent<SpyRTC.RTCMessage>,
+    reply: (
+      data: SpyMessage.MessageItem<'webrtc-connect', SpyRTC.RTCMessage>,
+    ) => void,
+  ) {
+    let msg: Parameters<typeof reply>[0];
 
-      this.messages.push(
-        msg as Exclude<SpySocket.ClientEvent, SpySocket.PingEvent>,
-      );
+    if (!isSupportRTC) {
+      msg = makeMessage(DEBUG_MESSAGE_TYPE.WEBRTC_CONNECT, {
+        type: DEBUG_MESSAGE_TYPE.NOT_SUPPORT_WEBRTC,
+        data: null,
+      });
+      reply(msg);
+      return;
+    }
+    const { webrtc } = PageSpyConfig.get();
+    if (!webrtc) {
+      msg = makeMessage(DEBUG_MESSAGE_TYPE.WEBRTC_CONNECT, {
+        type: DEBUG_MESSAGE_TYPE.CONFIG_NOT_VALID,
+        data: null,
+      });
+      reply(msg);
+      return;
+    }
+    const { type } = source.data;
+    switch (type) {
+      case DEBUG_MESSAGE_TYPE.ASK_FOR_STUN:
+        break;
+      case DEBUG_MESSAGE_TYPE.SDP_FROM_DEBUGGER:
+        break;
+      case DEBUG_MESSAGE_TYPE.ICE_CANDIDATE_FROM_DEBUGGER:
+        break;
+      default:
+        break;
     }
   }
 }

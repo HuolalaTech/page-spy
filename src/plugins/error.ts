@@ -1,6 +1,6 @@
 import atom from 'src/utils/atom';
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
-import socketStore from 'src/utils/socket';
+import socketStore from 'src/utils/connection/socket';
 import type PageSpyPlugin from './index';
 
 export default class ErrorPlugin implements PageSpyPlugin {

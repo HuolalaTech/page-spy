@@ -1,1 +1,1 @@
-export const ROOM_SESSION_KEY = 'page-spy-room';
+export const ROOM_SESSION_KEY = 'page_spy_room';

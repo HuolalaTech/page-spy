@@ -1,6 +1,6 @@
 import { WS } from 'jest-websocket-mock';
 import { DEBUG_MESSAGE_TYPE } from 'src/utils/message';
-import { SocketStore } from 'src/utils/socket';
+import { SocketStore } from 'src/utils/connection/socket';
 import {
   ConnectEvent,
   UnicastEvent,

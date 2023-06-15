@@ -1,5 +1,5 @@
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
-import socketStore from 'src/utils/socket';
+import socketStore from 'src/utils/connection/socket';
 import type { SpyConsole } from 'types';
 import atom from 'src/utils/atom';
 import type PageSpyPlugin from './index';
