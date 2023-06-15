@@ -5,25 +5,12 @@ import {
   makeBroadcastMessage,
   makeUnicastMessage,
 } from 'src/utils/message';
-import type { SpyMessage, SpyRTC, SpySocket } from 'types';
-import { PageSpyConfig } from 'src/config';
+import type { SpyMessage, SpySocket } from 'types';
 import atom from '../atom';
 import { ROOM_SESSION_KEY } from '../constants';
 import * as SERVER_MESSAGE_TYPE from '../message/server-type';
-import { isSupportRTC } from './rtc';
-
-interface SocketEvent<T = any> {
-  source: {
-    type: SpyMessage.MessageType;
-    data: T;
-  };
-  from: SpySocket.Connection;
-  to: SpySocket.Connection;
-}
-type SocketEventCallback = (
-  data: SocketEvent,
-  reply: (data: any) => void,
-) => void;
+import { RTCStore } from './rtc';
+import { SocketEventCallback, SocketEvent } from './utils';
 
 interface GetterMember {
   key: string; // 属性名
@@ -35,6 +22,8 @@ interface GetterMember {
 export class SocketStore {
   // websocket instance
   private socket: WebSocket | null = null;
+
+  private rtc: RTCPeerConnection | null = null;
 
   public getSocket() {
     return this.socket;
@@ -76,7 +65,7 @@ export class SocketStore {
     this.addListener('atom-detail', SocketStore.handleResolveAtom);
     this.addListener('atom-getter', SocketStore.handleAtomPropertyGetter);
     this.addListener('debugger-online', this.handleFlushBuffer);
-    this.addListener('webrtc-connect', SocketStore.handleWebRTCConnect);
+    this.addListener('webrtc-connect', RTCStore.handleWebRTCConnect);
   }
 
   public init(url: string) {
@@ -364,44 +353,6 @@ export class SocketStore {
       /* c8 ignore stop */
       const msg = makeMessage(`atom-getter-${id}`, atom.transformToAtom(value));
       reply(msg);
-    }
-  }
-
-  private static handleWebRTCConnect(
-    { source }: SocketEvent<SpyRTC.RTCMessage>,
-    reply: (
-      data: SpyMessage.MessageItem<'webrtc-connect', SpyRTC.RTCMessage>,
-    ) => void,
-  ) {
-    let msg: Parameters<typeof reply>[0];
-
-    if (!isSupportRTC) {
-      msg = makeMessage(DEBUG_MESSAGE_TYPE.WEBRTC_CONNECT, {
-        type: DEBUG_MESSAGE_TYPE.NOT_SUPPORT_WEBRTC,
-        data: null,
-      });
-      reply(msg);
-      return;
-    }
-    const { webrtc } = PageSpyConfig.get();
-    if (!webrtc) {
-      msg = makeMessage(DEBUG_MESSAGE_TYPE.WEBRTC_CONNECT, {
-        type: DEBUG_MESSAGE_TYPE.CONFIG_NOT_VALID,
-        data: null,
-      });
-      reply(msg);
-      return;
-    }
-    const { type } = source.data;
-    switch (type) {
-      case DEBUG_MESSAGE_TYPE.ASK_FOR_STUN:
-        break;
-      case DEBUG_MESSAGE_TYPE.SDP_FROM_DEBUGGER:
-        break;
-      case DEBUG_MESSAGE_TYPE.ICE_CANDIDATE_FROM_DEBUGGER:
-        break;
-      default:
-        break;
     }
   }
 }
