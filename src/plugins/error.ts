@@ -19,45 +19,10 @@ export default class ErrorPlugin implements PageSpyPlugin {
   }
 
   private onUncaughtError() {
-    const userErr = window.onerror;
-    // @ts-ignore
-    const isConfigurable = delete window.onerror;
-    if (!isConfigurable) {
-      window.onerror = (...args) => {
-        ErrorPlugin.sendMessage(args[4]);
-        if (userErr) {
-          userErr.apply(window, args);
-        }
-      };
-      return;
-    }
-
-    let errorHandler: (this: Window, ev: ErrorEvent) => any;
-    Object.defineProperty(window, 'onerror', {
-      // Normally, users would simply capture errors by assigning to 'window.onerror',
-      // but to avoid conflicts with the logic of other libraries, we specify
-      // 'configurable' as false here.
-      configurable: false,
-      enumerable: true,
-      get() {
-        return errorHandler;
-      },
-      set(fn: OnErrorEventHandler) {
-        window.removeEventListener('error', errorHandler);
-        errorHandler = (e: ErrorEvent) => {
-          ErrorPlugin.sendMessage(e.error?.stack || e.message);
-          fn?.apply(window, [
-            e.message,
-            e.filename,
-            e.lineno,
-            e.colno,
-            e.error,
-          ]);
-        };
-        window.addEventListener('error', errorHandler);
-      },
-    });
-    window.onerror = userErr;
+    const errorHandler = (e: ErrorEvent) => {
+      ErrorPlugin.sendMessage(e.error?.stack || e.message);
+    };
+    window.addEventListener('error', errorHandler);
   }
 
   private onResourceLoadError() {
