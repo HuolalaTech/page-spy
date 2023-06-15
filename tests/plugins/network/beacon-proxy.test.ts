@@ -11,18 +11,17 @@ const { sendBeacon: originSendBeacon } = window.navigator;
 afterEach(() => {
   jest.restoreAllMocks();
   window.navigator.sendBeacon = originSendBeacon;
+  NetworkPlugin.hasInitd = false;
 });
 
 describe('navigator.sendBeacon proxy', () => {
   it('Do nothing if not exist navigator.sendBeacon', () => {
-    const originBeacon = window.navigator.sendBeacon;
     Object.defineProperty(navigator, 'sendBeacon', {
       value: undefined,
       writable: true,
     });
     new NetworkPlugin().onCreated();
     expect(window.navigator.sendBeacon).toBe(undefined);
-    window.navigator.sendBeacon = originBeacon;
   });
   it('Wrap the navigator.sendBeacon', async () => {
     const sendBeaconSpy = jest.spyOn(window.navigator, 'sendBeacon');

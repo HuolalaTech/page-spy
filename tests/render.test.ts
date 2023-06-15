@@ -18,6 +18,7 @@ beforeAll(() => {
   });
 });
 beforeEach(() => {
+  SDK.instance = null;
   document.querySelector(rootId)?.remove();
 });
 
