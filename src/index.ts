@@ -50,7 +50,7 @@ export default class PageSpy {
 
   constructor(init: InitConfig = {}) {
     if (PageSpy.instance) {
-      psLog.warn('PageSpy has been initialized.');
+      psLog.warn('Cannot initialize PageSpy multiple times');
       // eslint-disable-next-line no-constructor-return
       return PageSpy.instance;
     }
@@ -142,9 +142,9 @@ export default class PageSpy {
   // there will be multiple `body` elements on the page,
   // which leads to strange phenomena such as css style mismatches
   render() {
-    const root = document.querySelector(Identifier);
+    const root = document.querySelector(`#${Identifier}`);
     if (root) {
-      psLog.error('The widget element has rendered');
+      psLog.warn('Cannot render the widget because it has been in the DOM');
       return;
     }
     if (document !== undefined) {
@@ -253,7 +253,7 @@ export default class PageSpy {
     moveable(logo);
     this.handleDeviceDPR();
 
-    psLog.log('Render success.');
+    psLog.log('Render success');
   }
 
   handleDeviceDPR() {
