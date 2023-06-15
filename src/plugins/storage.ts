@@ -6,8 +6,13 @@ import socketStore from '../utils/socket';
 export class StoragePlugin implements PageSpyPlugin {
   public name = 'StoragePlugin';
 
+  public static hasInitd = false;
+
   // eslint-disable-next-line class-methods-use-this
   public onCreated() {
+    if (StoragePlugin.hasInitd) return;
+    StoragePlugin.hasInitd = true;
+
     const { sendStorageItem, initStorageProxy } = StoragePlugin;
     const local = { ...localStorage };
     Object.keys(local).forEach((name) => {

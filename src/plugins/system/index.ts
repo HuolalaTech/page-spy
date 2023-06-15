@@ -17,14 +17,15 @@ window.Modernizr.addTest(
 );
 
 export default class SystemPlugin implements PageSpyPlugin {
-  public name: string;
+  public name = 'SystemPlugin';
 
-  public constructor() {
-    this.name = 'SystemPlugin';
-  }
+  public static hasInitd = false;
 
   // eslint-disable-next-line class-methods-use-this
   public async onCreated() {
+    if (SystemPlugin.hasInitd) return;
+    SystemPlugin.hasInitd = true;
+
     const id = getRandomId();
     const features = await computeResult();
     socketStore.broadcastMessage(

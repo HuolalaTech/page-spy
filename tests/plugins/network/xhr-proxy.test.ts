@@ -25,6 +25,7 @@ afterEach(() => {
   window.XMLHttpRequest.prototype.open = originOpen;
   window.XMLHttpRequest.prototype.setRequestHeader = originSetRequestHeader;
   window.XMLHttpRequest.prototype.send = originSend;
+  NetworkPlugin.hasInitd = false;
 });
 
 describe('XMLHttpRequest proxy', () => {

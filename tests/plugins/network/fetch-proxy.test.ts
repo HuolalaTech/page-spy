@@ -15,6 +15,7 @@ const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 afterEach(() => {
   jest.restoreAllMocks();
   window.fetch = originFetch;
+  NetworkPlugin.hasInitd = false;
 });
 
 describe('window.fetch proxy', () => {

@@ -5,8 +5,13 @@ import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
 export default class PagePlugin implements PageSpyPlugin {
   public name = 'PagePlugin';
 
+  public static hasInitd = false;
+
   // eslint-disable-next-line class-methods-use-this
   public onCreated() {
+    if (PagePlugin.hasInitd) return;
+    PagePlugin.hasInitd = true;
+
     window.addEventListener('load', () => {
       const msg = PagePlugin.collectHtml();
       SocketStore.broadcastMessage(msg);

@@ -31,7 +31,9 @@ export default class PageSpy {
 
   plugins: Record<string, PageSpyPlugin> = {};
 
-  config: Required<InitConfig>;
+  config: Required<InitConfig> | null = null;
+
+  request: Request | null = null;
 
   // System info: <os>-<browser>:<browserVersion>
   name = '';
@@ -42,19 +44,21 @@ export default class PageSpy {
   // Completed websocket room url
   roomUrl = '';
 
-  request: Request;
-
   socketStore = socketStore;
 
+  static instance: PageSpy | null = null;
+
   constructor(init: InitConfig = {}) {
+    if (PageSpy.instance) {
+      psLog.warn('Cannot initialize PageSpy multiple times');
+      // eslint-disable-next-line no-constructor-return
+      return PageSpy.instance;
+    }
+    PageSpy.instance = this;
+
     this.config = mergeConfig(init);
     this.request = new Request(this.config.api);
 
-    const root = document.getElementById(Identifier);
-    if (root) {
-      psLog.error('The widget element has rendered');
-      return;
-    }
     this.loadPlugins(
       new ConsolePlugin(),
       new ErrorPlugin(),
@@ -79,6 +83,10 @@ export default class PageSpy {
   }
 
   async init() {
+    if (!this.config) {
+      psLog.error('Cannot get the config info');
+      return;
+    }
     const roomCache = sessionStorage.getItem(ROOM_SESSION_KEY);
     if (roomCache === null) {
       await this.createNewConnection();
@@ -106,6 +114,10 @@ export default class PageSpy {
   }
 
   async createNewConnection() {
+    if (!this.request || !this.config) {
+      psLog.error('Cannot get the Request / config info');
+      return;
+    }
     const { data } = await this.request.createRoom(this.config.project);
     const roomUrl = this.request.getRoomUrl({
       address: data.address,
@@ -130,7 +142,11 @@ export default class PageSpy {
   // there will be multiple `body` elements on the page,
   // which leads to strange phenomena such as css style mismatches
   render() {
-    /* c8 ignore start */
+    const root = document.querySelector(`#${Identifier}`);
+    if (root) {
+      psLog.warn('Cannot render the widget because it has been in the DOM');
+      return;
+    }
     if (document !== undefined) {
       if (document.readyState === 'loading') {
         window.addEventListener('DOMContentLoaded', this.render.bind(this));
@@ -152,7 +168,6 @@ export default class PageSpy {
       };
       timer = window.setTimeout(pollingDocument, 1);
     }
-    /* c8 ignore stop */
   }
 
   refreshRoomInfo() {
@@ -174,6 +189,10 @@ export default class PageSpy {
   }
 
   saveSession() {
+    if (!this.config) {
+      psLog.error('Cannot get the config info');
+      return;
+    }
     const { name, address, roomUrl } = this;
     const roomInfo = JSON.stringify({
       name,
@@ -186,6 +205,10 @@ export default class PageSpy {
   }
 
   startRender() {
+    if (!this.config) {
+      psLog.error('Cannot get the config info');
+      return;
+    }
     const root = document.createElement('div');
     root.id = Identifier;
     this.root = root;
@@ -230,7 +253,7 @@ export default class PageSpy {
     moveable(logo);
     this.handleDeviceDPR();
 
-    psLog.log('Render success.');
+    psLog.log('Render success');
   }
 
   handleDeviceDPR() {

@@ -23,7 +23,6 @@ const resolvedProtocol = (() => {
       return ['https://', 'wss://'];
     }
   } catch (e) {
-    console.error(e);
     psLog.error(
       'Failed to resolve the protocol and fallback to [http://, ws://]',
     );

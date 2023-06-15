@@ -153,7 +153,7 @@ export class SocketStore {
       this.init(this.socketUrl);
     } /* c8 ignore start */ else {
       this.reconnectable = false;
-      psLog.warn('Websocket reconnect failed.');
+      psLog.error('Websocket reconnect failed');
     }
     /* c8 ignore stop */
   }

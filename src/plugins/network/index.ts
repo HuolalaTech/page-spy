@@ -13,7 +13,12 @@ export default class NetworkPlugin implements PageSpyPlugin {
 
   public beaconProxy: BeaconProxy | null = null;
 
+  public static hasInitd = false;
+
   public onCreated() {
+    if (NetworkPlugin.hasInitd) return;
+    NetworkPlugin.hasInitd = true;
+
     this.xhrProxy = new XhrProxy();
     this.fetchProxy = new FetchProxy();
     this.beaconProxy = new BeaconProxy();

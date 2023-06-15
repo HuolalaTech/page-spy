@@ -5,7 +5,7 @@ import NetworkPlugin from 'src/plugins/network';
 import SystemPlugin from 'src/plugins/system';
 import PagePlugin from 'src/plugins/page';
 import { StoragePlugin } from 'src/plugins/storage';
-import { SpyConsole } from 'types';
+import PageSpy, { SpyConsole } from 'types';
 import socketStore from 'src/utils/socket';
 import { ROOM_SESSION_KEY } from 'src/utils/constants';
 
@@ -14,6 +14,13 @@ afterEach(() => {
   jest.restoreAllMocks();
   document.querySelector(rootId)?.remove();
   sessionStorage.removeItem(ROOM_SESSION_KEY);
+  SDK.instance = null;
+  ConsolePlugin.hasInitd = false;
+  ErrorPlugin.hasInitd = false;
+  NetworkPlugin.hasInitd = false;
+  SystemPlugin.hasInitd = false;
+  PagePlugin.hasInitd = false;
+  StoragePlugin.hasInitd = false;
 });
 
 describe('new PageSpy([config])', () => {
@@ -37,16 +44,6 @@ describe('new PageSpy([config])', () => {
 
     const sdk = new SDK(config);
     expect(sdk.config).toEqual(expect.objectContaining(config));
-  });
-
-  it('Cannot init duplicate', () => {
-    const errorFn = jest.fn();
-    console.error = errorFn;
-
-    new SDK().render();
-    new SDK().render();
-
-    expect(errorFn).toBeCalledTimes(1);
   });
 
   it('Load plugins will run `<plugin>.onCreated()`', () => {
@@ -153,9 +150,11 @@ describe('new PageSpy([config])', () => {
         tags: {},
       },
     };
-    jest.spyOn(sdk.request, 'createRoom').mockImplementation(async function () {
-      return response;
-    });
+    jest
+      .spyOn(sdk.request!, 'createRoom')
+      .mockImplementation(async function () {
+        return response;
+      });
 
     expect(sessionStorage.getItem(ROOM_SESSION_KEY)).toBe(null);
 
