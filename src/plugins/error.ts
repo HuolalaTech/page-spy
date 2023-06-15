@@ -22,7 +22,15 @@ export default class ErrorPlugin implements PageSpyPlugin {
     const userErr = window.onerror;
     // @ts-ignore
     const isConfigurable = delete window.onerror;
-    if (!isConfigurable) return;
+    if (!isConfigurable) {
+      window.onerror = (...args) => {
+        ErrorPlugin.sendMessage(args[4]);
+        if (userErr) {
+          userErr.apply(window, args);
+        }
+      };
+      return;
+    }
 
     let errorHandler: (this: Window, ev: ErrorEvent) => any;
     Object.defineProperty(window, 'onerror', {
