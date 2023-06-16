@@ -45,7 +45,7 @@ export class SocketStore {
   private timer: number | null = null;
 
   // messages store
-  private messages: (SpySocket.BrodcastEvent | SpySocket.UnicastEvent)[] = [];
+  private messages: (SpySocket.BroadcastEvent | SpySocket.UnicastEvent)[] = [];
 
   // events center
   private events: Record<SpyMessage.InteractiveType, SocketEventCallback[]> = {
@@ -78,7 +78,7 @@ export class SocketStore {
   public init(url: string) {
     try {
       if (!url) {
-        throw Error('[PageSpy] WebSocket url cannot be empty');
+        throw Error('WebSocket url cannot be empty');
       }
       this.socket = new WebSocket(url);
       this.socketUrl = url;
@@ -95,7 +95,7 @@ export class SocketStore {
         this.connectOffline();
       });
     } catch (e: any) {
-      alert(`[PageSpy] ${e.message}`);
+      psLog.error(e.message);
     }
   }
 
@@ -244,7 +244,7 @@ export class SocketStore {
     /* c8 ignore start */
     this.messages
       .slice(msgIndex + 1)
-      .forEach((msg: SpySocket.BrodcastEvent | SpySocket.UnicastEvent) => {
+      .forEach((msg: SpySocket.BroadcastEvent | SpySocket.UnicastEvent) => {
         const data = {
           type: SERVER_MESSAGE_TYPE.MESSAGE,
           content: {

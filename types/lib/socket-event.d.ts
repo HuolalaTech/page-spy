@@ -47,7 +47,7 @@ export type CloseEvent = EventConstructor<
     reason: string;
   }
 >;
-export type BrodcastEvent = EventConstructor<
+export type BroadcastEvent = EventConstructor<
   'broadcast',
   {
     data: MessageItem;
@@ -69,13 +69,13 @@ export type ErrorEvent = EventConstructor<
   }
 >;
 export type PingEvent = EventConstructor<'ping', any>;
-export type ClientEvent = UnicastEvent | BrodcastEvent | PingEvent;
+export type ClientEvent = UnicastEvent | BroadcastEvent | PingEvent;
 export type Event =
   | JoinEvent
   | ConnectEvent
   | LeaveEvent
   | CloseEvent
-  | BrodcastEvent
+  | BroadcastEvent
   | UnicastEvent
   | ErrorEvent
   | PingEvent;

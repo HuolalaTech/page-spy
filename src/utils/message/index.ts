@@ -36,7 +36,7 @@ export function makeUnicastMessage(
 
 export function makeBroadcastMessage(
   msg: SpyMessage.MessageItem,
-): SpySocket.BrodcastEvent {
+): SpySocket.BroadcastEvent {
   return {
     type: SERVER_MESSAGE_TYPE.BROADCAST,
     content: {
