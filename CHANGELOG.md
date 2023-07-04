@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.2](https://github.com/HuolalaTech/page-spy/compare/v1.2.1...v1.2.2) (2023-07-04)
+
+### Features
+
+- assign onerror directly if not configurable ([7799aaf](https://github.com/HuolalaTech/page-spy/commit/7799aaf9c03126d7018d4ce875a216f7571b3a45))
+- plugins 'onCreate' can only be init once ([06d31ba](https://github.com/HuolalaTech/page-spy/commit/06d31bacd1e32908c98e2de3757e3e7f0433d421))
+- singleton mode PageSpy ([ddcd2cd](https://github.com/HuolalaTech/page-spy/commit/ddcd2cdce20590e7526119519bf7c827ce14ca28))
+- update log info & fix typo ([a5490df](https://github.com/HuolalaTech/page-spy/commit/a5490df585e2c9b013e1f7b3fb87143ba4d5df59))
+- update the log info ([eef934c](https://github.com/HuolalaTech/page-spy/commit/eef934c3459b8e6f66ee6b8ce450121d4d66ebcc))
+
+### Bug Fixes
+
+- don't handle window.onerror ([ae47966](https://github.com/HuolalaTech/page-spy/commit/ae479662eb5436156ecaf6a0a3f7c63f7a2245b6))
+- prevent window.onerror from being overriden ([c936ca7](https://github.com/HuolalaTech/page-spy/commit/c936ca75e2176b2e7c6df59d5daf1cbbdb68977c))
+
 ## [1.2.0](https://github.com/HuolalaTech/page-spy/compare/v1.1.0...v1.2.0) (2023-05-31)
 
 ### ⚠ BREAKING CHANGES
