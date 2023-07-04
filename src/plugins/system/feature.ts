@@ -7,10 +7,6 @@ export const FEATURE_MAP: SpySystem.Feature = {
       title: 'iframe/sandbox',
       keyPath: 'iframe/sandbox',
     },
-    seamless: {
-      title: 'iframe/seamless',
-      keyPath: 'iframe/seamless',
-    },
     srcdoc: {
       title: 'iframe/srcdoc',
       keyPath: 'iframe/srcdoc',
@@ -30,10 +26,6 @@ export const FEATURE_MAP: SpySystem.Feature = {
     exiforientation: {
       title: 'img/exif-orientation',
       keyPath: 'img/exif-orientation',
-    },
-    jpeg2000: {
-      title: 'img/jpeg2000',
-      keyPath: 'img/jpeg2000',
     },
     lazyloading: {
       title: 'img/lazyloading',
@@ -60,10 +52,6 @@ export const FEATURE_MAP: SpySystem.Feature = {
     clipboard: {
       title: 'Clipboard',
       keyPath: 'clipboard',
-    },
-    contextmenu: {
-      title: 'Contextmenu',
-      keyPath: 'contextmenu',
     },
     customevent: {
       title: 'Custom Event',
@@ -221,6 +209,29 @@ export const FEATURE_MAP: SpySystem.Feature = {
       title: 'ES6 Symbol',
       keyPath: 'es6/symbol',
     },
+    proxy: {
+      title: 'ES6 Proxy',
+      keyPath: 'proxy',
+    },
+    reflect: {
+      title: 'ES6 Reflect',
+      customTest: `"Reflect" in window &&
+      typeof window.Reflect === 'object' &&
+      typeof Reflect.has === 'function' &&
+      [
+        'apply',
+        'construct',
+        'defineProperty',
+        'deleteProperty',
+        'getOwnPropertyDescriptor',
+        'getPrototypeOf',
+        'has',
+        'isExtensible',
+        'ownKeys',
+        'preventExtensions',
+        'setPrototypeOf',
+      ].every((i) => Reflect.has(Reflect, i))`,
+    },
     es7array: {
       title: 'ES7 Array',
       keyPath: 'es7/array',
@@ -274,7 +285,6 @@ export const asyncFeatureKey = [
   'apng',
   'avif',
   'exiforientation',
-  'jpeg2000',
   'webp',
 ];
 
