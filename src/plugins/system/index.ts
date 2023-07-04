@@ -12,8 +12,23 @@ window.Modernizr.addTest(
   Modernizr.promises && !!Promise.prototype.finally,
 );
 window.Modernizr.addTest(
-  'iframe',
-  Modernizr.sandbox && Modernizr.seamless && Modernizr.srcdoc,
+  'reflect',
+  'Reflect' in window &&
+    typeof window.Reflect === 'object' &&
+    typeof Reflect.has === 'function' &&
+    [
+      'apply',
+      'construct',
+      'defineProperty',
+      'deleteProperty',
+      'getOwnPropertyDescriptor',
+      'getPrototypeOf',
+      'has',
+      'isExtensible',
+      'ownKeys',
+      'preventExtensions',
+      'setPrototypeOf',
+    ].every((i) => Reflect.has(Reflect, i)),
 );
 
 export default class SystemPlugin implements PageSpyPlugin {
