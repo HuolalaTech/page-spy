@@ -90,20 +90,25 @@ export class StoragePlugin implements PageSpyPlugin {
     Storage.prototype.clear = function () {
       const action = 'clear';
       const type = getStorageType(this);
+      clear.call(this);
       sendStorageItem({ type, action });
-      return clear.call(this);
     };
     Storage.prototype.removeItem = function (name: string) {
       const action = 'remove';
       const type = getStorageType(this);
-      sendStorageItem({ type, action, name });
-      return removeItem.call(this, name);
+      removeItem.call(this, name);
+      sendStorageItem({ type, action, name: String(name) });
     };
     Storage.prototype.setItem = function (name: string, value: string) {
       const action = 'set';
       const type = getStorageType(this);
-      sendStorageItem({ type, action, name, value });
-      return setItem.call(this, name, value);
+      setItem.call(this, name, value);
+      sendStorageItem({
+        type,
+        action,
+        name: String(name),
+        value: String(value),
+      });
     };
   }
 
