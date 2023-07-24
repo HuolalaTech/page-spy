@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.4](https://github.com/HuolalaTech/page-spy/compare/v1.2.3...v1.2.4) (2023-07-24)
+
+### Bug Fixes
+
+- use ArrayBuffer.isView instead of constructor ([c6b61da](https://github.com/HuolalaTech/page-spy/commit/c6b61daf7df7485ebaaabc215d587a45efa86cfd))
+
 ### [1.2.3](https://github.com/HuolalaTech/page-spy/compare/v1.2.2...v1.2.3) (2023-07-20)
 
 ### Features
