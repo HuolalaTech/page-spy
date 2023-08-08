@@ -1,3 +1,5 @@
+import PagePlugin from 'src/plugins/page';
+
 export interface InitConfig {
   /**
    * The server base url. For example, "example.com".
@@ -16,10 +18,18 @@ export interface InitConfig {
    */
   project?: string;
   /**
-   * Indicate whether auto render.
+   * Indicate whether auto render the widget on the bottom-left corner.
+   * You can manually render later by calling "window.$pageSpy.render()"
+   * if passed false.
    * @default true
    */
   autoRender?: boolean;
+  /**
+   * Custom title for displaying some data like user info to
+   * help you to distinguish the client. The title value will
+   * show in the room-list route page.
+   */
+  title?: string;
 }
 
 export * as SpyDevice from './lib/device';
@@ -33,4 +43,22 @@ export * as SpyNetwork from './lib/network';
 export * as SpyStorage from './lib/storage';
 export * as SpyPage from './lib/page';
 
-export default class PageSpy {}
+interface PageSpy {
+  root: HTMLElement | null;
+  version: string;
+  plugins: Record<string, PageSpyPlugin>;
+  config: Required<InitConfig> | null;
+  name: string;
+  address: string;
+  roomUrl: string;
+}
+
+interface PageSpyConstructor {
+  new (config: InitConfig): PageSpy;
+  instance: PageSpy | null;
+  render(): void;
+}
+
+declare global {
+  var PageSpy: PageSpyConstructor;
+}
