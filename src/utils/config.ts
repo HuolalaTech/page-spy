@@ -7,6 +7,7 @@ const defaultConfig = {
   clientOrigin: '',
   project: 'default',
   autoRender: true,
+  title: '',
 };
 
 const resolveConfig = () => {
@@ -20,6 +21,7 @@ const resolveConfig = () => {
     clientOrigin: origin,
     project: 'default',
     autoRender: true,
+    title: '',
   };
 };
 

@@ -1,5 +1,6 @@
 import { psLog } from 'src/utils';
 import { combineName, parseUserAgent } from 'src/utils/ua';
+import { InitConfig } from 'types';
 
 interface TResponse<T> {
   code: string;
@@ -30,6 +31,14 @@ const resolvedProtocol = (() => {
   return ['http://', 'ws://'];
 })();
 
+const joinQuery = (args: Record<string, unknown>) => {
+  const params = new URLSearchParams();
+  Object.entries(args).forEach(([k, v]) => {
+    params.append(k, String(v));
+  });
+  return params.toString();
+};
+
 export default class Request {
   constructor(public base: string = '') {
     /* c8 ignore next 3 */
@@ -38,11 +47,16 @@ export default class Request {
     }
   }
 
-  createRoom(project: string): Promise<TResponse<TCreateRoom>> {
+  createRoom(config: Required<InitConfig>): Promise<TResponse<TCreateRoom>> {
     const device = parseUserAgent();
     const name = combineName(device);
+    const query = joinQuery({
+      name,
+      group: config.project,
+      title: config.title,
+    });
     return fetch(
-      `${resolvedProtocol[0]}${this.base}/api/v1/room/create?name=${name}&group=${project}`,
+      `${resolvedProtocol[0]}${this.base}/api/v1/room/create?${query}`,
       {
         method: 'POST',
       },
@@ -55,16 +69,8 @@ export default class Request {
   }
 
   getRoomUrl(args: Record<string, string | number> = {}) {
-    const params = Object.keys(args).reduce((acc, cur, index, arr) => {
-      const val = args[cur];
-      /* c8 ignore next */
-      if (val == null) return acc;
-      let kv = `${cur}=${val}`;
-      if (index < arr.length - 1) {
-        kv += '&';
-      }
-      return acc + kv;
-    }, '');
-    return `${resolvedProtocol[1]}${this.base}/api/v1/ws/room/join?${params}`;
+    return `${resolvedProtocol[1]}${this.base}/api/v1/ws/room/join?${joinQuery(
+      args,
+    )}`;
   }
 }

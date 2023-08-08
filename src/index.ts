@@ -118,7 +118,7 @@ export default class PageSpy {
       psLog.error('Cannot get the Request / config info');
       return;
     }
-    const { data } = await this.request.createRoom(this.config.project);
+    const { data } = await this.request.createRoom(this.config);
     const roomUrl = this.request.getRoomUrl({
       address: data.address,
       name: `client:${getRandomId()}`,

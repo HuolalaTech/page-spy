@@ -20,6 +20,10 @@ export interface InitConfig {
    * @default true
    */
   autoRender?: boolean;
+  /**
+   * Custom title
+   */
+  title?: string;
 }
 
 export * as SpyDevice from './lib/device';
