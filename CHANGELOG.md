@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.5](https://github.com/HuolalaTech/page-spy/compare/v1.2.4...v1.2.5) (2023-08-08)
+
+### Features
+
+- add title config ([36b1b54](https://github.com/HuolalaTech/page-spy/commit/36b1b5402aa89fac9fdc516f5a485c619a81d15d))
+
 ### [1.2.4](https://github.com/HuolalaTech/page-spy/compare/v1.2.3...v1.2.4) (2023-07-24)
 
 ### Bug Fixes
