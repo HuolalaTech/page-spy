@@ -1,5 +1,4 @@
-import PagePlugin from 'src/plugins/page';
-
+import PageSpyPlugin from 'src/plugins';
 export interface InitConfig {
   /**
    * The server base url. For example, "example.com".
@@ -60,5 +59,7 @@ interface PageSpyConstructor {
 }
 
 declare global {
-  var PageSpy: PageSpyConstructor;
+  interface Window {
+    PageSpy: PageSpyConstructor;
+  }
 }

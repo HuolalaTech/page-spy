@@ -9,8 +9,13 @@ export type DataType =
   | 'debug-eval';
 export interface DataItem {
   id?: string;
+  time?: number;
+  url: string;
   logType: DataType;
   logs: any[];
-  url: string;
-  time?: number;
+  errorDetail: {
+    name: string;
+    message: string;
+    stack?: string;
+  } | null;
 }
