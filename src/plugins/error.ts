@@ -2,7 +2,21 @@
 import atom from 'src/utils/atom';
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
 import socketStore from 'src/utils/socket';
+import type { SpyConsole } from 'types';
 import type PageSpyPlugin from './index';
+
+const formatErrorObj = (err: Error) => {
+  if (typeof err !== 'object') return null;
+  const { name, message, stack } = Object(err);
+  if ([name, message, stack].every(Boolean) === false) {
+    return null;
+  }
+  return {
+    name,
+    message,
+    stack,
+  };
+};
 
 export default class ErrorPlugin implements PageSpyPlugin {
   public name = 'ErrorPlugin';
@@ -20,7 +34,9 @@ export default class ErrorPlugin implements PageSpyPlugin {
 
   private onUncaughtError() {
     const errorHandler = (e: ErrorEvent) => {
-      ErrorPlugin.sendMessage(e.error?.stack || e.message);
+      const { message, stack } = e.error;
+      const errorDetail = formatErrorObj(e.error);
+      ErrorPlugin.sendMessage(stack || message, errorDetail);
     };
     window.addEventListener('error', errorHandler);
   }
@@ -36,6 +52,7 @@ export default class ErrorPlugin implements PageSpyPlugin {
             `Resource Load Error: Cannot load resource of (${
               (evt.target! as any).src
             })`,
+            null,
           );
         }
       },
@@ -48,19 +65,25 @@ export default class ErrorPlugin implements PageSpyPlugin {
     window.addEventListener(
       'unhandledrejection',
       (evt: PromiseRejectionEvent) => {
-        ErrorPlugin.sendMessage(evt.reason);
+        const errorDetail = formatErrorObj(evt.reason);
+        ErrorPlugin.sendMessage(evt.reason, errorDetail);
       },
     );
   }
 
-  public static sendMessage(data: any) {
+  public static sendMessage(
+    data: any,
+    errorDetail: SpyConsole.DataItem['errorDetail'] | null,
+  ) {
     // Treat `error` data as `console`
-    const message = makeMessage(DEBUG_MESSAGE_TYPE.CONSOLE, {
+    const error = {
       logType: 'error',
       logs: [atom.transformToAtom(data)],
       time: Date.now(),
       url: window.location.href,
-    });
+      errorDetail,
+    };
+    const message = makeMessage(DEBUG_MESSAGE_TYPE.CONSOLE, error);
     socketStore.broadcastMessage(message);
   }
 }
