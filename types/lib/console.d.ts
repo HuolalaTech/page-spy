@@ -13,7 +13,7 @@ export interface DataItem {
   url: string;
   logType: DataType;
   logs: any[];
-  errorDetail: {
+  errorDetail?: {
     name: string;
     message: string;
     stack?: string;
