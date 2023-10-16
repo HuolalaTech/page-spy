@@ -1,4 +1,4 @@
-export type DataType = 'local' | 'session' | 'cookie';
+export type DataType = 'localStorage' | 'sessionStorage' | 'cookie';
 export type ActionType = 'clear' | 'remove' | 'get' | 'set';
 
 type RestCookieInfo = {
