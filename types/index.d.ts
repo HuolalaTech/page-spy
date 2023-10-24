@@ -41,6 +41,7 @@ export * as SpySystem from './lib/system';
 export * as SpyNetwork from './lib/network';
 export * as SpyStorage from './lib/storage';
 export * as SpyPage from './lib/page';
+export * as SpyDatabase from './lib/database';
 
 interface PageSpy {
   root: HTMLElement | null;

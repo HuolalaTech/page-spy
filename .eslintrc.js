@@ -13,5 +13,6 @@ module.exports = {
     'no-case-declarations': 'off',
     'func-names': 'off',
     'no-plusplus': 'off',
+    'arrow-body-style': 'off',
   },
 };
