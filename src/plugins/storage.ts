@@ -13,12 +13,27 @@ export class StoragePlugin implements PageSpyPlugin {
     if (StoragePlugin.hasInitd) return;
     StoragePlugin.hasInitd = true;
 
-    StoragePlugin.takeLocalStorage();
-    StoragePlugin.takeSessionStorage();
-    StoragePlugin.takeCookie();
-
     StoragePlugin.listenRefreshEvent();
     StoragePlugin.initStorageProxy();
+  }
+
+  private static listenRefreshEvent() {
+    socketStore.addListener(DEBUG_MESSAGE_TYPE.REFRESH, ({ source }) => {
+      const { data } = source;
+      switch (data) {
+        case 'localStorage':
+          StoragePlugin.takeLocalStorage();
+          break;
+        case 'sessionStorage':
+          StoragePlugin.takeSessionStorage();
+          break;
+        case 'cookie':
+          StoragePlugin.takeCookie();
+          break;
+        default:
+          break;
+      }
+    });
   }
 
   private static takeLocalStorage() {
@@ -55,21 +70,6 @@ export class StoragePlugin implements PageSpyPlugin {
           StoragePlugin.sendStorageItem(data);
         });
       });
-      window.cookieStore.addEventListener('change', (e) => {
-        const { changed, deleted } = e as CookieChangeEvent;
-        if (changed.length > 0) {
-          changed.forEach((cookie) => {
-            const data = StoragePlugin.formatCookieInfo(cookie, 'set');
-            StoragePlugin.sendStorageItem(data);
-          });
-        }
-        if (deleted.length > 0) {
-          deleted.forEach((cookie) => {
-            const data = StoragePlugin.formatCookieInfo(cookie, 'remove');
-            StoragePlugin.sendStorageItem(data);
-          });
-        }
-      });
     } else {
       document.cookie.split('; ').forEach((item) => {
         const [name, value] = item.split('=');
@@ -81,25 +81,6 @@ export class StoragePlugin implements PageSpyPlugin {
         });
       });
     }
-  }
-
-  private static listenRefreshEvent() {
-    socketStore.addListener(DEBUG_MESSAGE_TYPE.REFRESH, ({ source }) => {
-      const { data } = source;
-      switch (data) {
-        case 'localStorage':
-          StoragePlugin.takeLocalStorage();
-          break;
-        case 'sessionStorage':
-          StoragePlugin.takeSessionStorage();
-          break;
-        case 'cookie':
-          StoragePlugin.takeCookie();
-          break;
-        default:
-          break;
-      }
-    });
   }
 
   private static formatCookieInfo(
@@ -119,7 +100,8 @@ export class StoragePlugin implements PageSpyPlugin {
 
   private static sendStorageItem(info: Omit<SpyStorage.DataItem, 'id'>) {
     const data = makeMessage(DEBUG_MESSAGE_TYPE.STORAGE, info);
-    socketStore.broadcastMessage(data);
+    // The user wouldn't want to get the stale data, so here we set the 2nd parameter to true.
+    socketStore.broadcastMessage(data, true);
   }
 
   private static initStorageProxy() {
@@ -149,6 +131,24 @@ export class StoragePlugin implements PageSpyPlugin {
         value: String(value),
       });
     };
+
+    if (window.cookieStore) {
+      window.cookieStore.addEventListener('change', (e) => {
+        const { changed, deleted } = e as CookieChangeEvent;
+        if (changed.length > 0) {
+          changed.forEach((cookie) => {
+            const data = StoragePlugin.formatCookieInfo(cookie, 'set');
+            StoragePlugin.sendStorageItem(data);
+          });
+        }
+        if (deleted.length > 0) {
+          deleted.forEach((cookie) => {
+            const data = StoragePlugin.formatCookieInfo(cookie, 'remove');
+            StoragePlugin.sendStorageItem(data);
+          });
+        }
+      });
+    }
   }
 
   private static getStorageType(ins: Storage): SpyStorage.DataType {

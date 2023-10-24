@@ -12,10 +12,6 @@ export default class PagePlugin implements PageSpyPlugin {
     if (PagePlugin.hasInitd) return;
     PagePlugin.hasInitd = true;
 
-    window.addEventListener('load', () => {
-      const msg = PagePlugin.collectHtml();
-      SocketStore.broadcastMessage(msg);
-    });
     SocketStore.addListener(DEBUG_MESSAGE_TYPE.REFRESH, ({ source }, reply) => {
       const { data } = source;
       if (data === 'page') {

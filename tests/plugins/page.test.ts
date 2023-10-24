@@ -10,7 +10,7 @@ describe('Page plugin', () => {
 
     new PagePlugin().onCreated();
     window.dispatchEvent(new Event('load'));
-    expect(trigger).toHaveBeenCalledTimes(1);
+    expect(trigger).toHaveBeenCalledTimes(0);
 
     // @ts-ignore
     socket.dispatchEvent(DEBUG_MESSAGE_TYPE.REFRESH, {
@@ -21,6 +21,6 @@ describe('Page plugin', () => {
       from: '',
       to: '',
     } as any);
-    expect(trigger).toHaveBeenCalledTimes(2);
+    expect(trigger).toHaveBeenCalledTimes(1);
   });
 });
