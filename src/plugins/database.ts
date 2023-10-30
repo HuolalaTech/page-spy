@@ -208,7 +208,7 @@ export class DatabasePlugin implements PageSpyPlugin {
         const cursor = cursorRequest.result;
         if (cursor) {
           if (currentIndex >= lowerBound && currentIndex < upperBound) {
-            result.data.push(cursor.value);
+            result.data.push({ key: cursor.key, value: cursor.value });
           }
           currentIndex++;
           cursor.continue();
