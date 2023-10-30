@@ -21,6 +21,7 @@ import './index.less';
 import logoUrl from './assets/logo.svg';
 import { mergeConfig } from './utils/config';
 import { ROOM_SESSION_KEY } from './utils/constants';
+import { DatabasePlugin } from './plugins/database';
 
 const Identifier = '__pageSpy';
 
@@ -66,6 +67,7 @@ export default class PageSpy {
       new SystemPlugin(),
       new PagePlugin(),
       new StoragePlugin(),
+      new DatabasePlugin(),
     );
     this.init();
     window.addEventListener('beforeunload', () => {

@@ -4,7 +4,8 @@ export type DataType =
   | 'system'
   | 'network'
   | 'page'
-  | 'storage';
+  | 'storage'
+  | 'database';
 
 /**
  * Interactive: some type which sended by developer and need to reply something
@@ -16,7 +17,8 @@ export type InteractiveType =
   | `atom-detail-${string}`
   | 'atom-getter'
   | `atom-getter-${string}`
-  | 'debugger-online';
+  | 'debugger-online'
+  | 'database-pagination';
 
 export type MessageType = DataType | InteractiveType;
 

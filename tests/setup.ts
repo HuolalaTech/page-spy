@@ -38,3 +38,7 @@ window.alert = () => {};
 
 // mock window.cookieStore
 import './__mocks__/cookie-store';
+
+// mock window.indexedDB
+import 'fake-indexeddb/auto';
+import 'core-js/stable/structured-clone';

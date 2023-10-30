@@ -1,5 +1,5 @@
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
-import type { SpyStorage } from 'types';
+import { SpyStorage } from 'types';
 import type PageSpyPlugin from './index';
 import socketStore from '../utils/socket';
 
@@ -18,90 +18,76 @@ export class StoragePlugin implements PageSpyPlugin {
   }
 
   private static listenRefreshEvent() {
-    socketStore.addListener(DEBUG_MESSAGE_TYPE.REFRESH, ({ source }) => {
+    socketStore.addListener(DEBUG_MESSAGE_TYPE.REFRESH, async ({ source }) => {
       const { data } = source;
+      let result: SpyStorage.GetTypeDataItem | null = null;
+
       switch (data) {
         case 'localStorage':
-          StoragePlugin.takeLocalStorage();
+          result = StoragePlugin.takeLocalStorage();
           break;
         case 'sessionStorage':
-          StoragePlugin.takeSessionStorage();
+          result = StoragePlugin.takeSessionStorage();
           break;
         case 'cookie':
-          StoragePlugin.takeCookie();
+          result = await StoragePlugin.takeCookie();
           break;
         default:
           break;
+      }
+
+      if (result) {
+        StoragePlugin.sendStorageItem(result);
       }
     });
   }
 
   private static takeLocalStorage() {
-    const local = { ...localStorage };
-    Object.keys(local).forEach((name) => {
-      const value = local[name];
-      StoragePlugin.sendStorageItem({
-        type: 'localStorage',
-        action: 'get',
-        name,
-        value,
-      });
-    });
+    const data: SpyStorage.GetTypeDataItem = {
+      type: 'localStorage',
+      action: 'get',
+      data: Object.entries(localStorage).map(([name, value]) => {
+        return {
+          name,
+          value,
+        };
+      }),
+    };
+    return data;
   }
 
   private static takeSessionStorage() {
-    const session = { ...sessionStorage };
-    Object.keys(session).forEach((name) => {
-      const value = session[name];
-      StoragePlugin.sendStorageItem({
-        type: 'sessionStorage',
-        action: 'get',
-        name,
-        value,
-      });
-    });
-  }
-
-  private static takeCookie() {
-    if (window.cookieStore) {
-      window.cookieStore.getAll().then((cookies) => {
-        cookies.forEach((cookie) => {
-          const data = StoragePlugin.formatCookieInfo(cookie);
-          StoragePlugin.sendStorageItem(data);
-        });
-      });
-    } else {
-      document.cookie.split('; ').forEach((item) => {
-        const [name, value] = item.split('=');
-        StoragePlugin.sendStorageItem({
-          type: 'cookie',
-          action: 'get',
+    const data: SpyStorage.GetTypeDataItem = {
+      type: 'sessionStorage',
+      action: 'get',
+      data: Object.entries(sessionStorage).map(([name, value]) => {
+        return {
           name,
           value,
-        });
+        };
+      }),
+    };
+    return data;
+  }
+
+  private static async takeCookie() {
+    const data: SpyStorage.GetTypeDataItem = {
+      type: 'cookie',
+      action: 'get',
+      data: [],
+    };
+    if (window.cookieStore) {
+      data.data = await window.cookieStore.getAll();
+    } else {
+      data.data = document.cookie.split('; ').map((item) => {
+        const [name, value] = item.split('=');
+        return {
+          name,
+          value,
+        };
       });
     }
-  }
-
-  private static formatCookieInfo(
-    cookie: CookieStoreValue,
-    action: SpyStorage.ActionType = 'get',
-  ) {
-    const result: Omit<SpyStorage.DataItem, 'id'> = {
-      type: 'cookie',
-      action,
-      ...cookie,
-    };
-    if (!result.domain) {
-      result.domain = window.location.hostname;
-    }
-    return result;
-  }
-
-  private static sendStorageItem(info: Omit<SpyStorage.DataItem, 'id'>) {
-    const data = makeMessage(DEBUG_MESSAGE_TYPE.STORAGE, info);
-    // The user wouldn't want to get the stale data, so here we set the 2nd parameter to true.
-    socketStore.broadcastMessage(data, true);
+    return data;
   }
 
   private static initStorageProxy() {
@@ -109,27 +95,31 @@ export class StoragePlugin implements PageSpyPlugin {
     const { clear, removeItem, setItem } = Storage.prototype;
 
     Storage.prototype.clear = function () {
-      const action = 'clear';
-      const type = getStorageType(this);
       clear.call(this);
-      sendStorageItem({ type, action });
+      const data = {
+        type: getStorageType(this),
+        action: 'clear',
+      } as const;
+      sendStorageItem(data);
     };
     Storage.prototype.removeItem = function (name: string) {
-      const action = 'remove';
-      const type = getStorageType(this);
       removeItem.call(this, name);
-      sendStorageItem({ type, action, name: String(name) });
+      const data = {
+        type: getStorageType(this),
+        action: 'remove',
+        name: String(name),
+      } as const;
+      sendStorageItem(data);
     };
     Storage.prototype.setItem = function (name: string, value: string) {
-      const action = 'set';
-      const type = getStorageType(this);
       setItem.call(this, name, value);
-      sendStorageItem({
-        type,
-        action,
+      const data = {
+        type: getStorageType(this),
+        action: 'remove',
         name: String(name),
         value: String(value),
-      });
+      } as const;
+      sendStorageItem(data);
     };
 
     if (window.cookieStore) {
@@ -137,13 +127,21 @@ export class StoragePlugin implements PageSpyPlugin {
         const { changed, deleted } = e as CookieChangeEvent;
         if (changed.length > 0) {
           changed.forEach((cookie) => {
-            const data = StoragePlugin.formatCookieInfo(cookie, 'set');
+            const data = {
+              type: 'cookie',
+              action: 'set',
+              ...cookie,
+            } as const;
             StoragePlugin.sendStorageItem(data);
           });
         }
         if (deleted.length > 0) {
           deleted.forEach((cookie) => {
-            const data = StoragePlugin.formatCookieInfo(cookie, 'remove');
+            const data = {
+              type: 'cookie',
+              action: 'remove',
+              name: cookie.name,
+            } as const;
             StoragePlugin.sendStorageItem(data);
           });
         }
@@ -155,5 +153,11 @@ export class StoragePlugin implements PageSpyPlugin {
     if (ins === localStorage) return 'localStorage';
     if (ins === sessionStorage) return 'sessionStorage';
     return ins.constructor.name as any;
+  }
+
+  private static sendStorageItem(info: Omit<SpyStorage.DataItem, 'id'>) {
+    const data = makeMessage(DEBUG_MESSAGE_TYPE.STORAGE, info);
+    // The user wouldn't want to get the stale data, so here we set the 2nd parameter to true.
+    socketStore.broadcastMessage(data, true);
   }
 }

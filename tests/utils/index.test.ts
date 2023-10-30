@@ -1,4 +1,3 @@
-import { BINARY_FILE_VARIANT } from 'src/plugins/network/proxy/common';
 import { makePrimitiveValue, getValueType } from 'src/utils';
 
 describe('makePrimitiveValue: convert data to showable string', () => {

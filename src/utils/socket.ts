@@ -54,6 +54,7 @@ export class SocketStore {
     'atom-detail': [],
     'atom-getter': [],
     'debugger-online': [],
+    'database-pagination': [],
   };
 
   // Don't try to reconnect if error occupied

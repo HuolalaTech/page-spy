@@ -21,8 +21,11 @@ jobs:
           node-version: 16.x
 
       - name: yarn install, yarn test
+        # fake-indexeddb using `structureClone` which import in node^18,
+        # and we import the polyfill with `import 'core-js/stable/structured-clone'`
+        # to resolve it, so here we pass --ignore-engines after `yarn install` to ignore the error.
         run: |
-          yarn install
+          yarn install --ignore-engines
           yarn test --silent
 
       - name: Coveralls
