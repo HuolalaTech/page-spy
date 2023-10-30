@@ -5,7 +5,7 @@ import { DEBUG_MESSAGE_TYPE, makeMessage } from 'src/utils/message';
 import { SpyDatabase } from 'types';
 import PageSpyPlugin from '.';
 
-function promisify<T = any>(req: IDBRequest<T>): Promise<T> {
+export function promisify<T = any>(req: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {
     req.addEventListener('success', () => {
       resolve(req.result);
@@ -22,7 +22,7 @@ export class DatabasePlugin implements PageSpyPlugin {
   public static hasInitd = false;
 
   // eslint-disable-next-line class-methods-use-this
-  public async onCreated() {
+  public onCreated() {
     if (DatabasePlugin.hasInitd) return;
     DatabasePlugin.hasInitd = true;
 
