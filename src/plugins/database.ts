@@ -21,8 +21,15 @@ export class DatabasePlugin implements PageSpyPlugin {
 
   public static hasInitd = false;
 
+  private static get isSupport() {
+    if (!IDBFactory || !IDBObjectStore || !window.indexedDB) return false;
+    return true;
+  }
+
   // eslint-disable-next-line class-methods-use-this
   public onCreated() {
+    if (!DatabasePlugin.isSupport) return;
+
     if (DatabasePlugin.hasInitd) return;
     DatabasePlugin.hasInitd = true;
 
