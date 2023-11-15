@@ -49,7 +49,10 @@ export default class NetworkProxyBase {
       },
       false,
     );
-    socketStore.broadcastMessage(message);
+    socketStore.broadcastMessage(
+      message,
+      req.readyState !== XMLHttpRequest.DONE,
+    );
     this.deferDeleteRequest(id);
   }
 
