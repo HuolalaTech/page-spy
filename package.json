@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "A developer tool for debugging remote web page.",
   "main": "dist/index.min.js",
   "types": "dist/types/index.d.ts",
