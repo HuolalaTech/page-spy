@@ -19,7 +19,7 @@ import type { UElement } from './utils/moveable';
 import { moveable } from './utils/moveable';
 import './index.less';
 import logoUrl from './assets/logo.svg';
-import { mergeConfig } from './utils/config';
+import { Config } from './utils/config';
 import { ROOM_SESSION_KEY } from './utils/constants';
 import { DatabasePlugin } from './plugins/database';
 
@@ -31,8 +31,6 @@ export default class PageSpy {
   version = pkg.version;
 
   plugins: Record<string, PageSpyPlugin> = {};
-
-  config: Required<InitConfig> | null = null;
 
   request: Request | null = null;
 
@@ -57,8 +55,8 @@ export default class PageSpy {
     }
     PageSpy.instance = this;
 
-    this.config = mergeConfig(init);
-    this.request = new Request(this.config.api);
+    const { api } = Config.mergeConfig(init);
+    this.request = new Request(api);
 
     this.loadPlugins(
       new ConsolePlugin(),
@@ -85,10 +83,10 @@ export default class PageSpy {
   }
 
   async init() {
-    if (!this.config) {
-      psLog.error('Cannot get the config info');
-      return;
-    }
+    const ok = this.checkConfig();
+    if (!ok) return;
+
+    const config = Config.get();
     const roomCache = sessionStorage.getItem(ROOM_SESSION_KEY);
     if (roomCache === null) {
       await this.createNewConnection();
@@ -100,7 +98,7 @@ export default class PageSpy {
         usable,
         project: prev,
       } = JSON.parse(roomCache);
-      if (!usable || this.config.project !== prev) {
+      if (!usable || config.project !== prev) {
         await this.createNewConnection();
       } else {
         this.name = name;
@@ -110,17 +108,20 @@ export default class PageSpy {
       }
     }
     psLog.log('Plugins inited');
-    if (this.config.autoRender) {
+    if (config.autoRender) {
       this.render();
     }
   }
 
   async createNewConnection() {
-    if (!this.request || !this.config) {
-      psLog.error('Cannot get the Request / config info');
+    const configOK = this.checkConfig();
+    if (!configOK) return;
+
+    if (!this.request) {
+      psLog.error('Cannot get the Request');
       return;
     }
-    const { data } = await this.request.createRoom(this.config);
+    const { data } = await this.request.createRoom();
     const roomUrl = this.request.getRoomUrl({
       address: data.address,
       name: `client:${getRandomId()}`,
@@ -191,26 +192,24 @@ export default class PageSpy {
   }
 
   saveSession() {
-    if (!this.config) {
-      psLog.error('Cannot get the config info');
-      return;
-    }
+    const ok = this.checkConfig();
+    if (!ok) return;
+
     const { name, address, roomUrl } = this;
     const roomInfo = JSON.stringify({
       name,
       address,
       roomUrl,
       usable: true,
-      project: this.config.project,
+      project: Config.get().project,
     });
     sessionStorage.setItem(ROOM_SESSION_KEY, roomInfo);
   }
 
   startRender() {
-    if (!this.config) {
-      psLog.error('Cannot get the config info');
-      return;
-    }
+    const ok = this.checkConfig();
+    if (!ok) return;
+
     const root = document.createElement('div');
     root.id = Identifier;
     this.root = root;
@@ -230,8 +229,6 @@ export default class PageSpy {
       content: {
         name: this.name,
         address: this.address,
-        clientOrigin: this.config.clientOrigin,
-        project: this.config.project,
       },
       onOk: () => {
         modal.close();
@@ -256,6 +253,16 @@ export default class PageSpy {
     this.handleDeviceDPR();
 
     psLog.log('Render success');
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  checkConfig() {
+    const config = Config.get();
+    if (!config) {
+      psLog.error('Cannot get the config info');
+      return false;
+    }
+    return true;
   }
 
   handleDeviceDPR() {

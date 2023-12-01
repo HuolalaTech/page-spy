@@ -8,6 +8,7 @@ import { StoragePlugin } from 'src/plugins/storage';
 import PageSpy, { SpyConsole } from 'types';
 import socketStore from 'src/utils/socket';
 import { ROOM_SESSION_KEY } from 'src/utils/constants';
+import { Config } from 'src/utils/config';
 
 const rootId = '#__pageSpy';
 afterEach(() => {
@@ -28,7 +29,8 @@ describe('new PageSpy([config])', () => {
     const sdk = new SDK();
 
     // The config value inited from /tests/setup.ts
-    expect(sdk.config).toEqual(
+    const config = Config.get();
+    expect(config).toEqual(
       expect.objectContaining({
         api: 'example.com',
         clientOrigin: 'https://example.com',
@@ -37,13 +39,14 @@ describe('new PageSpy([config])', () => {
   });
 
   it('Pass config to constructor manually', () => {
-    const config = {
+    const userCfg = {
       api: 'custom-server.com',
       clientOrigin: 'https://debug-ui.com',
     };
 
-    const sdk = new SDK(config);
-    expect(sdk.config).toEqual(expect.objectContaining(config));
+    const sdk = new SDK(userCfg);
+    const config = Config.get();
+    expect(config).toEqual(expect.objectContaining(userCfg));
   });
 
   it('Load plugins will run `<plugin>.onCreated()`', () => {

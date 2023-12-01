@@ -29,6 +29,20 @@ export interface InitConfig {
    * show in the room-list route page.
    */
   title?: string;
+  /**
+   * Specify the server <scheme> manually.
+   *
+   * This is especially useful if PageSpy can't analyse the scheme correctly,
+   * e.g. the PageSpy browser plugin loads the SDK with
+   * "chrome-extension://xxx/sdk/index.min.js", which will be parsed as
+   * an invalid "chrome-extension://", and fallback to ['http://', 'ws://']
+   *
+   * - Pass `undefined | null`: sdk will auto analyse scheme;
+   * - Pass <boolean> value:
+   *   - false: sdk will use ['http://', 'ws://'];
+   *   - true: sdk will use ['https://', 'wss://'];
+   */
+  enableSSL?: boolean | null;
 }
 
 export * as SpyDevice from './lib/device';

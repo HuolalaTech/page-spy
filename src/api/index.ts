@@ -1,4 +1,5 @@
 import { psLog } from 'src/utils';
+import { Config } from 'src/utils/config';
 import { combineName, parseUserAgent } from 'src/utils/ua';
 import { InitConfig } from 'types';
 
@@ -17,7 +18,7 @@ interface TCreateRoom {
   tags: Record<string, any>;
 }
 
-const resolvedProtocol = (() => {
+const parseSchemeWithScript = () => {
   try {
     const { protocol } = new URL(document.currentScript?.getAttribute('src')!);
     if (protocol.startsWith('https')) {
@@ -29,7 +30,14 @@ const resolvedProtocol = (() => {
     );
   }
   return ['http://', 'ws://'];
-})();
+};
+
+const getScheme = (enableSSL: InitConfig['enableSSL']) => {
+  if (typeof enableSSL !== 'boolean') {
+    return parseSchemeWithScript();
+  }
+  return enableSSL ? ['https://', 'wss://'] : ['http://', 'ws://'];
+};
 
 const joinQuery = (args: Record<string, unknown>) => {
   const params = new URLSearchParams();
@@ -47,7 +55,9 @@ export default class Request {
     }
   }
 
-  createRoom(config: Required<InitConfig>): Promise<TResponse<TCreateRoom>> {
+  createRoom(): Promise<TResponse<TCreateRoom>> {
+    const config = Config.get();
+    const scheme = getScheme(config.enableSSL);
     const device = parseUserAgent();
     const name = combineName(device);
     const query = joinQuery({
@@ -55,12 +65,9 @@ export default class Request {
       group: config.project,
       title: config.title,
     });
-    return fetch(
-      `${resolvedProtocol[0]}${this.base}/api/v1/room/create?${query}`,
-      {
-        method: 'POST',
-      },
-    )
+    return fetch(`${scheme[0]}${this.base}/api/v1/room/create?${query}`, {
+      method: 'POST',
+    })
       .then((res) => res.json())
       .catch((err) => {
         /* c8 ignore next */
@@ -69,8 +76,8 @@ export default class Request {
   }
 
   getRoomUrl(args: Record<string, string | number> = {}) {
-    return `${resolvedProtocol[1]}${this.base}/api/v1/ws/room/join?${joinQuery(
-      args,
-    )}`;
+    const config = Config.get();
+    const scheme = getScheme(config.enableSSL);
+    return `${scheme[1]}${this.base}/api/v1/ws/room/join?${joinQuery(args)}`;
   }
 }

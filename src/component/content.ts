@@ -1,4 +1,5 @@
 import copy from 'copy-to-clipboard';
+import { Config } from 'src/utils/config';
 
 interface ContentParams {
   className?: string;
@@ -30,7 +31,8 @@ export class Content {
 
   render() {
     const { content = {}, onOk } = this.options;
-    const { name = '--', address = '--', clientOrigin, project } = content;
+    const { name = '--', address = '--' } = content;
+    const { project, clientOrigin } = Config.get();
     const [os, browser] = name.split(' ');
     const contentText = `
       <p><b>Device ID:</b> <span style="font-family: 'Monaco'">${address.slice(
