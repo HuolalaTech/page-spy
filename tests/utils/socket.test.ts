@@ -1,12 +1,7 @@
 import { WS } from 'jest-websocket-mock';
 import { DEBUG_MESSAGE_TYPE } from 'src/utils/message';
 import { SocketStore } from 'src/utils/socket';
-import {
-  ConnectEvent,
-  UnicastEvent,
-  ErrorEvent,
-  JoinEvent,
-} from 'types/lib/socket-event';
+import { ConnectEvent, ErrorEvent } from 'types/lib/socket-event';
 import * as SERVER_MESSAGE_TYPE from 'src/utils/message/server-type';
 
 // Mock micro task delay

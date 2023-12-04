@@ -223,6 +223,9 @@ export default class PageSpy {
     img.height = 50;
     logo.append(img);
     root.insertAdjacentElement('afterbegin', logo);
+    window.addEventListener('sdk-inactive', () => {
+      logo.classList.add('inactive');
+    });
 
     const modal = new Modal();
     const content = new Content({
