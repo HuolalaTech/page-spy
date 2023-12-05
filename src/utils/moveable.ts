@@ -55,8 +55,8 @@ export function moveable(el: HTMLElement) {
     evt.preventDefault();
     (el as UElement).isMoveEvent = false;
     rect = el.getBoundingClientRect();
-    critical.xAxis = document.documentElement.offsetWidth - rect.width;
-    critical.yAxis = document.documentElement.offsetHeight - rect.height;
+    critical.xAxis = window.innerWidth - rect.width;
+    critical.yAxis = window.innerHeight - rect.height;
 
     const { clientX, clientY } = getPosition(evt);
     touch.x = clientX;
@@ -64,7 +64,10 @@ export function moveable(el: HTMLElement) {
     document.addEventListener('mousemove', move, false);
     document.addEventListener('mouseup', end, false);
 
-    document.addEventListener('touchmove', move, { capture: false, passive: false });
+    document.addEventListener('touchmove', move, {
+      capture: false,
+      passive: false,
+    });
     document.addEventListener('touchend', end, false);
   }
 
