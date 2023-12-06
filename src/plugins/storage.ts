@@ -115,7 +115,7 @@ export class StoragePlugin implements PageSpyPlugin {
       setItem.call(this, name, value);
       const data = {
         type: getStorageType(this),
-        action: 'remove',
+        action: 'set',
         name: String(name),
         value: String(value),
       } as const;
