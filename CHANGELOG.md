@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.4](https://github.com/HuolalaTech/page-spy/compare/v1.4.3...v1.4.4) (2023-12-06)
+
+### Features
+
+- add inactive status style ([b10d79f](https://github.com/HuolalaTech/page-spy/commit/b10d79fe3df211b10e0c48937dea51ee81c9cf41))
+
+### Bug Fixes
+
+- use width/height of window instead of document ([7c702c5](https://github.com/HuolalaTech/page-spy/commit/7c702c5481bc2f24721ff86e15f3828c5114da6d))
+
 ### [1.4.3](https://github.com/HuolalaTech/page-spy/compare/v1.4.2...v1.4.3) (2023-12-01)
 
 ### [1.4.2](https://github.com/HuolalaTech/page-spy/compare/v1.4.1...v1.4.2) (2023-11-15)
