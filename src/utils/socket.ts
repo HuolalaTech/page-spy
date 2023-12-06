@@ -62,10 +62,6 @@ export class SocketStore {
 
   private reconnectTimes = 3;
 
-  // Don't try to reconnect and close immediately
-  // when user refresh the page.
-  private closeImmediately: boolean = false;
-
   // indicated connected  whether or not
   public connectionStatus: boolean = false;
 
@@ -121,7 +117,8 @@ export class SocketStore {
 
   public close() {
     this.clearPing();
-    this.closeImmediately = true;
+    this.reconnectTimes = 0;
+    this.reconnectable = false;
     this.socket?.close();
   }
 
@@ -136,27 +133,21 @@ export class SocketStore {
     this.connectionStatus = false;
     this.socketConnection = null;
     this.clearPing();
-
-    if (this.closeImmediately) return;
-    this.tryReconnect();
-  }
-
-  private tryReconnect() {
-    if (!this.reconnectable) {
+    if (!this.reconnectable || this.reconnectTimes <= 0) {
+      window.dispatchEvent(new CustomEvent('sdk-inactive'));
       sessionStorage.setItem(
         ROOM_SESSION_KEY,
         JSON.stringify({ usable: false }),
       );
       return;
     }
-    if (this.reconnectTimes > 0) {
-      this.reconnectTimes -= 1;
-      this.init(this.socketUrl);
-    } /* c8 ignore start */ else {
-      this.reconnectable = false;
-      psLog.error('Websocket reconnect failed');
-    }
-    /* c8 ignore stop */
+
+    this.tryReconnect();
+  }
+
+  tryReconnect() {
+    this.reconnectTimes -= 1;
+    this.init(this.socketUrl);
   }
 
   private pingConnect() {
