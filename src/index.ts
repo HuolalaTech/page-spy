@@ -68,9 +68,6 @@ export default class PageSpy {
       new DatabasePlugin(),
     );
     this.init();
-    window.addEventListener('beforeunload', () => {
-      socketStore.close();
-    });
   }
 
   loadPlugins(...args: PageSpyPlugin[]) {
