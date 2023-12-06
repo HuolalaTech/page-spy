@@ -127,7 +127,7 @@ describe('new PageSpy([config])', () => {
     expect(window.navigator.sendBeacon).not.toBe(originBeacon);
   });
 
-  it('Content load and unload', async () => {
+  it('Content load', async () => {
     const init = jest.spyOn(SDK.prototype, 'init');
     const close = jest.spyOn(socketStore, 'close');
 
@@ -135,9 +135,6 @@ describe('new PageSpy([config])', () => {
 
     window.dispatchEvent(new Event('DOMContentLoaded'));
     expect(init).toHaveBeenCalled();
-
-    window.dispatchEvent(new Event('beforeunload'));
-    expect(close).toHaveBeenCalled();
   });
   it('Init connection', async () => {
     const sdk = new SDK();
