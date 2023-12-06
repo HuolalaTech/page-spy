@@ -20,7 +20,7 @@ interface TCreateRoom {
 
 const parseSchemeWithScript = () => {
   try {
-    const { protocol } = new URL(document.currentScript?.getAttribute('src')!);
+    const { protocol } = new URL(Config.scriptLink);
     if (protocol.startsWith('https')) {
       return ['https://', 'wss://'];
     }

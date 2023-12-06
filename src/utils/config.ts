@@ -1,9 +1,9 @@
 import type { InitConfig } from 'types';
 
-const scriptLink = (document.currentScript as HTMLScriptElement)?.src;
-
 export class Config {
   private static value: Required<InitConfig>;
+
+  public static scriptLink = (document.currentScript as HTMLScriptElement)?.src;
 
   private static resolveConfig: () => Required<InitConfig> = () => {
     const defaultConfig = {
@@ -14,11 +14,11 @@ export class Config {
       title: '',
       enableSSL: null,
     };
-    if (!scriptLink) {
+    if (!Config.scriptLink) {
       return defaultConfig;
     }
 
-    const { host, origin } = new URL(scriptLink);
+    const { host, origin } = new URL(Config.scriptLink);
     const result = {
       ...defaultConfig,
       api: host,
