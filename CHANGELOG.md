@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.6](https://github.com/HuolalaTech/page-spy/compare/v1.4.5...v1.4.6) (2023-12-06)
+
+### Bug Fixes
+
+- remove beforeunload event ([6baf819](https://github.com/HuolalaTech/page-spy/commit/6baf819f77b6ca13eb6c027a9ab4a080161002d9))
+
 ### [1.4.5](https://github.com/HuolalaTech/page-spy/compare/v1.4.4...v1.4.5) (2023-12-06)
 
 ### [1.4.4](https://github.com/HuolalaTech/page-spy/compare/v1.4.3...v1.4.4) (2023-12-06)
