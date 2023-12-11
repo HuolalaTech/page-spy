@@ -36,6 +36,8 @@ PageSpy
 所有的参数都是可选的，下面是各个属性的说明及其默认值：
 
 ```tsx
+window.$pageSpy = new PageSpy(config?: InitConfig)
+
 interface InitConfig {
   // SDK 会从引入的路径自动分析并决定 Server 的地址（api）和调试端的地址（clientOrigin）
   // 假设你从 https://example.com/page-spy/index.min.js 引入，那么 SDK 会在内部设置：
