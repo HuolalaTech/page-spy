@@ -35,7 +35,7 @@ PageSpy
 
 所有的参数都是可选的，下面是各个属性的说明及其默认值：
 
-```tsx
+```ts
 window.$pageSpy = new PageSpy(config?: InitConfig)
 
 interface InitConfig {

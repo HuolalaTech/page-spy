@@ -36,7 +36,9 @@ After the integration, open your project in browser, there should be a widget (r
 
 All parameters are optional, here is a description of each property and its default value：
 
-```tsx
+```ts
+window.$pageSpy = new PageSpy(config?: InitConfig)
+
 interface InitConfig {
   // The SDK automatically analyses and determines the address of
   // the Server (api) and the address of the debug side (clientOrigin)
