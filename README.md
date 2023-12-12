@@ -6,20 +6,17 @@
 [minified-image]: https://img.shields.io/bundlephobia/min/@huolala-tech/page-spy
 [minified-url]: https://unpkg.com/browse/@huolala-tech/page-spy/dist/index.min.js
 
-[English](./README_EN.md) | 中文
+<div align="center">
+  <img src="./logo.svg" height="100" />
 
-<p align="center">
-  <img src="./logo.svg" height="120" />
-</p>
-
-<h1 align="center">
-PageSpy
+  <h1>Page Spy SDK</h1>
+  <p>PageSpy 是一款远程调试网页的工具。</p>
 
 [![Coverage Status][coveralls-image]][coveralls-url] [![NPM Package][npm-image]][npm-url] [![Minified size][minified-image]][minified-url]
 
-</h1>
+[English](./README_EN.md) | 中文
 
-> 一款远程调试网页的工具。
+</div>
 
 ## 简介
 

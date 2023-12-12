@@ -6,20 +6,17 @@
 [minified-image]: https://img.shields.io/bundlephobia/min/@huolala-tech/page-spy
 [minified-url]: https://unpkg.com/browse/@huolala-tech/page-spy/dist/index.min.js
 
-English | [中文](./README.md)
+<div align="center">
+  <img src="./logo.svg" height="100" />
 
-<p align="center">
-  <img src="./logo.svg" height="120" />
-</p>
-
-<h1 align="center">
-PageSpy
+  <h1>Page Spy SDK</h1>
+  <p>PageSpy is a developer platform for debugging web page.</p>
 
 [![Coverage Status][coveralls-image]][coveralls-url] [![NPM Package][npm-image]][npm-url] [![Minified size][minified-image]][minified-url]
 
-</h1>
+English | [中文](./README.md)
 
-> A developer tool for debugging remote web page.
+</div>
 
 ## What's this
 
