@@ -20,7 +20,7 @@
 
 ## 简介
 
-这个仓库和 [HuolalaTech/page-spy-web][page-spy-web] 相互配合，具体而言 `page-spy` 负责收集页面信息；`page-spy-web` 消费收集的信息，对数据进行过滤和整理，并将其转换成一种标准格式，最后在页面上呈现。
+这个仓库是 [HuolalaTech/page-spy-web][page-spy-web] 使用的 SDK。具体而言 SDK 负责收集页面信息；`page-spy-web` 消费收集的信息，对数据进行过滤和整理，并将其转换成一种标准格式，最后在页面上呈现。
 
 ## 使用
 

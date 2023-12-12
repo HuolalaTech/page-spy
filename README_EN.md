@@ -20,7 +20,7 @@ English | [中文](./README.md)
 
 ## What's this
 
-This repo and [HuolalaTech/page-spy-web][page-spy-web] work together, where `page-spy` collects information and `page-spy-web` consumes and filters, organizes, and converts information into a standardized format, which is then showed on the page.
+This repo is the SDK which be used in [HuolalaTech/page-spy-web][page-spy-web], where SDK collects information and `page-spy-web` consumes and filters, organizes, and converts information into a standardized format, which is then showed on the page.
 
 ## Usage
 
