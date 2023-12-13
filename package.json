@@ -32,7 +32,7 @@
     "build": "rollup -c",
     "postbuild": "cp -R ./types ./dist",
     "build:watch": "rollup -c -w",
-    "test": "jest",
+    "test": "jest --silent",
     "lint": "eslint --ext .js,.ts ./src",
     "lint:fix": "eslint --ext .js,.ts --fix ./src",
     "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,md,json}'",
