@@ -1,4 +1,4 @@
-import NetworkPlugin from 'src/plugins/network';
+import NetworkPlugin from 'web/plugins/network';
 import startServer from '../../server/index';
 import { computeRequestMapInfo } from './util';
 

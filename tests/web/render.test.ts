@@ -1,4 +1,4 @@
-import SDK from 'src/index';
+import SDK from 'web/index';
 import {
   fireEvent,
   getByAltText,
