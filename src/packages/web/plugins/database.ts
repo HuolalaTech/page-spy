@@ -1,9 +1,9 @@
 import { DBInfo, DBStoreInfo } from 'types/lib/database';
 import { psLog } from 'src/utils';
-import socketStore from 'src/utils/socket';
+import socketStore from 'web/helpers/socket';
 import { DEBUG_MESSAGE_TYPE, makeMessage } from 'src/utils/message';
 import { SpyDatabase } from 'types';
-import PageSpyPlugin from '.';
+import PageSpyPlugin from 'src/utils/plugin';
 
 export function promisify<T = any>(req: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {

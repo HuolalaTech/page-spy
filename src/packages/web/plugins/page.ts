@@ -1,5 +1,5 @@
-import SocketStore from 'src/utils/socket';
-import type PageSpyPlugin from 'src/plugins/index';
+import SocketStore from 'web/helpers/socket';
+import type PageSpyPlugin from 'src/utils/plugin';
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
 
 export default class PagePlugin implements PageSpyPlugin {

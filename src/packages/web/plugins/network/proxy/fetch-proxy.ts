@@ -6,7 +6,7 @@ import {
   isURL,
   psLog,
 } from 'src/utils';
-import { blob2base64Async } from 'src/utils/blob';
+import { blob2base64Async } from 'web/helpers/blob';
 import {
   addContentTypeHeader,
   getFormattedBody,

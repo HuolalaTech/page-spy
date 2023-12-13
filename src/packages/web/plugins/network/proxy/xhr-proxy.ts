@@ -7,9 +7,9 @@ import {
   getObjectKeys,
   psLog,
 } from 'src/utils';
-import { blob2base64Async } from 'src/utils/blob';
+import { blob2base64Async } from 'web/helpers/blob';
+import RequestItem from 'src/utils/request-item';
 import NetworkProxyBase from './base';
-import RequestItem from './request-item';
 import {
   MAX_SIZE,
   Reason,

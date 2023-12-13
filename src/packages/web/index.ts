@@ -1,9 +1,11 @@
 import type { InitConfig } from 'types';
 import copy from 'copy-to-clipboard';
+import { getRandomId, psLog } from 'src/utils';
+import type PageSpyPlugin from 'src/utils/plugin';
+import { ROOM_SESSION_KEY } from 'src/utils/constants';
 import { Modal } from './component/modal';
 import { Content } from './component/content';
 
-import type PageSpyPlugin from './plugins';
 import ConsolePlugin from './plugins/console';
 import ErrorPlugin from './plugins/error';
 import NetworkPlugin from './plugins/network';
@@ -11,17 +13,16 @@ import SystemPlugin from './plugins/system';
 import PagePlugin from './plugins/page';
 import { StoragePlugin } from './plugins/storage';
 
-import socketStore from './utils/socket';
+import socketStore from './helpers/socket';
 import Request from './api';
-import { getRandomId, psLog } from './utils';
-import pkg from '../package.json';
+import pkg from '../../../package.json';
 
-import type { UElement } from './utils/moveable';
-import { moveable } from './utils/moveable';
+import type { UElement } from './helpers/moveable';
+import { moveable } from './helpers/moveable';
 import './index.less';
 import logoUrl from './assets/logo.svg';
-import { Config } from './utils/config';
-import { ROOM_SESSION_KEY } from './utils/constants';
+// eslint-disable-next-line import/order
+import { Config } from 'src/utils/config';
 import { DatabasePlugin } from './plugins/database';
 import { Toast } from './component/toast';
 

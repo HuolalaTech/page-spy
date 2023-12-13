@@ -1,9 +1,9 @@
 /* eslint-disable class-methods-use-this */
 import atom from 'src/utils/atom';
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
-import socketStore from 'src/utils/socket';
+import socketStore from 'web/helpers/socket';
 import type { SpyConsole } from 'types';
-import type PageSpyPlugin from './index';
+import type PageSpyPlugin from 'src/utils/plugin';
 
 const formatErrorObj = (err: Error) => {
   if (typeof err !== 'object') return null;
