@@ -1,4 +1,4 @@
-import { blob2base64Async } from 'src/utils/blob';
+import { blob2base64Async } from 'web/helpers/blob';
 
 describe('blob2base64Async', () => {
   test('should convert a Blob to base64', async () => {

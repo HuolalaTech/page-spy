@@ -1,4 +1,4 @@
-import ErrorPlugin from 'src/plugins/error';
+import ErrorPlugin from 'web/plugins/error';
 
 beforeAll(() => {
   new ErrorPlugin().onCreated();

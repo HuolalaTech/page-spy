@@ -1,5 +1,5 @@
 import { IDBFactory } from 'fake-indexeddb';
-import { DatabasePlugin, promisify } from 'src/plugins/database';
+import { DatabasePlugin, promisify } from 'web/plugins/database';
 
 // @ts-ignore
 const dbTrigger = jest.spyOn(DatabasePlugin, 'sendData');

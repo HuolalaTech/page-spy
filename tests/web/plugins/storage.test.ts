@@ -1,5 +1,5 @@
-import { StoragePlugin } from 'src/plugins/storage';
-import socketStore from 'src/utils/socket';
+import { StoragePlugin } from "src/packages/web/plugins/storage";
+
 
 // @ts-ignore
 const trigger = jest.spyOn(StoragePlugin, 'sendStorageItem');

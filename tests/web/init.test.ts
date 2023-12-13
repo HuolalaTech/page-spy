@@ -1,12 +1,12 @@
-import SDK from 'src/index';
-import ConsolePlugin from 'src/plugins/console';
-import ErrorPlugin from 'src/plugins/error';
-import NetworkPlugin from 'src/plugins/network';
-import SystemPlugin from 'src/plugins/system';
-import PagePlugin from 'src/plugins/page';
-import { StoragePlugin } from 'src/plugins/storage';
+import SDK from 'web/index';
+import ConsolePlugin from 'web/plugins/console';
+import ErrorPlugin from 'web/plugins/error';
+import NetworkPlugin from 'web/plugins/network';
+import SystemPlugin from 'web/plugins/system';
+import PagePlugin from 'web/plugins/page';
+import { StoragePlugin } from 'web/plugins/storage';
 import PageSpy, { SpyConsole } from 'types';
-import socketStore from 'src/utils/socket';
+import socketStore from 'web/helpers/socket';
 import { ROOM_SESSION_KEY } from 'src/utils/constants';
 import { Config } from 'src/utils/config';
 

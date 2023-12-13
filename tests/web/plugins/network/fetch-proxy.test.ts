@@ -1,7 +1,7 @@
-import NetworkPlugin from 'src/plugins/network';
+import NetworkPlugin from 'web/plugins/network';
 import startServer from '../../server/index';
 import data from '../../server/data.json';
-import { Reason } from 'src/plugins/network/proxy/common';
+import { Reason } from 'web/plugins/network/proxy/common';
 import { computeRequestMapInfo } from './util';
 
 const port = 6688;
