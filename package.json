@@ -2,7 +2,11 @@
   "name": "@huolala-tech/page-spy",
   "version": "1.4.11",
   "description": "A developer tool for debugging remote web page.",
-  "main": "dist/index.min.js",
+  "exports": {
+    ".": "./dist/web/index.min.js",
+    "./web": "./dist/web/esm.min.js",
+    "./mp": "./dist/mp/esm.min.js"
+  },
   "types": "dist/types/index.d.ts",
   "license": "MIT",
   "homepage": "https://huolalatech.github.io/page-spy-web/",

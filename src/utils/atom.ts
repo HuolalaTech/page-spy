@@ -10,7 +10,7 @@ import {
   isPlainObject,
   isPrototype,
   makePrimitiveValue,
-} from './index';
+} from 'src/utils/index';
 
 class Atom {
   private store: Record<string, any> = {};

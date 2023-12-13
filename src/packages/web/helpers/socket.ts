@@ -6,9 +6,9 @@ import {
   makeUnicastMessage,
 } from 'src/utils/message';
 import type { SpyMessage, SpySocket } from 'types';
-import atom from './atom';
-import { ROOM_SESSION_KEY } from './constants';
-import * as SERVER_MESSAGE_TYPE from './message/server-type';
+import * as SERVER_MESSAGE_TYPE from 'src/utils/message/server-type';
+import { ROOM_SESSION_KEY } from 'src/utils/constants';
+import atom from 'src/utils/atom';
 
 interface SocketEvent<T = any> {
   source: {
