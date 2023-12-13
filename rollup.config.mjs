@@ -73,7 +73,7 @@ export default [
     input: 'src/packages/miniprogram/index.ts',
     output: [
       {
-        file: pkg.exports['./mp'],
+        file: pkg.exports['./miniprogram'],
         format: 'esm',
       },
     ],

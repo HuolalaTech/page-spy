@@ -5,7 +5,7 @@
   "exports": {
     ".": "./dist/web/index.min.js",
     "./web": "./dist/web/esm.min.js",
-    "./mp": "./dist/mp/esm.min.js"
+    "./miniprogram": "./dist/miniprogram/esm.min.js"
   },
   "types": "dist/types/index.d.ts",
   "license": "MIT",
