@@ -44,6 +44,8 @@ export class SocketStore {
 
   private timer: number | null = null;
 
+  private retryTimer: number | null = null;
+
   // messages store
   private messages: (SpySocket.BroadcastEvent | SpySocket.UnicastEvent)[] = [];
 
@@ -142,7 +144,14 @@ export class SocketStore {
       return;
     }
 
-    this.tryReconnect();
+    if (this.retryTimer) {
+      clearTimeout(this.retryTimer);
+    }
+
+    this.retryTimer = window.setTimeout(() => {
+      this.retryTimer = null;
+      this.tryReconnect();
+    }, 2000);
   }
 
   tryReconnect() {
