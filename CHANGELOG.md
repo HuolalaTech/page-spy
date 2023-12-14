@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.7](https://github.com/HuolalaTech/page-spy/compare/v1.4.6...v1.4.7) (2023-12-14)
+
+### Features
+
+- add delay timer when try to reconncet ([#23](https://github.com/HuolalaTech/page-spy/issues/23)) ([b229dd6](https://github.com/HuolalaTech/page-spy/commit/b229dd616926bc060ec90e62db13cd0255c6e6e9))
+
 ### [1.4.6](https://github.com/HuolalaTech/page-spy/compare/v1.4.5...v1.4.6) (2023-12-06)
 
 ### Bug Fixes
