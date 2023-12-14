@@ -29,22 +29,26 @@ describe('Socket store', () => {
     expect(client.connectionStatus).toBe(true);
     client.getSocket()?.close();
 
-    await sleep();
+    await sleep(2000 + 500);
     expect(reconnect).toHaveBeenCalledTimes(1);
     expect(client.connectionStatus).toBe(true);
   });
 
-  it('Connect failed if reconnect over 3 times', async () => {
-    // @ts-ignore
-    expect(client.reconnectTimes).toBe(3);
-    server.close();
+  it(
+    'Connect failed if reconnect over 3 times',
+    async () => {
+      // @ts-ignore
+      expect(client.reconnectTimes).toBe(3);
+      server.close();
 
-    await sleep(300);
-    // @ts-ignore
-    expect(client.reconnectTimes).toBe(0);
-    // @ts-ignore
-    expect(client.reconnectable).toBe(false);
-  });
+      await sleep(2000 * 3);
+      // @ts-ignore
+      expect(client.reconnectTimes).toBe(0);
+      // @ts-ignore
+      expect(client.reconnectable).toBe(false);
+    },
+    2000 * 4,
+  );
 
   it('Stop', async () => {
     expect(client.connectionStatus).toBe(true);
