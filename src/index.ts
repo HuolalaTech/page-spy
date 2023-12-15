@@ -1,4 +1,6 @@
 import type { InitConfig } from 'types';
+import copy from 'copy-to-clipboard';
+import Toastify from 'toastify-js';
 import { Modal } from './component/modal';
 import { Content } from './component/content';
 
@@ -204,6 +206,7 @@ export default class PageSpy {
   }
 
   startRender() {
+    const { project, clientOrigin } = Config.get();
     const ok = this.checkConfig();
     if (!ok) return;
 
@@ -225,12 +228,39 @@ export default class PageSpy {
     });
 
     const modal = new Modal();
+    const [os, browser] = this.name.split(' ');
     const content = new Content({
-      content: {
-        name: this.name,
-        address: this.address,
-      },
+      content: `
+      <p><b>Device ID:</b> <span style="font-family: 'Monaco'">${this.address.slice(
+        0,
+        4,
+      )}</span></p>
+      <p><b>System:</b> ${os}</p>
+      <p><b>Browser:</b> ${browser}</p>
+      <p><b>Project:</b> ${project}</p>
+      `,
       onOk: () => {
+        const text = `${clientOrigin}/devtools?version=${this.name}&address=${this.address}`;
+        const copyRes = copy(text);
+        let notifyTitle = '';
+        if (copyRes) {
+          notifyTitle = '拷贝成功!';
+        } else {
+          notifyTitle = '拷贝失败!';
+        }
+        Toastify({
+          text: notifyTitle,
+          duration: 1500,
+          gravity: 'top',
+          position: 'center',
+          style: {
+            background: '#fff',
+            color: '#000',
+            'box-shadow':
+              '0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05)',
+            'border-radius': '8px',
+          },
+        }).showToast();
         modal.close();
       },
     });
