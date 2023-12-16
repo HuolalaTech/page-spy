@@ -36,7 +36,8 @@ export class Content {
     const button = document.createElement('div');
     button.dataset.testid = 'copy-button';
     button.className = 'page-spy-content__ok';
-    button.textContent = '拷贝';
+    const lang = navigator.language;
+    button.textContent = lang === 'zh-CN' ? '拷贝' : 'Copy';
     button.onclick = (e) => {
       e.stopPropagation();
       if (onOk) onOk();

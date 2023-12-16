@@ -240,7 +240,15 @@ export default class PageSpy {
       `,
       onOk: () => {
         const text = `${clientOrigin}/devtools?version=${this.name}&address=${this.address}`;
-        copy(text);
+        const copyRes = copy(text);
+        let message = '';
+        const lang = navigator.language;
+        if (lang === 'zh-CN') {
+          message = copyRes ? '拷贝成功!' : '拷贝失败!';
+        } else {
+          message = copyRes ? 'Copy successfully!' : 'Copy failed!';
+        }
+        alert(message);
         modal.close();
       },
     });
