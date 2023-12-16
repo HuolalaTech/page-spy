@@ -1,6 +1,5 @@
 import type { InitConfig } from 'types';
 import copy from 'copy-to-clipboard';
-import Toastify from 'toastify-js';
 import { Modal } from './component/modal';
 import { Content } from './component/content';
 
@@ -241,26 +240,7 @@ export default class PageSpy {
       `,
       onOk: () => {
         const text = `${clientOrigin}/devtools?version=${this.name}&address=${this.address}`;
-        const copyRes = copy(text);
-        let notifyTitle = '';
-        if (copyRes) {
-          notifyTitle = '拷贝成功!';
-        } else {
-          notifyTitle = '拷贝失败!';
-        }
-        Toastify({
-          text: notifyTitle,
-          duration: 1500,
-          gravity: 'top',
-          position: 'center',
-          style: {
-            background: '#fff',
-            color: '#000',
-            'box-shadow':
-              '0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05)',
-            'border-radius': '8px',
-          },
-        }).showToast();
+        copy(text);
         modal.close();
       },
     });
