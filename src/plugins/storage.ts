@@ -24,10 +24,8 @@ export class StoragePlugin implements PageSpyPlugin {
 
       switch (data) {
         case 'localStorage':
-          result = StoragePlugin.takeLocalStorage();
-          break;
         case 'sessionStorage':
-          result = StoragePlugin.takeSessionStorage();
+          result = StoragePlugin.takeStorage(data);
           break;
         case 'cookie':
           result = await StoragePlugin.takeCookie();
@@ -42,31 +40,26 @@ export class StoragePlugin implements PageSpyPlugin {
     });
   }
 
-  private static takeLocalStorage() {
+  private static takeStorage(type: 'localStorage' | 'sessionStorage') {
     const data: SpyStorage.GetTypeDataItem = {
-      type: 'localStorage',
+      type,
       action: 'get',
-      data: Object.entries(localStorage).map(([name, value]) => {
-        return {
-          name,
-          value,
-        };
-      }),
+      data: [],
     };
-    return data;
-  }
+    const storage = window[type];
+    const size = storage.length;
+    if (!size) return data;
 
-  private static takeSessionStorage() {
-    const data: SpyStorage.GetTypeDataItem = {
-      type: 'sessionStorage',
-      action: 'get',
-      data: Object.entries(sessionStorage).map(([name, value]) => {
-        return {
+    for (let i = 0; i <= size - 1; i++) {
+      const name = storage.key(i);
+      if (name) {
+        const value = storage.getItem(name) || '';
+        data.data.push({
           name,
           value,
-        };
-      }),
-    };
+        });
+      }
+    }
     return data;
   }
 

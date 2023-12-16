@@ -1,20 +1,22 @@
 import { StoragePlugin } from 'src/plugins/storage';
+import socketStore from 'src/utils/socket';
 
 // @ts-ignore
 const trigger = jest.spyOn(StoragePlugin, 'sendStorageItem');
 
-beforeEach(() => {
+beforeAll(() => {
+  new StoragePlugin().onCreated();
+});
+afterEach(() => {
   localStorage.clear();
   sessionStorage.clear();
   document.cookie = '';
-});
-afterEach(() => {
-  jest.resetAllMocks();
+  trigger.mockReset();
+  console.log(trigger.mock);
 });
 
 describe('Storage plugin', () => {
   it('cookieStore / localStorage /sessionStorage', async () => {
-    new StoragePlugin().onCreated();
     await cookieStore.set('1', '1');
     await cookieStore.set('2', '2');
     expect(trigger).toHaveBeenCalledTimes(2);
@@ -67,5 +69,19 @@ describe('Storage plugin', () => {
       }),
     );
     expect(trigger).toHaveBeenCalledTimes(10);
+  });
+
+  it('Special keys in Storage', () => {
+    const keys = ['key', 'setItem', 'getItem', 'removeItem', 'clear'];
+
+    keys.forEach((k) => {
+      localStorage.setItem(k, k);
+    });
+
+    expect(trigger).toHaveBeenCalledTimes(5);
+    // @ts-ignore
+    const storage = StoragePlugin.takeStorage('localStorage');
+    expect(storage.data.length).toBe(5);
+    expect(storage.data.map((i) => i.name)).toEqual(keys);
   });
 });
