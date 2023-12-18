@@ -1,4 +1,5 @@
 import type { InitConfig } from 'types';
+import copy from 'copy-to-clipboard';
 import { Modal } from './component/modal';
 import { Content } from './component/content';
 
@@ -204,6 +205,7 @@ export default class PageSpy {
   }
 
   startRender() {
+    const { project, clientOrigin } = Config.get();
     const ok = this.checkConfig();
     if (!ok) return;
 
@@ -225,12 +227,28 @@ export default class PageSpy {
     });
 
     const modal = new Modal();
+    const [os, browser] = this.name.split(' ');
     const content = new Content({
-      content: {
-        name: this.name,
-        address: this.address,
-      },
+      content: `
+      <p><b>Device ID:</b> <span style="font-family: 'Monaco'">${this.address.slice(
+        0,
+        4,
+      )}</span></p>
+      <p><b>System:</b> ${os}</p>
+      <p><b>Browser:</b> ${browser}</p>
+      <p><b>Project:</b> ${project}</p>
+      `,
       onOk: () => {
+        const text = `${clientOrigin}/devtools?version=${this.name}&address=${this.address}`;
+        const copyRes = copy(text);
+        let message = '';
+        const lang = navigator.language;
+        if (lang === 'zh-CN') {
+          message = copyRes ? '拷贝成功!' : '拷贝失败!';
+        } else {
+          message = copyRes ? 'Copy successfully!' : 'Copy failed!';
+        }
+        alert(message);
         modal.close();
       },
     });

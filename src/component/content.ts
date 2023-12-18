@@ -1,11 +1,8 @@
-import copy from 'copy-to-clipboard';
-import { Config } from 'src/utils/config';
-
 interface ContentParams {
   className?: string;
   tagName?: string;
   onOk?: () => void;
-  content: Record<string, any>;
+  content: string;
 }
 
 export class Content {
@@ -30,37 +27,20 @@ export class Content {
   }
 
   render() {
-    const { content = {}, onOk } = this.options;
-    const { name = '--', address = '--' } = content;
-    const { project, clientOrigin } = Config.get();
-    const [os, browser] = name.split(' ');
-    const contentText = `
-      <p><b>Device ID:</b> <span style="font-family: 'Monaco'">${address.slice(
-        0,
-        4,
-      )}</span></p>
-      <p><b>System:</b> ${os}</p>
-      <p><b>Browser:</b> ${browser}</p>
-      <p><b>Project:</b> ${project}</p>
-      `;
-
+    const { content = '', onOk } = this.options;
     /* info */
     const info = document.createElement('div');
     info.className = 'page-spy-content__info';
-    info.innerHTML = contentText;
+    info.innerHTML = content;
     /* bottom button */
     const button = document.createElement('div');
     button.dataset.testid = 'copy-button';
     button.className = 'page-spy-content__ok';
-    button.textContent = 'Copy';
+    const lang = navigator.language;
+    button.textContent = lang === 'zh-CN' ? '拷贝' : 'Copy';
     button.onclick = (e) => {
       e.stopPropagation();
-      const text = `${clientOrigin}/devtools?version=${name}&address=${address}`;
-      const copyResult = copy(text);
-      if (copyResult) {
-        alert('Copy successfully!');
-        if (onOk) onOk();
-      }
+      if (onOk) onOk();
     };
     this.el.append(info, button);
   }
