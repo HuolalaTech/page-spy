@@ -6,6 +6,7 @@ import {
   waitFor,
 } from '@testing-library/dom';
 import copy from 'copy-to-clipboard';
+import { Toast } from 'src/component/toast';
 jest.mock('copy-to-clipboard', () =>
   jest.fn().mockImplementation((text: string) => true),
 );
@@ -17,9 +18,10 @@ beforeAll(() => {
     offsetHeight: { value: 1080 },
   });
 });
-beforeEach(() => {
+afterEach(() => {
   SDK.instance = null;
-  document.querySelector(rootId)?.remove();
+  document.documentElement.innerHTML = '';
+  jest.useRealTimers();
 });
 
 describe('Render PageSpy', () => {
@@ -92,14 +94,37 @@ describe('Render PageSpy', () => {
 
     await waitFor(() => {
       const html = document.documentElement;
+      const toast = jest.spyOn(Toast, 'message');
+
       const copyButton = getByTestId(html, 'copy-button');
-      const isVisible = expect(copyButton).not.toBe(null);
       fireEvent.click(copyButton);
 
+      const isVisible = expect(copyButton).not.toBe(null);
       const copied = expect(copy).toHaveBeenCalledWith(
         `${config.clientOrigin}/devtools?version=${sdk.name}&address=${sdk.address}`,
       );
-      return Promise.all([isVisible, copied]);
+      const toasted = expect(toast).toHaveBeenCalledTimes(1);
+      return Promise.all([isVisible, copied, toasted]);
     });
+  });
+
+  it('Toast static method', () => {
+    jest.useFakeTimers();
+
+    const doc = document.documentElement;
+    expect(document.querySelector('.page-spy-toast')).toBe(null);
+
+    Toast.message('Hello PageSpy');
+    expect(document.querySelectorAll('.page-spy-toast').length).toBe(1);
+    jest.advanceTimersByTime(1500);
+    expect(document.querySelectorAll('.page-spy-toast').length).toBe(0);
+
+    Toast.message('The 1st message');
+    Toast.message('The 2nd message');
+    Toast.message('The 3rd message');
+    expect(document.querySelectorAll('.page-spy-toast').length).toBe(3);
+
+    Toast.destroy();
+    expect(document.querySelectorAll('.page-spy-toast').length).toBe(0);
   });
 });
