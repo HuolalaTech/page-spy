@@ -157,7 +157,7 @@ export default class PageSpy {
       }
     } else {
       // if document does not exist, wait for it
-      let timer: number;
+      let timer: ReturnType<typeof setTimeout>;
       const pollingDocument = () => {
         if (!!document && document.readyState === 'complete') {
           if (timer) {
@@ -165,10 +165,10 @@ export default class PageSpy {
           }
           this.startRender();
         } else {
-          timer = window.setTimeout(pollingDocument, 1);
+          timer = setTimeout(pollingDocument, 1);
         }
       };
-      timer = window.setTimeout(pollingDocument, 1);
+      timer = setTimeout(pollingDocument, 1);
     }
   }
 
