@@ -10,12 +10,15 @@ export class Toast {
     node.classList.add('page-spy-toast');
     node.innerText = String(text);
     document.documentElement.appendChild(node);
-    Toast.timer = setTimeout(() => {
+    const timer = setTimeout(() => {
       if (document.contains(node)) {
         document.documentElement.removeChild(node);
       }
-      Toast.timer = null;
+      if (Toast.timer === timer) {
+        Toast.timer = null;
+      }
     }, 1500);
+    Toast.timer = timer;
   }
 
   static destroy() {
