@@ -23,6 +23,7 @@ import logoUrl from './assets/logo.svg';
 import { Config } from './utils/config';
 import { ROOM_SESSION_KEY } from './utils/constants';
 import { DatabasePlugin } from './plugins/database';
+import { Toast } from './component/toast';
 
 const Identifier = '__pageSpy';
 
@@ -242,13 +243,16 @@ export default class PageSpy {
         const text = `${clientOrigin}/devtools?version=${this.name}&address=${this.address}`;
         const copyRes = copy(text);
         let message = '';
-        const lang = navigator.language;
-        if (lang === 'zh-CN') {
+        const langs = navigator.languages;
+        const isCN = ['zh-CN', 'zh-HK', 'zh-TW', 'zh'].some((l) => {
+          return langs.includes(l);
+        });
+        if (isCN) {
           message = copyRes ? '拷贝成功!' : '拷贝失败!';
         } else {
           message = copyRes ? 'Copy successfully!' : 'Copy failed!';
         }
-        alert(message);
+        Toast.message(message);
         modal.close();
       },
     });

@@ -81,3 +81,22 @@
     }
   }
 }
+
+.page-spy-toast {
+  position: fixed;
+  left: 50%;
+  top: 10%;
+  transform: translateX(-50%);
+
+  max-width: 50vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 6px 12px;
+  color: @primary-color;
+  font-size: @fontSize;
+  background-color: #fafafa;
+  border-radius: 4px;
+  box-shadow: 0px 4px 8px 2px rgba(0, 0, 0, 0.2);
+  z-index: 99999;
+}
