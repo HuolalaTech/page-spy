@@ -16,4 +16,15 @@ describe('Error plugin', () => {
     window.dispatchEvent(new Event('unhandledrejection'));
     expect(errorOccupied).toHaveBeenCalledTimes(3);
   });
+
+  it('Should handle error event without error object', () => {
+    window.dispatchEvent(new Event('error'));
+
+    expect(errorOccupied).toHaveBeenCalledTimes(3);
+    expect(errorOccupied).toHaveBeenCalledWith('An unknown error occurred', {
+      name: '',
+      message: 'An unknown error occurred',
+      stack: 'No stack trace available',
+    });
+  });
 });
