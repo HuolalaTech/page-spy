@@ -9,7 +9,6 @@ import {
 } from 'src/utils';
 import { blob2base64Async } from 'web/helpers/blob';
 import RequestItem from 'src/utils/request-item';
-import NetworkProxyBase from './base';
 import {
   MAX_SIZE,
   Reason,
@@ -17,8 +16,9 @@ import {
   getFormattedBody,
   isOkStatusCode,
   resolveUrlInfo,
-} from './common';
-
+} from 'src/utils/network/common';
+import socketStore from 'web/helpers/socket';
+import WebNetworkProxyBase from './base';
 declare global {
   interface XMLHttpRequest {
     pageSpyRequestId: string;
@@ -26,7 +26,7 @@ declare global {
     pageSpyRequestUrl: string;
   }
 }
-class XhrProxy extends NetworkProxyBase {
+class XhrProxy extends WebNetworkProxyBase {
   private xhrOpen: XMLHttpRequest['open'] | null = null;
 
   private xhrSend: XMLHttpRequest['send'] | null = null;

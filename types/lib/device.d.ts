@@ -16,3 +16,10 @@ export type Browser =
   | 'Firefox'
   | 'Safari'
   | 'Unknown';
+
+export interface DeviceInfo {
+  osName: OS;
+  osVersion: string;
+  browserName: Browser;
+  browserVersion: string; // TODO 加入小程序，这里是不是要加个 非浏览器的枚举
+}

@@ -5,7 +5,7 @@ import {
   getContentType,
   getFormattedBody,
   resolveUrlInfo,
-} from 'web/plugins/network/proxy/common';
+} from 'src/utils/network/common';
 import { toStringTag } from 'src/utils';
 
 describe('Network utilities', () => {

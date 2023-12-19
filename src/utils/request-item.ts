@@ -9,7 +9,14 @@ export default class RequestItem implements SpyNetwork.RequestInfo {
 
   url: string = '';
 
-  requestType: 'xhr' | 'fetch' | 'ping' = 'xhr';
+  requestType:
+    | 'xhr'
+    | 'fetch'
+    | 'ping'
+    | 'wx-request'
+    | 'wx-upload'
+    | 'my-request'
+    | 'my-upload' = 'xhr';
 
   requestHeader: [string, string][] | null = null;
 

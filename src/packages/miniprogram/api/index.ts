@@ -1,7 +1,8 @@
 import { psLog } from 'src/utils';
 import { Config } from 'src/utils/config';
-import { combineName, parseUserAgent } from 'src/utils/device';
 import { InitConfig } from 'types';
+import { getDeviceInfo, promisifyMPApi } from '../utils';
+import { combineName } from 'src/utils/device';
 
 interface TResponse<T> {
   code: string;
@@ -18,24 +19,7 @@ interface TCreateRoom {
   tags: Record<string, any>;
 }
 
-const parseSchemeWithScript = () => {
-  try {
-    const { protocol } = new URL(Config.scriptLink);
-    if (protocol.startsWith('https')) {
-      return ['https://', 'wss://'];
-    }
-  } catch (e) {
-    psLog.error(
-      'Failed to resolve the protocol and fallback to [http://, ws://]',
-    );
-  }
-  return ['http://', 'ws://'];
-};
-
 const getScheme = (enableSSL: InitConfig['enableSSL']) => {
-  if (typeof enableSSL !== 'boolean') {
-    return parseSchemeWithScript();
-  }
   return enableSSL ? ['https://', 'wss://'] : ['http://', 'ws://'];
 };
 
@@ -58,21 +42,27 @@ export default class Request {
   createRoom(): Promise<TResponse<TCreateRoom>> {
     const config = Config.get();
     const scheme = getScheme(config.enableSSL);
-    const device = parseUserAgent();
+    const device = getDeviceInfo();
     const name = combineName(device);
     const query = joinQuery({
       name,
       group: config.project,
       title: config.title,
     });
-    return fetch(`${scheme[0]}${this.base}/api/v1/room/create?${query}`, {
+
+    return promisifyMPApi(wx.request)({
+      url: `${scheme[0]}${this.base}/api/v1/room/create?${query}`,
       method: 'POST',
-    })
-      .then((res) => res.json())
-      .catch((err) => {
+    }).then(
+      (res: any) => {
+        console.log('pomireq res', res);
+        return res.data;
+      },
+      (err) => {
         /* c8 ignore next */
         throw Error(`Request create room failed: ${err.message}`);
-      });
+      },
+    ) as Promise<TResponse<TCreateRoom>>;
   }
 
   getRoomUrl(args: Record<string, string | number> = {}) {

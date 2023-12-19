@@ -14,10 +14,10 @@ import {
   MAX_SIZE,
   Reason,
   resolveUrlInfo,
-} from './common';
-import NetworkProxyBase from './base';
+} from 'src/utils/network/common';
+import WebNetworkProxyBase from './base';
 
-export default class FetchProxy extends NetworkProxyBase {
+export default class FetchProxy extends WebNetworkProxyBase {
   private fetch: WindowOrWorkerGlobalScope['fetch'] | null = null;
 
   constructor() {

@@ -2,7 +2,7 @@ import type PageSpyPlugin from 'src/utils/plugin';
 import { getRandomId } from 'src/utils';
 import socketStore from 'web/helpers/socket';
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
-import { parseUserAgent } from 'src/utils/ua';
+import { parseUserAgent } from 'src/utils/device';
 import '../../deps/modernizr';
 import { SpySystem } from 'types';
 import { computeResult } from './feature';

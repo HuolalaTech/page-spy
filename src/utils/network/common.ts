@@ -1,5 +1,6 @@
 import {
   isBlob,
+  isBrowser,
   isDocument,
   isFile,
   isFormData,
@@ -15,6 +16,23 @@ import { SpyNetwork } from 'types';
 export const MAX_SIZE = 1024 * 1024 * 2;
 export const Reason = {
   EXCEED_SIZE: 'Exceed maximum limit',
+};
+
+// Fork XMLHttpRequest status, for usage in platforms other than browser.
+export enum ReqReadyState {
+  UNSENT = 0,
+  OPENED = 1,
+  HEADERS_RECEIVED = 2,
+  LOADING = 3,
+  DONE = 4,
+}
+
+export const StatusTextMap = {
+  0: '',
+  1: '',
+  2: '',
+  3: 'Loading',
+  4: 'Done',
 };
 
 export const BINARY_FILE_VARIANT = '(file)';
@@ -35,18 +53,27 @@ export function formatEntries(data: IterableIterator<[string, unknown]>) {
   return result;
 }
 
+// TODO: 这部分逻辑可以移到调试端去做？因为收集端可能不在浏览器环境
 export function resolveUrlInfo(target: URL | string) {
   try {
-    const { href, searchParams } = new URL(target, window.location.href);
-    const url = href;
-    const query = [...searchParams.entries()];
+    const url = target.toString();
+    let query: [string, string][];
+
+    if (isBrowser()) {
+      const { searchParams } = new URL(
+        target /* TO DELETE: 应该由外部传入 window.location.href*/,
+      );
+      query = [...searchParams.entries()];
+    } else {
+      query = []; // TODO 非浏览器实现
+    }
     // https://exp.com => "exp.com/"
     // https://exp.com/ => "exp.com/"
     // https://exp.com/devtools => "devtools"
     // https://exp.com/devtools/ => "devtools/"
     // https://exp.com/devtools?version=Mac/10.15.7 => "devtools?version=Mac/10.15.7"
     // https://exp.com/devtools/?version=Mac/10.15.7 => "devtools/?version=Mac/10.15.7"
-    const name = href.replace(/^.*?([^/]+)(\/)*(\?.*?)?$/, '$1$2$3') || '';
+    const name = url.replace(/^.*?([^/]+)(\/)*(\?.*?)?$/, '$1$2$3') || '';
 
     return {
       url,

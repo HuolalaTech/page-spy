@@ -1,4 +1,8 @@
-export type DataType = 'localStorage' | 'sessionStorage' | 'cookie';
+export type DataType =
+  | 'localStorage'
+  | 'sessionStorage'
+  | 'cookie'
+  | 'mpStorage';
 export type ActionType = 'clear' | 'remove' | 'get' | 'set';
 
 type Data = Pick<CookieStoreValue, 'name' | 'value'> &
