@@ -4,9 +4,10 @@ import {
   addContentTypeHeader,
   getFormattedBody,
   resolveUrlInfo,
-} from './common';
+} from 'src/utils/network/common';
+import WebNetworkProxyBase from './base';
 
-export default class BeaconProxy extends NetworkProxyBase {
+export default class BeaconProxy extends WebNetworkProxyBase {
   private sendBeacon: Navigator['sendBeacon'] | null = null;
 
   public constructor() {

@@ -14,5 +14,6 @@ module.exports = {
     'func-names': 'off',
     'no-plusplus': 'off',
     'arrow-body-style': 'off',
+    'max-classes-per-file': 'off',
   },
 };

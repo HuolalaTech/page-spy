@@ -1,9 +1,12 @@
 import type { InitConfig } from 'types';
+import { isBrowser } from '.';
 
 export class Config {
   private static value: Required<InitConfig>;
 
-  public static scriptLink = (document.currentScript as HTMLScriptElement)?.src;
+  public static scriptLink = isBrowser()
+    ? (document.currentScript as HTMLScriptElement)?.src
+    : '';
 
   private static resolveConfig: () => Required<InitConfig> = () => {
     const defaultConfig = {
