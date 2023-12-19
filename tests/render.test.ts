@@ -111,7 +111,6 @@ describe('Render PageSpy', () => {
   it('Toast static method', () => {
     jest.useFakeTimers();
 
-    const doc = document.documentElement;
     expect(document.querySelector('.page-spy-toast')).toBe(null);
 
     Toast.message('Hello PageSpy');
