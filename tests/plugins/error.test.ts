@@ -21,10 +21,9 @@ describe('Error plugin', () => {
     window.dispatchEvent(new Event('error'));
 
     expect(errorOccupied).toHaveBeenCalledTimes(3);
-    expect(errorOccupied).toHaveBeenCalledWith('An unknown error occurred', {
-      name: '',
-      message: 'An unknown error occurred',
-      stack: 'No stack trace available',
-    });
+    expect(errorOccupied).toHaveBeenCalledWith(
+      '[PageSpy] An unknown error occurred and no stack trace available',
+      null,
+    );
   });
 });

@@ -40,13 +40,9 @@ export default class ErrorPlugin implements PageSpyPlugin {
         ErrorPlugin.sendMessage(stack || message, errorDetail);
       } else {
         // When the error does not exist, use default information
-        const defaultMessage = 'An unknown error occurred';
-        const defaultStack = 'No stack trace available';
-        ErrorPlugin.sendMessage(defaultMessage, {
-          name: '',
-          message: defaultMessage,
-          stack: defaultStack,
-        });
+        const defaultMessage =
+          '[PageSpy] An unknown error occurred and no stack trace available';
+        ErrorPlugin.sendMessage(defaultMessage, null);
       }
     };
     window.addEventListener('error', errorHandler);
