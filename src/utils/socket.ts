@@ -42,9 +42,9 @@ export class SocketStore {
 
   private socketConnection: SpySocket.Connection | null = null;
 
-  private timer: number | null = null;
+  private timer: ReturnType<typeof setInterval> | null = null;
 
-  private retryTimer: number | null = null;
+  private retryTimer: ReturnType<typeof setTimeout> | null = null;
 
   // messages store
   private messages: (SpySocket.BroadcastEvent | SpySocket.UnicastEvent)[] = [];
@@ -148,7 +148,7 @@ export class SocketStore {
       clearTimeout(this.retryTimer);
     }
 
-    this.retryTimer = window.setTimeout(() => {
+    this.retryTimer = setTimeout(() => {
       this.retryTimer = null;
       this.tryReconnect();
     }, 2000);
@@ -161,7 +161,7 @@ export class SocketStore {
 
   private pingConnect() {
     /* c8 ignore start */
-    this.timer = window.setInterval(() => {
+    this.timer = setInterval(() => {
       if (this.socket?.readyState !== WebSocket.OPEN) return;
       this.send({
         type: 'ping',
