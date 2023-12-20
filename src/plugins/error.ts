@@ -55,9 +55,10 @@ export default class ErrorPlugin implements PageSpyPlugin {
       'error',
       (evt: Event) => {
         if (!(evt instanceof ErrorEvent)) {
+          const { target } = evt as any;
           ErrorPlugin.sendMessage(
-            `Resource Load Error: Cannot load resource of (${
-              (evt.target! as any).src
+            `[PageSpy] Resource Load Error: Cannot load resource of (${
+              target.src || target.href
             })`,
             null,
           );
