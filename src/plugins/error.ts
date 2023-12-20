@@ -34,9 +34,16 @@ export default class ErrorPlugin implements PageSpyPlugin {
 
   private onUncaughtError() {
     const errorHandler = (e: ErrorEvent) => {
-      const { message, stack } = e.error;
-      const errorDetail = formatErrorObj(e.error);
-      ErrorPlugin.sendMessage(stack || message, errorDetail);
+      if (e.error) {
+        const { message, stack } = e.error;
+        const errorDetail = formatErrorObj(e.error);
+        ErrorPlugin.sendMessage(stack || message, errorDetail);
+      } else {
+        // When the error does not exist, use default information
+        const defaultMessage =
+          '[PageSpy] An unknown error occurred and no stack trace available';
+        ErrorPlugin.sendMessage(defaultMessage, null);
+      }
     };
     window.addEventListener('error', errorHandler);
   }
