@@ -4,10 +4,9 @@ beforeAll(() => {
   new ErrorPlugin().onCreated();
 });
 
-const errorOccupied = jest.fn();
-jest.spyOn(ErrorPlugin, 'sendMessage').mockImplementation(errorOccupied);
+const errorOccupied = jest.spyOn(ErrorPlugin, 'sendMessage');
 afterEach(() => {
-  jest.restoreAllMocks();
+  errorOccupied.mockClear();
 });
 
 describe('Error plugin', () => {
@@ -20,7 +19,7 @@ describe('Error plugin', () => {
   it('Should handle error event without error object', () => {
     window.dispatchEvent(new Event('error'));
 
-    expect(errorOccupied).toHaveBeenCalledTimes(3);
+    expect(errorOccupied).toHaveBeenCalledTimes(2);
     expect(errorOccupied).toHaveBeenCalledWith(
       '[PageSpy] An unknown error occurred and no stack trace available',
       null,
