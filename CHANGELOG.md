@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.9](https://github.com/HuolalaTech/page-spy/compare/v1.4.7...v1.4.9) (2023-12-20)
+
+### Features
+
+- transition logo status style ([26e319d](https://github.com/HuolalaTech/page-spy/commit/26e319de60762edfa66f8dfca0ebb287fd435103))
+- use toast instead of alert ([#24](https://github.com/HuolalaTech/page-spy/issues/24)) ([235e403](https://github.com/HuolalaTech/page-spy/commit/235e403be100478f92f324ab4d39b8ca2c9853f1))
+
+### Bug Fixes
+
+- use default value when 'ErrorEvent.error' not exists ([#27](https://github.com/HuolalaTech/page-spy/issues/27)) ([6919682](https://github.com/HuolalaTech/page-spy/commit/69196823b5988ecf009378792bb51fd49b3b1f14))
+
 ### [1.4.8](https://github.com/HuolalaTech/page-spy/compare/v1.4.4...v1.4.8) (2023-12-16)
 
 ### Features
