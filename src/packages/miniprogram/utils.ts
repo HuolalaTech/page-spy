@@ -4,7 +4,7 @@ type CallbackParams<R = any, E = any> = {
   [key: string]: any;
 } & AsyncCallback<R, E>;
 
-// TODO: 这里补类型
+// PENDING: 这里补泛型
 export const promisifyMPApi = (api: (params: any) => any) => {
   return (params: Record<string, any>) => {
     return new Promise((resolve, reject) => {
@@ -26,15 +26,26 @@ const OSMap: Record<string, DeviceInfo['osName']> = {
   android: 'Android',
   windows: 'Windows',
   mac: 'Mac',
-  devtools: 'Unknown',
+  devtools: 'Unknown', // TODO： 小程序独有的
 };
 
 export const getDeviceInfo = () => {
   const info = wx.getSystemInfoSync();
   return {
-    osName: OSMap[info.platform],
+    osName:
+      info.platform !== 'devtools'
+        ? OSMap[info.platform]
+        : info.system.split(' ')[0],
     osVersion: info.system,
-    browserName: 'WeChat',
+    browserName: 'MPWeChat',
     browserVersion: info.version,
   } as DeviceInfo;
+};
+
+export const joinQuery = (args: Record<string, unknown>) => {
+  const arr: string[] = [];
+  Object.entries(args).forEach(([k, v]) => {
+    arr.push(`${k}=${v}`);
+  });
+  return arr.join('&');
 };

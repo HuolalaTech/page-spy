@@ -28,7 +28,7 @@
     "node": ">=10"
   },
   "scripts": {
-    "mp": "yarn build && cp dist/mp/esm.min.js ../../../mphll/light-app/src/plugins/pageSpy.js",
+    "mp": "yarn build && cp dist/miniprogram/esm.min.js ../../../mphll/light-app/src/plugins/pageSpy.js",
     "build": "rollup -c",
     "postbuild": "cp -R ./types ./dist",
     "build:watch": "rollup -c -w",

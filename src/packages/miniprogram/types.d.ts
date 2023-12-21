@@ -158,9 +158,5 @@ type PageInfo = {
   data: Record<string, any>;
   // page query string params
   options: Record<string, any>;
-  // TODO CLEAR: not sure if is uniapp vue property
-  $page: {
-    fullPath: string;
-  };
 };
 declare function getCurrentPages(): PageInfo[];

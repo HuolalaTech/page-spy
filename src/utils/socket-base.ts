@@ -206,7 +206,7 @@ export abstract class SocketStoreBase {
   private pingConnect() {
     /* c8 ignore start */
     this.timer = setInterval(() => {
-      if (this.socket?.state !== SocketState.OPEN) return;
+      if (this.socket?.getState() !== SocketState.OPEN) return;
       this.send({
         type: 'ping',
         content: null,

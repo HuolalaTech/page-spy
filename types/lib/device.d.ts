@@ -15,6 +15,7 @@ export type Browser =
   | 'Chrome'
   | 'Firefox'
   | 'Safari'
+  | 'MPWeChat'
   | 'Unknown';
 
 export interface DeviceInfo {

@@ -42,11 +42,12 @@ export default class SystemPlugin implements PageSpyPlugin {
     SystemPlugin.hasInitd = true;
 
     const id = getRandomId();
+    const deviceInfo = getDeviceInfo();
     socketStore.broadcastMessage(
       makeMessage(DEBUG_MESSAGE_TYPE.SYSTEM, {
         id,
         system: {
-          ua: 'mp-weixin', // TODO DEPENDING: 获取小程序 ua，让服务端实现 navigator.userAgent,
+          ua: `${deviceInfo.osName}/${deviceInfo.osVersion} MPWeChat/${deviceInfo.browserVersion}`, // PENDING: 获取小程序 ua，让服务端实现 navigator.userAgent,
           ...getDeviceInfo(),
         },
         // features,

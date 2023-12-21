@@ -1,7 +1,7 @@
 import { psLog } from 'src/utils';
 import { Config } from 'src/utils/config';
 import { InitConfig } from 'types';
-import { getDeviceInfo, promisifyMPApi } from '../utils';
+import { getDeviceInfo, joinQuery, promisifyMPApi } from '../utils';
 import { combineName } from 'src/utils/device';
 
 interface TResponse<T> {
@@ -23,14 +23,6 @@ const getScheme = (enableSSL: InitConfig['enableSSL']) => {
   return enableSSL ? ['https://', 'wss://'] : ['http://', 'ws://'];
 };
 
-const joinQuery = (args: Record<string, unknown>) => {
-  const params = new URLSearchParams();
-  Object.entries(args).forEach(([k, v]) => {
-    params.append(k, String(v));
-  });
-  return params.toString();
-};
-
 export default class Request {
   constructor(public base: string = '') {
     /* c8 ignore next 3 */
@@ -45,7 +37,7 @@ export default class Request {
     const device = getDeviceInfo();
     const name = combineName(device);
     const query = joinQuery({
-      name,
+      name: encodeURIComponent(name),
       group: config.project,
       title: config.title,
     });
@@ -55,7 +47,6 @@ export default class Request {
       method: 'POST',
     }).then(
       (res: any) => {
-        console.log('pomireq res', res);
         return res.data;
       },
       (err) => {
