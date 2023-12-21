@@ -39,7 +39,7 @@ export class StoragePlugin implements PageSpyPlugin {
   private static listenRefreshEvent() {
     socketStore.addListener(DEBUG_MESSAGE_TYPE.REFRESH, async ({ source }) => {
       const { data } = source;
-      if (data === 'localStorage') {
+      if (data === 'mpStorage') {
         try {
           const info = wx.getStorageInfoSync();
 
@@ -51,7 +51,7 @@ export class StoragePlugin implements PageSpyPlugin {
           });
 
           const dataItem: SpyStorage.GetTypeDataItem = {
-            type: 'localStorage',
+            type: 'mpStorage',
             action: 'get',
             data,
           };

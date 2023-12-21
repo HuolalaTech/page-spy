@@ -3,6 +3,7 @@ import socketStore from 'miniprogram/helpers/socket';
 import type { SpyConsole } from 'types';
 import atom from 'src/utils/atom';
 import type PageSpyPlugin from 'src/utils/plugin';
+import { joinQuery } from '../utils';
 
 export default class ConsolePlugin implements PageSpyPlugin {
   public name: string = 'ConsolePlugin';
@@ -21,10 +22,12 @@ export default class ConsolePlugin implements PageSpyPlugin {
       this.console[item] = globalThis.console[item];
       globalThis.console[item] = (...args: any[]) => {
         const page = getCurrentPages().pop();
+        const url =
+          (page && page.route + '?' + joinQuery(page.options || {})) || '/';
         this.printLog({
           logType: item,
           logs: args,
-          url: page ? page.$page.fullPath : '', // mp might not init page url
+          url,
         });
       };
     });

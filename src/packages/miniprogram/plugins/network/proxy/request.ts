@@ -8,13 +8,13 @@ import {
   toStringTag,
 } from 'src/utils';
 import {
-  addContentTypeHeader,
   getFormattedBody,
   isOkStatusCode,
   MAX_SIZE,
   Reason,
   ReqReadyState,
   resolveUrlInfo,
+  toLowerKeys,
 } from 'src/utils/network/common';
 import MPNetworkProxyBase from './base';
 
@@ -63,6 +63,7 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
         req.method = method.toUpperCase();
         req.requestType = 'wx-request';
         req.status = 0;
+        // TODO statusText 要不要标准化
         req.statusText = 'Pending';
         req.startTime = Date.now();
         req.readyState = ReqReadyState.UNSENT;
@@ -76,11 +77,6 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
         if (req.method !== 'GET') {
           // NOTE：小程序的奇葩操作： request content-type 全部为 application/json
           req.requestHeader = [['Content-Type', 'application/json']];
-          // 小程序应该没有这么麻烦
-          // req.requestHeader = addContentTypeHeader(
-          //   req.requestHeader,
-          //   params.data,
-          // );
 
           if (typeof params.data === 'string') {
             req.requestPayload = params.data;
@@ -115,7 +111,8 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
 
           // Loading ~ Done
           if (!isOkStatusCode(res!.statusCode)) return '';
-          const contentType = res?.header?.['content-type'];
+          const lowerHeaders = toLowerKeys(res?.header || {});
+          const contentType = lowerHeaders['content-type'];
           if (contentType) {
             if (contentType.includes('application/json')) {
               req.responseType = 'json';
@@ -135,31 +132,21 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
           switch (req.responseType) {
             case 'json':
             case 'text':
-              try {
-                req.response = JSON.parse(res!.data as string);
-              } catch (e) {
-                req.response = res;
-                req.responseType = 'text';
+              if (typeof res?.data === 'string') {
+                try {
+                  req.response = JSON.parse(res!.data as string);
+                } catch (e) {
+                  req.response = res.data;
+                  req.responseType = 'text';
+                }
+              } else {
+                req.response = res?.data;
               }
               break;
-            case 'arraybuffer': // TODO
-              // eslint-disable-next-line no-case-declarations
-              const ab = res?.data as ArrayBuffer;
-              // if (ab.byteLength <= MAX_SIZE) {
-              //   const buffer = Buffer.from(ab)
-              //   buffer.toString('base64')
-              //   let a: ArrayBuffer
-
-              //   try {
-              //     req.response = await blob2base64Async(blob);
-              //   } catch (e: any) {
-              //     req.response = await blob.text();
-              //     psLog.error(e.message);
-              //   }
-              // } else {
-              // }
+            case 'arraybuffer':
+              // NOTE: 小程序 arraybuffer 没有合适的方法转为 base64，一期暂时这样。
               req.response = '[arrayBuffer]';
-              req.responseReason = Reason.EXCEED_SIZE;
+              // req.responseReason = Reason.EXCEED_SIZE;
               break;
             default:
               break;
