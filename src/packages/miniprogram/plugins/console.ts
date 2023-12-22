@@ -22,8 +22,13 @@ export default class ConsolePlugin implements PageSpyPlugin {
       this.console[item] = globalThis.console[item];
       globalThis.console[item] = (...args: any[]) => {
         const page = getCurrentPages().pop();
-        const url =
-          (page && page.route + '?' + joinQuery(page.options || {})) || '/';
+        let url = '/';
+        if (page) {
+          url = page.route;
+          if (page.options && Object.keys(page.options).length > 0) {
+            url += '?' + joinQuery(page.options);
+          }
+        }
         this.printLog({
           logType: item,
           logs: args,

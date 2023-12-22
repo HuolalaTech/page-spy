@@ -60,20 +60,25 @@ export abstract class SocketWrapper {
     error: [],
     message: [],
   };
+
   protected emit(event: 'open' | 'close' | 'error' | 'message', data: any) {
     this.events[event].forEach((fun) => {
       fun(data);
     });
   }
+
   onOpen(fun: (res: { header?: Record<string, string> }) => void) {
     this.events.open.push(fun);
   }
+
   onClose(fun: (res: { code: number; reason: string }) => void) {
     this.events.close.push(fun);
   }
+
   onError(fun: (msg: string) => void) {
     this.events.error.push(fun);
   }
+
   onMessage(fun: (data: string | ArrayBuffer) => void) {
     this.events.message.push(fun);
   }

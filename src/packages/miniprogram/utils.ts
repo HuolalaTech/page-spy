@@ -1,9 +1,5 @@
 import { DeviceInfo } from 'types/lib/device';
 
-type CallbackParams<R = any, E = any> = {
-  [key: string]: any;
-} & AsyncCallback<R, E>;
-
 // PENDING: 这里补泛型
 export const promisifyMPApi = (api: (params: any) => any) => {
   return (params: Record<string, any>) => {
@@ -26,14 +22,13 @@ const OSMap: Record<string, DeviceInfo['osName']> = {
   android: 'Android',
   windows: 'Windows',
   mac: 'Mac',
-  devtools: 'Unknown', // TODO： 小程序独有的
 };
 
 export const getDeviceInfo = () => {
   const info = wx.getSystemInfoSync();
   return {
     osName:
-      info.platform !== 'devtools'
+      info.platform !== 'devtools' // NOTE: 小程序独有
         ? OSMap[info.platform]
         : info.system.split(' ')[0],
     osVersion: info.system,

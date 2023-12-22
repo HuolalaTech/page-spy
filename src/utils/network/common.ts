@@ -62,21 +62,23 @@ function parseUrlParams(url: string): [string, string][] {
 
   const params = queryString.split('&');
 
-  // 用于存储解析后的键值对
-  const result: [string, string][] = [];
-
-  for (const param of params) {
+  const result = params.map((param) => {
+    // 找到等号的索引
     const eqIndex = param.indexOf('=');
-    // 如果等号不存在，则将整个参数字符串作为key，值设为空字符串
+
+    // 如果等号不存在，整个参数字符串作为键，值设为空字符串
     if (eqIndex === -1) {
-      result.push([param, '']);
-    } else {
-      // 解析出键和值
-      const key = decodeURIComponent(param.slice(0, eqIndex));
-      const value = decodeURIComponent(param.slice(eqIndex + 1));
-      result.push([key, value]);
+      // 解码参数并返回键值对数组
+      return [param, ''];
     }
-  }
+
+    // 获取键和值，并解码
+    const key = decodeURIComponent(param.slice(0, eqIndex));
+    const value = decodeURIComponent(param.slice(eqIndex + 1));
+
+    // 返回键值对数组
+    return [key, value];
+  }) as [string, string][];
 
   return result;
 }
@@ -89,7 +91,7 @@ export function resolveUrlInfo(target: URL | string) {
 
     if (isBrowser()) {
       const { searchParams } = new URL(
-        target /* TO DELETE: 应该由外部传入 window.location.href*/,
+        target /* TO DELETE: 应该由外部传入 window.location.href */,
       );
       query = [...searchParams.entries()];
     } else {
