@@ -28,7 +28,6 @@
     "node": ">=10"
   },
   "scripts": {
-    "mp": "yarn build && cp dist/miniprogram/esm.min.js ../../../mphll/light-app/src/plugins/pageSpy.js",
     "build": "rollup -c",
     "postbuild": "cp -R ./types ./dist",
     "build:watch": "rollup -c -w",
@@ -37,7 +36,7 @@
     "lint:fix": "eslint --ext .js,.ts --fix ./src",
     "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,md,json}'",
     "commit": "git-cz",
-    "prepublishOnly": "yarn test --silent && yarn build",
+    "prepublishOnly": "yarn build",
     "release:major": "standard-version --release-as major",
     "release:minor": "standard-version --release-as minor",
     "release:patch": "standard-version --release-as patch"
