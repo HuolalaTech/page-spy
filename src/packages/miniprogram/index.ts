@@ -16,9 +16,7 @@ import pkg from '../../../package.json';
 // eslint-disable-next-line import/order
 import { Config } from 'src/utils/config';
 
-const Identifier = '__pageSpy';
-
-export let roomCache: Record<string, any> | null = null;
+let roomCache: Record<string, any> | null = null;
 
 export default class PageSpy {
   root: HTMLElement | null = null;

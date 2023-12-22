@@ -150,7 +150,7 @@ type WXSystemAPI = {
   );
 };
 
-declare var wx: WXStorageAPI & WXNetworkAPI & WXSystemAPI;
+declare const wx: WXStorageAPI & WXNetworkAPI & WXSystemAPI;
 
 type PageInfo = {
   route: string;

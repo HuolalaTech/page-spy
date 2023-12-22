@@ -1,34 +1,11 @@
+import { getRandomId, isObjectLike, psLog, toStringTag } from 'src/utils';
 import {
-  getRandomId,
-  isHeaders,
-  isObjectLike,
-  isString,
-  isURL,
-  psLog,
-  toStringTag,
-} from 'src/utils';
-import {
-  getFormattedBody,
   isOkStatusCode,
-  MAX_SIZE,
-  Reason,
   ReqReadyState,
   resolveUrlInfo,
   toLowerKeys,
 } from 'src/utils/network/common';
 import MPNetworkProxyBase from './base';
-
-type SuccessResType = {
-  data: string | object | ArrayBuffer;
-  statusCode: number;
-  header: Record<string, string>;
-  cookies?: string[];
-};
-
-type ErrorType = {
-  errMsg: string;
-  errno: number; // mini program error code
-};
 
 export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
   private request: typeof wx.request | null = null;
@@ -52,7 +29,7 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
       const req = that.getRequest(id);
       if (req) {
         const method = params.method || 'GET';
-        const url: string | URL = params.url;
+        const { url } = params;
         const requestHeader: HeadersInit | null = params.header || null;
 
         const urlInfo = resolveUrlInfo(url);

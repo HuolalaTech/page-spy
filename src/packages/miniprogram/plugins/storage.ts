@@ -2,6 +2,7 @@ import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
 import { SpyStorage } from 'types';
 import type PageSpyPlugin from 'src/utils/plugin';
 import socketStore from 'miniprogram/helpers/socket';
+import { psLog } from 'src/utils';
 
 function mpDataStringify(data: any) {
   const typeOfValue = typeof data;
@@ -38,8 +39,8 @@ export class StoragePlugin implements PageSpyPlugin {
 
   private static listenRefreshEvent() {
     socketStore.addListener(DEBUG_MESSAGE_TYPE.REFRESH, async ({ source }) => {
-      const { data } = source;
-      if (data === 'mpStorage') {
+      const { data: storageType } = source;
+      if (storageType === 'mpStorage') {
         try {
           const info = wx.getStorageInfoSync();
 
@@ -102,6 +103,8 @@ export class StoragePlugin implements PageSpyPlugin {
         sendSetItem(key, data);
         return res;
       } catch (e) {
+        // TODO e is unknown so we can't use it, for further investigation
+        psLog.error(`Failed to set storage synchronously: ${key}`);
         throw e;
       }
     };
@@ -128,6 +131,11 @@ export class StoragePlugin implements PageSpyPlugin {
         });
         return res;
       } catch (e) {
+        psLog.error(
+          `Failed to batch set storage synchronously: ${JSON.stringify(
+            kvList.map((kv) => kv.key),
+          )}`,
+        );
         throw e;
       }
     };
@@ -150,6 +158,7 @@ export class StoragePlugin implements PageSpyPlugin {
         sendRemoveItem(res);
         return res;
       } catch (e) {
+        psLog.error(`Failed to remove storage synchronously: ${key}`);
         throw e;
       }
     };
@@ -172,6 +181,7 @@ export class StoragePlugin implements PageSpyPlugin {
         sendClearItem();
         return res;
       } catch (e) {
+        psLog.error('Failed to clear storage synchronously');
         throw e;
       }
     };

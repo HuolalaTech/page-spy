@@ -1,8 +1,7 @@
-import { psLog } from 'src/utils';
 import { Config } from 'src/utils/config';
 import { InitConfig } from 'types';
-import { getDeviceInfo, joinQuery, promisifyMPApi } from '../utils';
 import { combineName } from 'src/utils/device';
+import { getDeviceInfo, joinQuery, promisifyMPApi } from '../utils';
 
 interface TResponse<T> {
   code: string;

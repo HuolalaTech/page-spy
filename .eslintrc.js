@@ -15,5 +15,7 @@ module.exports = {
     'no-plusplus': 'off',
     'arrow-body-style': 'off',
     'max-classes-per-file': 'off',
+    'prefer-template': 'off',
+    'class-methods-use-this': 'off',
   },
 };
