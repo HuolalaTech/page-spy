@@ -1,10 +1,11 @@
-export type ProxyType = 'log' | 'info' | 'error' | 'warn';
+export type ProxyType = 'log' | 'info' | 'error' | 'warn' | 'debug';
 
 export type DataType =
   | 'log'
   | 'info'
   | 'error'
   | 'warn'
+  | 'debug'
   | 'debug-origin'
   | 'debug-eval';
 export interface DataItem {
