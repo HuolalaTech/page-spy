@@ -56,7 +56,7 @@ export default class FetchProxy extends WebNetworkProxyBase {
           requestHeader = input.headers;
         }
 
-        const urlInfo = resolveUrlInfo(url);
+        const urlInfo = resolveUrlInfo(url, window.location.href);
         req.url = urlInfo.url;
         req.name = urlInfo.name;
         req.getData = urlInfo.query;

@@ -17,8 +17,8 @@ import {
   isOkStatusCode,
   resolveUrlInfo,
 } from 'src/utils/network/common';
-import socketStore from 'web/helpers/socket';
 import WebNetworkProxyBase from './base';
+
 declare global {
   interface XMLHttpRequest {
     pageSpyRequestId: string;
@@ -143,7 +143,7 @@ class XhrProxy extends WebNetworkProxyBase {
       } = XMLReq;
       const req = that.getRequest(pageSpyRequestId);
       if (req) {
-        const urlInfo = resolveUrlInfo(pageSpyRequestUrl);
+        const urlInfo = resolveUrlInfo(pageSpyRequestUrl, window.location.href);
         req.url = urlInfo.url;
         req.name = urlInfo.name;
         req.getData = urlInfo.query;

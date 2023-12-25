@@ -1,5 +1,4 @@
 import { getRandomId, psLog } from 'src/utils';
-import NetworkProxyBase from './base';
 import {
   addContentTypeHeader,
   getFormattedBody,
@@ -33,7 +32,7 @@ export default class BeaconProxy extends WebNetworkProxyBase {
       that.createRequest(id);
       const req = that.getRequest(id);
       if (req) {
-        const urlInfo = resolveUrlInfo(url);
+        const urlInfo = resolveUrlInfo(url, window.location.href);
         req.url = urlInfo.url;
         req.name = urlInfo.name;
         req.getData = urlInfo.query;

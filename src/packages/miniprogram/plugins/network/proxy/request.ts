@@ -55,16 +55,19 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
           // NOTE：小程序的奇葩操作： request content-type 全部为 application/json
           req.requestHeader = [['Content-Type', 'application/json']];
 
-          if (typeof params.data === 'string') {
-            req.requestPayload = params.data;
-          } else if (typeof params.data === 'object') {
-            if (params.data instanceof ArrayBuffer) {
+          const { data } = params;
+          if (data) {
+            if (typeof data === 'string') {
+              req.requestPayload = data;
+            } else if (data instanceof ArrayBuffer) {
               req.requestPayload = '[object ArrayBuffer]';
             } else {
-              req.requestPayload = JSON.stringify(params.data);
+              try {
+                req.requestPayload = JSON.stringify(data);
+              } catch (e) {
+                req.requestPayload = toStringTag(data);
+              }
             }
-          } else {
-            req.requestPayload = toStringTag(params.data);
           }
         }
         that.sendRequestItem(id, req);
@@ -87,7 +90,7 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
           that.sendRequestItem(id, req);
 
           // Loading ~ Done
-          if (!isOkStatusCode(res!.statusCode)) return '';
+          if (!isOkStatusCode(res!.statusCode)) return;
           const lowerHeaders = toLowerKeys(res?.header || {});
           const contentType = lowerHeaders['content-type'];
           if (contentType) {
@@ -144,9 +147,10 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
 
         const requestInstance = originRequest(params);
         return requestInstance;
-      } else {
-        psLog.warn('The request object is not found on window.fetch event');
       }
+
+      psLog.warn('The request object is not found on window.fetch event');
+      return null;
     };
   }
 }

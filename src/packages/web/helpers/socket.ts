@@ -1,6 +1,7 @@
 import { stringifyData } from 'src/utils';
 import { ROOM_SESSION_KEY } from 'src/utils/constants';
-import SocketStoreBase, {
+import {
+  SocketStoreBase,
   SocketState,
   SocketWrapper,
 } from 'src/utils/socket-base';
