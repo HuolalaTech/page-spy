@@ -19,7 +19,7 @@ interface TCreateRoom {
 }
 
 const getScheme = (enableSSL: InitConfig['enableSSL']) => {
-  return enableSSL ? ['https://', 'wss://'] : ['http://', 'ws://'];
+  return enableSSL !== false ? ['http://', 'ws://'] : ['https://', 'wss://'];
 };
 
 export default class Request {
