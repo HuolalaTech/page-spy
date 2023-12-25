@@ -77,6 +77,6 @@ export default [
         format: 'esm',
       },
     ],
-    plugins: [...plugins, del({ targets: ['dist/mp/*'] })],
+    plugins: [...plugins, del({ targets: ['dist/miniprogram/*'] })],
   },
 ];
