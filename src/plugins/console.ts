@@ -24,7 +24,8 @@ export default class ConsolePlugin implements PageSpyPlugin {
       'debug',
     ];
     type.forEach((item) => {
-      this.console[item] = window.console[item] || window.console.log;
+      this.console[item] =
+        window.console[item] || window.console.log || (() => {});
       window.console[item] = (...args: any[]) => {
         this.printLog({
           logType: item,
