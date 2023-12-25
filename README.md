@@ -33,7 +33,7 @@ After the integration, open your project in browser, there should be a widget (r
 
 ## The init parameters
 
-## Web
+### Web
 
 For browser, all parameters are optional, here is a description of each property and its default value：
 
