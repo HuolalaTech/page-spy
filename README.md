@@ -33,7 +33,9 @@ After the integration, open your project in browser, there should be a widget (r
 
 ## The init parameters
 
-All parameters are optional, here is a description of each property and its default value：
+## Web
+
+For browser, all parameters are optional, here is a description of each property and its default value：
 
 ```ts
 window.$pageSpy = new PageSpy(config?: InitConfig)
@@ -46,20 +48,23 @@ interface InitConfig {
   //   - api: "example.com"
   //   - clientOrigin: "https://example.com"
   // If your service is deployed elsewhere, you can manually specify here to override.
-  api: '';
-  clientOrigin: '';
+  api?: string;
+  clientOrigin?: string;
 
   // "project" is an aggregation of information that can be searched in the room list on the debug side.
-  project: 'default';
+  // default: 'default'
+  project?: string;
 
   // "title" is a user-defined parameter that can be used to distinguish the current debugging client,
   // and the corresponding information is displayed under the "device id" in each debugging connection panel.
-  title: '--';
+  // default: '--'
+  title?: string;
 
   // Indicates whether the SDK will automatically render the "Circle with Logo on White Background"
   // control in the bottom left corner of the client when initiation is complete. If set to false,
   // you can call window.$pageSpy.render() to render it manually.
-  autoRender: true;
+  // default: true
+  autoRender?: boolean;
 
   // Manually specify the scheme of the PageSpy service.
   // This works if the SDK can't correctly analyse the scheme, e.g. if PageSpy's browser plugin
@@ -69,6 +74,37 @@ interface InitConfig {
   //   - Pass boolean value:
   //     - true: the SDK will access the PageSpy service via ["https://", "wss://"].
   //     - false: the SDK will access the PageSpy service via ["http://", "wss://"]
-  enableSSL: null;
+  enableSSL?: boolean | null;
 }
+```
+
+### Mini Program
+
+Except for the `api` parameter, all parameters are optional, here is a description of each property and its default value：
+
+```ts
+const pageSpy = new PageSpy(config?: InitConfig)
+
+interface InitConfig {
+  // Server domain, must be provided。
+  // Example："example.com"
+  api: string;
+
+  // "project" is an aggregation of information that can be searched in the room list on the debug side.
+  // default: 'default'
+  project?: string;
+
+  // "title" is a user-defined parameter that can be used to distinguish the current debugging client,
+  // and the corresponding information is displayed under the "device id" in each debugging connection panel.
+  // default: '--'
+  title?: string;
+
+  // Manually specify the scheme of the PageSpy service.
+  // Note that except for development environment, mini-program requires the scheme to be set to "https", so:
+  //  - By default, pass the value undefined or null, the SDK will parse it to TRUE;
+  //  - true: the SDK will access the PageSpy service via ["https://", "wss://"];
+  //  - false: the SDK will access the PageSpy service via ["http://", "wss://"].
+  enableSSL?: boolean | null;
+}
+
 ```

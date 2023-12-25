@@ -32,6 +32,8 @@
 
 ## 实例化参数
 
+### Web
+
 所有的参数都是可选的，下面是各个属性的说明及其默认值：
 
 ```ts
@@ -43,19 +45,22 @@ interface InitConfig {
   //   - api: "example.com"
   //   - clientOrigin: "https://example.com"
   // 如果你的服务部署在别处，就需要在这里手动指定去覆盖。
-  api: '';
-  clientOrigin: '';
+  api?: string;
+  clientOrigin?: string;
 
   // project 作为信息的一种聚合，可以在调试端房间列表进行搜索
-  project: 'default';
+  // 默认值 'default'
+  project?: string;
 
   // title 供用户提供自定义参数，可以用于区分当前调试的客户端
   // 对应的信息显示在每个调试连接面板的「设备id」下方
-  title: '--';
+  // 默认值 '--'
+  title?: string;
 
   // 指示 SDK 初始化完成，是否自动在客户端左下角渲染「圆形白底带 Logo」的控件
   // 如果设置为 false, 可以调用 window.$pageSpy.render() 手动渲染
-  autoRender: true;
+  // 默认值 true
+  autoRender?: boolean;
 
   // 手动指定 PageSpy 服务的 scheme。
   // 这在 SDK 无法正确分析出 scheme 可以使用，例如 PageSpy 的浏览器插件
@@ -65,6 +70,37 @@ interface InitConfig {
   //   - 传递 boolean 值：
   //     - true：SDK 将通过 ["https://", "wss://"] 访问 PageSpy 服务
   //     - false：SDK 将通过 ["http://", "ws://"] 访问 PageSpy 服务
-  enableSSL: null;
+  enableSSL?: boolean | null;
 }
+```
+
+### 小程序
+
+除 `api` 外，其他参数都是可选的。
+
+```ts
+const pageSpy = new PageSpy(config?: InitConfig)
+
+interface InitConfig {
+  // server 地址域名，必填。
+  // 例子："example.com"
+  api: string;
+
+  // project 作为信息的一种聚合，可以在调试端房间列表进行搜索
+  // 默认值 'default'
+  project?: string;
+
+  // title 供用户提供自定义参数，可以用于区分当前调试的客户端
+  // 对应的信息显示在每个调试连接面板的「设备id」下方
+  // 默认值 '--'
+  title?: string;
+
+  // 手动指定 PageSpy 服务的 scheme。
+  // 注意小程序除了开发环境外，强制要求使用 https 和 wss 协议，所以：
+  //  - （默认）传值 undefined 或者 null：自动转换为 TRUE;
+  //  - true：SDK 将通过 ["https://", "wss://"] 访问 PageSpy 服务;
+  //  - false：SDK 将通过 ["http://", "ws://"] 访问 PageSpy 服务;
+  enableSSL?: boolean | null;
+}
+
 ```
