@@ -1,7 +1,7 @@
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
 import { psLog } from 'src/utils';
 import RequestItem from 'src/utils/request-item';
-import SocketStoreBase from '../socket-base';
+import { SocketStoreBase } from '../socket-base';
 import { ReqReadyState } from './common';
 
 type RequestStore = Record<string, RequestItem | null>;

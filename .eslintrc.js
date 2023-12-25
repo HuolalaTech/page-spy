@@ -17,5 +17,6 @@ module.exports = {
     'max-classes-per-file': 'off',
     'prefer-template': 'off',
     'class-methods-use-this': 'off',
+    'no-param-reassign': 'off',
   },
 };

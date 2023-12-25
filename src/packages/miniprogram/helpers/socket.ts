@@ -1,4 +1,5 @@
-import SocketStoreBase, {
+import {
+  SocketStoreBase,
   SocketState,
   SocketWrapper,
 } from 'src/utils/socket-base';
