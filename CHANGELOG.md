@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.10](https://github.com/HuolalaTech/page-spy/compare/v1.4.9...v1.4.10) (2023-12-26)
+
+### Features
+
+- supports console log output at the debug level ([#29](https://github.com/HuolalaTech/page-spy/issues/29)) ([b669170](https://github.com/HuolalaTech/page-spy/commit/b66917025b7308690c3419c8177029caa8f5be0d))
+
+### Bug Fixes
+
+- 🐛 get correct url when load fails ([#28](https://github.com/HuolalaTech/page-spy/issues/28)) ([24506f5](https://github.com/HuolalaTech/page-spy/commit/24506f58d0520413f3fc1739b12dce096fcb1e61))
+
 ### [1.4.9](https://github.com/HuolalaTech/page-spy/compare/v1.4.7...v1.4.9) (2023-12-20)
 
 ### Features
