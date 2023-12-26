@@ -16,9 +16,16 @@ export default class ConsolePlugin implements PageSpyPlugin {
     if (ConsolePlugin.hasInitd) return;
     ConsolePlugin.hasInitd = true;
 
-    const type: SpyConsole.ProxyType[] = ['log', 'info', 'error', 'warn'];
+    const type: SpyConsole.ProxyType[] = [
+      'log',
+      'info',
+      'error',
+      'warn',
+      'debug',
+    ];
     type.forEach((item) => {
-      this.console[item] = window.console[item];
+      this.console[item] =
+        window.console[item] || window.console.log || (() => {});
       window.console[item] = (...args: any[]) => {
         this.printLog({
           logType: item,
