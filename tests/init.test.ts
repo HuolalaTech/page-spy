@@ -75,7 +75,13 @@ describe('new PageSpy([config])', () => {
   });
 
   it('With ConsolePlugin loaded, ths console.<type> menthods be wrapped', () => {
-    const consoleKey: SpyConsole.ProxyType[] = ['log', 'info', 'warn', 'error'];
+    const consoleKey: SpyConsole.ProxyType[] = [
+      'log',
+      'info',
+      'warn',
+      'error',
+      'warn',
+    ];
     const originConsole = consoleKey.map((i) => console[i]);
     expect(consoleKey.map((i) => console[i])).toEqual(originConsole);
 
@@ -87,7 +93,7 @@ describe('new PageSpy([config])', () => {
     cPlugin.onCreated();
     expect(consoleKey.map((i) => console[i])).not.toEqual(originConsole);
     // @ts-ignore
-    expect(Object.keys(cPlugin.console)).toHaveLength(4);
+    expect(Object.keys(cPlugin.console)).toHaveLength(consoleKey.length);
   });
 
   it('With StoragePlugin loaded, the Storage.prototype[.<method>] be wrapped', () => {
