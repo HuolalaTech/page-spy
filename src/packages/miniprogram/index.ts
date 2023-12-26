@@ -88,6 +88,13 @@ export default class PageSpy {
         this.useOldConnection();
       }
     }
+
+    if (wx.canIUse('onAppShow')) {
+      wx.onAppShow(() => {
+        // Mini programe can not detect ws disconnect (before we add heart beat ping pong). So we need to refresh the connection.
+        this.useOldConnection();
+      });
+    }
     psLog.log('Plugins inited');
   }
 

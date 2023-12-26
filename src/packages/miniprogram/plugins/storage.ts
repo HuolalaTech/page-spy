@@ -76,6 +76,7 @@ export class StoragePlugin implements PageSpyPlugin {
       'batchGetStorage',
       'batchGetStorageSync',
       'removeStorage',
+      'removeStorageSync',
       'clearStorage',
       'clearStorageSync',
     ] as (keyof WXStorageAPI)[];

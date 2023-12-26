@@ -107,6 +107,13 @@ export default class PageSpy {
         this.useOldConnection();
       }
     }
+    // reconnect when page switch to front-ground.
+    document.addEventListener('visibilitychange', (e) => {
+      // For browser, if the connection exist, no need to recreate.
+      if (!document.hidden && !socketStore.connectionStatus) {
+        this.useOldConnection();
+      }
+    });
     psLog.log('Plugins inited');
     if (config.autoRender) {
       this.render();
