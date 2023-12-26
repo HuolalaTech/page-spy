@@ -130,7 +130,10 @@ export abstract class SocketStoreBase {
       if (!url) {
         throw Error('WebSocket url cannot be empty');
       }
-      // this.socket = new WebSocket(url);
+      // close existing connection
+      if (this.socket.getState() === SocketState.OPEN) {
+        this.socket.destroy();
+      }
       this.socket?.init(url);
       this.socketUrl = url;
       this.socket?.onOpen(() => {

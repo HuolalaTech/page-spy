@@ -134,6 +134,33 @@ type WXSystemAPI = {
   };
   onError(listener: (res: { message: string; stack: string }) => void);
   onUnHandledRejection(listener: (res: { reason: string }) => void);
+  onAppShow(
+    listener: (res: {
+      path: string;
+      scene: number;
+      query: Object;
+      shareTicket?: string;
+      referrerInfo?: {
+        appId: string;
+        extraData: string;
+      };
+      forwardMaterials?: {
+        type: string;
+        name: string;
+        path: string;
+        size: number;
+      }[];
+      chatType: 1 | 2 | 3 | 4;
+      apiCategory:
+        | 'default'
+        | 'nativeFunctionalized'
+        | 'browseOnly'
+        | 'embedded';
+    }) => void,
+  ): void;
+  onAppHide(listener: () => void): void;
+  offAppShow(listener: () => void): void;
+  offAppHide(listener: () => void): void;
   onPageNotFound(
     listener: (res: {
       path: string;
