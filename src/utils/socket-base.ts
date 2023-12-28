@@ -92,7 +92,7 @@ export abstract class SocketWrapper {
 
   protected clearListeners() {
     // clear listeners
-    Object.entries(this.events).forEach(([event, funs]) => {
+    Object.entries(this.events).forEach(([, funs]) => {
       funs.splice(0);
     });
   }
