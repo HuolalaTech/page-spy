@@ -107,7 +107,7 @@ export default class PageSpy {
       }
     }
     // reconnect when page switch to front-ground.
-    document.addEventListener('visibilitychange', (e) => {
+    document.addEventListener('visibilitychange', () => {
       // For browser, if the connection exist, no need to recreate.
       if (!document.hidden && !socketStore.connectionStatus) {
         this.useOldConnection();
