@@ -108,3 +108,5 @@ interface InitConfig {
 }
 
 ```
+
+For more details of mini-program usage, please refer to [Mini-Program Usage](https://github.com/HuolalaTech/page-spy/wiki/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E)

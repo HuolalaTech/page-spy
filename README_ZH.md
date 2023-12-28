@@ -104,3 +104,5 @@ interface InitConfig {
 }
 
 ```
+
+小程序更详细的说明请阅读 [小程序使用说明](https://github.com/HuolalaTech/page-spy/wiki/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E)

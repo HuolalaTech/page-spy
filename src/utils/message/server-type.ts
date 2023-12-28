@@ -6,3 +6,4 @@ export const MESSAGE = 'message';
 export const BROADCAST = 'broadcast';
 export const ERROR = 'error';
 export const PING = 'ping';
+export const PONG = 'pong';

@@ -14,6 +14,7 @@ import Request from './api';
 // import './index.less';
 // eslint-disable-next-line import/order
 import { Config } from 'src/utils/config';
+import { SocketState } from 'src/utils/socket-base';
 
 let roomCache: Record<string, any> | null = null;
 
@@ -92,7 +93,10 @@ export default class PageSpy {
       wx.onAppShow(() => {
         // Mini programe can not detect ws disconnect (before we add heart beat ping pong).
         // So we need to refresh the connection.
-        this.useOldConnection();
+        const state = socketStore.getSocket().getState();
+        if (state === SocketState.CLOSED || state === SocketState.CLOSING) {
+          this.useOldConnection();
+        }
       });
     }
     psLog.log('Plugins inited');

@@ -32,10 +32,11 @@ class WebSocketWrapper extends SocketWrapper {
 
   close() {
     this.socket?.close();
-    this.socket = null;
+    this.clearListeners();
   }
 
   destroy(): void {
+    this.close();
     this.socket = null;
   }
 

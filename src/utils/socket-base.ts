@@ -13,6 +13,7 @@ import {
 import type { SpyMessage, SpySocket } from 'types';
 import * as SERVER_MESSAGE_TYPE from 'src/utils/message/server-type';
 import atom from 'src/utils/atom';
+import { PackedEvent } from 'types/lib/socket-event';
 
 interface SocketEvent<T = any> {
   source: {
@@ -44,6 +45,8 @@ export enum SocketState {
   CLOSED = 3,
 }
 
+const HEARTBAET_INTERVAL = 5000;
+
 // 封装不同平台的 socket
 export abstract class SocketWrapper {
   abstract init(url: string): void;
@@ -65,6 +68,10 @@ export abstract class SocketWrapper {
     this.events[event].forEach((fun) => {
       fun(data);
     });
+    // for close and error, clear all listeners or they will be called on next socket instance.
+    if (event === 'close' || event === 'error') {
+      this.clearListeners();
+    }
   }
 
   onOpen(fun: (res: { header?: Record<string, string> }) => void) {
@@ -83,6 +90,12 @@ export abstract class SocketWrapper {
     this.events.message.push(fun);
   }
 
+  protected clearListeners() {
+    // clear listeners
+    Object.entries(this.events).forEach(([event, funs]) => {
+      funs.splice(0);
+    });
+  }
 }
 
 export abstract class SocketStoreBase {
@@ -92,7 +105,12 @@ export abstract class SocketStoreBase {
 
   private socketConnection: SpySocket.Connection | null = null;
 
-  private timer: ReturnType<typeof setInterval> | null = null;
+  // ping timer used for send next ping.
+  // a ping is sent after last msg (normal msg or pong) received.
+  private pingTimer: ReturnType<typeof setTimeout> | null = null;
+
+  // pong timer used for waiting for pong, if pong not received, close the connection
+  private pongTimer: ReturnType<typeof setTimeout> | null = null;
 
   // messages store
   private messages: (SpySocket.BroadcastEvent | SpySocket.UnicastEvent)[] = [];
@@ -131,11 +149,12 @@ export abstract class SocketStoreBase {
         throw Error('WebSocket url cannot be empty');
       }
       // close existing connection
-      if (this.socket.getState() === SocketState.OPEN) {
+      if (
+        this.socket.getState() === SocketState.OPEN ||
+        this.socket.getState() === SocketState.CONNECTING
+      ) {
         this.socket.destroy();
       }
-      this.socket?.init(url);
-      this.socketUrl = url;
       this.socket?.onOpen(() => {
         this.connectOnline();
         this.socket?.onMessage((evt) => {
@@ -146,10 +165,11 @@ export abstract class SocketStoreBase {
         this.connectOffline();
       });
       this.socket?.onError(() => {
-        this.reconnectTimes = 0;
-        this.reconnectable = false;
+        // we treat on error the same with on close.
         this.connectOffline();
       });
+      this.socketUrl = url;
+      this.socket?.init(url);
     } catch (e: any) {
       psLog.error(e.message);
     }
@@ -184,7 +204,7 @@ export abstract class SocketStoreBase {
   private connectOnline() {
     this.connectionStatus = true;
     this.reconnectTimes = 3;
-    this.pingConnect();
+    this.ping();
   }
 
   private connectOffline() {
@@ -206,28 +226,61 @@ export abstract class SocketStoreBase {
     this.init(this.socketUrl);
   }
 
-  private pingConnect() {
+  private ping() {
+    if (this.pingTimer) {
+      clearTimeout(this.pingTimer);
+    }
     /* c8 ignore start */
-    this.timer = setInterval(() => {
-      if (this.socket?.getState() !== SocketState.OPEN) return;
+    this.pingTimer = setTimeout(() => {
       this.send({
         type: 'ping',
         content: null,
       });
-    }, 10000);
+      this.pingTimer = null;
+      this.pongTimer = setTimeout(() => {
+        // lost connection
+        this.connectOffline();
+        this.pongTimer = null;
+      }, HEARTBAET_INTERVAL);
+    }, HEARTBAET_INTERVAL);
     /* c8 ignore stop */
   }
 
   private clearPing() {
-    if (this.timer) {
-      clearInterval(this.timer);
+    if (this.pingTimer) {
+      clearTimeout(this.pingTimer);
+      this.pingTimer = null;
     }
+    if (this.pongTimer) {
+      clearTimeout(this.pongTimer);
+      this.pongTimer = null;
+    }
+  }
+
+  private handlePong() {
+    clearTimeout(this.pongTimer!);
+    this.pongTimer = null;
+
+    if (this.pingTimer) {
+      clearTimeout(this.pingTimer);
+      this.pingTimer = null;
+    }
+    this.ping();
   }
 
   // get the data which we expected from nested structure of the message
   protected handleMessage(evt: any) {
-    const { CONNECT, MESSAGE, ERROR, JOIN, PING, LEAVE, CLOSE, BROADCAST } =
-      SERVER_MESSAGE_TYPE;
+    const {
+      CONNECT,
+      MESSAGE,
+      ERROR,
+      JOIN,
+      PING,
+      PONG,
+      LEAVE,
+      CLOSE,
+      BROADCAST,
+    } = SERVER_MESSAGE_TYPE;
     const result = JSON.parse(evt.data) as SpySocket.Event;
     const { type } = result;
     switch (type) {
@@ -250,6 +303,7 @@ export abstract class SocketStoreBase {
         this.connectOffline();
         break;
       /* c8 ignore start */
+      case PONG:
       case JOIN:
       case PING:
       case LEAVE:
@@ -260,6 +314,8 @@ export abstract class SocketStoreBase {
         break;
       /* c8 ignore stop */
     }
+    // whatever the type is, we should handle pong
+    this.handlePong();
   }
 
   private dispatchEvent(type: SpyMessage.InteractiveType, data: SocketEvent) {
@@ -383,6 +439,9 @@ export abstract class SocketStoreBase {
     if (this.connectionStatus) {
       /* c8 ignore start */
       try {
+        const pkMsg = msg as PackedEvent;
+        pkMsg.createdAt = Date.now();
+        pkMsg.requestId = getRandomId();
         this.socket?.send(stringifyData(msg));
       } catch (e) {
         throw Error(`Incompatible: ${(e as Error).message}`);

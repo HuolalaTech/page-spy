@@ -39,6 +39,8 @@ class MPWeixinSocketWrapper extends SocketWrapper {
 
   close() {
     this.socket?.close({});
+    this.state = SocketState.CLOSED;
+    this.clearListeners();
   }
 
   destroy(): void {
