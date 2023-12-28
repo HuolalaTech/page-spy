@@ -37,7 +37,7 @@ export class Modal {
     }, 300);
   }
 
-  append(node: HTMLElement) {
-    this.el.appendChild(node);
+  appendNode(node: HTMLElement) {
+    this.el.insertAdjacentElement('beforeend', node);
   }
 }

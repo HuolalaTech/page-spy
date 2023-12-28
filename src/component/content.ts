@@ -42,6 +42,7 @@ export class Content {
       e.stopPropagation();
       if (onOk) onOk();
     };
-    this.el.append(info, button);
+    this.el.insertAdjacentElement('beforeend', info);
+    this.el.insertAdjacentElement('beforeend', button);
   }
 }
