@@ -10,7 +10,6 @@ import { StoragePlugin } from './plugins/storage';
 
 import socketStore from './helpers/socket';
 import Request from './api';
-import pkg from '../../../package.json';
 
 // import './index.less';
 // eslint-disable-next-line import/order
@@ -21,7 +20,7 @@ let roomCache: Record<string, any> | null = null;
 export default class PageSpy {
   root: HTMLElement | null = null;
 
-  version = pkg.version;
+  version = PKG_VERSION;
 
   plugins: Record<string, PageSpyPlugin> = {};
 
@@ -91,7 +90,8 @@ export default class PageSpy {
 
     if (wx.canIUse('onAppShow')) {
       wx.onAppShow(() => {
-        // Mini programe can not detect ws disconnect (before we add heart beat ping pong). So we need to refresh the connection.
+        // Mini programe can not detect ws disconnect (before we add heart beat ping pong).
+        // So we need to refresh the connection.
         this.useOldConnection();
       });
     }

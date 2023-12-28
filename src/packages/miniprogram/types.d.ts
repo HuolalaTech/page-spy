@@ -1,3 +1,5 @@
+declare const PKG_VERSION: string;
+
 type AsyncCallback<R = any, E = any> = {
   success?: (res?: R) => void;
   fail?: (error?: E) => void;

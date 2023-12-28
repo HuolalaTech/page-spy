@@ -15,7 +15,6 @@ import { StoragePlugin } from './plugins/storage';
 
 import socketStore from './helpers/socket';
 import Request from './api';
-import pkg from '../../../package.json';
 
 import type { UElement } from './helpers/moveable';
 import { moveable } from './helpers/moveable';
@@ -31,7 +30,7 @@ const Identifier = '__pageSpy';
 export default class PageSpy {
   root: HTMLElement | null = null;
 
-  version = pkg.version;
+  version = PKG_VERSION;
 
   plugins: Record<string, PageSpyPlugin> = {};
 
