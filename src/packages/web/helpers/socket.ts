@@ -4,6 +4,7 @@ import {
   SocketStoreBase,
   SocketState,
   SocketWrapper,
+  WebSocketEvents,
 } from 'src/utils/socket-base';
 
 class WebSocketWrapper extends SocketWrapper {
@@ -11,13 +12,8 @@ class WebSocketWrapper extends SocketWrapper {
 
   init(url: string) {
     this.socket = new WebSocket(url);
-    const eventNames = ['open', 'close', 'error', 'message'] as (
-      | 'open'
-      | 'close'
-      | 'error'
-      | 'message'
-    )[];
-    (eventNames as typeof eventNames).forEach((eventName) => {
+    const eventNames: WebSocketEvents[] = ['open', 'close', 'error', 'message'];
+    eventNames.forEach((eventName) => {
       this.socket!.addEventListener(eventName, (data) => {
         this.events[eventName].forEach((cb) => {
           cb(data);
@@ -45,7 +41,7 @@ class WebSocketWrapper extends SocketWrapper {
   }
 }
 
-export class SocketStore extends SocketStoreBase {
+class WebSocketStore extends SocketStoreBase {
   // websocket instance
   protected socket: WebSocketWrapper = new WebSocketWrapper();
 
@@ -65,4 +61,4 @@ export class SocketStore extends SocketStoreBase {
   }
 }
 
-export default new SocketStore();
+export default new WebSocketStore();

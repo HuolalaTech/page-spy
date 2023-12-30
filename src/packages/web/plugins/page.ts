@@ -1,4 +1,4 @@
-import SocketStore from 'web/helpers/socket';
+import socketStore from 'web/helpers/socket';
 import type PageSpyPlugin from 'src/utils/plugin';
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
 
@@ -12,7 +12,7 @@ export default class PagePlugin implements PageSpyPlugin {
     if (PagePlugin.hasInitd) return;
     PagePlugin.hasInitd = true;
 
-    SocketStore.addListener(DEBUG_MESSAGE_TYPE.REFRESH, ({ source }, reply) => {
+    socketStore.addListener(DEBUG_MESSAGE_TYPE.REFRESH, ({ source }, reply) => {
       const { data } = source;
       if (data === 'page') {
         const msg = PagePlugin.collectHtml();

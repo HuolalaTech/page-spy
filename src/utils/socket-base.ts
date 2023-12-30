@@ -35,6 +35,7 @@ interface GetterMember {
   instanceId: string; // 当前实例的 id
 }
 
+export type WebSocketEvents = keyof WebSocketEventMap;
 type CallbackType = (data?: any) => void;
 
 // fork WebSocket state
@@ -54,17 +55,14 @@ export abstract class SocketWrapper {
   abstract close(data?: {}): void;
   abstract destroy(): void;
   abstract getState(): SocketState;
-  protected events: Record<
-    'open' | 'close' | 'error' | 'message',
-    CallbackType[]
-  > = {
+  protected events: Record<WebSocketEvents, CallbackType[]> = {
     open: [],
     close: [],
     error: [],
     message: [],
   };
 
-  protected emit(event: 'open' | 'close' | 'error' | 'message', data: any) {
+  protected emit(event: WebSocketEvents, data: any) {
     this.events[event].forEach((fun) => {
       fun(data);
     });
@@ -463,5 +461,3 @@ export abstract class SocketStoreBase {
     }
   }
 }
-
-export default SocketStoreBase;
