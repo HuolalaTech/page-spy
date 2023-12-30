@@ -6,7 +6,7 @@ import autoprefixer from 'autoprefixer';
 import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import json from '@rollup/plugin-json';
-import replace from '@rollup/plugin-replace'
+import replace from '@rollup/plugin-replace';
 import { uglify } from 'rollup-plugin-uglify';
 import alias from '@rollup/plugin-alias';
 import image from '@rollup/plugin-image';
@@ -26,7 +26,7 @@ const plugins = [
     // exclude: 'tests/**/*',
   }),
   replace({
-    'PKG_VERSION': `"pkg.version"`,
+    PKG_VERSION: `"${pkg.version}"`,
   }),
   postcss({
     extensions: ['.css', '.less'],
@@ -46,7 +46,7 @@ const plugins = [
       },
     ],
   }),
-,
+  ,
   uglify(),
 ];
 
@@ -67,15 +67,15 @@ export default [
         format: 'esm',
       },
     ],
-    plugins: [...plugins, 
+    plugins: [
+      ...plugins,
       babel({
-      exclude: ['node_modules/**', /deps\/modernizr/],
-      babelHelpers: 'bundled',
-      extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx'],
-
-    }), 
-    del({ targets: ['dist/web/*'] })
-  ],
+        exclude: ['node_modules/**', /deps\/modernizr/],
+        babelHelpers: 'bundled',
+        extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx'],
+      }),
+      del({ targets: ['dist/web/*'] }),
+    ],
   },
   {
     input: 'src/packages/miniprogram/index.ts',
@@ -85,12 +85,13 @@ export default [
         format: 'esm',
       },
     ],
-    plugins: [...plugins, 
+    plugins: [
+      ...plugins,
       babel({
         exclude: ['node_modules/**', /deps\/modernizr/],
         babelHelpers: 'runtime',
         extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx'],
-        plugins: ["@babel/plugin-transform-runtime"],
+        plugins: ['@babel/plugin-transform-runtime'],
         presets: [
           [
             '@babel/env',
@@ -100,8 +101,9 @@ export default [
             },
           ],
           '@babel/preset-typescript',
-        ]
-      }), 
-      del({ targets: ['dist/miniprogram/*'] })],
+        ],
+      }),
+      del({ targets: ['dist/miniprogram/*'] }),
+    ],
   },
 ];
