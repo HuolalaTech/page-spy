@@ -27,6 +27,7 @@ const plugins = [
   }),
   replace({
     PKG_VERSION: `"${pkg.version}"`,
+    preventAssignment: true,
   }),
   postcss({
     extensions: ['.css', '.less'],
@@ -46,7 +47,6 @@ const plugins = [
       },
     ],
   }),
-  ,
   uglify(),
 ];
 
