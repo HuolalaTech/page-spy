@@ -1,6 +1,6 @@
 import { WS } from 'jest-websocket-mock';
 import { DEBUG_MESSAGE_TYPE } from 'src/utils/message';
-import { SocketStore } from 'web/helpers/socket';
+import { WebSocketStore } from 'web/helpers/socket';
 import { ConnectEvent, ErrorEvent } from 'types/lib/socket-event';
 import * as SERVER_MESSAGE_TYPE from 'src/utils/message/server-type';
 
@@ -8,10 +8,10 @@ import * as SERVER_MESSAGE_TYPE from 'src/utils/message/server-type';
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 
 let server: WS;
-let client: SocketStore;
+let client: WebSocketStore;
 beforeEach(async () => {
   server = new WS(fakeUrl, { jsonProtocol: true });
-  client = new SocketStore();
+  client = new WebSocketStore();
   client.init(fakeUrl);
   await server.connected;
 });

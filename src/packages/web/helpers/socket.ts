@@ -7,7 +7,7 @@ import {
   WebSocketEvents,
 } from 'src/utils/socket-base';
 
-class WebSocketWrapper extends SocketWrapper {
+export class WebSocketWrapper extends SocketWrapper {
   private socket: WebSocket | null = null;
 
   init(url: string) {
@@ -41,7 +41,7 @@ class WebSocketWrapper extends SocketWrapper {
   }
 }
 
-class WebSocketStore extends SocketStoreBase {
+export class WebSocketStore extends SocketStoreBase {
   // websocket instance
   protected socket: WebSocketWrapper = new WebSocketWrapper();
 

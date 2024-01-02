@@ -36,6 +36,16 @@ global.navigator.sendBeacon = jest.fn<boolean, any>((...args: any) => {
 // mock window.alert
 window.alert = () => {};
 
+// mock browser env
+Object.defineProperty(document, Symbol.toStringTag, {
+  value: 'HTMLDocument',
+});
+
+// mock compile vars
+Object.defineProperty(window, 'PKG_VERSION', {
+  value: '1.0.0',
+});
+
 // mock window.cookieStore
 import '../__mocks__/cookie-store';
 

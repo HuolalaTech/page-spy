@@ -9,6 +9,7 @@ import PageSpy, { SpyConsole } from 'types';
 import socketStore from 'web/helpers/socket';
 import { ROOM_SESSION_KEY } from 'src/utils/constants';
 import { Config } from 'src/utils/config';
+import { isBrowser } from 'src/utils';
 
 const rootId = '#__pageSpy';
 afterEach(() => {
@@ -22,6 +23,12 @@ afterEach(() => {
   SystemPlugin.hasInitd = false;
   PagePlugin.hasInitd = false;
   StoragePlugin.hasInitd = false;
+});
+
+describe('Im in the right env', () => {
+  it('Im in browser', () => {
+    expect(isBrowser()).toBe(true);
+  });
 });
 
 describe('new PageSpy([config])', () => {

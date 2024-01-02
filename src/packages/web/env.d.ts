@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-redeclare */
 /* eslint-disable vars-on-top */
 /* eslint-disable no-var */
+
 declare var Modernizr: any;
 
 declare var PKG_VERSION: string;
