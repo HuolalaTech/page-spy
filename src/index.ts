@@ -221,8 +221,8 @@ export default class PageSpy {
     img.src = logoUrl;
     img.width = 50;
     img.height = 50;
-    logo.append(img);
-    root.insertAdjacentElement('afterbegin', logo);
+    logo.insertAdjacentElement('beforeend', img);
+    root.insertAdjacentElement('beforeend', logo);
     window.addEventListener('sdk-inactive', () => {
       logo.classList.add('inactive');
     });
@@ -256,8 +256,8 @@ export default class PageSpy {
         modal.close();
       },
     });
-    modal.append(content.el!);
-    root.append(modal.el);
+    modal.appendNode(content.el!);
+    root.insertAdjacentElement('beforeend', modal.el);
 
     function showModal(e: any) {
       const { isMoveEvent } = logo as unknown as UElement;
@@ -270,7 +270,7 @@ export default class PageSpy {
     }
     logo.addEventListener('click', showModal, false);
     logo.addEventListener('touchend', showModal, false);
-    document.documentElement.append(root);
+    document.documentElement.insertAdjacentElement('beforeend', root);
     moveable(logo);
     this.handleDeviceDPR();
 

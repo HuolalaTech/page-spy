@@ -22,7 +22,14 @@ export class DatabasePlugin implements PageSpyPlugin {
   public static hasInitd = false;
 
   private static get isSupport() {
-    if (!IDBFactory || !IDBObjectStore || !window.indexedDB) return false;
+    if (
+      !IDBFactory ||
+      !IDBObjectStore ||
+      !window.indexedDB ||
+      !window.indexedDB.databases
+    ) {
+      return false;
+    }
     return true;
   }
 
