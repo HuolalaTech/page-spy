@@ -1,3 +1,5 @@
+import { mockRequest } from './mock/request';
+
 Object.defineProperty(globalThis, 'name', {
   value: '小程序单元测试',
 });
@@ -14,22 +16,53 @@ function apiCallbackOptions() {
 
 Object.defineProperty(globalThis, 'wx', {
   value: {
-    setStorage(params) {
-      // params.success()
+    setStorage(params: AsyncCallback) {
+      setTimeout(() => {
+        params.success?.();
+      }, 0);
     },
     setStorageSync() {},
-    batchSetStorage() {},
+    batchSetStorage(params: AsyncCallback) {
+      setTimeout(() => {
+        params.success?.();
+      }, 0);
+    },
     batchSetStorageSync() {},
-    getStorage() {},
+    getStorage(params: AsyncCallback) {
+      setTimeout(() => {
+        params.success?.();
+      }, 0);
+    },
     getStorageSync() {},
     batchGetStorage() {},
     batchGetStorageSync() {},
-    removeStorage() {},
+    removeStorage(params: AsyncCallback) {
+      setTimeout(() => {
+        params.success?.();
+      }, 0);
+    },
     removeStorageSync() {},
-    clearStorage() {},
+    clearStorage(params: AsyncCallback) {
+      setTimeout(() => {
+        params.success?.();
+      }, 0);
+    },
     clearStorageSync() {},
 
-    request() {},
+    request: mockRequest,
     connectSocket() {},
+  },
+});
+
+Object.defineProperty(globalThis, 'getCurrentPages', {
+  value: function () {
+    return [
+      {
+        route: 'page/index/index',
+        options: {
+          aaa: 'bbb',
+        },
+      },
+    ];
   },
 });

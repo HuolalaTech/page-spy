@@ -4,7 +4,7 @@ import type PageSpyPlugin from 'src/utils/plugin';
 import socketStore from 'miniprogram/helpers/socket';
 import { psLog } from 'src/utils';
 
-function mpDataStringify(data: any) {
+export function mpDataStringify(data: any) {
   const typeOfValue = typeof data;
   let vStr: string = data;
   if (
@@ -23,18 +23,20 @@ function mpDataStringify(data: any) {
   return vStr;
 }
 
-export class StoragePlugin implements PageSpyPlugin {
+export default class StoragePlugin implements PageSpyPlugin {
   public name = 'StoragePlugin';
 
   public static hasInitd = false;
+
+  private static originFunctions: WXStorageAPI | null = null;
 
   // eslint-disable-next-line class-methods-use-this
   public onCreated() {
     if (StoragePlugin.hasInitd) return;
     StoragePlugin.hasInitd = true;
 
-    StoragePlugin.listenRefreshEvent();
     StoragePlugin.initStorageProxy();
+    StoragePlugin.listenRefreshEvent();
   }
 
   private static listenRefreshEvent() {
@@ -47,7 +49,9 @@ export class StoragePlugin implements PageSpyPlugin {
           const data = info.keys.map((key) => {
             return {
               name: key,
-              value: mpDataStringify(wx.getStorageSync(key)),
+              value: mpDataStringify(
+                StoragePlugin.originFunctions?.getStorageSync(key),
+              ),
             };
           });
 
@@ -82,8 +86,13 @@ export class StoragePlugin implements PageSpyPlugin {
     ] as (keyof WXStorageAPI)[];
 
     const originFunc = {} as WXStorageAPI;
+    this.originFunctions = {} as WXStorageAPI;
+
+    // proxyFunctions.forEach((name) => {
+    //   originFunc[name] = wx[name];
+    // });
     proxyFunctions.forEach((name) => {
-      (originFunc as any)[name] = wx[name];
+      this.originFunctions![name] = wx[name];
     });
 
     wx.setStorage = function (

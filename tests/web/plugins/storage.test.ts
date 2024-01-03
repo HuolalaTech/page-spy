@@ -1,5 +1,4 @@
-import { StoragePlugin } from "src/packages/web/plugins/storage";
-
+import { StoragePlugin } from 'src/packages/web/plugins/storage';
 
 // @ts-ignore
 const trigger = jest.spyOn(StoragePlugin, 'sendStorageItem');
@@ -12,7 +11,7 @@ afterEach(() => {
   sessionStorage.clear();
   document.cookie = '';
   trigger.mockReset();
-  console.log(trigger.mock);
+  // console.log(trigger.mock);
 });
 
 describe('Storage plugin', () => {

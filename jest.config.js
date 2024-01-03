@@ -27,7 +27,6 @@ module.exports = {
         color: '#84DC42',
       },
       testMatch: ['<rootDir>/tests/miniprogram/**/*.test.ts'],
-      testEnvironment: '<rootDir>/tests/miniprogram/environment.ts',
       collectCoverage: true,
       coverageDirectory: './coverage/miniprogram',
       coverageProvider: 'v8',

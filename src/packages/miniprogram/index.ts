@@ -1,12 +1,13 @@
 import type { InitConfig } from 'types';
 import { getRandomId, psLog } from 'src/utils';
 import type PageSpyPlugin from 'src/utils/plugin';
+import { SocketState } from 'src/utils/socket-base';
 
 import ConsolePlugin from './plugins/console';
 import ErrorPlugin from './plugins/error';
 import NetworkPlugin from './plugins/network';
 // import SystemPlugin from './plugins/system';
-import { StoragePlugin } from './plugins/storage';
+import StoragePlugin from './plugins/storage';
 
 import socketStore from './helpers/socket';
 import Request from './api';
@@ -14,7 +15,6 @@ import Request from './api';
 // import './index.less';
 // eslint-disable-next-line import/order
 import { Config } from 'src/utils/config';
-import { SocketState } from 'src/utils/socket-base';
 
 let roomCache: Record<string, any> | null = null;
 
