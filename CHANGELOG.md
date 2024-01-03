@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.11](https://github.com/HuolalaTech/page-spy/compare/v1.4.10...v1.4.11) (2024-01-03)
+
+### Bug Fixes
+
+- use 'insertAdjacentElement' instead of 'append' ([#31](https://github.com/HuolalaTech/page-spy/issues/31)) ([3ea8651](https://github.com/HuolalaTech/page-spy/commit/3ea86516139704382be0bc40ae9f8d17e09be4c8))
+
 ### [1.4.10](https://github.com/HuolalaTech/page-spy/compare/v1.4.9...v1.4.10) (2023-12-26)
 
 ### Features
