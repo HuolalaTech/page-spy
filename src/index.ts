@@ -240,7 +240,9 @@ export default class PageSpy {
       <p><b>Project:</b> ${project}</p>
       `,
       onOk: () => {
-        const text = `${clientOrigin}/devtools?version=${this.name}&address=${this.address}`;
+        const text = `${clientOrigin}/#/devtools?version=${encodeURIComponent(
+          this.name,
+        )}&address=${encodeURIComponent(this.address)}`;
         const copyRes = copy(text);
         let message = '';
         const langs = navigator.languages;
