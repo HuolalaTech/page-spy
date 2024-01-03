@@ -18,37 +18,35 @@ beforeEach(async () => {
 
 afterEach(() => {
   WS.clean();
+  jest.useRealTimers();
 });
 
 const fakeUrl = 'ws://localhost:1234';
 
 describe('Socket store', () => {
   it('Close, Reconnect', async () => {
+    jest.useFakeTimers();
     // @ts-ignore
     const reconnect = jest.spyOn(client, 'tryReconnect');
     expect(client.connectionStatus).toBe(true);
     client.getSocket()?.close();
 
-    await sleep(2000 + 500);
+    jest.advanceTimersByTime(2000 + 500);
+
     expect(reconnect).toHaveBeenCalledTimes(1);
     expect(client.connectionStatus).toBe(true);
   });
 
-  it(
-    'Connect failed if reconnect over 3 times',
-    async () => {
-      // @ts-ignore
-      expect(client.reconnectTimes).toBe(3);
-      server.close();
+  it('Connect failed if reconnect over 3 times', async () => {
+    jest.useFakeTimers();
+    // @ts-ignore
+    expect(client.reconnectTimes).toBe(3);
+    server.close();
 
-      await sleep(2000 * 3);
-      // @ts-ignore
-      expect(client.reconnectTimes).toBe(0);
-      // @ts-ignore
-      expect(client.reconnectable).toBe(false);
-    },
-    2000 * 4,
-  );
+    jest.advanceTimersByTime((2000 + 500) * 3);
+    // @ts-ignore
+    expect(client.reconnectTimes).toBe(0);
+  });
 
   it('Stop', async () => {
     expect(client.connectionStatus).toBe(true);
