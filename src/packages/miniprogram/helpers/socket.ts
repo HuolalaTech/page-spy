@@ -4,7 +4,7 @@ import {
   SocketWrapper,
 } from 'src/utils/socket-base';
 
-class MPWeixinSocketWrapper extends SocketWrapper {
+export class MPWeixinSocketWrapper extends SocketWrapper {
   private socket: MPWeixinSocket | null = null;
 
   private state: SocketState = 0;

@@ -50,7 +50,36 @@ Object.defineProperty(globalThis, 'wx', {
     clearStorageSync() {},
 
     request: mockRequest,
-    connectSocket() {},
+    connectSocket(params: { url: string }) {
+      let closeHandler: (res: any) => void;
+      let openHandler: (res: any) => void;
+      let messageHandler: (data: object) => void;
+      let errorHandler: (msg: string) => void;
+      return {
+        send(data: object) {},
+        onOpen(handler: (res: any) => void) {
+          openHandler = handler;
+        },
+        onClose(handler: (res: any) => void) {
+          closeHandler = handler;
+        },
+        onError(handler: (msg: string) => void) {
+          errorHandler = handler;
+        },
+        close() {},
+        onMessage(handler: (data: object) => void) {
+          messageHandler = handler;
+        },
+      } as MPWeixinSocket;
+    },
+
+    getSystemInfoSync() {
+      return {
+        platform: 'devtools',
+        version: '1.0.0',
+        system: 'iOS 14.0.1',
+      };
+    },
   },
 });
 

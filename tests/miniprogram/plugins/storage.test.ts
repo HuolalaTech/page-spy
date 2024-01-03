@@ -32,9 +32,14 @@ describe('Storage plugin', () => {
   it('set storage async', (done) => {
     wx.setStorage({ key: '1', data: '1' });
     wx.setStorage({ key: '2', data: '2' });
-
+    wx.batchSetStorage({
+      kvList: [
+        { key: '3', value: '3' },
+        { key: '4', value: '4' },
+      ],
+    });
     setTimeout(() => {
-      expect(trigger).toHaveBeenCalledTimes(2);
+      expect(trigger).toHaveBeenCalledTimes(4);
       expect(trigger).lastCalledWith(
         expect.objectContaining({
           type: 'mpStorage',
@@ -47,7 +52,14 @@ describe('Storage plugin', () => {
   it('set storage sync', () => {
     wx.setStorageSync('3', '3');
     wx.setStorageSync('3', '4');
-    expect(trigger).toHaveBeenCalledTimes(2);
+    wx.batchSetStorageSync({
+      kvList: [
+        { key: '3', value: '3' },
+        { key: '4', value: '4' },
+      ],
+    });
+
+    expect(trigger).toHaveBeenCalledTimes(4);
     expect(trigger).lastCalledWith(
       expect.objectContaining({
         type: 'mpStorage',
@@ -57,9 +69,9 @@ describe('Storage plugin', () => {
   });
   it('get storage async', (done) => {
     wx.getStorage({ key: '1' });
-
+    wx.batchGetStorage({ keyList: ['1', '2'] });
     setTimeout(() => {
-      expect(trigger).toHaveBeenCalledTimes(1);
+      expect(trigger).toHaveBeenCalledTimes(3);
       expect(trigger).lastCalledWith(
         expect.objectContaining({
           type: 'mpStorage',
@@ -72,6 +84,7 @@ describe('Storage plugin', () => {
   it('get storage sync', () => {
     wx.getStorageSync('3');
     wx.getStorageSync('4');
+    wx.batchGetStorageSync(['3', '4']);
     expect(trigger).toHaveBeenCalledTimes(2);
     expect(trigger).lastCalledWith(
       expect.objectContaining({
@@ -79,6 +92,48 @@ describe('Storage plugin', () => {
         action: 'get',
       }),
     );
+  });
+
+  it('remove storage async', (done) => {
+    wx.removeStorage({ key: '1' });
+    wx.removeStorage({ key: '2' });
+    setTimeout(() => {
+      expect(trigger).toHaveBeenCalledTimes(2);
+      expect(trigger).lastCalledWith(
+        expect.objectContaining({
+          type: 'mpStorage',
+          action: 'remove',
+        }),
+      );
+      done();
+    }, 100);
+  });
+
+  it('remove storage sync', () => {
+    wx.removeStorageSync('1');
+    wx.removeStorageSync('2');
+    expect(trigger).toHaveBeenCalledTimes(2);
+    expect(trigger).lastCalledWith(
+      expect.objectContaining({
+        type: 'mpStorage',
+        action: 'remove',
+      }),
+    );
+  });
+
+  it('clear storage', (done) => {
+    wx.clearStorageSync();
+    wx.clearStorage({});
+    setTimeout(() => {
+      expect(trigger).toHaveBeenCalledTimes(2);
+      expect(trigger).lastCalledWith(
+        expect.objectContaining({
+          type: 'mpStorage',
+          action: 'clear',
+        }),
+      );
+      done();
+    }, 100);
   });
   // await cookieStore.delete('1');
   // await cookieStore.delete('2');

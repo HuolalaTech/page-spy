@@ -86,13 +86,14 @@ export default class StoragePlugin implements PageSpyPlugin {
     ] as (keyof WXStorageAPI)[];
 
     const originFunc = {} as WXStorageAPI;
-    this.originFunctions = {} as WXStorageAPI;
+    StoragePlugin.originFunctions = {} as WXStorageAPI;
 
     // proxyFunctions.forEach((name) => {
     //   originFunc[name] = wx[name];
     // });
     proxyFunctions.forEach((name) => {
-      this.originFunctions![name] = wx[name];
+      // @ts-ignore
+      StoragePlugin.originFunctions![name] = wx[name];
     });
 
     wx.setStorage = function (
