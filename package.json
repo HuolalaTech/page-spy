@@ -4,10 +4,15 @@
   "description": "A developer tool for debugging remote web page.",
   "exports": {
     ".": "./dist/web/index.min.js",
-    "./web": "./dist/web/esm.min.js",
-    "./miniprogram": "./dist/miniprogram/esm.min.js"
+    "./web": {
+      "import": "./dist/web/esm.min.js",
+      "types": "./dist/types/web.d.ts"
+    },
+    "./miniprogram": {
+      "import": "./dist/miniprogram/esm.min.js",
+      "types": "./dist/types/miniprogram.d.ts"
+    }
   },
-  "types": "dist/types/index.d.ts",
   "license": "MIT",
   "homepage": "https://huolalatech.github.io/page-spy-web/",
   "repository": {

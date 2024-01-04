@@ -1,4 +1,3 @@
-import PageSpyPlugin from 'src/plugins';
 export interface InitConfig {
   /**
    * The server base url. For example, "example.com".
@@ -6,23 +5,11 @@ export interface InitConfig {
    * - Filter room: `https://${api}/room/list`
    * - Join WebSocket room: `wss://${api}/ws/room/join`
    */
-  api?: string;
-
-  /**
-   * Client host. Form example, "https://example.com".
-   */
-  clientOrigin?: string;
+  api: string;
   /**
    * Project name, used for group connections
    */
   project?: string;
-  /**
-   * Indicate whether auto render the widget on the bottom-left corner.
-   * You can manually render later by calling "window.$pageSpy.render()"
-   * if passed false.
-   * @default true
-   */
-  autoRender?: boolean;
   /**
    * Custom title for displaying some data like user info to
    * help you to distinguish the client. The title value will
@@ -31,18 +18,10 @@ export interface InitConfig {
   title?: string;
   /**
    * Specify the server <scheme> manually.
-   *
-   * This is especially useful if PageSpy can't analyse the scheme correctly,
-   * e.g. the PageSpy browser plugin loads the SDK with
-   * "chrome-extension://xxx/sdk/index.min.js", which will be parsed as
-   * an invalid "chrome-extension://", and fallback to ['http://', 'ws://']
-   *
-   * - Pass `undefined | null`: sdk will auto analyse scheme;
-   * - Pass <boolean> value:
-   *   - false: sdk will use ['http://', 'ws://'];
-   *   - true: sdk will use ['https://', 'wss://'];
+   * - false: sdk will use ['http://', 'ws://'];
+   * - true (Default): sdk will use ['https://', 'wss://'];
    */
-  enableSSL?: boolean | null;
+  enableSSL?: boolean;
 }
 
 export * as SpyDevice from './lib/device';
@@ -54,8 +33,12 @@ export * as SpyConsole from './lib/console';
 export * as SpySystem from './lib/system';
 export * as SpyNetwork from './lib/network';
 export * as SpyStorage from './lib/storage';
-export * as SpyPage from './lib/page';
-export * as SpyDatabase from './lib/database';
+
+interface PageSpyPlugin {
+  name: string;
+  onCreated?(): void;
+  onLoaded?(): void;
+}
 
 interface PageSpy {
   root: HTMLElement | null;
@@ -73,8 +56,6 @@ interface PageSpyConstructor {
   render(): void;
 }
 
-declare global {
-  interface Window {
-    PageSpy: PageSpyConstructor;
-  }
-}
+declare const PageSpy: PageSpyConstructor;
+
+export default PageSpy;
