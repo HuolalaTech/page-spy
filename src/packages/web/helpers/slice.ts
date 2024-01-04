@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+// NOTE: this file is not used, so ignore it in test.
 const SIGNAL_BYTE = 2; //
 const MAX_BYTE = 1024 * 100;
 const MAX_SIZE = MAX_BYTE / SIGNAL_BYTE;

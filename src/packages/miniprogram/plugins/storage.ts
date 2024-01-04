@@ -72,7 +72,7 @@ export default class StoragePlugin implements PageSpyPlugin {
       }
     });
   }
-  /* c8 ignore end */
+  /* c8 ignore stop */
 
   private static initStorageProxy() {
     const { sendClearItem, sendRemoveItem, sendSetItem } = StoragePlugin;
