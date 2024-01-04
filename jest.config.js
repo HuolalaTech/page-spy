@@ -2,6 +2,7 @@
  * @type {import("ts-jest/dist/types").InitialOptionsTsJest}
  */
 module.exports = {
+  collectCoverageFrom: ['src/**/*.{ts,tsx}'],
   projects: [
     {
       displayName: {

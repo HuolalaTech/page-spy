@@ -8,41 +8,84 @@ export const mockRequest = (
     responseType?: 'text' | 'arraybuffer';
   } & AsyncCallback,
 ) => {
+  let res: any = {};
   switch (params.url) {
     case '/plain-text':
-      params.success?.({
+      res = {
         statusCode: 200,
         header: {
           'content-type': 'application/json',
         },
         data: 'Hello PageSpy',
-      });
+      };
+      params.success?.(res);
+      params.complete?.(res);
       break;
     case '/json':
-      params.success?.({
+      res = {
         statusCode: 200,
         header: {
           'content-type': 'application/json',
         },
         data: { text: 'Hello PageSpy' },
-      });
+      };
+      params.success?.(res);
+      params.complete?.(res);
       break;
     case '/array-buffer':
-      params.success?.({
+      res = {
         statusCode: 200,
         header: {
-          'content-type': 'application/json',
+          'content-type': 'application/octet-stream',
         },
-        data: new Uint8Array([1, 2, 3, 4]),
-      });
+        data: new ArrayBuffer(10),
+      };
+      params.success?.(res);
+      params.complete?.(res);
+      break;
+    case '/fail':
+      res = {
+        statusCode: 400,
+        header: {
+          'content-type': 'text/plain',
+        },
+        data: 'Hello PageSpy',
+      };
+      params.fail?.(res);
+      params.complete?.(res);
       break;
     default:
-      params.success?.({
+      if (params.url.includes('/api/v1/room/create')) {
+        res = {
+          statusCode: 200,
+          header: {
+            'content-type': 'application/json',
+          },
+          data: {
+            code: 'ok',
+            message: 'mock response',
+            success: true,
+            data: {
+              name: 'xxxx-name',
+              address: 'xxxx-address',
+              group: 'xxxx-group',
+              password: 'xxxx-password',
+              tags: {},
+            },
+          },
+        };
+        params.success?.(res);
+        params.complete?.(res);
+        return;
+      }
+      res = {
         statusCode: 200,
         header: {
           'content-type': 'text/plain',
         },
         data: 'Hello PageSpy',
-      });
+      };
+      params.success?.(res);
+      params.complete?.(res);
   }
 };

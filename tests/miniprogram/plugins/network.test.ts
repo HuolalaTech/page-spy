@@ -49,6 +49,35 @@ describe('wx.request proxy', () => {
     });
   });
 
+  it('The origin callback will be called', async () => {
+    const reqSpy = jest.spyOn(wx, 'request');
+    new NetworkPlugin().onCreated();
+
+    const successCallback = jest.fn();
+    const completeCallback = jest.fn();
+    const failCallback = jest.fn();
+    // fetch(url, init)
+    wx.request({
+      url: '/',
+      method: 'GET',
+      success: successCallback,
+      complete: completeCallback,
+    });
+    await sleep();
+    expect(successCallback).toBeCalled();
+    expect(completeCallback).toBeCalled();
+
+    wx.request({
+      url: '/fail',
+      method: 'GET',
+      fail: failCallback,
+      complete: completeCallback,
+    });
+    await sleep();
+    expect(successCallback).toBeCalled();
+    expect(completeCallback).toBeCalledTimes(2);
+  });
+
   it('Request plain text', (done) => {
     new NetworkPlugin().onCreated();
     wx.request({
@@ -76,10 +105,45 @@ describe('wx.request proxy', () => {
       url: '/array-buffer',
       responseType: 'arraybuffer',
       success(res) {
-        expect(res?.data).toEqual(new Uint8Array([1, 2, 3, 4]));
+        expect(res?.data).toEqual(new ArrayBuffer(10));
         done();
       },
     });
+  });
+
+  it('Array buffer response will not be converted to base64', (done) => {
+    const np = new NetworkPlugin();
+    np.onCreated();
+    const { requestProxy } = np;
+    expect(computeRequestMapInfo(requestProxy).size).toBe(0);
+
+    wx.request({
+      url: `/array-buffer`,
+      responseType: 'arraybuffer',
+      success(res) {
+        expect(res?.data).toEqual(new ArrayBuffer(10));
+        const { freezedRequests, size } = computeRequestMapInfo(requestProxy);
+        expect(size).toBe(1);
+        const current = Object.values(freezedRequests);
+        expect(current[0]?.responseType).toBe('arraybuffer');
+        expect(current[0]?.response).toBe('[object ArrayBuffer]');
+        done();
+      },
+    });
+  });
+
+  it('The SDK record the request information', () => {
+    const np = new NetworkPlugin();
+    np.onCreated();
+    const { requestProxy } = np;
+    expect(requestProxy).not.toBe(null);
+    expect(computeRequestMapInfo(requestProxy).size).toBe(0);
+
+    const count = 5;
+    Array.from({ length: count }).forEach((_, index) => {
+      wx.request({ url: `${apiPrefix}/posts/${index}` });
+    });
+    expect(computeRequestMapInfo(requestProxy).size).toBe(count);
   });
 
   // it('Big response entity will not be converted to base64 by PageSpy', async () => {
@@ -97,20 +161,6 @@ describe('wx.request proxy', () => {
   //   const current = Object.values(freezedRequests);
   //   expect(current[0]?.response).toBe('[object Blob]');
   //   expect(current[0]?.responseReason).toBe(Reason.EXCEED_SIZE);
-  // });
-
-  // it('The SDK record the request information', () => {
-  //   const np = new NetworkPlugin();
-  //   np.onCreated();
-  //   const { fetchProxy } = np;
-  //   expect(fetchProxy).not.toBe(null);
-  //   expect(computeRequestMapInfo(fetchProxy).size).toBe(0);
-
-  //   const count = 5;
-  //   Array.from({ length: count }).forEach((_, index) => {
-  //     fetch(`${apiPrefix}/posts/${index}`);
-  //   });
-  //   expect(computeRequestMapInfo(fetchProxy).size).toBe(count);
   // });
 
   // it('The cached request items will be freed when no longer needed', async () => {

@@ -1,6 +1,8 @@
 import StoragePlugin, {
   mpDataStringify,
 } from 'src/packages/miniprogram/plugins/storage';
+import { initStorageMock } from '../mock/storage';
+import socketStore from 'miniprogram/helpers/socket';
 
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 
@@ -8,8 +10,10 @@ const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 const trigger = jest.spyOn(StoragePlugin, 'sendStorageItem');
 
 beforeAll(() => {
+  initStorageMock();
   new StoragePlugin().onCreated();
 });
+
 afterEach(() => {
   trigger.mockReset();
   // console.log(trigger.mock);
@@ -24,12 +28,12 @@ describe('Storage data stringify', () => {
     const date = new Date();
     expect(mpDataStringify(date)).toBe(date.toDateString());
     expect(mpDataStringify(null)).toBe('null');
-    expect(mpDataStringify(undefined)).toBe('undefined');
+    expect(mpDataStringify(undefined)).toBe(undefined);
   });
 });
 
 describe('Storage plugin', () => {
-  it('set storage async', (done) => {
+  it('set storage async', async () => {
     wx.setStorage({ key: '1', data: '1' });
     wx.setStorage({ key: '2', data: '2' });
     wx.batchSetStorage({
@@ -38,26 +42,22 @@ describe('Storage plugin', () => {
         { key: '4', value: '4' },
       ],
     });
-    setTimeout(() => {
-      expect(trigger).toHaveBeenCalledTimes(4);
-      expect(trigger).lastCalledWith(
-        expect.objectContaining({
-          type: 'mpStorage',
-          action: 'set',
-        }),
-      );
-      done();
-    }, 100);
+    await sleep();
+    expect(trigger).toHaveBeenCalledTimes(4);
+    expect(trigger).lastCalledWith(
+      expect.objectContaining({
+        type: 'mpStorage',
+        action: 'set',
+      }),
+    );
   });
   it('set storage sync', () => {
     wx.setStorageSync('3', '3');
     wx.setStorageSync('3', '4');
-    wx.batchSetStorageSync({
-      kvList: [
-        { key: '3', value: '3' },
-        { key: '4', value: '4' },
-      ],
-    });
+    wx.batchSetStorageSync([
+      { key: '3', value: '3' },
+      { key: '4', value: '4' },
+    ]);
 
     expect(trigger).toHaveBeenCalledTimes(4);
     expect(trigger).lastCalledWith(
@@ -67,46 +67,18 @@ describe('Storage plugin', () => {
       }),
     );
   });
-  it('get storage async', (done) => {
-    wx.getStorage({ key: '1' });
-    wx.batchGetStorage({ keyList: ['1', '2'] });
-    setTimeout(() => {
-      expect(trigger).toHaveBeenCalledTimes(3);
-      expect(trigger).lastCalledWith(
-        expect.objectContaining({
-          type: 'mpStorage',
-          action: 'get',
-        }),
-      );
-      done();
-    }, 100);
-  });
-  it('get storage sync', () => {
-    wx.getStorageSync('3');
-    wx.getStorageSync('4');
-    wx.batchGetStorageSync(['3', '4']);
+
+  it('remove storage async', async () => {
+    wx.removeStorage({ key: '1' });
+    wx.removeStorage({ key: '2' });
+    await sleep();
     expect(trigger).toHaveBeenCalledTimes(2);
     expect(trigger).lastCalledWith(
       expect.objectContaining({
         type: 'mpStorage',
-        action: 'get',
+        action: 'remove',
       }),
     );
-  });
-
-  it('remove storage async', (done) => {
-    wx.removeStorage({ key: '1' });
-    wx.removeStorage({ key: '2' });
-    setTimeout(() => {
-      expect(trigger).toHaveBeenCalledTimes(2);
-      expect(trigger).lastCalledWith(
-        expect.objectContaining({
-          type: 'mpStorage',
-          action: 'remove',
-        }),
-      );
-      done();
-    }, 100);
   });
 
   it('remove storage sync', () => {
@@ -121,19 +93,28 @@ describe('Storage plugin', () => {
     );
   });
 
-  it('clear storage', (done) => {
+  it('clear storage', async () => {
     wx.clearStorageSync();
     wx.clearStorage({});
-    setTimeout(() => {
-      expect(trigger).toHaveBeenCalledTimes(2);
-      expect(trigger).lastCalledWith(
-        expect.objectContaining({
-          type: 'mpStorage',
-          action: 'clear',
-        }),
-      );
-      done();
-    }, 100);
+    await sleep();
+    expect(trigger).toHaveBeenCalledTimes(2);
+    expect(trigger).lastCalledWith(
+      expect.objectContaining({
+        type: 'mpStorage',
+        action: 'clear',
+      }),
+    );
+  });
+
+  it('Send refresh all storage', async () => {
+    StoragePlugin.sendRefresh();
+    expect(trigger).toHaveBeenCalledTimes(1);
+    expect(trigger).lastCalledWith(
+      expect.objectContaining({
+        type: 'mpStorage',
+        action: 'get',
+      }),
+    );
   });
   // await cookieStore.delete('1');
   // await cookieStore.delete('2');

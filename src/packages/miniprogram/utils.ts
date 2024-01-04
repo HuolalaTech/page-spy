@@ -31,7 +31,7 @@ export const getDeviceInfo = () => {
       info.platform !== 'devtools' // NOTE: 小程序独有
         ? OSMap[info.platform]
         : info.system.split(' ')[0],
-    osVersion: info.system,
+    osVersion: info.system.split(' ')[1],
     browserName: 'MPWeChat',
     browserVersion: info.version,
   } as DeviceInfo;

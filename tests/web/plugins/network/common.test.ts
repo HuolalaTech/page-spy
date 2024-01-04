@@ -6,7 +6,7 @@ import {
   getFormattedBody,
   resolveUrlInfo,
 } from 'src/utils/network/common';
-import { toStringTag } from 'src/utils';
+import { isBrowser, toStringTag } from 'src/utils';
 
 describe('Network utilities', () => {
   // format the USP and FormData data which be used in request payload,
@@ -41,7 +41,7 @@ describe('Network utilities', () => {
 
   describe('resolveUrlInfo()', () => {
     it('Normal location context', () => {
-      const urlInfo = resolveUrlInfo('./foo?bar=bar');
+      const urlInfo = resolveUrlInfo('./foo?bar=bar', 'http://localhost/');
       expect(urlInfo).toEqual({
         url: 'http://localhost/foo?bar=bar',
         name: 'foo?bar=bar',

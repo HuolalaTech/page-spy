@@ -118,17 +118,19 @@ type WXNetworkAPI = {
 };
 
 type WXSystemAPI = {
+  // for test purpose
+  trigger(name: string, data?: any): void;
   canIUse(schema: string): boolean;
   getSystemInfoSync(): {
     brand?: string;
-    model: string;
-    pixelRatio: number;
+    // model: string;
+    // pixelRatio: number;
     screenWidth?: number;
     screenHeight?: number;
-    windowWidth: number;
-    windowHeight: number;
+    // windowWidth: number;
+    // windowHeight: number;
     statusBarHeight?: number;
-    language: string;
+    // language: string;
     version: string;
     system: string;
     platform: 'ios' | 'android' | 'windows' | 'mac' | 'devtools';
@@ -160,23 +162,23 @@ type WXSystemAPI = {
         | 'embedded';
     }) => void,
   ): void;
-  onAppHide(listener: () => void): void;
+  // onAppHide(listener: () => void): void;
   offAppShow(listener: () => void): void;
-  offAppHide(listener: () => void): void;
-  onPageNotFound(
-    listener: (res: {
-      path: string;
-      query: Object;
-      isEntryPage: boolean;
-    }) => void,
-  );
-  onLazyLoadError(
-    listener: (res: {
-      type: string;
-      subpackage: any[];
-      errMsg: string;
-    }) => void,
-  );
+  // offAppHide(listener: () => void): void;
+  // onPageNotFound(
+  //   listener: (res: {
+  //     path: string;
+  //     query: Object;
+  //     isEntryPage: boolean;
+  //   }) => void,
+  // );
+  // onLazyLoadError(
+  //   listener: (res: {
+  //     type: string;
+  //     subpackage: any[];
+  //     errMsg: string;
+  //   }) => void,
+  // );
 };
 
 declare const wx: WXStorageAPI & WXNetworkAPI & WXSystemAPI;

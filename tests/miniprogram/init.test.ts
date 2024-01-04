@@ -1,9 +1,26 @@
 import { isBrowser } from 'src/utils';
+import SDK from 'miniprogram/index';
+
 import ConsolePlugin from 'miniprogram/plugins/console';
 import StoragePlugin from 'miniprogram/plugins/storage';
 import NetworkPlugin from 'miniprogram/plugins/network';
 
 import { SpyConsole } from 'types';
+import { ROOM_SESSION_KEY } from 'src/utils/constants';
+import { initStorageMock } from './mock/storage';
+
+const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
+
+beforeEach(() => {
+  initStorageMock();
+});
+afterEach(() => {
+  jest.restoreAllMocks();
+  SDK.instance = null;
+  ConsolePlugin.hasInitd = false;
+  NetworkPlugin.hasInitd = false;
+  StoragePlugin.hasInitd = false;
+});
 
 describe('Im in the right env', () => {
   it('Im in browser', () => {
@@ -11,50 +28,154 @@ describe('Im in the right env', () => {
   });
 });
 
-it('With StoragePlugin loaded, the wx storage apis be wrapped', () => {
-  const storageAPIs = [
-    'setStorage',
-    'setStorageSync',
-    'batchSetStorage',
-    'batchSetStorageSync',
-    'getStorage',
-    'getStorageSync',
-    'batchGetStorage',
-    'batchGetStorageSync',
-    'removeStorage',
-    'removeStorageSync',
-    'clearStorage',
-    'clearStorageSync',
-  ] as (keyof WXStorageAPI)[];
-  const originStorageMethods = storageAPIs.map((i) => wx[i]);
-  expect(storageAPIs.map((i) => wx[i])).toEqual(originStorageMethods);
+describe('new PageSpy([config])', () => {
+  it('Must offer api', () => {
+    expect(() => new SDK()).toThrow('The api base url cannot be empty');
+  });
 
-  // changed!
-  new StoragePlugin().onCreated();
-  expect(storageAPIs.map((i) => wx[i])).not.toEqual(originStorageMethods);
-});
+  it('Load plugins will run `<plugin>.onCreated()`', () => {
+    const cPlugin = new ConsolePlugin();
+    // const ePlugin = new ErrorPlugin();
+    const nPlugin = new NetworkPlugin();
+    const s2Plugin = new StoragePlugin();
+    const plugins = [cPlugin, nPlugin, s2Plugin];
 
-it('With ConsolePlugin loaded, ths console.<type> menthods be wrapped', () => {
-  const consoleKey: SpyConsole.ProxyType[] = ['log', 'info', 'warn', 'error'];
-  const originConsole = consoleKey.map((i) => console[i]);
-  expect(consoleKey.map((i) => console[i])).toEqual(originConsole);
+    const onCreatedFn = jest.fn();
+    plugins.forEach((i) => {
+      jest.spyOn(i, 'onCreated').mockImplementation(onCreatedFn);
+    });
 
-  const cPlugin = new ConsolePlugin();
-  // @ts-ignore
-  expect(Object.keys(cPlugin.console)).toHaveLength(0);
+    const sdk = new SDK({ api: 'test-api.com' });
+    expect(onCreatedFn).toHaveBeenCalledTimes(0);
 
-  // changed!
-  cPlugin.onCreated();
-  expect(consoleKey.map((i) => console[i])).not.toEqual(originConsole);
-  // @ts-ignore
-  expect(Object.keys(cPlugin.console)).toHaveLength(4);
-});
+    sdk.loadPlugins(cPlugin);
+    expect(onCreatedFn).toHaveBeenCalledTimes(1);
 
-it('With NetworkPlugin loaded, the network request methods be wrapped', () => {
-  const originRequest = wx.request;
-  // changed!
-  new NetworkPlugin().onCreated();
-  expect(wx.request).not.toBe(originRequest);
+    onCreatedFn.mockReset();
+    sdk.loadPlugins(...plugins);
+    expect(onCreatedFn).toHaveBeenCalledTimes(plugins.length);
+  });
+
+  it('With StoragePlugin loaded, the wx storage apis be wrapped', () => {
+    const storageAPIs = [
+      'setStorage',
+      'setStorageSync',
+      'batchSetStorage',
+      'batchSetStorageSync',
+      'getStorage',
+      'getStorageSync',
+      'batchGetStorage',
+      'batchGetStorageSync',
+      'removeStorage',
+      'removeStorageSync',
+      'clearStorage',
+      'clearStorageSync',
+    ] as (keyof WXStorageAPI)[];
+    const originStorageMethods = storageAPIs.map((i) => wx[i]);
+    expect(storageAPIs.map((i) => wx[i])).toEqual(originStorageMethods);
+
+    // changed!
+    new StoragePlugin().onCreated();
+    expect(storageAPIs.map((i) => wx[i])).not.toEqual(originStorageMethods);
+  });
+
+  it('With ConsolePlugin loaded, ths console.<type> menthods be wrapped', () => {
+    const consoleKey: SpyConsole.ProxyType[] = ['log', 'info', 'warn', 'error'];
+    const originConsole = consoleKey.map((i) => console[i]);
+    expect(consoleKey.map((i) => console[i])).toEqual(originConsole);
+
+    const cPlugin = new ConsolePlugin();
+    // @ts-ignore
+    expect(Object.keys(cPlugin.console)).toHaveLength(0);
+
+    // changed!
+    cPlugin.onCreated();
+    expect(consoleKey.map((i) => console[i])).not.toEqual(originConsole);
+    // @ts-ignore
+    expect(Object.keys(cPlugin.console)).toHaveLength(4);
+  });
+
+  it('With NetworkPlugin loaded, the network request methods be wrapped', () => {
+    const originRequest = wx.request;
+    // changed!
+    const plugin = new NetworkPlugin();
+    plugin.onCreated();
+    expect(wx.request).not.toBe(originRequest);
+    const originProxy = plugin.requestProxy;
+    plugin.onCreated();
+  });
+
+  it('Plugins can only be inited once', () => {
+    const nPlugin = new NetworkPlugin();
+    nPlugin.onCreated();
+    const cPlugin = new ConsolePlugin();
+    cPlugin.onCreated();
+    const sPlugin = new StoragePlugin();
+    sPlugin.onCreated();
+    const originRequestProxy = nPlugin.requestProxy;
+    const originConsoleWrap = console.log;
+    const originStorageWrap = wx.setStorageSync;
+    nPlugin.onCreated();
+    cPlugin.onCreated();
+    sPlugin.onCreated();
+
+    expect(nPlugin.requestProxy).toEqual(originRequestProxy);
+    expect(console.log).toEqual(originConsoleWrap);
+    expect(wx.setStorageSync).toEqual(originStorageWrap);
+  });
+
+  it('Init connection', async () => {
+    expect(wx.getStorageSync(ROOM_SESSION_KEY)).toBeFalsy();
+
+    const sdk = new SDK({ api: 'test-api.com' });
+    // const response = {
+    //   code: 'ok',
+    //   message: 'mock response',
+    //   success: true,
+    //   data: {
+    //     name: 'xxxx-name',
+    //     address: 'xxxx-address',
+    //     group: 'xxxx-group',
+    //     password: 'xxxx-password',
+    //     tags: {},
+    //   },
+    // };
+    // jest
+    //   .spyOn(sdk.request!, 'createRoom')
+    //   .mockImplementation(async function () {
+    //     return response;
+    //   });
+    await sdk.init();
+    // await sleep()
+
+    expect(wx.getStorageSync(ROOM_SESSION_KEY)).toEqual({
+      name: sdk.name,
+      address: sdk.address,
+      roomUrl: sdk.roomUrl,
+      usable: true,
+      project: 'default',
+    });
+  });
+
+  it('Create room', async () => {});
+
+  it('Init connection with cache', async () => {
+    expect(wx.getStorageSync(ROOM_SESSION_KEY)).toBeFalsy();
+    wx.setStorageSync(ROOM_SESSION_KEY, {
+      name: '',
+      address: 'xxxx-address',
+      roomUrl: 'test-room-url',
+      usable: true,
+      project: 'default',
+    });
+
+    const spy = jest.spyOn(SDK.prototype, 'useOldConnection');
+
+    await new SDK({ api: 'test-api.com' }).init();
+
+    // await sleep();
+    expect(spy).toBeCalled();
+  });
 });
 
 export {};

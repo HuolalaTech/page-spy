@@ -4,11 +4,29 @@ import {
   promisifyMPApi,
 } from 'src/packages/miniprogram/utils';
 
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 describe('Miniprogram utils', () => {
   it('Get device info', () => {
     expect(getDeviceInfo()).toMatchObject({
       osName: 'iOS',
-      osVersion: '14.4.2',
+      osVersion: '14.0.1',
+      browserName: 'MPWeChat',
+      browserVersion: '1.0.0',
+    });
+
+    jest.spyOn(wx, 'getSystemInfoSync').mockImplementation(() => {
+      return {
+        platform: 'devtools',
+        system: 'iOS 14.0.1',
+        version: '1.0.0',
+      };
+    });
+    expect(getDeviceInfo()).toMatchObject({
+      osName: 'iOS',
+      osVersion: '14.0.1',
       browserName: 'MPWeChat',
       browserVersion: '1.0.0',
     });

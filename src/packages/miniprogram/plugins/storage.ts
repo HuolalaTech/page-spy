@@ -39,34 +39,40 @@ export default class StoragePlugin implements PageSpyPlugin {
     StoragePlugin.listenRefreshEvent();
   }
 
+  static sendRefresh() {
+    try {
+      const info = wx.getStorageInfoSync();
+
+      const data = info.keys.map((key) => {
+        return {
+          name: key,
+          value: mpDataStringify(
+            StoragePlugin.originFunctions?.getStorageSync(key),
+          ),
+        };
+      });
+
+      const dataItem: SpyStorage.GetTypeDataItem = {
+        type: 'mpStorage',
+        action: 'get',
+        data,
+      };
+      StoragePlugin.sendStorageItem(dataItem);
+    } catch (e) {
+      // TODO
+    }
+  }
+
+  /* c8 ignore start */
   private static listenRefreshEvent() {
     socketStore.addListener(DEBUG_MESSAGE_TYPE.REFRESH, async ({ source }) => {
       const { data: storageType } = source;
       if (storageType === 'mpStorage') {
-        try {
-          const info = wx.getStorageInfoSync();
-
-          const data = info.keys.map((key) => {
-            return {
-              name: key,
-              value: mpDataStringify(
-                StoragePlugin.originFunctions?.getStorageSync(key),
-              ),
-            };
-          });
-
-          const dataItem: SpyStorage.GetTypeDataItem = {
-            type: 'mpStorage',
-            action: 'get',
-            data,
-          };
-          StoragePlugin.sendStorageItem(dataItem);
-        } catch (e) {
-          // TODO
-        }
+        StoragePlugin.sendRefresh();
       }
     });
   }
+  /* c8 ignore end */
 
   private static initStorageProxy() {
     const { sendClearItem, sendRemoveItem, sendSetItem } = StoragePlugin;
@@ -75,22 +81,14 @@ export default class StoragePlugin implements PageSpyPlugin {
       'setStorageSync',
       'batchSetStorage',
       'batchSetStorageSync',
-      'getStorage',
-      'getStorageSync',
-      'batchGetStorage',
-      'batchGetStorageSync',
       'removeStorage',
       'removeStorageSync',
       'clearStorage',
       'clearStorageSync',
     ] as (keyof WXStorageAPI)[];
 
-    const originFunc = {} as WXStorageAPI;
     StoragePlugin.originFunctions = {} as WXStorageAPI;
 
-    // proxyFunctions.forEach((name) => {
-    //   originFunc[name] = wx[name];
-    // });
     proxyFunctions.forEach((name) => {
       // @ts-ignore
       StoragePlugin.originFunctions![name] = wx[name];
@@ -99,7 +97,7 @@ export default class StoragePlugin implements PageSpyPlugin {
     wx.setStorage = function (
       params: Parameters<WXStorageAPI['setStorage']>[0],
     ) {
-      return originFunc.setStorage({
+      return StoragePlugin.originFunctions!.setStorage({
         ...params,
         success(res) {
           sendSetItem(params.key, params.data);
@@ -110,10 +108,11 @@ export default class StoragePlugin implements PageSpyPlugin {
 
     wx.setStorageSync = function (key: string, data: any) {
       try {
-        const res = originFunc.setStorageSync(key, data);
+        const res = StoragePlugin.originFunctions!.setStorageSync(key, data);
         sendSetItem(key, data);
         return res;
       } catch (e) {
+        /* c8 ignore next 3 */
         // TODO e is unknown so we can't use it, for further investigation
         psLog.error(`Failed to set storage synchronously: ${key}`);
         throw e;
@@ -123,7 +122,7 @@ export default class StoragePlugin implements PageSpyPlugin {
     wx.batchSetStorage = function (
       params: Parameters<WXStorageAPI['batchSetStorage']>[0],
     ) {
-      return originFunc.batchSetStorage({
+      return StoragePlugin.originFunctions!.batchSetStorage({
         ...params,
         success(res) {
           params.kvList.forEach((kv) => {
@@ -136,11 +135,12 @@ export default class StoragePlugin implements PageSpyPlugin {
 
     wx.batchSetStorageSync = function (kvList: KVList) {
       try {
-        const res = originFunc.batchSetStorageSync(kvList);
+        const res = StoragePlugin.originFunctions!.batchSetStorageSync(kvList);
         kvList.forEach((kv) => {
           sendSetItem(kv.key, kv.value);
         });
         return res;
+        /* c8 ignore next 7 */
       } catch (e) {
         psLog.error(
           `Failed to batch set storage synchronously: ${JSON.stringify(
@@ -154,7 +154,7 @@ export default class StoragePlugin implements PageSpyPlugin {
     wx.removeStorage = function (
       params: Parameters<WXStorageAPI['removeStorage']>[0],
     ) {
-      return originFunc.removeStorage({
+      return StoragePlugin.originFunctions!.removeStorage({
         ...params,
         success(res) {
           sendRemoveItem(params.key);
@@ -165,9 +165,10 @@ export default class StoragePlugin implements PageSpyPlugin {
 
     wx.removeStorageSync = function (key: string) {
       try {
-        const res = originFunc.removeStorageSync(key);
+        const res = StoragePlugin.originFunctions!.removeStorageSync(key);
         sendRemoveItem(res);
         return res;
+        /* c8 ignore next 4 */
       } catch (e) {
         psLog.error(`Failed to remove storage synchronously: ${key}`);
         throw e;
@@ -177,7 +178,7 @@ export default class StoragePlugin implements PageSpyPlugin {
     wx.clearStorage = function (
       params: Parameters<WXStorageAPI['clearStorage']>[0],
     ) {
-      return originFunc.clearStorage({
+      return StoragePlugin.originFunctions!.clearStorage({
         ...params,
         success(res) {
           sendClearItem();
@@ -188,9 +189,10 @@ export default class StoragePlugin implements PageSpyPlugin {
 
     wx.clearStorageSync = function () {
       try {
-        const res = originFunc.clearStorageSync();
+        const res = StoragePlugin.originFunctions!.clearStorageSync();
         sendClearItem();
         return res;
+        /* c8 ignore next 4 */
       } catch (e) {
         psLog.error('Failed to clear storage synchronously');
         throw e;

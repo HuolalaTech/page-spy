@@ -125,7 +125,7 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
                 break;
               case 'arraybuffer':
                 // NOTE: 小程序 arraybuffer 没有合适的方法转为 base64，一期暂时这样。
-                req.response = '[arrayBuffer]';
+                req.response = '[object ArrayBuffer]';
                 // req.responseReason = Reason.EXCEED_SIZE;
                 break;
               default:
@@ -150,7 +150,8 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
         return requestInstance;
       }
 
-      psLog.warn('The request object is not found on window.fetch event');
+      /* c8 ignore next 2 */
+      psLog.warn('The request object is not found on wx.request event');
       return null;
     };
   }

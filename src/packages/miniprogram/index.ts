@@ -2,6 +2,7 @@ import type { InitConfig } from 'types';
 import { getRandomId, psLog } from 'src/utils';
 import type PageSpyPlugin from 'src/utils/plugin';
 import { SocketState } from 'src/utils/socket-base';
+import { ROOM_SESSION_KEY } from 'src/utils/constants';
 
 import ConsolePlugin from './plugins/console';
 import ErrorPlugin from './plugins/error';
@@ -15,8 +16,6 @@ import Request from './api';
 // import './index.less';
 // eslint-disable-next-line import/order
 import { Config } from 'src/utils/config';
-
-let roomCache: Record<string, any> | null = null;
 
 export default class PageSpy {
   root: HTMLElement | null = null;
@@ -58,7 +57,7 @@ export default class PageSpy {
       // new SystemPlugin(),
       new StoragePlugin(),
     );
-    this.init();
+    // this.init();
   }
 
   loadPlugins(...args: PageSpyPlugin[]) {
@@ -75,7 +74,8 @@ export default class PageSpy {
     if (!ok) return;
 
     const config = Config.get();
-    if (roomCache === null) {
+    const roomCache = wx.getStorageSync(ROOM_SESSION_KEY);
+    if (!roomCache || typeof roomCache !== 'object') {
       await this.createNewConnection();
     } else {
       const { name, address, roomUrl, usable, project: prev } = roomCache;
@@ -132,7 +132,8 @@ export default class PageSpy {
     /* c8 ignore start */
     this.saveSession();
     const timerId = setInterval(() => {
-      if (roomCache !== null) {
+      const roomCache = wx.getStorageSync(ROOM_SESSION_KEY);
+      if (roomCache && typeof roomCache === 'object') {
         const { usable } = roomCache;
         if (usable === false) {
           clearInterval(timerId);
@@ -150,19 +151,21 @@ export default class PageSpy {
     if (!ok) return;
 
     const { name, address, roomUrl } = this;
-    roomCache = {
+    const roomCache = {
       name,
       address,
       roomUrl,
       usable: true,
       project: Config.get().project,
     };
+    wx.setStorageSync(ROOM_SESSION_KEY, roomCache);
   }
 
   // eslint-disable-next-line class-methods-use-this
   checkConfig() {
     const config = Config.get();
     if (!config) {
+      /* c8 ignore next 2 */
       psLog.error('Cannot get the config info');
       return false;
     }

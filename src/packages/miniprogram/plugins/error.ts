@@ -5,18 +5,18 @@ import socketStore from 'miniprogram/helpers/socket';
 import type { SpyConsole } from 'types';
 import type PageSpyPlugin from 'src/utils/plugin';
 
-const formatErrorObj = (err: Error) => {
-  if (typeof err !== 'object') return null;
-  const { name, message, stack } = Object(err);
-  if ([name, message, stack].every(Boolean) === false) {
-    return null;
-  }
-  return {
-    name,
-    message,
-    stack,
-  };
-};
+// const formatErrorObj = (err: Error) => {
+//   if (typeof err !== 'object') return null;
+//   const { name, message, stack } = Object(err);
+//   if ([name, message, stack].every(Boolean) === false) {
+//     return null;
+//   }
+//   return {
+//     name,
+//     message,
+//     stack,
+//   };
+// };
 
 export default class ErrorPlugin implements PageSpyPlugin {
   public name = 'ErrorPlugin';
@@ -34,11 +34,19 @@ export default class ErrorPlugin implements PageSpyPlugin {
   private onUncaughtError() {
     if (wx.canIUse('onError')) {
       wx.onError((error) => {
-        ErrorPlugin.sendMessage(error.message, {
-          name: 'uncaught error',
-          message: error.message,
-          stack: error.stack,
-        });
+        if (error.stack || error.message) {
+          /* istanbul ignore next 2 */
+          const { message, stack } = error;
+          ErrorPlugin.sendMessage(stack || message, {
+            name: 'uncaught error',
+            ...error,
+          });
+        } else {
+          // When the error does not exist, use default information
+          const defaultMessage =
+            '[PageSpy] An unknown error occurred and no message or stack trace available';
+          ErrorPlugin.sendMessage(defaultMessage, null);
+        }
       });
     }
   }
