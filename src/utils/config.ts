@@ -1,4 +1,4 @@
-import type { InitConfig } from 'types';
+import type { InitConfig } from 'types/web';
 import { isBrowser } from '.';
 
 export class Config {

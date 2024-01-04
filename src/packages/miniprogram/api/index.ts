@@ -1,5 +1,5 @@
 import { Config } from 'src/utils/config';
-import { InitConfig } from 'types';
+import { InitConfig } from 'types/miniprogram';
 import { combineName } from 'src/utils/device';
 import { getDeviceInfo, joinQuery, promisifyMPApi } from '../utils';
 

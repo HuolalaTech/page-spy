@@ -1,4 +1,4 @@
-import type { InitConfig } from 'types';
+import type { InitConfig } from 'types/miniprogram';
 import { getRandomId, psLog } from 'src/utils';
 import type PageSpyPlugin from 'src/utils/plugin';
 import { SocketState } from 'src/utils/socket-base';
@@ -164,8 +164,8 @@ export default class PageSpy {
   // eslint-disable-next-line class-methods-use-this
   checkConfig() {
     const config = Config.get();
-    if (!config) {
-      /* c8 ignore next 2 */
+    /* c8 ignore next 3 */
+    if (!config || !config.api) {
       psLog.error('Cannot get the config info');
       return false;
     }

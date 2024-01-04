@@ -106,7 +106,11 @@ export class MockWX implements WXSystemAPI, WXNetworkAPI, WXStorageAPI {
       onError(handler: (msg: string) => void) {
         errorHandler = handler;
       },
-      close() {},
+      close() {
+        if (closeHandler) {
+          closeHandler({});
+        }
+      },
       onMessage(handler: (data: object) => void) {
         messageHandler = handler;
       },

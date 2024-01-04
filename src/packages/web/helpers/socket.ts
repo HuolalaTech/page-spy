@@ -28,7 +28,7 @@ export class WebSocketWrapper extends SocketWrapper {
 
   close() {
     this.socket?.close();
-    this.clearListeners();
+    // this.clearListeners();
   }
 
   destroy(): void {

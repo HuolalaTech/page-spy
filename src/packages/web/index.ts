@@ -1,4 +1,4 @@
-import type { InitConfig } from 'types';
+import type { InitConfig } from 'types/web';
 import copy from 'copy-to-clipboard';
 import { getRandomId, psLog } from 'src/utils';
 import type PageSpyPlugin from 'src/utils/plugin';

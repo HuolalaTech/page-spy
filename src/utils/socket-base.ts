@@ -195,7 +195,6 @@ export abstract class SocketStoreBase {
   public close() {
     this.clearPing();
     this.reconnectTimes = 0;
-    this.connectionStatus = false;
     this.reconnectable = false;
     this.socket?.close();
   }
