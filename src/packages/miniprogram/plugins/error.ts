@@ -2,7 +2,7 @@
 import atom from 'src/utils/atom';
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
 import socketStore from 'miniprogram/helpers/socket';
-import type { SpyConsole } from 'types';
+import type { SpyConsole } from 'types/miniprogram';
 import type PageSpyPlugin from 'src/utils/plugin';
 
 // const formatErrorObj = (err: Error) => {

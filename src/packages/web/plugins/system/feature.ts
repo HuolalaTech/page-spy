@@ -1,5 +1,5 @@
 import { getObjectKeys, hasOwnProperty } from 'src/utils';
-import type { SpySystem } from 'types';
+import type { SpySystem } from 'types/web';
 
 export const FEATURE_MAP: SpySystem.Feature = {
   Element: {

@@ -9,7 +9,7 @@ import {
   isURLSearchParams,
   toStringTag,
 } from 'src/utils';
-import { SpyNetwork } from 'types';
+import { SpyNetwork } from 'types/web';
 
 // File size is not recommended to exceed the MAX_SIZE,
 // big size files would result negative performance impact distinctly in local-test.

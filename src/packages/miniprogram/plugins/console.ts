@@ -1,6 +1,6 @@
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
 import socketStore from 'miniprogram/helpers/socket';
-import type { SpyConsole } from 'types';
+import type { SpyConsole } from 'types/miniprogram';
 import atom from 'src/utils/atom';
 import type PageSpyPlugin from 'src/utils/plugin';
 import { joinQuery } from '../utils';

@@ -2,6 +2,7 @@ import { StoragePlugin } from 'src/packages/web/plugins/storage';
 
 // @ts-ignore
 const trigger = jest.spyOn(StoragePlugin, 'sendStorageItem');
+const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 
 beforeAll(() => {
   new StoragePlugin().onCreated();
@@ -82,5 +83,19 @@ describe('Storage plugin', () => {
     const storage = StoragePlugin.takeStorage('localStorage');
     expect(storage.data.length).toBe(5);
     expect(storage.data.map((i) => i.name)).toEqual(keys);
+  });
+
+  it('Response refresh event', async () => {
+    StoragePlugin.sendRefresh('sessionStorage');
+    StoragePlugin.sendRefresh('cookie');
+    StoragePlugin.sendRefresh('localStorage');
+
+    expect(trigger).toHaveBeenCalledTimes(3);
+    expect(trigger).lastCalledWith(
+      expect.objectContaining({
+        type: 'localStorage',
+        action: 'get',
+      }),
+    );
   });
 });

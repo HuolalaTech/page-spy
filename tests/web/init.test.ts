@@ -5,7 +5,7 @@ import NetworkPlugin from 'web/plugins/network';
 import SystemPlugin from 'web/plugins/system';
 import PagePlugin from 'web/plugins/page';
 import { StoragePlugin } from 'web/plugins/storage';
-import PageSpy, { SpyConsole } from 'types';
+import PageSpy, { SpyConsole } from 'types/web';
 import socketStore from 'web/helpers/socket';
 import { ROOM_SESSION_KEY } from 'src/utils/constants';
 import { Config } from 'src/utils/config';

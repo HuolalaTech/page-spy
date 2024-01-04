@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
-import type { SpyAtom } from 'types';
+import type { SpyAtom } from 'types/web';
 import {
   getRandomId,
   getValueType,

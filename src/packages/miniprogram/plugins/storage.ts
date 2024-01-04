@@ -1,5 +1,5 @@
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
-import { SpyStorage } from 'types';
+import { SpyStorage } from 'types/miniprogram';
 import type PageSpyPlugin from 'src/utils/plugin';
 import socketStore from 'miniprogram/helpers/socket';
 import { psLog } from 'src/utils';

@@ -10,7 +10,7 @@ import {
   makeBroadcastMessage,
   makeUnicastMessage,
 } from 'src/utils/message';
-import type { SpyMessage, SpySocket } from 'types';
+import type { SpyMessage, SpySocket } from 'types/web';
 import * as SERVER_MESSAGE_TYPE from 'src/utils/message/server-type';
 import atom from 'src/utils/atom';
 import { PackedEvent } from 'types/lib/socket-event';
@@ -221,6 +221,9 @@ export abstract class SocketStoreBase {
 
   tryReconnect() {
     this.reconnectTimes -= 1;
+    if (this.reconnectTimes <= 0) {
+      this.reconnectable = false;
+    }
     this.init(this.socketUrl);
   }
 

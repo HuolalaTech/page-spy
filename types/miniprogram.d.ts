@@ -21,7 +21,7 @@ export interface InitConfig {
    * - false: sdk will use ['http://', 'ws://'];
    * - true (Default): sdk will use ['https://', 'wss://'];
    */
-  enableSSL?: boolean;
+  enableSSL?: boolean | null;
 }
 
 export * as SpyDevice from './lib/device';

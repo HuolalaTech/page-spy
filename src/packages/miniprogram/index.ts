@@ -39,7 +39,7 @@ export default class PageSpy {
 
   static instance: PageSpy | null = null;
 
-  constructor(init: InitConfig = {}) {
+  constructor(init: InitConfig) {
     if (PageSpy.instance) {
       psLog.warn('Cannot initialize PageSpy multiple times');
       // eslint-disable-next-line no-constructor-return

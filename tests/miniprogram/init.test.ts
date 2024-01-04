@@ -5,7 +5,7 @@ import ConsolePlugin from 'miniprogram/plugins/console';
 import StoragePlugin from 'miniprogram/plugins/storage';
 import NetworkPlugin from 'miniprogram/plugins/network';
 
-import { SpyConsole } from 'types';
+import { SpyConsole } from 'types/miniprogram';
 import { ROOM_SESSION_KEY } from 'src/utils/constants';
 import { initStorageMock } from './mock/storage';
 
@@ -30,7 +30,9 @@ describe('Im in the right env', () => {
 
 describe('new PageSpy([config])', () => {
   it('Must offer api', () => {
-    expect(() => new SDK()).toThrow('The api base url cannot be empty');
+    expect(() => new SDK({ api: '' })).toThrow(
+      'The api base url cannot be empty',
+    );
   });
 
   it('Load plugins will run `<plugin>.onCreated()`', () => {

@@ -4,7 +4,7 @@ import socketStore from 'web/helpers/socket';
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
 import { parseUserAgent } from 'src/utils/device';
 import '../../deps/modernizr';
-import { SpySystem } from 'types';
+import { SpySystem } from 'types/web';
 import { computeResult } from './feature';
 
 window.Modernizr.addTest(

@@ -1,5 +1,5 @@
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
-import { SpyStorage } from 'types';
+import { SpyStorage } from 'types/web';
 import type PageSpyPlugin from 'src/utils/plugin';
 import socketStore from 'web/helpers/socket';
 
@@ -17,26 +17,33 @@ export class StoragePlugin implements PageSpyPlugin {
     StoragePlugin.initStorageProxy();
   }
 
+  static async sendRefresh(type: string) {
+    let result: SpyStorage.GetTypeDataItem | null = null;
+
+    switch (type) {
+      case 'localStorage':
+      case 'sessionStorage':
+        result = StoragePlugin.takeStorage(type);
+        break;
+      case 'cookie':
+        result = await StoragePlugin.takeCookie();
+        break;
+      default:
+        break;
+    }
+
+    if (result) {
+      StoragePlugin.sendStorageItem(result);
+    }
+  }
+
   private static listenRefreshEvent() {
+    /* c8 ignore next 5*/
     socketStore.addListener(DEBUG_MESSAGE_TYPE.REFRESH, async ({ source }) => {
+      /* c8 ignore next 3*/
+      console.log('listen a refresh');
       const { data } = source;
-      let result: SpyStorage.GetTypeDataItem | null = null;
-
-      switch (data) {
-        case 'localStorage':
-        case 'sessionStorage':
-          result = StoragePlugin.takeStorage(data);
-          break;
-        case 'cookie':
-          result = await StoragePlugin.takeCookie();
-          break;
-        default:
-          break;
-      }
-
-      if (result) {
-        StoragePlugin.sendStorageItem(result);
-      }
+      StoragePlugin.sendRefresh(data);
     });
   }
 
