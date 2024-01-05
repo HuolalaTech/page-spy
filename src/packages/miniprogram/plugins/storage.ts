@@ -46,9 +46,7 @@ export default class StoragePlugin implements PageSpyPlugin {
       const data = info.keys.map((key) => {
         return {
           name: key,
-          value: mpDataStringify(
-            StoragePlugin.originFunctions?.getStorageSync(key),
-          ),
+          value: mpDataStringify(wx.getStorageSync(key)),
         };
       });
 
