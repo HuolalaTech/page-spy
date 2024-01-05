@@ -63,7 +63,7 @@ export default [
         name: 'PageSpy',
       },
       {
-        file: pkg.exports['./web'],
+        file: pkg.exports['./web']['import'],
         format: 'esm',
       },
     ],
@@ -81,14 +81,14 @@ export default [
     input: 'src/packages/miniprogram/index.ts',
     output: [
       {
-        file: pkg.exports['./miniprogram'],
+        file: pkg.exports['./miniprogram']['import'],
         format: 'esm',
       },
     ],
     plugins: [
       ...plugins,
       babel({
-        exclude: ['node_modules/**', /deps\/modernizr/],
+        exclude: ['node_modules/**'],
         babelHelpers: 'runtime',
         extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx'],
         plugins: ['@babel/plugin-transform-runtime'],
