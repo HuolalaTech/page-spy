@@ -138,25 +138,8 @@ describe('new PageSpy([config])', () => {
     expect(wx.getStorageSync(ROOM_SESSION_KEY)).toBeFalsy();
 
     const sdk = new SDK({ api: 'test-api.com' });
-    // const response = {
-    //   code: 'ok',
-    //   message: 'mock response',
-    //   success: true,
-    //   data: {
-    //     name: 'xxxx-name',
-    //     address: 'xxxx-address',
-    //     group: 'xxxx-group',
-    //     password: 'xxxx-password',
-    //     tags: {},
-    //   },
-    // };
-    // jest
-    //   .spyOn(sdk.request!, 'createRoom')
-    //   .mockImplementation(async function () {
-    //     return response;
-    //   });
-    await sdk.init();
-    // await sleep()
+    // await sdk.init();
+    await sleep();
 
     expect(wx.getStorageSync(ROOM_SESSION_KEY)).toEqual({
       name: sdk.name,
@@ -181,9 +164,9 @@ describe('new PageSpy([config])', () => {
 
     const spy = jest.spyOn(SDK.prototype, 'useOldConnection');
 
-    await new SDK({ api: 'test-api.com' }).init();
+    new SDK({ api: 'test-api.com' });
 
-    // await sleep();
+    await sleep();
     expect(spy).toBeCalled();
   });
 });

@@ -57,7 +57,7 @@ export default class PageSpy {
       // new SystemPlugin(),
       new StoragePlugin(),
     );
-    // this.init();
+    this.init();
   }
 
   loadPlugins(...args: PageSpyPlugin[]) {
