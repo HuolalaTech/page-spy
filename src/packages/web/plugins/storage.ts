@@ -38,10 +38,9 @@ export class StoragePlugin implements PageSpyPlugin {
   }
 
   private static listenRefreshEvent() {
-    /* c8 ignore next 5*/
+    /* c8 ignore next 5 */
     socketStore.addListener(DEBUG_MESSAGE_TYPE.REFRESH, async ({ source }) => {
-      /* c8 ignore next 3*/
-      console.log('listen a refresh');
+      /* c8 ignore next 3 */
       const { data } = source;
       StoragePlugin.sendRefresh(data);
     });

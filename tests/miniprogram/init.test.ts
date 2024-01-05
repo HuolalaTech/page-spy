@@ -35,6 +35,14 @@ describe('new PageSpy([config])', () => {
     );
   });
 
+  it('Can not init twice', () => {
+    new SDK({ api: 'example' });
+    const instance = SDK.instance;
+    new SDK({ api: 'example' });
+
+    expect(SDK.instance).toEqual(instance);
+  });
+
   it('Load plugins will run `<plugin>.onCreated()`', () => {
     const cPlugin = new ConsolePlugin();
     // const ePlugin = new ErrorPlugin();

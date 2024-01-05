@@ -89,6 +89,7 @@ export default class PageSpy {
       }
     }
 
+    /* c8 ignore next 10 */
     if (wx.canIUse('onAppShow')) {
       wx.onAppShow(() => {
         // Mini programe can not detect ws disconnect (before we add heart beat ping pong).
