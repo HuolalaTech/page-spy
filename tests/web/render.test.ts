@@ -25,7 +25,7 @@ afterEach(() => {
 });
 
 describe('Render PageSpy', () => {
-  it('Root element and logo', async () => {
+  it('Root element and logo', () => {
     const sdk = new SDK();
     sdk.render();
 
@@ -101,7 +101,7 @@ describe('Render PageSpy', () => {
 
       const isVisible = expect(copyButton).not.toBe(null);
       const copied = expect(copy).toHaveBeenCalledWith(
-        `${config.clientOrigin}/devtools?version=${sdk.name}&address=${sdk.address}`,
+        `${config.clientOrigin}/#/devtools?version=${sdk.name}&address=${sdk.address}`,
       );
       const toasted = expect(toast).toHaveBeenCalledTimes(1);
       return Promise.all([isVisible, copied, toasted]);
