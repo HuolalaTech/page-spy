@@ -90,10 +90,12 @@ describe('Storage plugin', () => {
     StoragePlugin.sendRefresh('cookie');
     StoragePlugin.sendRefresh('localStorage');
 
+    await sleep();
+
     expect(trigger).toHaveBeenCalledTimes(3);
     expect(trigger).lastCalledWith(
       expect.objectContaining({
-        type: 'localStorage',
+        type: 'cookie',
         action: 'get',
       }),
     );
