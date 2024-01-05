@@ -21,7 +21,7 @@ export class DatabasePlugin implements PageSpyPlugin {
 
   public static hasInitd = false;
 
-  private static get isSupport() {
+  public static get isSupport() {
     if (
       !IDBFactory ||
       !IDBObjectStore ||

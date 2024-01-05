@@ -1,36 +1,65 @@
 import { IDBFactory } from 'fake-indexeddb';
+import { DEBUG_MESSAGE_TYPE } from 'src/utils/message';
 import { DatabasePlugin, promisify } from 'web/plugins/database';
+import socket from 'src/packages/web/helpers/socket';
 
+const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 // @ts-ignore
 const dbTrigger = jest.spyOn(DatabasePlugin, 'sendData');
 
-afterEach(() => {
-  window.indexedDB = new IDBFactory();
+// init indexedDB store and fill data
+beforeEach(async () => {
+  const req = window.indexedDB.open('blog', 1);
+  req.addEventListener('upgradeneeded', () => {
+    const db = req.result;
+    db.createObjectStore('posts', { autoIncrement: true });
+  });
+  const db = await promisify(req);
+  const store = db.transaction('posts', 'readwrite').objectStore('posts');
+  const storeTasks = Array(100)
+    .fill(0)
+    .map((i) => promisify(store.add(i)));
+  await Promise.all(storeTasks);
+
+  // Must call `db.close()` before calling `deleteDatabase`.
+  // See https://github.com/dumbmatter/fakeIndexedDB/issues/2#issuecomment-119588557
+  db.close();
   jest.resetAllMocks();
+});
+afterEach(async () => {
+  await window.indexedDB.deleteDatabase('blog');
 });
 
 describe('Database plugin', () => {
-  it('IDBFactory.prototype.deleteDatabase', async () => {
-    const db1 = await indexedDB.databases();
-    expect(db1.length).toBe(0);
+  it('If not support indexedDB', () => {
+    const originFn = window.indexedDB.databases;
+    Object.assign(window.indexedDB, {
+      databases: undefined,
+    });
 
-    const db = await promisify(indexedDB.open('blog'));
-    const db2 = await indexedDB.databases();
-    expect(db2.length).toBe(1);
-    // Must call `db.close()` before calling `deleteDatabase`.
-    // See https://github.com/dumbmatter/fakeIndexedDB/issues/2#issuecomment-119588557
-    db.close();
+    expect(DatabasePlugin.isSupport).toBe(false);
+
+    new DatabasePlugin().onCreated();
+
+    expect(DatabasePlugin.hasInitd).toBe(false);
+
+    window.indexedDB.databases = originFn;
+  });
+
+  it('IDBFactory.prototype.deleteDatabase', async () => {
+    const db = await indexedDB.databases();
+    expect(db.length).toBe(1);
 
     new DatabasePlugin().onCreated();
 
     await promisify(indexedDB.deleteDatabase('blog'));
-    const db3 = await indexedDB.databases();
-    expect(db3.length).toBe(0);
+    const db2 = await indexedDB.databases();
+    expect(db2.length).toBe(0);
 
     expect(dbTrigger).toHaveBeenCalledTimes(1);
   });
 
-  it('IDBObjectStore.prototype: add / put / clear / delete', (done) => {
+  it('IDBObjectStore.prototype: add / put / clear / delete', async () => {
     // @ts-ignore
     const originAdd = jest.spyOn(IDBObjectStore.prototype, 'add');
     // @ts-ignore
@@ -42,34 +71,50 @@ describe('Database plugin', () => {
 
     new DatabasePlugin().onCreated();
 
-    const req = indexedDB.open('blog');
-    req.addEventListener('upgradeneeded', () => {
-      const db = req.result;
-      db.createObjectStore('posts', { autoIncrement: true });
+    const db = await promisify(window.indexedDB.open('blog'));
+    const store = db.transaction('posts', 'readwrite').objectStore('posts');
+
+    await promisify(store.add(123));
+    await promisify(store.put(456));
+    await promisify(store.getAll());
+    expect(originAdd).toHaveBeenCalledTimes(1);
+    expect(originPut).toHaveBeenCalledTimes(1);
+
+    await promisify(store.delete(1));
+    await promisify(store.getAll());
+    expect(originDelete).toHaveBeenCalledTimes(1);
+
+    await promisify(store.clear());
+    await promisify(store.getAll());
+    expect(originClear).toHaveBeenCalledTimes(1);
+
+    expect(dbTrigger).toHaveBeenCalledTimes(4);
+  });
+
+  it('DATABASE_PAGINATION event and REFRESH event', async () => {
+    new DatabasePlugin().onCreated();
+
+    // @ts-ignore
+    socket.dispatchEvent(DEBUG_MESSAGE_TYPE.REFRESH, {
+      source: {
+        type: DEBUG_MESSAGE_TYPE.REFRESH,
+        data: 'indexedDB',
+      },
     });
-    req.addEventListener('success', async () => {
-      const db = req.result;
-      const store = db.transaction('posts', 'readwrite').objectStore('posts');
-      await promisify(store.add(123));
-      await promisify(store.put(456));
-      const data1 = await promisify(store.getAll());
-      expect(data1.length).toBe(2);
-      expect(originAdd).toHaveBeenCalledTimes(1);
-      expect(originPut).toHaveBeenCalledTimes(1);
-
-      await promisify(store.delete(1));
-      const data2 = await promisify(store.getAll());
-      expect(data2.length).toBe(1);
-      expect(originDelete).toHaveBeenCalledTimes(1);
-
-      await promisify(store.clear());
-      const data3 = await promisify(store.getAll());
-      expect(data3.length).toBe(0);
-      expect(originClear).toHaveBeenCalledTimes(1);
-
-      expect(dbTrigger).toHaveBeenCalledTimes(4);
-
-      done();
+    // @ts-ignore
+    socket.dispatchEvent(DEBUG_MESSAGE_TYPE.DATABASE_PAGINATION, {
+      source: {
+        type: DEBUG_MESSAGE_TYPE.DATABASE_PAGINATION,
+        data: {
+          db: 'blog',
+          store: 'posts',
+          page: 2,
+        },
+      },
     });
+
+    await sleep();
+
+    expect(dbTrigger).toHaveBeenCalledTimes(2);
   });
 });
