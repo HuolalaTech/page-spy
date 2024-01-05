@@ -10,6 +10,9 @@ import socketStore from 'web/helpers/socket';
 import { ROOM_SESSION_KEY } from 'src/utils/constants';
 import { Config } from 'src/utils/config';
 import { isBrowser } from 'src/utils';
+import Request from 'src/packages/web/api';
+
+const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 
 const rootId = '#__pageSpy';
 afterEach(() => {
@@ -150,7 +153,6 @@ describe('new PageSpy([config])', () => {
     expect(init).toHaveBeenCalled();
   });
   it('Init connection', async () => {
-    const sdk = new SDK();
     const response = {
       code: 'ok',
       message: 'mock response',
@@ -164,14 +166,16 @@ describe('new PageSpy([config])', () => {
       },
     };
     jest
-      .spyOn(sdk.request!, 'createRoom')
+      .spyOn(Request.prototype, 'createRoom')
       .mockImplementation(async function () {
         return response;
       });
 
     expect(sessionStorage.getItem(ROOM_SESSION_KEY)).toBe(null);
 
-    await sdk.init();
+    const sdk = new SDK();
+    await sleep();
+
     expect(JSON.parse(sessionStorage.getItem(ROOM_SESSION_KEY)!)).toEqual({
       name: sdk.name,
       address: sdk.address,
