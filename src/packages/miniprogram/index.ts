@@ -78,8 +78,9 @@ export default class PageSpy {
     if (!roomCache || typeof roomCache !== 'object') {
       await this.createNewConnection();
     } else {
-      const { name, address, roomUrl, usable, project: prev } = roomCache;
-      if (!usable || config.project !== prev) {
+      const { name, address, roomUrl, usable, project: prev, time } = roomCache;
+      // The server will close the connection after 60s. for the sdk, we use 30s.
+      if (!usable || config.project !== prev || time < Date.now() - 1000 * 30) {
         await this.createNewConnection();
       } else {
         this.name = name;
@@ -125,10 +126,12 @@ export default class PageSpy {
   }
 
   useOldConnection() {
+    // TODO when use old connection, must make sure it's connectable, then refresh the cache
     this.refreshRoomInfo();
     socketStore.init(this.roomUrl);
   }
 
+  // avoid deleted by user code
   refreshRoomInfo() {
     /* c8 ignore start */
     this.saveSession();
@@ -136,6 +139,7 @@ export default class PageSpy {
       const roomCache = wx.getStorageSync(ROOM_SESSION_KEY);
       if (roomCache && typeof roomCache === 'object') {
         const { usable } = roomCache;
+        // unusable or time is expired, the room is not usable
         if (usable === false) {
           clearInterval(timerId);
           return;
@@ -158,6 +162,7 @@ export default class PageSpy {
       roomUrl,
       usable: true,
       project: Config.get().project,
+      time: Date.now(),
     };
     wx.setStorageSync(ROOM_SESSION_KEY, roomCache);
   }

@@ -1,4 +1,5 @@
 /* istanbul ignore file */
+import { ROOM_SESSION_KEY } from 'src/utils/constants';
 import {
   SocketStoreBase,
   SocketState,
@@ -62,7 +63,9 @@ export class MPWeixinSocketStore extends SocketStoreBase {
     return this.socket;
   }
 
-  onOffline() {}
+  onOffline() {
+    wx.setStorageSync(ROOM_SESSION_KEY, JSON.stringify({ usable: false }));
+  }
 }
 
 export default new MPWeixinSocketStore();

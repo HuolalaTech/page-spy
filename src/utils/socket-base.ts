@@ -110,6 +110,8 @@ export abstract class SocketStoreBase {
   // pong timer used for waiting for pong, if pong not received, close the connection
   private pongTimer: ReturnType<typeof setTimeout> | null = null;
 
+  private retryTimer: number | null = null;
+
   // messages store
   private messages: (SpySocket.BroadcastEvent | SpySocket.UnicastEvent)[] = [];
 
@@ -216,7 +218,14 @@ export abstract class SocketStoreBase {
       return;
     }
 
-    this.tryReconnect();
+    if (this.retryTimer) {
+      clearTimeout(this.retryTimer);
+    }
+
+    this.retryTimer = window.setTimeout(() => {
+      this.retryTimer = null;
+      this.tryReconnect();
+    }, 2000);
   }
 
   tryReconnect() {
@@ -300,6 +309,10 @@ export abstract class SocketStoreBase {
         }
         break;
       case ERROR:
+        // TODO: we should handle this error
+        // if (result.content.code === 'RoomNotFoundError') {
+        //   // Room not exist, might because used an old connection.
+        // }
         this.reconnectable = false;
         this.connectOffline();
         break;
