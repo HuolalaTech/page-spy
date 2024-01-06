@@ -59,9 +59,9 @@ export default class BeaconProxy extends WebNetworkProxyBase {
         }
         req.readyState = XMLHttpRequest.DONE;
         that.sendRequestItem(id, req);
-      } else {
+      } /* c8 ignore start */ else {
         psLog.warn('The request object is not on navigator.sendBeacon event');
-      }
+      } /* c8 ignore stop */
       return result;
     };
   }

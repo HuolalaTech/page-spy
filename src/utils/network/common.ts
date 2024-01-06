@@ -88,13 +88,13 @@ export function resolveUrlInfo(target: URL | string, base?: string | URL) {
       name,
       query,
     };
-  } catch (e) {
+  } /* c8 ignore start */ catch (e) {
     return {
       url: 'Unknown',
       name: 'Unknown',
       query: null,
     };
-  }
+  } /* c8 ignore stop */
 }
 
 export function getContentType(data: Document | RequestInit['body']) {

@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 export default abstract class PageSpyPlugin {
   public constructor(public name: string) {}
   // 加载后立即生效

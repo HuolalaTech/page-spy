@@ -14,6 +14,7 @@ const script = new JSDOM(
   `
   <html>
     <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <script src="https://example.com/sdk/index.min.js"></script>
     </head>
   </html>
@@ -52,3 +53,12 @@ import '../__mocks__/cookie-store';
 // mock window.indexedDB
 import 'fake-indexeddb/auto';
 import 'core-js/stable/structured-clone';
+
+window.Modernizr = {
+  addTest(key: string, support: boolean) {
+    void 0;
+  },
+  on(key: string, cb: (a: boolean) => void) {
+    cb(true);
+  },
+};

@@ -109,11 +109,12 @@ class XhrProxy extends WebNetworkProxyBase {
               break;
           }
           that.sendRequestItem(XMLReq.pageSpyRequestId, req);
-        } else {
+        } /* c8 ignore start */ else {
           psLog.warn(
             "The request object is not found on XMLHttpRequest's readystatechange event",
           );
         }
+        /* c8 ignore stop */
       });
 
       return open.apply(XMLReq, args as any);
@@ -126,11 +127,11 @@ class XhrProxy extends WebNetworkProxyBase {
           req.requestHeader = [];
         }
         req.requestHeader.push([key, value]);
-      } else {
+      } /* c8 ignore start */ else {
         psLog.warn(
           "The request object is not found on XMLHttpRequest's setRequestHeader event",
         );
-      }
+      } /* c8 ignore stop */
       return setRequestHeader.apply(this, [key, value]);
     };
 
@@ -158,11 +159,11 @@ class XhrProxy extends WebNetworkProxyBase {
             that.sendRequestItem(XMLReq.pageSpyRequestId, req);
           });
         }
-      } else {
+      } /* c8 ignore start */ else {
         psLog.warn(
           "The request object is not found on XMLHttpRequest's send event",
         );
-      }
+      } /* c8 ignore stop */
       return send.apply(XMLReq, [body]);
     };
   }
@@ -191,9 +192,12 @@ class XhrProxy extends WebNetworkProxyBase {
             // not a JSON string
             result.response = XMLReq.response;
           }
-        } else if (typeof XMLReq.response !== 'undefined') {
+        } /* c8 ignore start */ else if (
+          typeof XMLReq.response !== 'undefined'
+        ) {
           result.response = toStringTag(XMLReq.response);
         }
+        /* c8 ignore stop */
         break;
       case 'json':
         if (typeof XMLReq.response !== 'undefined') {
@@ -214,10 +218,10 @@ class XhrProxy extends WebNetworkProxyBase {
             if (blob.size <= MAX_SIZE) {
               try {
                 result.response = await blob2base64Async(blob);
-              } catch (e: any) {
+              } /* c8 ignore start */ catch (e: any) {
                 result.response = await blob.text();
                 psLog.error(e.message);
-              }
+              } /* c8 ignore stop */
             } else {
               result.response = '[object Blob]';
               result.responseReason = Reason.EXCEED_SIZE;

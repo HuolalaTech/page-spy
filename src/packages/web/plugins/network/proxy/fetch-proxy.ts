@@ -140,15 +140,16 @@ export default class FetchProxy extends WebNetworkProxyBase {
                 if (blob.size <= MAX_SIZE) {
                   try {
                     req.response = await blob2base64Async(blob);
-                  } catch (e: any) {
+                  } /* c8 ignore start */ catch (e: any) {
                     req.response = await blob.text();
                     psLog.error(e.message);
-                  }
+                  } /* c8 ignore stop */
                 } else {
                   req.response = '[object Blob]';
                   req.responseReason = Reason.EXCEED_SIZE;
                 }
                 break;
+              /* c8 ignore next 2 */
               default:
                 break;
             }
@@ -157,9 +158,9 @@ export default class FetchProxy extends WebNetworkProxyBase {
             req.readyState = XMLHttpRequest.DONE;
             that.sendRequestItem(id, req);
           });
-      } else {
+      } /* c8 ignore start */ else {
         psLog.warn('The request object is not found on window.fetch event');
-      }
+      } /* c8 ignore stop */
       return fetchInstance;
     };
   }

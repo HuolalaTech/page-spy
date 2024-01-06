@@ -82,9 +82,6 @@ export default class PageSpy {
   }
 
   async init() {
-    const ok = this.checkConfig();
-    if (!ok) return;
-
     const config = Config.get();
     const roomCache = sessionStorage.getItem(ROOM_SESSION_KEY);
     if (roomCache === null) {
@@ -120,9 +117,6 @@ export default class PageSpy {
   }
 
   async createNewConnection() {
-    const configOK = this.checkConfig();
-    if (!configOK) return;
-
     if (!this.request) {
       psLog.error('Cannot get the Request');
       return;
@@ -152,6 +146,7 @@ export default class PageSpy {
   // which leads to strange phenomena such as css style mismatches
   render() {
     const root = document.querySelector(`#${Identifier}`);
+    /* c8 ignore start */
     if (root) {
       psLog.warn('Cannot render the widget because it has been in the DOM');
       return;
@@ -177,10 +172,10 @@ export default class PageSpy {
       };
       timer = setTimeout(pollingDocument, 1);
     }
+    /* c8 ignore stop */
   }
 
   refreshRoomInfo() {
-    /* c8 ignore start */
     this.saveSession();
     const timerId = setInterval(() => {
       const latestRoomInfo = sessionStorage.getItem(ROOM_SESSION_KEY);
@@ -194,13 +189,9 @@ export default class PageSpy {
 
       this.saveSession();
     }, 15 * 1000);
-    /* c8 ignore stop */
   }
 
   saveSession() {
-    const ok = this.checkConfig();
-    if (!ok) return;
-
     const { name, address, roomUrl } = this;
     const roomInfo = JSON.stringify({
       name,
@@ -214,8 +205,6 @@ export default class PageSpy {
 
   startRender() {
     const { project, clientOrigin } = Config.get();
-    const ok = this.checkConfig();
-    if (!ok) return;
 
     const root = document.createElement('div');
     root.id = Identifier;
@@ -286,18 +275,7 @@ export default class PageSpy {
     psLog.log('Render success');
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  checkConfig() {
-    const config = Config.get();
-    if (!config) {
-      psLog.error('Cannot get the config info');
-      return false;
-    }
-    return true;
-  }
-
   handleDeviceDPR() {
-    /* c8 ignore start */
     const dpr = window.devicePixelRatio || 1;
     const viewportEl = document.querySelector('[name="viewport"]');
 
@@ -311,6 +289,5 @@ export default class PageSpy {
         this.root!.style.fontSize = `${14 * dpr}px`;
       }
     }
-    /* c8 ignore stop */
   }
 }

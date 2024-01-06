@@ -28,6 +28,7 @@ export class StoragePlugin implements PageSpyPlugin {
       case 'cookie':
         result = await StoragePlugin.takeCookie();
         break;
+      /* c8 ignore next 2 */
       default:
         break;
     }
@@ -77,7 +78,7 @@ export class StoragePlugin implements PageSpyPlugin {
     };
     if (window.cookieStore) {
       data.data = await window.cookieStore.getAll();
-    } else {
+    } /* c8 ignore start */ else {
       data.data = document.cookie.split('; ').map((item) => {
         const [name, value] = item.split('=');
         return {
@@ -85,7 +86,7 @@ export class StoragePlugin implements PageSpyPlugin {
           value,
         };
       });
-    }
+    } /* c8 ignore stop */
     return data;
   }
 

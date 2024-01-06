@@ -18,7 +18,7 @@ interface TCreateRoom {
   tags: Record<string, any>;
 }
 
-const parseSchemeWithScript = () => {
+export const parseSchemeWithScript = () => {
   try {
     const { protocol } = new URL(Config.scriptLink);
     if (protocol.startsWith('https')) {

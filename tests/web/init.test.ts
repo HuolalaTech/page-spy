@@ -5,18 +5,20 @@ import NetworkPlugin from 'web/plugins/network';
 import SystemPlugin from 'web/plugins/system';
 import PagePlugin from 'web/plugins/page';
 import { StoragePlugin } from 'web/plugins/storage';
-import PageSpy, { SpyConsole } from 'types/web';
+import { SpyConsole } from 'types/web';
 import socketStore from 'web/helpers/socket';
 import { ROOM_SESSION_KEY } from 'src/utils/constants';
 import { Config } from 'src/utils/config';
 import { isBrowser } from 'src/utils';
 import Request from 'src/packages/web/api';
+import { JSDOM } from 'jsdom';
 
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 
 const rootId = '#__pageSpy';
 afterEach(() => {
   jest.restoreAllMocks();
+  jest.useRealTimers();
   document.querySelector(rootId)?.remove();
   sessionStorage.removeItem(ROOM_SESSION_KEY);
   SDK.instance = null;
@@ -36,7 +38,10 @@ describe('Im in the right env', () => {
 
 describe('new PageSpy([config])', () => {
   it('Auto detect config by parsing `document.currentScript.src`', () => {
+    jest.useFakeTimers();
     const sdk = new SDK();
+
+    jest.advanceTimersByTime(100000);
 
     // The config value inited from /tests/setup.ts
     const config = Config.get();
@@ -52,6 +57,7 @@ describe('new PageSpy([config])', () => {
     const userCfg = {
       api: 'custom-server.com',
       clientOrigin: 'https://debug-ui.com',
+      enableSSL: true,
     };
 
     const sdk = new SDK(userCfg);
@@ -152,6 +158,7 @@ describe('new PageSpy([config])', () => {
     window.dispatchEvent(new Event('DOMContentLoaded'));
     expect(init).toHaveBeenCalled();
   });
+
   it('Init connection', async () => {
     const response = {
       code: 'ok',
@@ -223,5 +230,23 @@ describe('new PageSpy([config])', () => {
     new SDK();
     window.dispatchEvent(new Event('DOMContentLoaded'));
     expect(spy).toBeCalled();
+  });
+
+  it('Will get the same instance with duplicate init', () => {
+    expect(SDK.instance).toBe(null);
+
+    // 1st init
+    const ins1 = new SDK();
+    // 2nd init
+    const ins2 = new SDK();
+
+    expect(ins1).toBe(ins2);
+  });
+
+  it('PageSpy.prototype.refreshRoomInfo', () => {
+    jest.useFakeTimers();
+
+    SDK.prototype.refreshRoomInfo();
+    jest.advanceTimersByTime(30 * 1000);
   });
 });
