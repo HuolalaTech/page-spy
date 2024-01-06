@@ -35,12 +35,13 @@ export default class ErrorPlugin implements PageSpyPlugin {
     if (wx.canIUse('onError')) {
       wx.onError((error) => {
         if (error.stack || error.message) {
-          /* istanbul ignore next 2 */
+          /* c8 ignore start */
           const { message, stack } = error;
           ErrorPlugin.sendMessage(stack || message, {
             name: 'uncaught error',
             ...error,
           });
+          /* c8 ignore stop */
         } else {
           // When the error does not exist, use default information
           const defaultMessage =

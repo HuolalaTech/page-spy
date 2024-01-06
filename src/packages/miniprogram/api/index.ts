@@ -48,7 +48,7 @@ export default class Request {
         return res.data;
       },
       (err) => {
-        /* istanbul ignore next */
+        /* c8 ignore next */
         throw Error(`Request create room failed: ${err.message}`);
       },
     ) as Promise<TResponse<TCreateRoom>>;
