@@ -1,4 +1,4 @@
-import { makePrimitiveValue, getValueType } from 'src/utils';
+import { makePrimitiveValue, getValueType, isArrayLike } from 'src/utils';
 
 describe('makePrimitiveValue: convert data to showable string', () => {
   it('✅ Primitive is ok', () => {
@@ -10,6 +10,7 @@ describe('makePrimitiveValue: convert data to showable string', () => {
       { received: NaN, expected: 'NaN' },
       { received: 123n, expected: '123n' },
       { received: Symbol('foo'), expected: 'Symbol(foo)' },
+      { received: null, expected: null },
     ].forEach(({ received, expected }) => {
       expect(makePrimitiveValue(received).value).toBe(expected);
     });
@@ -50,4 +51,15 @@ describe('getValueType', () => {
   expect(getValueType(new Object())).toBe('object');
   expect(getValueType(Object.create(null))).toBe('object');
   expect(getValueType(new Array())).toBe('object');
+});
+
+describe('isArrayLike()', () => {
+  const normalList = [1, 2, 3];
+  expect(isArrayLike(normalList)).toBe(false);
+
+  const nodeList = document.querySelectorAll('div');
+  expect(isArrayLike(nodeList)).toBe(true);
+
+  const htmlCollection = document.scripts;
+  expect(isArrayLike(htmlCollection)).toBe(true);
 });

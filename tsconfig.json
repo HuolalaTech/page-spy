@@ -20,7 +20,9 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "src/*": ["src/*"]
+      "src/*": ["src/*"],
+      "web/*": ["src/packages/web/*"],
+      "miniprogram/*": ["src/packages/miniprogram/*"]
     }
   },
   "include": ["src/**/*", "tests/**/*"]

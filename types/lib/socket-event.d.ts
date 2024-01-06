@@ -69,6 +69,7 @@ export type ErrorEvent = EventConstructor<
   }
 >;
 export type PingEvent = EventConstructor<'ping', any>;
+export type PongEvent = EventConstructor<'pong', any>;
 export type ClientEvent = UnicastEvent | BroadcastEvent | PingEvent;
 export type Event =
   | JoinEvent
@@ -78,4 +79,10 @@ export type Event =
   | BroadcastEvent
   | UnicastEvent
   | ErrorEvent
-  | PingEvent;
+  | PingEvent
+  | PongEvent;
+
+export type PackedEvent = Event & {
+  createdAt: number;
+  requestId: string;
+};

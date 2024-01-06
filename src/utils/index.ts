@@ -1,3 +1,13 @@
+// envs
+
+export function isBrowser() {
+  return (
+    typeof window === 'object' &&
+    typeof document === 'object' &&
+    Object.prototype.toString.call(document) === '[object HTMLDocument]'
+  );
+}
+
 export function getRandomId() {
   return Math.random().toString(36).slice(2);
 }
@@ -28,11 +38,24 @@ export function isBigInt(value: unknown): value is bigint {
 export function isArray(value: unknown): value is unknown[] {
   return value instanceof Array;
 }
-
 export function isArrayLike(
   value: unknown,
 ): value is NodeList | HTMLCollection {
-  return value instanceof NodeList || value instanceof HTMLCollection;
+  if (
+    typeof NodeList === 'function' &&
+    NodeList.name === 'NodeList' &&
+    value instanceof NodeList
+  ) {
+    return true;
+  }
+  if (
+    typeof HTMLCollection === 'function' &&
+    HTMLCollection.name === 'HTMLCollection' &&
+    value instanceof HTMLCollection
+  ) {
+    return true;
+  }
+  return false;
 }
 
 export function isObjectLike(value: unknown): value is Record<string, unknown> {
