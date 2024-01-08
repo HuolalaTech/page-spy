@@ -51,7 +51,7 @@ export default class PageSpy {
     const { api, disabledOnProd } = Config.mergeConfig(init);
 
     if (wx.canIUse('getAccountInfoSync')) {
-      const accountInfo = wx.getAccountInfoSync();
+      const accountInfo = wx.getAccountInfoSync().miniProgram;
       if (accountInfo.envVersion === 'release' && disabledOnProd !== false) {
         psLog.warn('PageSpy is not allowed on release env of mini program');
       }

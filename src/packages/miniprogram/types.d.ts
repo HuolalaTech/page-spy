@@ -180,9 +180,11 @@ type WXSystemAPI = {
   //   }) => void,
   // );
   getAccountInfoSync(): {
-    appId: string;
-    envVersion: 'develop' | 'trial' | 'release';
-    version: string;
+    miniProgram: {
+      appId: string;
+      envVersion: 'develop' | 'trial' | 'release';
+      version: string;
+    };
   };
 };
 
