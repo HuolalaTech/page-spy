@@ -1060,14 +1060,6 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@huolala-tech/page-spy@^1.5.0-beta.4":
-  version "1.5.0-beta.4"
-  resolved "https://registry.npmjs.org/@huolala-tech/page-spy/-/page-spy-1.5.0-beta.4.tgz#201bf42c1f5cc18eefdb267de0045b3cabec37c2"
-  integrity sha512-upmNePPnoRe38Oa1WykFC4aC0dfQHMhsNnUZpzEBc+mm2gNHXciEuuWwvmaMGqgsUCba7qnlhj7Fn/IKm5Szpw==
-  dependencies:
-    "@babel/runtime" "^7.13.0"
-    copy-to-clipboard "^3.3.1"
-
 "@hutson/parse-repository-url@^3.0.0":
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@hutson/parse-repository-url/-/parse-repository-url-3.0.2.tgz#98c23c950a3d9b6c8f0daed06da6c3af06981340"
