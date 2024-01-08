@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "A developer tool for debugging remote web page.",
   "exports": {
     ".": "./dist/web/index.min.js",
@@ -49,7 +49,6 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.0",
-    "@huolala-tech/page-spy": "^1.5.0-beta.4",
     "copy-to-clipboard": "^3.3.1"
   },
   "devDependencies": {
