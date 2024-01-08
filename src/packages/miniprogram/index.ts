@@ -7,7 +7,7 @@ import { ROOM_SESSION_KEY } from 'src/utils/constants';
 import ConsolePlugin from './plugins/console';
 import ErrorPlugin from './plugins/error';
 import NetworkPlugin from './plugins/network';
-// import SystemPlugin from './plugins/system';
+import SystemPlugin from './plugins/system';
 import StoragePlugin from './plugins/storage';
 
 import socketStore from './helpers/socket';
@@ -54,7 +54,7 @@ export default class PageSpy {
       new ConsolePlugin(),
       new ErrorPlugin(),
       new NetworkPlugin(),
-      // new SystemPlugin(),
+      new SystemPlugin(),
       new StoragePlugin(),
     );
     this.init();
