@@ -15,7 +15,7 @@ import Request from './api';
 
 // import './index.less';
 // eslint-disable-next-line import/order
-import { Config } from 'src/utils/config';
+import { Config } from './config';
 
 export default class PageSpy {
   root: HTMLElement | null = null;
@@ -45,9 +45,17 @@ export default class PageSpy {
       // eslint-disable-next-line no-constructor-return
       return PageSpy.instance;
     }
+
     PageSpy.instance = this;
 
-    const { api } = Config.mergeConfig(init);
+    const { api, disabledOnProd } = Config.mergeConfig(init);
+
+    if (wx.canIUse('getAccountInfoSync')) {
+      const accountInfo = wx.getAccountInfoSync();
+      if (accountInfo.envVersion === 'release' && disabledOnProd !== false) {
+        psLog.warn('PageSpy is not allowed on release env of mini program');
+      }
+    }
     this.request = new Request(api);
 
     this.loadPlugins(

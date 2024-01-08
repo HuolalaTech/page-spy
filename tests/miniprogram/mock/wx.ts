@@ -141,4 +141,15 @@ export class MockWX implements WXSystemAPI, WXNetworkAPI, WXStorageAPI {
   offAppShow(listener: () => void): void {
     this.off('onAppShow', listener);
   }
+  getAccountInfoSync(): {
+    appId: string;
+    envVersion: 'develop' | 'trial' | 'release';
+    version: string;
+  } {
+    return {
+      appId: 'wx1234567890abcdef',
+      envVersion: 'develop',
+      version: '1.0.0',
+    };
+  }
 }

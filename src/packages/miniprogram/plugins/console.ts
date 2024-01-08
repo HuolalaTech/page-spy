@@ -18,23 +18,29 @@ export default class ConsolePlugin implements PageSpyPlugin {
     ConsolePlugin.hasInitd = true;
 
     const type: SpyConsole.ProxyType[] = ['log', 'info', 'error', 'warn'];
+    const that = this;
     type.forEach((item) => {
       this.console[item] = globalThis.console[item];
-      globalThis.console[item] = (...args: any[]) => {
-        const page = getCurrentPages().pop();
-        let url = '/';
-        if (page) {
-          url = page.route;
-          if (page.options && Object.keys(page.options).length > 0) {
-            url += '?' + joinQuery(page.options);
+      Object.defineProperty(globalThis.console, item, {
+        value(...args: any[]) {
+          const page = getCurrentPages().pop();
+          let url = '/';
+          if (page) {
+            url = page.route;
+            if (page.options && Object.keys(page.options).length > 0) {
+              url += '?' + joinQuery(page.options);
+            }
           }
-        }
-        this.printLog({
-          logType: item,
-          logs: args,
-          url,
-        });
-      };
+          that.printLog({
+            logType: item,
+            logs: args,
+            url,
+          });
+        },
+        configurable: true,
+        enumerable: true,
+        writable: true,
+      });
     });
   }
 

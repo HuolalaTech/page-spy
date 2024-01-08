@@ -18,5 +18,7 @@ module.exports = {
     'prefer-template': 'off',
     'class-methods-use-this': 'off',
     'no-param-reassign': 'off',
+    'comma-dangle': 'off',
+    '@typescript-eslint/comma-dangle': 'off',
   },
 };

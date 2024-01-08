@@ -22,6 +22,13 @@ export interface InitConfig {
    * - true (Default): sdk will use ['https://', 'wss://'];
    */
   enableSSL?: boolean | null;
+
+  /**
+   * Disable pagespy on release environment.
+   * - true (Default): only allow pagespy init on develop and trail environment.
+   * - false
+   */
+  disabledOnProd?: boolean | null;
 }
 
 export * as SpyDevice from './lib/device';

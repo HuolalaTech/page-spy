@@ -92,110 +92,122 @@ export default class StoragePlugin implements PageSpyPlugin {
       StoragePlugin.originFunctions![name] = wx[name];
     });
 
-    wx.setStorage = function (
-      params: Parameters<WXStorageAPI['setStorage']>[0],
-    ) {
-      return StoragePlugin.originFunctions!.setStorage({
-        ...params,
-        success(res) {
-          sendSetItem(params.key, params.data);
-          params.success?.(res);
-        },
-      });
-    };
-
-    wx.setStorageSync = function (key: string, data: any) {
-      try {
-        const res = StoragePlugin.originFunctions!.setStorageSync(key, data);
-        sendSetItem(key, data);
-        return res;
-      } catch (e) {
-        /* c8 ignore next 3 */
-        // TODO e is unknown so we can't use it, for further investigation
-        psLog.error(`Failed to set storage synchronously: ${key}`);
-        throw e;
-      }
-    };
-
-    wx.batchSetStorage = function (
-      params: Parameters<WXStorageAPI['batchSetStorage']>[0],
-    ) {
-      return StoragePlugin.originFunctions!.batchSetStorage({
-        ...params,
-        success(res) {
-          params.kvList.forEach((kv) => {
-            sendSetItem(kv.key, kv.value);
+    Object.defineProperties(wx, {
+      setStorage: {
+        value(params: Parameters<WXStorageAPI['setStorage']>[0]) {
+          return StoragePlugin.originFunctions!.setStorage({
+            ...params,
+            success(res) {
+              sendSetItem(params.key, params.data);
+              params.success?.(res);
+            },
           });
-          params.success?.(res);
         },
-      });
-    };
-
-    wx.batchSetStorageSync = function (kvList: KVList) {
-      try {
-        const res = StoragePlugin.originFunctions!.batchSetStorageSync(kvList);
-        kvList.forEach((kv) => {
-          sendSetItem(kv.key, kv.value);
-        });
-        return res;
-        /* c8 ignore next 7 */
-      } catch (e) {
-        psLog.error(
-          `Failed to batch set storage synchronously: ${JSON.stringify(
-            kvList.map((kv) => kv.key),
-          )}`,
-        );
-        throw e;
-      }
-    };
-
-    wx.removeStorage = function (
-      params: Parameters<WXStorageAPI['removeStorage']>[0],
-    ) {
-      return StoragePlugin.originFunctions!.removeStorage({
-        ...params,
-        success(res) {
-          sendRemoveItem(params.key);
-          params.success?.(res);
+      },
+      setStorageSync: {
+        value(key: string, data: any) {
+          try {
+            const res = StoragePlugin.originFunctions!.setStorageSync(
+              key,
+              data,
+            );
+            sendSetItem(key, data);
+            return res;
+          } catch (e) {
+            /* c8 ignore next 3 */
+            // TODO e is unknown so we can't use it, for further investigation
+            psLog.error(`Failed to set storage synchronously: ${key}`);
+            throw e;
+          }
         },
-      });
-    };
+      },
 
-    wx.removeStorageSync = function (key: string) {
-      try {
-        const res = StoragePlugin.originFunctions!.removeStorageSync(key);
-        sendRemoveItem(res);
-        return res;
-        /* c8 ignore next 4 */
-      } catch (e) {
-        psLog.error(`Failed to remove storage synchronously: ${key}`);
-        throw e;
-      }
-    };
-
-    wx.clearStorage = function (
-      params: Parameters<WXStorageAPI['clearStorage']>[0],
-    ) {
-      return StoragePlugin.originFunctions!.clearStorage({
-        ...params,
-        success(res) {
-          sendClearItem();
-          params.success?.(res);
+      batchSetStorage: {
+        value(params: Parameters<WXStorageAPI['batchSetStorage']>[0]) {
+          return StoragePlugin.originFunctions!.batchSetStorage({
+            ...params,
+            success(res) {
+              params.kvList.forEach((kv) => {
+                sendSetItem(kv.key, kv.value);
+              });
+              params.success?.(res);
+            },
+          });
         },
-      });
-    };
+      },
+      batchSetStorageSync: {
+        value(kvList: KVList) {
+          try {
+            const res =
+              StoragePlugin.originFunctions!.batchSetStorageSync(kvList);
+            kvList.forEach((kv) => {
+              sendSetItem(kv.key, kv.value);
+            });
+            return res;
+            /* c8 ignore next 7 */
+          } catch (e) {
+            psLog.error(
+              `Failed to batch set storage synchronously: ${JSON.stringify(
+                kvList.map((kv) => kv.key),
+              )}`,
+            );
+            throw e;
+          }
+        },
+      },
 
-    wx.clearStorageSync = function () {
-      try {
-        const res = StoragePlugin.originFunctions!.clearStorageSync();
-        sendClearItem();
-        return res;
-        /* c8 ignore next 4 */
-      } catch (e) {
-        psLog.error('Failed to clear storage synchronously');
-        throw e;
-      }
-    };
+      removeStorage: {
+        value(params: Parameters<WXStorageAPI['removeStorage']>[0]) {
+          return StoragePlugin.originFunctions!.removeStorage({
+            ...params,
+            success(res) {
+              sendRemoveItem(params.key);
+              params.success?.(res);
+            },
+          });
+        },
+      },
+
+      removeStorageSync: {
+        value(key: string) {
+          try {
+            const res = StoragePlugin.originFunctions!.removeStorageSync(key);
+            sendRemoveItem(res);
+            return res;
+            /* c8 ignore next 4 */
+          } catch (e) {
+            psLog.error(`Failed to remove storage synchronously: ${key}`);
+            throw e;
+          }
+        },
+      },
+
+      clearStorage: {
+        value(params: Parameters<WXStorageAPI['clearStorage']>[0]) {
+          return StoragePlugin.originFunctions!.clearStorage({
+            ...params,
+            success(res) {
+              sendClearItem();
+              params.success?.(res);
+            },
+          });
+        },
+      },
+
+      clearStorageSync: {
+        value() {
+          try {
+            const res = StoragePlugin.originFunctions!.clearStorageSync();
+            sendClearItem();
+            return res;
+            /* c8 ignore next 4 */
+          } catch (e) {
+            psLog.error('Failed to clear storage synchronously');
+            throw e;
+          }
+        },
+      },
+    });
   }
 
   private static sendSetItem(key: string, value: any) {

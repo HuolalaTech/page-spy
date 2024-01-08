@@ -179,6 +179,11 @@ type WXSystemAPI = {
   //     errMsg: string;
   //   }) => void,
   // );
+  getAccountInfoSync(): {
+    appId: string;
+    envVersion: 'develop' | 'trial' | 'release';
+    version: string;
+  };
 };
 
 declare const wx: WXStorageAPI & WXNetworkAPI & WXSystemAPI;
