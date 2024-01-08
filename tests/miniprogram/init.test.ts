@@ -147,6 +147,7 @@ describe('new PageSpy([config])', () => {
       roomUrl: sdk.roomUrl,
       usable: true,
       project: 'default',
+      time: expect.any(Number),
     });
   });
 
