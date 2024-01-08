@@ -42,7 +42,7 @@
     "lint:fix": "eslint --ext .js,.ts --fix ./src",
     "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,md,json}'",
     "commit": "git-cz",
-    "prepublishOnly": "yarn build",
+    "prepublishOnly": "yarn test && yarn build",
     "release:major": "standard-version --release-as major",
     "release:minor": "standard-version --release-as minor",
     "release:patch": "standard-version --release-as patch"

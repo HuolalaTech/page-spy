@@ -46,16 +46,19 @@ export default class PageSpy {
       return PageSpy.instance;
     }
 
-    PageSpy.instance = this;
-
     const { api, disabledOnProd } = Config.mergeConfig(init);
 
     if (wx.canIUse('getAccountInfoSync')) {
       const accountInfo = wx.getAccountInfoSync().miniProgram;
       if (accountInfo.envVersion === 'release' && disabledOnProd !== false) {
         psLog.warn('PageSpy is not allowed on release env of mini program');
+        // eslint-disable-next-line consistent-return
+        return;
       }
     }
+
+    PageSpy.instance = this;
+
     this.request = new Request(api);
 
     this.loadPlugins(
