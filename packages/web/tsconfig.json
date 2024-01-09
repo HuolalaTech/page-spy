@@ -5,8 +5,10 @@
     "types": ["jest"],
     "noEmit": true,
     "paths": {
-      "types/*": ["types/*"]
+      "src/*": ["./src/*"],
+      "types/*": ["./types/*"],
+      "base/*": ["../base/*"]
     }
   },
-  "include": ["src/**/*", "tests/**/*"]
+  "include": ["src"]
 }

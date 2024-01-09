@@ -1,12 +1,12 @@
-import { isBrowser } from 'src/utils';
-import SDK from 'miniprogram/index';
+import { isBrowser } from 'base/src';
+import SDK from 'src/index';
 
-import ConsolePlugin from 'miniprogram/plugins/console';
-import StoragePlugin from 'miniprogram/plugins/storage';
-import NetworkPlugin from 'miniprogram/plugins/network';
+import ConsolePlugin from 'src/plugins/console';
+import StoragePlugin from 'src/plugins/storage';
+import NetworkPlugin from 'src/plugins/network';
 
-import { SpyConsole } from 'types/miniprogram';
-import { ROOM_SESSION_KEY } from 'src/utils/constants';
+import { SpyConsole } from 'base/types/index';
+import { ROOM_SESSION_KEY } from 'base/src/constants';
 import { initStorageMock } from './mock/storage';
 
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));

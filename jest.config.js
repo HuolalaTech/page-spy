@@ -1,9 +1,13 @@
 /**
- * @type {import("ts-jest/dist/types").InitialOptionsTsJest}
+ * @type {import("ts-jest/dist/types").JestConfigWithTsJest}
  */
 module.exports = {
   collectCoverageFrom: ['packages/**/*.{ts,tsx}', '!packages/**/*.d.ts'],
   coverageProvider: 'v8',
+  // projects 里面的配置是合并还是覆盖待确认
+  moduleNameMapper: {
+    '^base/(.*)$': '<rootDir>/packages/base/$1',
+  },
   projects: [
     {
       displayName: {

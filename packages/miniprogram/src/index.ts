@@ -1,8 +1,8 @@
-import type { InitConfig } from 'types/miniprogram';
-import { getRandomId, psLog } from 'src/utils';
-import type PageSpyPlugin from 'src/utils/plugin';
-import { SocketState } from 'src/utils/socket-base';
-import { ROOM_SESSION_KEY } from 'src/utils/constants';
+import type { InitConfig } from 'types/index';
+import { getRandomId, psLog } from 'base/src';
+import type { PageSpyPlugin } from 'base/types';
+import { SocketState } from 'base/src/socket-base';
+import { ROOM_SESSION_KEY } from 'base/src/constants';
 
 import ConsolePlugin from './plugins/console';
 import ErrorPlugin from './plugins/error';

@@ -1,5 +1,5 @@
 // eslint-disable no-case-declarations
-import type PageSpyPlugin from 'src/utils/plugin';
+import type { PageSpyPlugin } from 'base/types/index';
 import RequestProxy from './proxy/request';
 
 export default class NetworkPlugin implements PageSpyPlugin {

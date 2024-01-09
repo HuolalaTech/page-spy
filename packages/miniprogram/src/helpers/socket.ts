@@ -1,10 +1,9 @@
-/* istanbul ignore file */
-import { ROOM_SESSION_KEY } from 'src/utils/constants';
+import { ROOM_SESSION_KEY } from 'base/src/constants';
 import {
   SocketStoreBase,
   SocketState,
   SocketWrapper,
-} from 'src/utils/socket-base';
+} from 'base/src/socket-base';
 
 export class MPWeixinSocketWrapper extends SocketWrapper {
   private socket: MPWeixinSocket | null = null;

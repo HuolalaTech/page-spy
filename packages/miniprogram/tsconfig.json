@@ -2,11 +2,12 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "lib": ["esnext"],
-    "types": ["jest"],
     "noEmit": true,
     "paths": {
-      "types/*": ["./types/*"]
+      "src/*": ["./src/*"],
+      "types/*": ["./types/*"],
+      "base/*": ["../base/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "tests"]
 }

@@ -1,5 +1,5 @@
-import RequestProxy from 'miniprogram/plugins/network/proxy/request';
-import RequestItem from 'src/utils/request-item';
+import RequestProxy from 'src/plugins/network/proxy/request';
+import RequestItem from 'base/src/request-item';
 
 type RequestStore = Record<string, RequestItem | null>;
 interface RequestsInfo {

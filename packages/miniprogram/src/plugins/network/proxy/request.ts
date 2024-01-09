@@ -1,10 +1,10 @@
-import { getRandomId, isObjectLike, psLog, toStringTag } from 'src/utils';
+import { getRandomId, isObjectLike, psLog, toStringTag } from 'base/src/index';
 import {
   isOkStatusCode,
   ReqReadyState,
   resolveUrlInfo,
   toLowerKeys,
-} from 'src/utils/network/common';
+} from 'base/src/network/common';
 import MPNetworkProxyBase from './base';
 
 export default class MPWeixinRequestProxy extends MPNetworkProxyBase {

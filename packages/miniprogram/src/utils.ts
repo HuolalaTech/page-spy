@@ -1,4 +1,4 @@
-import { DeviceInfo } from 'types/lib/device';
+import type { DeviceInfo } from 'base/types/lib/device';
 
 // PENDING: 这里补泛型
 export const promisifyMPApi = (api: (params: any) => any) => {

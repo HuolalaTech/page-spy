@@ -12,6 +12,7 @@
     "types"
   ],
   "scripts": {
+    "cwd": "node ./cwd.js",
     "build": "rollup -c",
     "build:watch": "rollup -c -w",
     "test": "jest --silent",

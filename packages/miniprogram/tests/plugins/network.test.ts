@@ -1,5 +1,4 @@
-import NetworkPlugin from 'miniprogram/plugins/network';
-import { Reason } from 'src/utils/network/common';
+import NetworkPlugin from 'src/plugins/network';
 import { computeRequestMapInfo } from './util';
 
 const port = 6688;

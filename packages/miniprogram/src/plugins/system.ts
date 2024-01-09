@@ -1,8 +1,7 @@
-import type PageSpyPlugin from 'src/utils/plugin';
-import { getRandomId } from 'src/utils';
-import socketStore from 'miniprogram/helpers/socket';
-import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
-import { SpySystem } from 'types/miniprogram';
+import { getRandomId } from 'base/src';
+import socketStore from 'src/helpers/socket';
+import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
+import type { SpySystem, PageSpyPlugin } from 'base/types';
 import { getDeviceInfo } from '../utils';
 
 export default class SystemPlugin implements PageSpyPlugin {

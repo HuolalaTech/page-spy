@@ -1,4 +1,5 @@
-import ConsolePlugin from 'src/packages/miniprogram/plugins/console';
+import ConsolePlugin from 'src/plugins/console';
+
 afterEach(() => {
   jest.restoreAllMocks();
   // wx.request = originRequest;

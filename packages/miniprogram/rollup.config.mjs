@@ -35,7 +35,10 @@ const plugins = [
     plugins: [autoprefixer()],
   }),
   alias({
-    entries: [{ find: 'src', replacement: resolve(root, './src') }],
+    entries: [
+      { find: 'src', replacement: resolve(root, './src') },
+      { find: 'base', replacement: resolve(root, '../base') },
+    ],
   }),
   uglify(),
 ];

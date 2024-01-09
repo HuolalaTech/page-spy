@@ -1,4 +1,4 @@
-import type { InitConfig } from 'types/miniprogram';
+import type { InitConfig } from 'types/index';
 
 export class Config {
   private static value: Required<InitConfig>;

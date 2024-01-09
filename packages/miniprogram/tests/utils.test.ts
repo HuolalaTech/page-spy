@@ -1,8 +1,4 @@
-import {
-  getDeviceInfo,
-  joinQuery,
-  promisifyMPApi,
-} from 'src/packages/miniprogram/utils';
+import { getDeviceInfo, joinQuery, promisifyMPApi } from 'src/utils';
 
 afterEach(() => {
   jest.clearAllMocks();

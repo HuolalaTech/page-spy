@@ -1,8 +1,7 @@
-import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
-import { SpyStorage } from 'types/miniprogram';
-import type PageSpyPlugin from 'src/utils/plugin';
-import socketStore from 'miniprogram/helpers/socket';
-import { psLog } from 'src/utils';
+import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
+import { SpyStorage, PageSpyPlugin } from 'base/types';
+import socketStore from 'src/helpers/socket';
+import { psLog } from 'base/src';
 
 export function mpDataStringify(data: any) {
   const typeOfValue = typeof data;
