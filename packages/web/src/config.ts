@@ -1,12 +1,9 @@
-import type { InitConfig } from 'types/web';
-import { isBrowser } from '.';
+import type { InitConfig } from 'types/index';
 
 export class Config {
-  private static value: Required<InitConfig>;
+  private static value: any;
 
-  public static scriptLink = isBrowser()
-    ? (document.currentScript as HTMLScriptElement)?.src
-    : '';
+  public static scriptLink = (document.currentScript as HTMLScriptElement)?.src;
 
   private static resolveConfig: () => Required<InitConfig> = () => {
     const defaultConfig = {

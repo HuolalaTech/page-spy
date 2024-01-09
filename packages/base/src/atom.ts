@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
-import type { SpyAtom } from 'types/web';
+import type { SpyAtom } from 'types/index';
 import {
   getRandomId,
   getValueType,
@@ -10,7 +10,7 @@ import {
   isPlainObject,
   isPrototype,
   makePrimitiveValue,
-} from 'src/utils/index';
+} from './index';
 
 class Atom {
   private store: Record<string, any> = {};

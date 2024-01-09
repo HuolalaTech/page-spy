@@ -3,17 +3,17 @@
  * 不同平台 socket 的 api 不同但功能相同，这里抽象一层
  */
 
-import { getRandomId, psLog, stringifyData } from 'src/utils';
+import type { SpyMessage, SpySocket } from 'types';
+import { PackedEvent } from 'types/lib/socket-event';
+import { getRandomId, psLog, stringifyData } from './index';
 import {
   DEBUG_MESSAGE_TYPE,
   makeMessage,
   makeBroadcastMessage,
   makeUnicastMessage,
-} from 'src/utils/message';
-import type { SpyMessage, SpySocket } from 'types/web';
-import * as SERVER_MESSAGE_TYPE from 'src/utils/message/server-type';
-import atom from 'src/utils/atom';
-import { PackedEvent } from 'types/lib/socket-event';
+} from './message';
+import * as SERVER_MESSAGE_TYPE from './message/server-type';
+import atom from './atom';
 
 interface SocketEvent<T = any> {
   source: {

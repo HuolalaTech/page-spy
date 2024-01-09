@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-syntax */
 
-import { SpyDevice } from 'types/web';
+import { SpyDevice } from 'types/index';
 import { DeviceInfo } from 'types/lib/device';
 
 const browsers = {

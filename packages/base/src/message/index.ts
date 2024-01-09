@@ -1,4 +1,4 @@
-import type { SpyMessage, SpySocket } from 'types/web';
+import type { SpyMessage, SpySocket } from 'types/index';
 import { getRandomId } from '../index';
 import * as SERVER_MESSAGE_TYPE from './server-type';
 
