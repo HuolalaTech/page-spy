@@ -1,8 +1,8 @@
-import type { InitConfig } from 'types/web';
+import type { InitConfig } from 'types/index';
 import copy from 'copy-to-clipboard';
-import { getRandomId, psLog } from 'src/utils';
-import type PageSpyPlugin from 'src/utils/plugin';
-import { ROOM_SESSION_KEY } from 'src/utils/constants';
+import { getRandomId, psLog } from 'base/src';
+import { ROOM_SESSION_KEY } from 'base/src/constants';
+import type { PageSpyPlugin } from 'base/types';
 import { Modal } from './component/modal';
 import { Content } from './component/content';
 
@@ -21,7 +21,7 @@ import { moveable } from './helpers/moveable';
 import './index.less';
 import logoUrl from './assets/logo.svg';
 // eslint-disable-next-line import/order
-import { Config } from 'src/utils/config';
+import { Config } from './config';
 import { DatabasePlugin } from './plugins/database';
 import { Toast } from './component/toast';
 

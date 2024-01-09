@@ -1,11 +1,11 @@
-import { stringifyData } from 'src/utils';
-import { ROOM_SESSION_KEY } from 'src/utils/constants';
+import { stringifyData } from 'base/src';
+import { ROOM_SESSION_KEY } from 'base/src/constants';
 import {
   SocketStoreBase,
   SocketState,
   SocketWrapper,
   WebSocketEvents,
-} from 'src/utils/socket-base';
+} from 'base/src/socket-base';
 
 export class WebSocketWrapper extends SocketWrapper {
   private socket: WebSocket | null = null;

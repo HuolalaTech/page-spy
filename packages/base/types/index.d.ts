@@ -7,4 +7,6 @@ export * as SpyConsole from './lib/console';
 export * as SpySystem from './lib/system';
 export * as SpyNetwork from './lib/network';
 export * as SpyStorage from './lib/storage';
+export * as SpyDatabase from './lib/database';
+
 export { PageSpyPlugin } from './lib/plugin';

@@ -1,8 +1,8 @@
-import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
-import socketStore from 'web/helpers/socket';
-import type { SpyConsole } from 'types/web';
-import atom from 'src/utils/atom';
-import type PageSpyPlugin from 'src/utils/plugin';
+import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
+import socketStore from 'src/helpers/socket';
+import type { SpyConsole } from 'base/types/index';
+import atom from 'base/src/atom';
+import type { PageSpyPlugin } from 'base/types';
 
 export default class ConsolePlugin implements PageSpyPlugin {
   public name: string = 'ConsolePlugin';

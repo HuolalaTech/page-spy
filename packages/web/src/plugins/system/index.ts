@@ -1,10 +1,9 @@
-import type PageSpyPlugin from 'src/utils/plugin';
-import { getRandomId } from 'src/utils';
-import socketStore from 'web/helpers/socket';
-import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
-import { parseUserAgent } from 'src/utils/device';
+import { getRandomId } from 'base/src';
+import socketStore from 'src/helpers/socket';
+import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
+import { parseUserAgent } from 'base/src/device';
 import '../../deps/modernizr';
-import { SpySystem } from 'types/web';
+import { SpySystem, PageSpyPlugin } from 'base/types/index';
 import { computeResult } from './feature';
 
 window.Modernizr.addTest(

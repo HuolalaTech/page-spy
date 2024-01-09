@@ -5,8 +5,8 @@ import {
   isString,
   isURL,
   psLog,
-} from 'src/utils';
-import { blob2base64Async } from 'web/helpers/blob';
+} from 'base/src';
+import { blob2base64Async } from 'src/helpers/blob';
 import {
   addContentTypeHeader,
   getFormattedBody,
@@ -14,7 +14,7 @@ import {
   MAX_SIZE,
   Reason,
   resolveUrlInfo,
-} from 'src/utils/network/common';
+} from 'base/src/network/common';
 import WebNetworkProxyBase from './base';
 
 export default class FetchProxy extends WebNetworkProxyBase {

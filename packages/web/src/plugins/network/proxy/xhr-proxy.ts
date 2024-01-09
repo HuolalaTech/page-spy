@@ -6,9 +6,9 @@ import {
   isBlob,
   getObjectKeys,
   psLog,
-} from 'src/utils';
-import { blob2base64Async } from 'web/helpers/blob';
-import RequestItem from 'src/utils/request-item';
+} from 'base/src';
+import { blob2base64Async } from 'src/helpers/blob';
+import RequestItem from 'base/src/request-item';
 import {
   MAX_SIZE,
   Reason,
@@ -16,7 +16,7 @@ import {
   getFormattedBody,
   isOkStatusCode,
   resolveUrlInfo,
-} from 'src/utils/network/common';
+} from 'base/src/network/common';
 import WebNetworkProxyBase from './base';
 
 declare global {
@@ -80,11 +80,14 @@ class XhrProxy extends WebNetworkProxyBase {
               req.statusText = 'Loading';
               const header = XMLReq.getAllResponseHeaders() || '';
               const headerArr = header.trim().split(/[\r\n]+/);
-              req.responseHeader = headerArr.reduce((acc, cur) => {
-                const [headerKey, ...parts] = cur.split(': ');
-                acc.push([headerKey, parts.join(': ')]);
-                return acc;
-              }, [] as [string, string][]);
+              req.responseHeader = headerArr.reduce(
+                (acc, cur) => {
+                  const [headerKey, ...parts] = cur.split(': ');
+                  acc.push([headerKey, parts.join(': ')]);
+                  return acc;
+                },
+                [] as [string, string][],
+              );
               break;
             // Loading and download
             case XMLReq.LOADING:

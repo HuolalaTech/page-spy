@@ -1,8 +1,8 @@
 import { WS } from 'jest-websocket-mock';
-import { DEBUG_MESSAGE_TYPE } from 'src/utils/message';
-import { WebSocketStore } from 'web/helpers/socket';
-import { ConnectEvent, ErrorEvent } from 'types/lib/socket-event';
-import * as SERVER_MESSAGE_TYPE from 'src/utils/message/server-type';
+import { DEBUG_MESSAGE_TYPE } from 'base/src/message';
+import { WebSocketStore } from 'src/helpers/socket';
+import { ConnectEvent, ErrorEvent } from 'base/types/lib/socket-event';
+import * as SERVER_MESSAGE_TYPE from 'base/src/message/server-type';
 
 // Mock micro task delay
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));

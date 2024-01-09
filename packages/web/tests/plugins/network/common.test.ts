@@ -5,8 +5,8 @@ import {
   getContentType,
   getFormattedBody,
   resolveUrlInfo,
-} from 'src/utils/network/common';
-import { isBrowser, toStringTag } from 'src/utils';
+} from 'base/src/network/common';
+import { isBrowser, toStringTag } from 'base/src';
 
 describe('Network utilities', () => {
   // format the USP and FormData data which be used in request payload,

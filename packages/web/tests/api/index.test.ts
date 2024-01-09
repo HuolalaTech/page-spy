@@ -1,5 +1,5 @@
-import { parseSchemeWithScript } from 'src/packages/web/api';
-import { Config } from 'src/utils/config';
+import { parseSchemeWithScript } from 'src/api';
+import { Config } from 'src/config';
 
 describe('Web API utils fn', () => {
   it('parseSchemeWithScript', () => {

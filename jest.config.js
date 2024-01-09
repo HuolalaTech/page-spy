@@ -5,9 +5,9 @@ module.exports = {
   collectCoverageFrom: ['packages/**/*.{ts,tsx}', '!packages/**/*.d.ts'],
   coverageProvider: 'v8',
   // projects 里面的配置是合并还是覆盖待确认
-  moduleNameMapper: {
-    '^base/(.*)$': '<rootDir>/packages/base/$1',
-  },
+  // moduleNameMapper: {
+  //   '^base/(.*)$': '<rootDir>/packages/base/$1',
+  // },
   projects: [
     {
       displayName: {
@@ -35,6 +35,7 @@ module.exports = {
       ],
       moduleNameMapper: {
         '^src/(.*)$': '<rootDir>/packages/web/src/$1',
+        '^base/(.*)$': '<rootDir>/packages/base/$1',
         '\\.(css|less|svg|png|jpg)$':
           '<rootDir>/packages/web/tests/__mocks__/assets.js',
       },
@@ -49,6 +50,7 @@ module.exports = {
       setupFilesAfterEnv: ['<rootDir>/packages/miniprogram/tests/setup.ts'],
       moduleNameMapper: {
         '^src/(.*)$': '<rootDir>/packages/miniprogram/src/$1',
+        '^base/(.*)$': '<rootDir>/packages/base/$1',
       },
     },
   ],

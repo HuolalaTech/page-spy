@@ -1,5 +1,5 @@
-export const blob2base64Async = (blob: Blob) =>
-  new Promise((resolve, reject) => {
+export const blob2base64Async = (blob: Blob) => {
+  return new Promise((resolve, reject) => {
     const fr = new FileReader();
     fr.onload = (e) => {
       resolve(e.target?.result);
@@ -10,3 +10,4 @@ export const blob2base64Async = (blob: Blob) =>
     };
     fr.readAsDataURL(blob);
   });
+};

@@ -1,7 +1,7 @@
-import { psLog } from 'src/utils';
-import { Config } from 'src/utils/config';
-import { combineName, parseUserAgent } from 'src/utils/device';
-import { InitConfig } from 'types/web';
+import { psLog } from 'base/src';
+import { Config } from 'src/config';
+import { combineName, parseUserAgent } from 'base/src/device';
+import { InitConfig } from 'types/index';
 
 interface TResponse<T> {
   code: string;

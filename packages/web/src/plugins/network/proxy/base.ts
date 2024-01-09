@@ -1,5 +1,5 @@
-import socketStore from 'web/helpers/socket';
-import NetworkProxyBase from 'src/utils/network/network-proxy-base';
+import socketStore from 'src/helpers/socket';
+import NetworkProxyBase from 'base/src/network/base';
 
 export default class WebNetworkProxyBase extends NetworkProxyBase {
   constructor() {

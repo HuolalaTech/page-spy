@@ -1,7 +1,6 @@
-import { makeMessage, DEBUG_MESSAGE_TYPE } from 'src/utils/message';
-import { SpyStorage } from 'types/web';
-import type PageSpyPlugin from 'src/utils/plugin';
-import socketStore from 'web/helpers/socket';
+import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
+import { SpyStorage, PageSpyPlugin } from 'base/types/index';
+import socketStore from 'src/helpers/socket';
 
 export class StoragePlugin implements PageSpyPlugin {
   public name = 'StoragePlugin';

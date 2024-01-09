@@ -1,6 +1,6 @@
-import PagePlugin from 'web/plugins/page';
-import { DEBUG_MESSAGE_TYPE } from 'src/utils/message';
-import socket from 'web/helpers/socket';
+import PagePlugin from 'src/plugins/page';
+import { DEBUG_MESSAGE_TYPE } from 'base/src/message';
+import socket from 'src/helpers/socket';
 // @ts-ignore
 const trigger = jest.spyOn(PagePlugin, 'collectHtml');
 

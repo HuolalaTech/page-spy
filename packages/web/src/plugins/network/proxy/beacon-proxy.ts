@@ -1,9 +1,9 @@
-import { getRandomId, psLog } from 'src/utils';
+import { getRandomId, psLog } from 'base/src';
 import {
   addContentTypeHeader,
   getFormattedBody,
   resolveUrlInfo,
-} from 'src/utils/network/common';
+} from 'base/src/network/common';
 import WebNetworkProxyBase from './base';
 
 export default class BeaconProxy extends WebNetworkProxyBase {

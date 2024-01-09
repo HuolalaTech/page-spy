@@ -1,6 +1,8 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "allowJs": true,
+    "resolveJsonModule": true,
     "lib": ["DOM", "DOM.Iterable", "esnext"],
     "types": ["jest"],
     "noEmit": true,
@@ -10,5 +12,5 @@
       "base/*": ["../base/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "tests"]
 }

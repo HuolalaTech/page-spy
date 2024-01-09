@@ -1,5 +1,5 @@
 // eslint-disable no-case-declarations
-import type PageSpyPlugin from 'src/utils/plugin';
+import type { PageSpyPlugin } from 'base/types/index';
 import XhrProxy from './proxy/xhr-proxy';
 import FetchProxy from './proxy/fetch-proxy';
 import BeaconProxy from './proxy/beacon-proxy';
