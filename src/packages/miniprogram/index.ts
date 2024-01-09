@@ -160,6 +160,7 @@ export default class PageSpy {
       this.saveSession();
     }, 15 * 1000);
     /* c8 ignore stop */
+    psLog.log(`Room ID: ${this.address.slice(0, 4)}`);
   }
 
   saveSession() {
