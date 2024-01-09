@@ -7,7 +7,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import json from '@rollup/plugin-json';
 import replace from '@rollup/plugin-replace';
-import { uglify } from 'rollup-plugin-uglify';
+import terser from '@rollup/plugin-terser';
 import alias from '@rollup/plugin-alias';
 import image from '@rollup/plugin-image';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
@@ -47,7 +47,7 @@ const plugins = [
       },
     ],
   }),
-  uglify(),
+  terser(),
 ];
 
 /**
@@ -61,10 +61,12 @@ export default [
         file: pkg.exports['.'],
         format: 'iife',
         name: 'PageSpy',
+        sourcemap: true,
       },
       {
         file: pkg.exports['./web']['import'],
         format: 'esm',
+        sourcemap: true,
       },
     ],
     plugins: [
@@ -83,6 +85,7 @@ export default [
       {
         file: pkg.exports['./miniprogram']['import'],
         format: 'esm',
+        sourcemap: true,
       },
     ],
     plugins: [
