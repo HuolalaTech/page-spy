@@ -1,18 +1,13 @@
-/**
- * @type {import("ts-jest/dist/types").JestConfigWithTsJest}
- */
-module.exports = {
-  collectCoverageFrom: ['packages/**/*.{ts,tsx}', '!packages/**/*.d.ts'],
+import type { Config } from 'jest';
+
+const config: Config = {
+  collectCoverageFrom: ['packages/**/*.ts', '!packages/**/*.d.ts'],
   coverageProvider: 'v8',
-  // projects 里面的配置是合并还是覆盖待确认
-  // moduleNameMapper: {
-  //   '^base/(.*)$': '<rootDir>/packages/base/$1',
-  // },
   projects: [
     {
       displayName: {
         name: 'Base',
-        color: '#FBBF0D',
+        color: 'gray',
       },
       testMatch: ['<rootDir>/packages/base/tests/**/*.test.ts'],
       testEnvironment: 'jsdom',
@@ -24,7 +19,7 @@ module.exports = {
     {
       displayName: {
         name: 'Web',
-        color: '#3080EE',
+        color: 'yellow',
       },
       testMatch: ['<rootDir>/packages/web/tests/**/*.test.ts'],
       testEnvironment: 'jsdom',
@@ -43,7 +38,7 @@ module.exports = {
     {
       displayName: {
         name: 'Mini Program',
-        color: '#84DC42',
+        color: 'green',
       },
       testMatch: ['<rootDir>/packages/miniprogram/tests/**/*.test.ts'],
       preset: 'ts-jest',
@@ -55,3 +50,5 @@ module.exports = {
     },
   ],
 };
+
+export default config;
