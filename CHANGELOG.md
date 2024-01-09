@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.7](https://github.com/HuolalaTech/page-spy/compare/v1.5.1...v1.5.7) (2024-01-09)
+
+### Features
+
+- use terser instead of uglifyjs && add sourcemap ([1bc6107](https://github.com/HuolalaTech/page-spy/commit/1bc6107c190d1b198f5990966b257cc86a6e5cff))
+
 ### [1.5.6](https://github.com/HuolalaTech/page-spy/compare/v1.5.5...v1.5.6) (2024-01-09)
 
 ### [1.5.5](https://github.com/HuolalaTech/page-spy/compare/v1.5.4...v1.5.5) (2024-01-08)
