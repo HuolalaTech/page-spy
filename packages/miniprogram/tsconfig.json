@@ -5,8 +5,8 @@
     "types": ["jest"],
     "noEmit": true,
     "paths": {
-      "types/*": ["types/*"]
+      "types/*": ["./types/*"]
     }
   },
-  "include": ["src/**/*", "tests/**/*"]
+  "include": ["src"]
 }

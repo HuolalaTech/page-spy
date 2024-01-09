@@ -2,11 +2,11 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "esnext"],
-    "types": ["jest"],
     "noEmit": true,
     "paths": {
-      "types/*": ["types/*"]
+      "src/*": ["./src/*"],
+      "types/*": ["./types/*"]
     }
   },
-  "include": ["src/**/*", "tests/**/*"]
+  "include": ["src", "tests"]
 }

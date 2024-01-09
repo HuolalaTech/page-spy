@@ -1,4 +1,4 @@
-import { makePrimitiveValue, getValueType, isArrayLike } from 'src/utils';
+import { makePrimitiveValue, getValueType, isArrayLike } from 'src/index';
 
 describe('makePrimitiveValue: convert data to showable string', () => {
   it('✅ Primitive is ok', () => {

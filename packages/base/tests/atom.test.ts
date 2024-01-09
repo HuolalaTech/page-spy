@@ -1,4 +1,4 @@
-import atom from 'src/utils/atom';
+import atom from 'src/atom';
 
 // jest.mock('src/utils/atom.ts');
 beforeEach(() => {

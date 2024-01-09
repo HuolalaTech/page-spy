@@ -1,4 +1,5 @@
-import { getFormattedBody, resolveUrlInfo } from 'src/utils/network/common';
+import { getFormattedBody } from 'src/network/common';
+// import { getFormattedBody, resolveUrlInfo } from 'src/utils/network/common';
 
 describe('Network common utils', () => {
   it('getFormattedBody()', () => {
