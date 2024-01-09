@@ -1,13 +1,24 @@
 {
-  "references": [
-    {
-      "path": "packages/base"
-    },
-    {
-      "path": "packages/web"
-    },
-    {
-      "path": "packages/miniprogram"
-    }
-  ]
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "declaration": false,
+    "strict": true,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "importHelpers": true,
+    "target": "esnext",
+    "module": "esnext",
+    "lib": ["esnext"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "isolatedModules": true,
+    "paths": {}
+  },
+  "exclude": ["node_modules"]
 }
