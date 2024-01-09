@@ -101,6 +101,11 @@ interface InitConfig {
   //  - true：SDK 将通过 ["https://", "wss://"] 访问 PageSpy 服务;
   //  - false：SDK 将通过 ["http://", "ws://"] 访问 PageSpy 服务;
   enableSSL?: boolean | null;
+
+  // 在 release 环境禁用。
+  //  - true (Default)：默认仅允许 PageSpy 在开发版 ("develop") 和体验版 ("trial") 使用
+  //  - false：允许正式版里开启
+  disabledOnProd?: boolean;
 }
 
 ```

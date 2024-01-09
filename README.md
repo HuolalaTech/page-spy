@@ -105,6 +105,11 @@ interface InitConfig {
   //  - true: the SDK will access the PageSpy service via ["https://", "wss://"];
   //  - false: the SDK will access the PageSpy service via ["http://", "wss://"].
   enableSSL?: boolean | null;
+
+  // Disable pagespy on release environment.
+  // - true (Default): only allow pagespy init on develop and trail environment.
+  // - false: allow using in release environment
+  disabledOnProd?: boolean | null;
 }
 
 ```
