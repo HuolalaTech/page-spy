@@ -37,6 +37,8 @@ export default class PageSpy {
 
   socketStore = socketStore;
 
+  config = new Config();
+
   static instance: PageSpy | null = null;
 
   constructor(init: InitConfig) {
@@ -46,7 +48,7 @@ export default class PageSpy {
       return PageSpy.instance;
     }
 
-    const { api, disabledOnProd } = Config.mergeConfig(init);
+    const { disabledOnProd } = this.config.mergeConfig(init);
 
     if (wx.canIUse('getAccountInfoSync')) {
       const accountInfo = wx.getAccountInfoSync().miniProgram;
@@ -59,7 +61,7 @@ export default class PageSpy {
 
     PageSpy.instance = this;
 
-    this.request = new Request(api);
+    this.request = new Request(this.config);
 
     this.loadPlugins(
       new ConsolePlugin(),
@@ -84,7 +86,7 @@ export default class PageSpy {
     const ok = this.checkConfig();
     if (!ok) return;
 
-    const config = Config.get();
+    const config = this.config.get();
     const roomCache = wx.getStorageSync(ROOM_SESSION_KEY);
     if (!roomCache || typeof roomCache !== 'object') {
       await this.createNewConnection();
@@ -172,7 +174,7 @@ export default class PageSpy {
       address,
       roomUrl,
       usable: true,
-      project: Config.get().project,
+      project: this.config.get().project,
       time: Date.now(),
     };
     wx.setStorageSync(ROOM_SESSION_KEY, roomCache);
@@ -180,7 +182,7 @@ export default class PageSpy {
 
   // eslint-disable-next-line class-methods-use-this
   checkConfig() {
-    const config = Config.get();
+    const config = this.config.get();
     /* c8 ignore next 3 */
     if (!config || !config.api) {
       psLog.error('Cannot get the config info');

@@ -27,14 +27,18 @@ const getScheme = (enableSSL: InitConfig['enableSSL']) => {
 };
 
 export default class Request {
-  constructor(public base: string = '') {
-    if (!base) {
+  constructor(public config: Config) {
+    if (!config.get().api) {
       throw Error('The api base url cannot be empty');
     }
   }
 
+  get base() {
+    return this.config.get().api;
+  }
+
   createRoom(): Promise<TResponse<TCreateRoom>> {
-    const config = Config.get();
+    const config = this.config.get();
     const scheme = getScheme(config.enableSSL);
     const device = getDeviceInfo();
     const name = combineName(device);
@@ -59,7 +63,7 @@ export default class Request {
   }
 
   getRoomUrl(args: Record<string, string | number> = {}) {
-    const config = Config.get();
+    const config = this.config.get();
     const scheme = getScheme(config.enableSSL);
     return `${scheme[1]}${this.base}/api/v1/ws/room/join?${joinQuery(args)}`;
   }

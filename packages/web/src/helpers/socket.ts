@@ -49,6 +49,7 @@ export class WebSocketStore extends SocketStoreBase {
     return this.socket;
   }
 
+  // disable lint: this is an abstract method of parent class, so it cannot be static
   // eslint-disable-next-line class-methods-use-this
   onOffline(): void {
     window.dispatchEvent(new CustomEvent('sdk-inactive'));

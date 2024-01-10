@@ -47,6 +47,8 @@ export default class PageSpy {
 
   socketStore = socketStore;
 
+  config = new Config();
+
   static instance: PageSpy | null = null;
 
   constructor(init: InitConfig = {}) {
@@ -57,8 +59,8 @@ export default class PageSpy {
     }
     PageSpy.instance = this;
 
-    const { api } = Config.mergeConfig(init);
-    this.request = new Request(api);
+    this.config.mergeConfig(init);
+    this.request = new Request(this.config);
 
     this.loadPlugins(
       new ConsolePlugin(),
@@ -82,7 +84,7 @@ export default class PageSpy {
   }
 
   async init() {
-    const config = Config.get();
+    const config = this.config.get();
     const roomCache = sessionStorage.getItem(ROOM_SESSION_KEY);
     if (roomCache === null) {
       await this.createNewConnection();
@@ -192,19 +194,19 @@ export default class PageSpy {
   }
 
   saveSession() {
-    const { name, address, roomUrl } = this;
+    const { name, address, roomUrl, config } = this;
     const roomInfo = JSON.stringify({
       name,
       address,
       roomUrl,
       usable: true,
-      project: Config.get().project,
+      project: config.get().project,
     });
     sessionStorage.setItem(ROOM_SESSION_KEY, roomInfo);
   }
 
   startRender() {
-    const { project, clientOrigin } = Config.get();
+    const { project, clientOrigin } = this.config.get();
 
     const root = document.createElement('div');
     root.id = Identifier;
