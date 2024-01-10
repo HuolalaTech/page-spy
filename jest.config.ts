@@ -2,15 +2,25 @@ import type { Config } from 'jest';
 import { pathsToModuleNameMapper } from 'ts-jest';
 import tsConfig from './tsconfig.json';
 
-const tsConfigPathsMap = pathsToModuleNameMapper(
-  tsConfig.compilerOptions.paths,
-  {
+const moduleNameMapper = {
+  ...pathsToModuleNameMapper(tsConfig.compilerOptions.paths, {
     prefix: '<rootDir>/',
-  },
-);
+  }),
+  '\\.(css|less|svg|png|jpg)$':
+    '<rootDir>/packages/web/tests/__mocks__/assets.js',
+};
+
+/**
+ * The following fields cannot be global config and
+ * must define in the item of 'projects':
+ * - moduleNameMapper
+ * - testMatch
+ * - preset
+ */
 
 const config: Config = {
   collectCoverageFrom: ['packages/**/*.ts', '!packages/**/*.d.ts'],
+  coverageProvider: 'v8',
   projects: [
     {
       displayName: {
@@ -20,11 +30,7 @@ const config: Config = {
       preset: 'ts-jest',
       testEnvironment: 'jsdom',
       testMatch: ['**/packages/base/tests/**/*.test.ts'],
-      moduleNameMapper: {
-        ...tsConfigPathsMap,
-        '\\.(css|less|svg|png|jpg)$':
-          '<rootDir>/packages/web/tests/__mocks__/assets.js',
-      },
+      moduleNameMapper,
     },
     {
       displayName: {
@@ -34,11 +40,7 @@ const config: Config = {
       preset: 'ts-jest',
       testEnvironment: 'jsdom',
       testMatch: ['**/packages/web/tests/**/*.test.ts'],
-      moduleNameMapper: {
-        ...tsConfigPathsMap,
-        '\\.(css|less|svg|png|jpg)$':
-          '<rootDir>/packages/web/tests/__mocks__/assets.js',
-      },
+      moduleNameMapper,
       setupFilesAfterEnv: [
         '<rootDir>/packages/web/tests/setup.ts',
         'jest-canvas-mock',
@@ -51,11 +53,7 @@ const config: Config = {
       },
       preset: 'ts-jest',
       testMatch: ['**/packages/miniprogram/tests/**/*.test.ts'],
-      moduleNameMapper: {
-        ...tsConfigPathsMap,
-        '\\.(css|less|svg|png|jpg)$':
-          '<rootDir>/packages/web/tests/__mocks__/assets.js',
-      },
+      moduleNameMapper,
       setupFilesAfterEnv: ['<rootDir>/packages/miniprogram/tests/setup.ts'],
     },
   ],
