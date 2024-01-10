@@ -48,6 +48,12 @@ export default class PageSpy {
       return PageSpy.instance;
     }
 
+    if (!init.api) {
+      throw new Error(
+        'Must pass the "api" value when you init with `new PageSpy({...})`',
+      );
+    }
+
     const { disabledOnProd } = this.config.mergeConfig(init);
 
     if (wx.canIUse('getAccountInfoSync')) {

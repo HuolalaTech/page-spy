@@ -17,12 +17,16 @@ export class Config extends ConfigBase<InitConfig> {
       return defaultConfig;
     }
 
-    const { host, origin } = new URL(this.scriptLink);
-    const result = {
-      ...defaultConfig,
-      api: host,
-      clientOrigin: origin,
-    };
-    return result;
+    try {
+      const { host, origin } = new URL(this.scriptLink);
+      const result = {
+        ...defaultConfig,
+        api: host,
+        clientOrigin: origin,
+      };
+      return result;
+    } catch (e) {
+      return defaultConfig;
+    }
   };
 }
