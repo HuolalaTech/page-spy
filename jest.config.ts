@@ -25,7 +25,7 @@ const config: Config = {
     {
       displayName: {
         name: 'Base',
-        color: 'gray',
+        color: 'cyanBright',
       },
       preset: 'ts-jest',
       testEnvironment: 'jsdom',
