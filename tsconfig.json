@@ -4,6 +4,7 @@
     "rootDir": ".",
     "declaration": false,
     "strict": true,
+    "resolveJsonModule": true,
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "esnext",
