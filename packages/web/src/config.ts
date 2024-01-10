@@ -1,11 +1,10 @@
+import { ConfigBase } from 'base/src/config';
 import type { InitConfig } from 'web/types/index';
 
-export class Config {
-  private static value: any;
+export class Config extends ConfigBase<InitConfig> {
+  public scriptLink = (document.currentScript as HTMLScriptElement)?.src;
 
-  public static scriptLink = (document.currentScript as HTMLScriptElement)?.src;
-
-  private static resolveConfig: () => Required<InitConfig> = () => {
+  protected defaultConfig = () => {
     const defaultConfig = {
       api: '',
       clientOrigin: '',
@@ -14,11 +13,11 @@ export class Config {
       title: '',
       enableSSL: null,
     };
-    if (!Config.scriptLink) {
+    if (!this.scriptLink) {
       return defaultConfig;
     }
 
-    const { host, origin } = new URL(Config.scriptLink);
+    const { host, origin } = new URL(this.scriptLink);
     const result = {
       ...defaultConfig,
       api: host,
@@ -26,17 +25,4 @@ export class Config {
     };
     return result;
   };
-
-  public static mergeConfig = (userCfg: InitConfig): Required<InitConfig> => {
-    Config.value = {
-      /* c8 ignore next */
-      ...Config.resolveConfig(),
-      ...userCfg,
-    };
-    return Config.value;
-  };
-
-  public static get() {
-    return Config.value;
-  }
 }

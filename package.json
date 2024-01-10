@@ -9,7 +9,8 @@
     "coverage": "jest --silent --coverage",
     "lint": "eslint --ext .js,.ts ./packages",
     "lint:fix": "eslint --ext .js,.ts --fix ./package",
-    "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,md,json}'"
+    "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,md,json}'",
+    "typecheck": "tsc --noEmit"
   },
   "gitHooks": {
     "pre-commit": "lint-staged"

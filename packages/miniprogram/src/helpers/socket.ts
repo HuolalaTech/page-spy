@@ -62,6 +62,8 @@ export class MPWeixinSocketStore extends SocketStoreBase {
     return this.socket;
   }
 
+  // this is an abstract method of parent class, cannot be static
+  /* eslint-disable-next-line */
   onOffline() {
     wx.setStorageSync(ROOM_SESSION_KEY, JSON.stringify({ usable: false }));
   }

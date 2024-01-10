@@ -1,7 +1,6 @@
 import { psLog } from 'base/src';
 import { Config } from 'web/src/config';
 import { combineName, parseUserAgent } from 'base/src/device';
-import { InitConfig } from 'web/types/index';
 
 interface TResponse<T> {
   code: string;
@@ -18,27 +17,6 @@ interface TCreateRoom {
   tags: Record<string, any>;
 }
 
-export const parseSchemeWithScript = () => {
-  try {
-    const { protocol } = new URL(Config.scriptLink);
-    if (protocol.startsWith('https')) {
-      return ['https://', 'wss://'];
-    }
-  } catch (e) {
-    psLog.error(
-      'Failed to resolve the protocol and fallback to [http://, ws://]',
-    );
-  }
-  return ['http://', 'ws://'];
-};
-
-const getScheme = (enableSSL: InitConfig['enableSSL']) => {
-  if (typeof enableSSL !== 'boolean') {
-    return parseSchemeWithScript();
-  }
-  return enableSSL ? ['https://', 'wss://'] : ['http://', 'ws://'];
-};
-
 const joinQuery = (args: Record<string, unknown>) => {
   const params = new URLSearchParams();
   Object.entries(args).forEach(([k, v]) => {
@@ -48,16 +26,42 @@ const joinQuery = (args: Record<string, unknown>) => {
 };
 
 export default class Request {
-  constructor(public base: string = '') {
+  constructor(public config: Config) {
     /* c8 ignore next 3 */
-    if (!base) {
+    if (!config.get().api) {
       throw Error('The api base url cannot be empty');
     }
   }
 
+  get base() {
+    return this.config.get().api;
+  }
+
+  parseSchemeWithScript() {
+    try {
+      const { protocol } = new URL(this.config.scriptLink);
+      if (protocol.startsWith('https')) {
+        return ['https://', 'wss://'];
+      }
+    } catch (e) {
+      psLog.error(
+        'Failed to resolve the protocol and fallback to [http://, ws://]',
+      );
+    }
+    return ['http://', 'ws://'];
+  }
+
+  getScheme() {
+    const { enableSSL } = this.config.get();
+    if (typeof enableSSL !== 'boolean') {
+      return this.parseSchemeWithScript();
+    }
+    return enableSSL ? ['https://', 'wss://'] : ['http://', 'ws://'];
+  }
+
   createRoom(): Promise<TResponse<TCreateRoom>> {
-    const config = Config.get();
-    const scheme = getScheme(config.enableSSL);
+    const config = this.config.get();
+    const scheme = this.getScheme();
     const device = parseUserAgent();
     const name = combineName(device);
     const query = joinQuery({
@@ -76,8 +80,7 @@ export default class Request {
   }
 
   getRoomUrl(args: Record<string, string | number> = {}) {
-    const config = Config.get();
-    const scheme = getScheme(config.enableSSL);
+    const scheme = this.getScheme();
     return `${scheme[1]}${this.base}/api/v1/ws/room/join?${joinQuery(args)}`;
   }
 }
