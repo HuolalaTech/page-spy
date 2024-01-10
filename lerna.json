@@ -1,5 +1,12 @@
 {
   "$schema": "node_modules/lerna/schemas/lerna-schema.json",
   "version": "independent",
-  "npmClient": "yarn"
+  "npmClient": "yarn",
+  "command": {
+    "version": {
+      "allowBranch": ["main"],
+      "message": "chore(release): publish %s",
+      "preid": "beta"
+    }
+  }
 }

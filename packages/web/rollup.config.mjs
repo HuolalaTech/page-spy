@@ -7,7 +7,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import json from '@rollup/plugin-json';
 import replace from '@rollup/plugin-replace';
-import { uglify } from 'rollup-plugin-uglify';
+import terser from '@rollup/plugin-terser';
 import alias from '@rollup/plugin-alias';
 import image from '@rollup/plugin-image';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
@@ -40,7 +40,7 @@ const plugins = [
       { find: 'base', replacement: resolve(root, '../base') },
     ],
   }),
-  uglify(),
+  terser(),
 ];
 
 /**
