@@ -48,7 +48,7 @@ Object.defineProperty(window, 'PKG_VERSION', {
 });
 
 // mock window.cookieStore
-import '../__mocks__/cookie-store';
+import './__mocks__/cookie-store';
 
 // mock window.indexedDB
 import 'fake-indexeddb/auto';

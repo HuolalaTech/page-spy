@@ -65,6 +65,16 @@ export default {
       exclude: ['node_modules/**', /deps\/modernizr/],
       babelHelpers: 'bundled',
       extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx'],
+      presets: [
+        [
+          '@babel/env',
+          {
+            useBuiltIns: 'usage',
+            corejs: '3.30',
+          },
+        ],
+        '@babel/preset-typescript',
+      ],
     }),
     del({ targets: ['dist/*'] }),
   ],

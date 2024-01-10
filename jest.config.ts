@@ -19,7 +19,11 @@ const moduleNameMapper = {
  */
 
 const config: Config = {
-  collectCoverageFrom: ['packages/**/*.ts', '!packages/**/*.d.ts'],
+  collectCoverageFrom: [
+    'packages/**/*.ts',
+    '!packages/**/*.d.ts',
+    '!**/*.test.ts',
+  ],
   coverageProvider: 'v8',
   projects: [
     {

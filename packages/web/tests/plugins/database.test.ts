@@ -113,7 +113,7 @@ describe('Database plugin', () => {
       },
     });
 
-    await sleep();
+    await sleep(1000);
 
     expect(dbTrigger).toHaveBeenCalledTimes(2);
   });
