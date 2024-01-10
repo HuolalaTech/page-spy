@@ -1,4 +1,4 @@
-import NetworkPlugin from 'src/plugins/network';
+import NetworkPlugin from 'miniprogram/src/plugins/network';
 import { computeRequestMapInfo } from './util';
 
 const port = 6688;

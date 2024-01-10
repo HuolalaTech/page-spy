@@ -1,4 +1,4 @@
-import type { InitConfig } from 'types/index';
+import type { InitConfig } from 'web/types/index';
 import copy from 'copy-to-clipboard';
 import { getRandomId, psLog } from 'base/src';
 import { ROOM_SESSION_KEY } from 'base/src/constants';

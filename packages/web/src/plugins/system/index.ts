@@ -1,5 +1,5 @@
 import { getRandomId } from 'base/src';
-import socketStore from 'src/helpers/socket';
+import socketStore from 'web/src/helpers/socket';
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import { parseUserAgent } from 'base/src/device';
 import '../../deps/modernizr';

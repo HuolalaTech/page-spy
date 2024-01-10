@@ -1,9 +1,9 @@
 import { isBrowser } from 'base/src';
-import SDK from 'src/index';
+import SDK from 'miniprogram/src/index';
 
-import ConsolePlugin from 'src/plugins/console';
-import StoragePlugin from 'src/plugins/storage';
-import NetworkPlugin from 'src/plugins/network';
+import ConsolePlugin from 'miniprogram/src/plugins/console';
+import StoragePlugin from 'miniprogram/src/plugins/storage';
+import NetworkPlugin from 'miniprogram/src/plugins/network';
 
 import { SpyConsole } from 'base/types/index';
 import { ROOM_SESSION_KEY } from 'base/src/constants';

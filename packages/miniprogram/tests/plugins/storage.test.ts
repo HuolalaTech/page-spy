@@ -1,4 +1,6 @@
-import StoragePlugin, { mpDataStringify } from 'src/plugins/storage';
+import StoragePlugin, {
+  mpDataStringify,
+} from 'miniprogram/src/plugins/storage';
 import { initStorageMock } from '../mock/storage';
 
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));

@@ -3,8 +3,8 @@
  * 不同平台 socket 的 api 不同但功能相同，这里抽象一层
  */
 
-import type { SpyMessage, SpySocket } from 'types/index';
-import { PackedEvent } from 'types/lib/socket-event';
+import type { SpyMessage, SpySocket } from 'base/types/index';
+import { PackedEvent } from 'base/types/lib/socket-event';
 import { getRandomId, psLog, stringifyData } from './index';
 import {
   DEBUG_MESSAGE_TYPE,

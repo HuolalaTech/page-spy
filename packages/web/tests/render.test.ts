@@ -1,4 +1,4 @@
-import SDK from 'src/index';
+import SDK from 'web/src/index';
 import {
   fireEvent,
   getByAltText,
@@ -6,7 +6,7 @@ import {
   waitFor,
 } from '@testing-library/dom';
 import copy from 'copy-to-clipboard';
-import { Toast } from 'src/component/toast';
+import { Toast } from 'web/src/component/toast';
 jest.mock('copy-to-clipboard', () =>
   jest.fn().mockImplementation((text: string) => true),
 );

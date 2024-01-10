@@ -1,6 +1,6 @@
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import { SpyStorage, PageSpyPlugin } from 'base/types';
-import socketStore from 'src/helpers/socket';
+import socketStore from 'miniprogram/src/helpers/socket';
 import { psLog } from 'base/src';
 
 export function mpDataStringify(data: any) {

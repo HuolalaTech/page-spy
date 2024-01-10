@@ -1,4 +1,4 @@
-import NetworkPlugin from 'src/plugins/network';
+import NetworkPlugin from 'web/src/plugins/network';
 import startServer from '../../server/index';
 import data from '../../server/data.json';
 import { Reason } from 'base/src/network/common';

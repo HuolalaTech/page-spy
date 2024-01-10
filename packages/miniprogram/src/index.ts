@@ -1,4 +1,4 @@
-import type { InitConfig } from 'types/index';
+import type { InitConfig } from 'miniprogram/types/index';
 import { getRandomId, psLog } from 'base/src';
 import type { PageSpyPlugin } from 'base/types';
 import { SocketState } from 'base/src/socket-base';

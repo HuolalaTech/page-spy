@@ -1,7 +1,7 @@
-import BeaconProxy from 'src/plugins/network/proxy/beacon-proxy';
-import FetchProxy from 'src/plugins/network/proxy/fetch-proxy';
+import BeaconProxy from 'web/src/plugins/network/proxy/beacon-proxy';
+import FetchProxy from 'web/src/plugins/network/proxy/fetch-proxy';
 import RequestItem from 'base/src/request-item';
-import XhrProxy from 'src/plugins/network/proxy/xhr-proxy';
+import XhrProxy from 'web/src/plugins/network/proxy/xhr-proxy';
 
 type RequestStore = Record<string, RequestItem | null>;
 interface RequestsInfo {

@@ -1,4 +1,4 @@
-import RequestProxy from 'src/plugins/network/proxy/request';
+import RequestProxy from 'miniprogram/src/plugins/network/proxy/request';
 import RequestItem from 'base/src/request-item';
 
 type RequestStore = Record<string, RequestItem | null>;

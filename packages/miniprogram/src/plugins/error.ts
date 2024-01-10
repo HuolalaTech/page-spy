@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import atom from 'base/src/atom';
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
-import socketStore from 'src/helpers/socket';
+import socketStore from 'miniprogram/src/helpers/socket';
 import type { SpyConsole, PageSpyPlugin } from 'base/types/index';
 
 // const formatErrorObj = (err: Error) => {

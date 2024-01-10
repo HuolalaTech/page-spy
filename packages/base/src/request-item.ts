@@ -1,4 +1,4 @@
-import { SpyNetwork } from 'types/index';
+import { SpyNetwork } from 'base/types/index';
 
 export default class RequestItem implements SpyNetwork.RequestInfo {
   id = '';

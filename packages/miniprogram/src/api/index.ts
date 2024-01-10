@@ -1,6 +1,10 @@
-import { InitConfig } from 'types/index';
+import { InitConfig } from 'miniprogram/types/index';
 import { combineName } from 'base/src/device';
-import { getDeviceInfo, joinQuery, promisifyMPApi } from 'base/src';
+import {
+  getDeviceInfo,
+  joinQuery,
+  promisifyMPApi,
+} from 'miniprogram/src/utils';
 import { Config } from '../config';
 
 interface TResponse<T> {

@@ -1,6 +1,10 @@
-import { SocketState, SocketStoreBase, SocketWrapper } from 'src/socket-base';
-import NetworkProxyBase from 'src/network/base';
-import RequestItem from 'src/request-item';
+import {
+  SocketState,
+  SocketStoreBase,
+  SocketWrapper,
+} from 'base/src/socket-base';
+import NetworkProxyBase from 'base/src/network/base';
+import RequestItem from 'base/src/request-item';
 
 class PlatformSocketWrapper extends SocketWrapper {
   init(url: string): void {

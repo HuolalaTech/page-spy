@@ -1,6 +1,6 @@
-import socket from 'src/helpers/socket';
-import SystemPlugin from 'src/plugins/system';
-import { computeResult } from 'src/plugins/system/feature';
+import socket from 'web/src/helpers/socket';
+import SystemPlugin from 'web/src/plugins/system';
+import { computeResult } from 'web/src/plugins/system/feature';
 
 describe('System plugin', () => {
   it('computeResult()', async () => {

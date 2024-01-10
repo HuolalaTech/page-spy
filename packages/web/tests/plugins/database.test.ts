@@ -1,7 +1,7 @@
 import { IDBFactory } from 'fake-indexeddb';
 import { DEBUG_MESSAGE_TYPE } from 'base/src/message';
-import { DatabasePlugin, promisify } from 'src/plugins/database';
-import socket from 'src/helpers/socket';
+import { DatabasePlugin, promisify } from 'web/src/plugins/database';
+import socket from 'web/src/helpers/socket';
 
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 // @ts-ignore

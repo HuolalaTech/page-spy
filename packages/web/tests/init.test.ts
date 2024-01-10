@@ -1,16 +1,16 @@
-import SDK from 'src/index';
-import ConsolePlugin from 'src/plugins/console';
-import ErrorPlugin from 'src/plugins/error';
-import NetworkPlugin from 'src/plugins/network';
-import SystemPlugin from 'src/plugins/system';
-import PagePlugin from 'src/plugins/page';
-import { StoragePlugin } from 'src/plugins/storage';
+import SDK from 'web/src/index';
+import ConsolePlugin from 'web/src/plugins/console';
+import ErrorPlugin from 'web/src/plugins/error';
+import NetworkPlugin from 'web/src/plugins/network';
+import SystemPlugin from 'web/src/plugins/system';
+import PagePlugin from 'web/src/plugins/page';
+import { StoragePlugin } from 'web/src/plugins/storage';
 import { SpyConsole } from 'base/types/index';
-import socketStore from 'src/helpers/socket';
+import socketStore from 'web/src/helpers/socket';
 import { ROOM_SESSION_KEY } from 'base/src/constants';
-import { Config } from 'src/config';
+import { Config } from 'web/src/config';
 import { isBrowser } from 'base/src';
-import Request from 'src/api';
+import Request from 'web/src/api';
 import { JSDOM } from 'jsdom';
 
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));

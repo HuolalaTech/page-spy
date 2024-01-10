@@ -36,7 +36,7 @@ const plugins = [
   }),
   alias({
     entries: [
-      { find: 'src', replacement: resolve(root, './src') },
+      { find: 'web', replacement: resolve(root, '../web') },
       { find: 'base', replacement: resolve(root, '../base') },
     ],
   }),

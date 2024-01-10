@@ -1,4 +1,4 @@
-import socketStore from 'src/helpers/socket';
+import socketStore from 'web/src/helpers/socket';
 import type { PageSpyPlugin } from 'base/types';
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
 

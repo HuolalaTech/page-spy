@@ -1,6 +1,6 @@
 import { DBInfo, DBStoreInfo } from 'base/types/lib/database';
 import { psLog } from 'base/src';
-import socketStore from 'src/helpers/socket';
+import socketStore from 'web/src/helpers/socket';
 import { DEBUG_MESSAGE_TYPE, makeMessage } from 'base/src/message';
 import { SpyDatabase, PageSpyPlugin } from 'base/types/index';
 

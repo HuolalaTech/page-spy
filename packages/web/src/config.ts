@@ -1,4 +1,4 @@
-import type { InitConfig } from 'types/index';
+import type { InitConfig } from 'web/types/index';
 
 export class Config {
   private static value: any;

@@ -3,20 +3,28 @@
   "compilerOptions": {
     "rootDir": ".",
     "declaration": false,
+    "noEmit": true,
     "strict": true,
     "resolveJsonModule": true,
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "esnext",
     "module": "esnext",
-    "lib": ["esnext"],
+    "lib": ["DOM", "DOM.Iterable", "esnext"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "allowJs": true,
+    "baseUrl": ".",
+    "paths": {
+      "base/*": ["./packages/base/*"],
+      "web/*": ["./packages/web/*"],
+      "miniprogram/*": ["./packages/miniprogram/*"]
+    }
   },
   "exclude": ["**/node_modules", "**/dist"]
 }

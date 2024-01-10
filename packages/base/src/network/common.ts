@@ -1,4 +1,4 @@
-import type { SpyNetwork } from 'types/index';
+import type { SpyNetwork } from 'base/types/index';
 import {
   isBlob,
   isBrowser,

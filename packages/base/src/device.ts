@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 
-import { SpyDevice } from 'types/index';
-import { DeviceInfo } from 'types/lib/device';
+import { SpyDevice } from 'base/types/index';
+import { DeviceInfo } from 'base/types/lib/device';
 
 const browsers = {
   WeChat: /MicroMessenger\/([\d.]+)/,

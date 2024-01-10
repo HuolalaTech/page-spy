@@ -1,5 +1,5 @@
 import { getRandomId } from 'base/src';
-import socketStore from 'src/helpers/socket';
+import socketStore from 'miniprogram/src/helpers/socket';
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import type { SpySystem, PageSpyPlugin } from 'base/types';
 import { getDeviceInfo } from '../utils';

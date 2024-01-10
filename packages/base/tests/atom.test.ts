@@ -1,6 +1,6 @@
-import atom from 'src/atom';
+import atom from 'base/src/atom';
 
-// jest.mock('src/utils/atom.ts');
+// jest.mock('base/src/utils/atom.ts');
 beforeEach(() => {
   atom.resetStore();
   atom.resetInstanceStore();

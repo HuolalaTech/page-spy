@@ -1,4 +1,4 @@
-import ConsolePlugin from 'src/plugins/console';
+import ConsolePlugin from 'miniprogram/src/plugins/console';
 
 afterEach(() => {
   jest.restoreAllMocks();

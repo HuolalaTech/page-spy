@@ -36,7 +36,7 @@ const plugins = [
   }),
   alias({
     entries: [
-      { find: 'src', replacement: resolve(root, './src') },
+      { find: 'miniprogram', replacement: resolve(root, '../miniprogram') },
       { find: 'base', replacement: resolve(root, '../base') },
     ],
   }),
