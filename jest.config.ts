@@ -11,27 +11,34 @@ const tsConfigPathsMap = pathsToModuleNameMapper(
 
 const config: Config = {
   collectCoverageFrom: ['packages/**/*.ts', '!packages/**/*.d.ts'],
-  testMatch: ['**/packages/**/tests/**/*.test.ts'],
-  preset: 'ts-jest',
-  moduleNameMapper: {
-    ...tsConfigPathsMap,
-    '\\.(css|less|svg|png|jpg)$':
-      '<rootDir>/packages/web/tests/__mocks__/assets.js',
-  },
   projects: [
     {
       displayName: {
         name: 'Base',
         color: 'gray',
       },
+      preset: 'ts-jest',
       testEnvironment: 'jsdom',
+      testMatch: ['**/packages/base/tests/**/*.test.ts'],
+      moduleNameMapper: {
+        ...tsConfigPathsMap,
+        '\\.(css|less|svg|png|jpg)$':
+          '<rootDir>/packages/web/tests/__mocks__/assets.js',
+      },
     },
     {
       displayName: {
         name: 'Web',
         color: 'yellow',
       },
+      preset: 'ts-jest',
       testEnvironment: 'jsdom',
+      testMatch: ['**/packages/web/tests/**/*.test.ts'],
+      moduleNameMapper: {
+        ...tsConfigPathsMap,
+        '\\.(css|less|svg|png|jpg)$':
+          '<rootDir>/packages/web/tests/__mocks__/assets.js',
+      },
       setupFilesAfterEnv: [
         '<rootDir>/packages/web/tests/setup.ts',
         'jest-canvas-mock',
@@ -41,6 +48,13 @@ const config: Config = {
       displayName: {
         name: 'Mini Program',
         color: 'green',
+      },
+      preset: 'ts-jest',
+      testMatch: ['**/packages/miniprogram/tests/**/*.test.ts'],
+      moduleNameMapper: {
+        ...tsConfigPathsMap,
+        '\\.(css|less|svg|png|jpg)$':
+          '<rootDir>/packages/web/tests/__mocks__/assets.js',
       },
       setupFilesAfterEnv: ['<rootDir>/packages/miniprogram/tests/setup.ts'],
     },
