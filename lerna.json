@@ -5,8 +5,7 @@
   "command": {
     "version": {
       "allowBranch": ["main"],
-      "preid": "beta",
-      "gitTagVersion": false
+      "preid": "beta"
     }
   }
 }
