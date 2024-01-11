@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-types",
-  "version": "1.6.0-beta.0",
+  "version": "1.6.0-beta.1",
   "description": "Types for PageSpy SDK",
   "license": "MIT",
   "types": "index.d.ts",
@@ -18,5 +18,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "0be7027282c5e3f8a7dacc673a36898c551f8200"
 }

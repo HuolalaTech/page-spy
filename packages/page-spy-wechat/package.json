@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-wechat",
-  "version": "1.6.0-beta.0",
+  "version": "1.6.0-beta.1",
   "description": "A developer tool for debugging wechat miniprogram",
   "license": "MIT",
   "main": "dist/cjs/index.min.js",
@@ -69,5 +69,6 @@
   ],
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "0be7027282c5e3f8a7dacc673a36898c551f8200"
 }
