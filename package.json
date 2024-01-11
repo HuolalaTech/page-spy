@@ -12,7 +12,7 @@
     "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,md,json}'",
     "typecheck": "tsc --noEmit",
     "preversion": "yarn run test",
-    "prepublish": "lerna run build",
+    "prepublishOnly": "lerna run build",
     "release:major": "lerna publish major",
     "release:minor": "lerna publish patch",
     "release:patch": "lerna publish patch",

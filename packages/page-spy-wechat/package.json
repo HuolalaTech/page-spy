@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-wechat",
-  "version": "1.6.0-beta.4",
+  "version": "1.6.0-beta.0",
   "description": "A developer tool for debugging wechat miniprogram",
   "license": "MIT",
   "main": "dist/cjs/index.min.js",
