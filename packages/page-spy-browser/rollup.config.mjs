@@ -53,10 +53,12 @@ export default {
       file: pkg.main,
       format: 'iife',
       name: 'PageSpy',
+      sourcemap: true,
     },
     {
       file: pkg.module,
       format: 'esm',
+      sourcemap: true,
     },
   ],
   plugins: [
