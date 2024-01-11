@@ -19,7 +19,9 @@ export interface InitConfigBase {
   /**
    * Specify the server <scheme> manually.
    * - false: sdk will use ['http://', 'ws://'];
-   * - true (Default): sdk will use ['https://', 'wss://'];
+   * - true: sdk will use ['https://', 'wss://'];
+   * - null: sdk will automatically analyse the scheme by the
+   *        'src' property value
    */
   enableSSL?: boolean | null;
 }

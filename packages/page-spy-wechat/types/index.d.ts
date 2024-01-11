@@ -17,18 +17,9 @@ export interface InitConfig extends InitConfigBase {
   disabledOnProd?: boolean | null;
 }
 
-interface PageSpyMini extends PageSpyBase {
-  version: string;
-  plugins: Record<string, PageSpyPlugin>;
-  config: Required<InitConfig> | null;
-  name: string;
-  address: string;
-  roomUrl: string;
-}
-
 interface PageSpyConstructor {
-  new (config: InitConfig): PageSpy;
-  instance: PageSpy | null;
+  new (config: InitConfig): PageSpyBase;
+  instance: PageSpyBase | null;
 }
 
 declare const PageSpy: PageSpyConstructor;
