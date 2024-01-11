@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
-import type { SpyAtom } from 'base/types/index';
+import type { SpyAtom } from '@huolala-tech/page-spy-types';
 import {
   getRandomId,
   getValueType,

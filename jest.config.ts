@@ -7,7 +7,7 @@ const moduleNameMapper = {
     prefix: '<rootDir>/',
   }),
   '\\.(css|less|svg|png|jpg)$':
-    '<rootDir>/packages/web/tests/__mocks__/assets.js',
+    '<rootDir>/packages/page-spy-browser/tests/__mocks__/assets.js',
 };
 
 /**
@@ -38,27 +38,27 @@ const config: Config = {
     },
     {
       displayName: {
-        name: 'Web',
+        name: 'Browser',
         color: 'yellow',
       },
       preset: 'ts-jest',
       testEnvironment: 'jsdom',
-      testMatch: ['**/packages/web/tests/**/*.test.ts'],
+      testMatch: ['**/packages/page-spy-browser/tests/**/*.test.ts'],
       moduleNameMapper,
       setupFilesAfterEnv: [
-        '<rootDir>/packages/web/tests/setup.ts',
+        '<rootDir>/packages/page-spy-browser/tests/setup.ts',
         'jest-canvas-mock',
       ],
     },
     {
       displayName: {
-        name: 'Mini Program',
+        name: 'Wechat',
         color: 'green',
       },
       preset: 'ts-jest',
-      testMatch: ['**/packages/miniprogram/tests/**/*.test.ts'],
+      testMatch: ['**/packages/page-spy-wechat/tests/**/*.test.ts'],
       moduleNameMapper,
-      setupFilesAfterEnv: ['<rootDir>/packages/miniprogram/tests/setup.ts'],
+      setupFilesAfterEnv: ['<rootDir>/packages/page-spy-wechat/tests/setup.ts'],
     },
   ],
 };

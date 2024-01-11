@@ -1,4 +1,4 @@
-import type { SpyMessage, SpySocket } from 'base/types/index';
+import type { SpyMessage, SpySocket } from '@huolala-tech/page-spy-types';
 import { getRandomId } from '../index';
 import * as SERVER_MESSAGE_TYPE from './server-type';
 

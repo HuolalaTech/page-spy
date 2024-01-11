@@ -1,0 +1,22 @@
+{
+  "name": "@huolala-tech/page-spy-types",
+  "version": "1.5.5",
+  "description": "Types for PageSpy SDK",
+  "license": "MIT",
+  "types": "index.d.ts",
+  "files": [
+    "lib",
+    "index.d.ts"
+  ],
+  "homepage": "https://www.pagespy.org/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HuolalaTech/page-spy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HuolalaTech/page-spy/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

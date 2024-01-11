@@ -1,4 +1,4 @@
-import type { SpyNetwork } from 'base/types/index';
+import type { SpyNetwork } from '@huolala-tech/page-spy-types';
 import {
   isBlob,
   isBrowser,

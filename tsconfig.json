@@ -22,8 +22,8 @@
     "baseUrl": ".",
     "paths": {
       "base/*": ["./packages/base/*"],
-      "web/*": ["./packages/web/*"],
-      "miniprogram/*": ["./packages/miniprogram/*"]
+      "page-spy-browser/*": ["./packages/page-spy-browser/*"],
+      "page-spy-wechat/*": ["./packages/page-spy-wechat/*"]
     }
   },
   "exclude": ["**/node_modules", "**/dist"]

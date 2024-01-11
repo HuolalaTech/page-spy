@@ -5,7 +5,6 @@
   "command": {
     "version": {
       "allowBranch": ["main"],
-      "message": "chore(release): publish %s",
       "preid": "beta"
     }
   }
