@@ -1,6 +1,14 @@
+[npm-image]: https://img.shields.io/npm/v/@huolala-tech/page-spy-browser?logo=npm&label=version
+[npm-url]: https://www.npmjs.com/package/@huolala-tech/page-spy-browser
+[minified-image]: https://img.shields.io/bundlephobia/min/@huolala-tech/page-spy-browser
+[minified-url]: https://unpkg.com/browse/@huolala-tech/page-spy-browser/dist/iife/index.min.js
+
 English | [中文](./README_ZH.md)
 
 # `@huolala-tech/page-spy-browser`
+
+[![SDK version][npm-image]][npm-url]
+[![SDK size][minified-image]][minified-url]
 
 > The SDK used in Web environment.
 

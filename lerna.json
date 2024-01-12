@@ -7,5 +7,6 @@
       "allowBranch": ["main"],
       "preid": "beta"
     }
-  }
+  },
+  "ignoreChanges": ["**/tests/**", "**/*.md"]
 }

@@ -1,6 +1,14 @@
+[npm-image]: https://img.shields.io/npm/v/@huolala-tech/page-spy-browser?logo=npm&label=version
+[npm-url]: https://www.npmjs.com/package/@huolala-tech/page-spy-browser
+[minified-image]: https://img.shields.io/bundlephobia/min/@huolala-tech/page-spy-browser
+[minified-url]: https://unpkg.com/browse/@huolala-tech/page-spy-browser/dist/iife/index.min.js
+
 [English](./README.md) | 中文
 
 # `@huolala-tech/page-spy-browser`
+
+[![SDK version][npm-image]][npm-url]
+[![SDK size][minified-image]][minified-url]
 
 > 这个 SDK 用于调试浏览器环境的网页应用。
 
