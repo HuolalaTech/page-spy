@@ -8,22 +8,22 @@ describe('Web API utils fn', () => {
       api: 'init-api',
     });
     const request = new Request(config);
-    const originLink = config.scriptLink;
+    const originLink = Config.scriptLink;
 
     // <script src="https://exp.com/page-spy/index.min.js"></script>
-    config.scriptLink = 'https://exp.com/page-spy/index.min.js';
+    Config.scriptLink = 'https://exp.com/page-spy/index.min.js';
     expect(request.parseSchemeWithScript()).toEqual(['https://', 'wss://']);
 
     // <script src="http://exp.com/page-spy/index.min.js"></script>
-    config.scriptLink = 'http://exp.com/page-spy/index.min.js';
+    Config.scriptLink = 'http://exp.com/page-spy/index.min.js';
     expect(request.parseSchemeWithScript()).toEqual(['http://', 'ws://']);
 
     // <script src="some-others://like-chrome-extension/page-spy/index.min.js"></script>
-    config.scriptLink =
+    Config.scriptLink =
       'some-others://like-chrome-extension/page-spy/index.min.js';
     expect(request.parseSchemeWithScript()).toEqual(['http://', 'ws://']);
 
     // reset to default
-    config.scriptLink = originLink;
+    Config.scriptLink = originLink;
   });
 });
