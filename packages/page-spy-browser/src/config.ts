@@ -2,7 +2,11 @@ import { ConfigBase } from 'base/src/config';
 import type { InitConfig } from 'page-spy-browser/types/index';
 
 export class Config extends ConfigBase<InitConfig> {
-  public scriptLink = (document.currentScript as HTMLScriptElement)?.src;
+  /**
+   * NOTE: the 'scriptLink' must be mark static, for
+   * "document.currentScript.src" only valid after <script> load done.
+   */
+  public static scriptLink = (document.currentScript as HTMLScriptElement)?.src;
 
   protected defaultConfig = () => {
     const defaultConfig = {
@@ -13,12 +17,13 @@ export class Config extends ConfigBase<InitConfig> {
       title: '',
       enableSSL: null,
     };
-    if (!this.scriptLink) {
+
+    if (!Config.scriptLink) {
       return defaultConfig;
     }
 
     try {
-      const { host, origin } = new URL(this.scriptLink);
+      const { host, origin } = new URL(Config.scriptLink);
       const result = {
         ...defaultConfig,
         api: host,
