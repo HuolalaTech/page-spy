@@ -56,4 +56,8 @@ export default class SystemPlugin implements PageSpyPlugin {
   public onReset() {
     SystemPlugin.hasInitd = false;
   }
+
+  public onReset() {
+    SystemPlugin.hasInitd = false;
+  }
 }
