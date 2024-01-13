@@ -64,7 +64,11 @@ export default {
   plugins: [
     ...plugins,
     babel({
-      exclude: ['node_modules/**', /deps\/modernizr/],
+      /**
+       * Why exclude core-js?
+       * See: https://github.com/rollup/rollup-plugin-babel/issues/254
+       */
+      exclude: ['node_modules/**', /\/core-js\//, /deps\/modernizr/],
       babelHelpers: 'bundled',
       extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx'],
       presets: [

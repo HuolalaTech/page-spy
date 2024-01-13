@@ -39,7 +39,7 @@ export default class Request {
 
   parseSchemeWithScript() {
     try {
-      const { protocol } = new URL(this.config.scriptLink);
+      const { protocol } = new URL(Config.scriptLink);
       if (protocol.startsWith('https')) {
         return ['https://', 'wss://'];
       }

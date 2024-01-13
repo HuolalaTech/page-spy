@@ -1,10 +1,9 @@
 [page-spy-web]: https://github.com/HuolalaTech/page-spy-web.git 'page-spy-web'
-[coveralls-image]: https://coveralls.io/repos/github/HuolalaTech/page-spy/badge.svg?branch=main
+[ci-build-image]: https://img.shields.io/github/actions/workflow/status/HuolalaTech/page-spy/coveralls.yml?logo=github&label=build
+[ci-build-url]: https://github.com/HuolalaTech/page-spy/actions/workflows/coveralls.yml
+[coveralls-image]: https://img.shields.io/coverallsCoverage/github/HuolalaTech/page-spy?label=coverage&logo=coveralls
 [coveralls-url]: https://coveralls.io/github/HuolalaTech/page-spy?branch=main
-[npm-image]: https://img.shields.io/npm/v/@huolala-tech/page-spy
-[npm-url]: https://www.npmjs.com/package/@huolala-tech/page-spy
-[minified-image]: https://img.shields.io/bundlephobia/min/@huolala-tech/page-spy
-[minified-url]: https://unpkg.com/browse/@huolala-tech/page-spy/dist/index.min.js
+[welcome-pr]: https://img.shields.io/badge/PRs-welcome-green
 
 <div align="center">
   <img src="./logo.svg" height="100" />
@@ -12,7 +11,9 @@
   <h1>Page Spy SDKs</h1>
   <p>PageSpy 是一款远程调试网页的工具。</p>
 
-[![Coverage Status][coveralls-image]][coveralls-url] [![NPM Package][npm-image]][npm-url] [![Minified size][minified-image]][minified-url]
+[![CI build status][ci-build-image]][ci-build-url]
+[![Coverage Status][coveralls-image]][coveralls-url]
+![Welcome PR][welcome-pr]
 
 <a href="https://www.producthunt.com/posts/pagespy?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-pagespy" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=429852&theme=light" alt="PageSpy - Remote&#0032;debugging&#0032;as&#0032;seamless&#0032;as&#0032;local&#0032;debugging&#0046; | Product Hunt" height="36" /></a> <a href="https://news.ycombinator.com/item?id=38679798" target="_blank"><img src="https://hackernews-badge.vercel.app/api?id=38679798" alt="PageSpy - Remote&#0032;debugging&#0032;as&#0032;seamless&#0032;as&#0032;local&#0032;debugging&#0046; | Hacker News" height="36" /></a>
 
@@ -30,11 +31,11 @@
 
 ## SDKs
 
-| Type             | Repo                                                             | Status    |
-| ---------------- | ---------------------------------------------------------------- | --------- |
-| Common types     | [`@huolala-tech/page-spy-types`](./packages/page-spy-types/)     | Pending   |
-| Web SDK          | [`@huolala-tech/page-spy-browser`](./packages/page-spy-browser/) | Pending   |
-| Wechat sdk       | [`@huolala-tech/page-spy-wechat`](./packages/page-spy-wechat/)   | Pending   |
-| uniApp sdk       | `@huolala-tech/page-spy-uniapp`                                  | Not Start |
-| Taro sdk         | `@huolala-tech/page-spy-taro`                                    | Not Start |
-| React Native sdk | `@huolala-tech/page-spy-rn`                                      | Not Start |
+| Type             | Repo                                                             | Status |
+| ---------------- | ---------------------------------------------------------------- | ------ |
+| Common types     | [`@huolala-tech/page-spy-types`](./packages/page-spy-types/)     | Done   |
+| Web sdk          | [`@huolala-tech/page-spy-browser`](./packages/page-spy-browser/) | Done   |
+| Wechat sdk       | [`@huolala-tech/page-spy-wechat`](./packages/page-spy-wechat/)   | Done   |
+| uniApp sdk       | `@huolala-tech/page-spy-uniapp`                                  | WIP    |
+| Taro sdk         | `@huolala-tech/page-spy-taro`                                    | WIP    |
+| React Native sdk | `@huolala-tech/page-spy-rn`                                      | WIP    |

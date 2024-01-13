@@ -11,11 +11,12 @@
     "lint:fix": "eslint --ext .js,.ts --fix ./package",
     "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,md,json}'",
     "typecheck": "tsc --noEmit",
-    "prerelease": "yarn run test && lerna run build",
-    "release:major": "yarn run prerelease && lerna publish major",
-    "release:minor": "yarn run prerelease && lerna publish patch",
-    "release:patch": "yarn run prerelease && lerna publish patch",
-    "release:beta": "yarn run prerelease && lerna publish prerelease"
+    "preversion": "yarn run test",
+    "prepublishOnly": "lerna run build",
+    "release:major": "lerna publish major",
+    "release:minor": "lerna publish patch",
+    "release:patch": "lerna publish patch",
+    "release:beta": "lerna publish prerelease --dist-tag beta"
   },
   "gitHooks": {
     "pre-commit": "lint-staged"
