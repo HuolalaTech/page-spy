@@ -198,7 +198,7 @@ export abstract class SocketStoreBase {
     this.clearPing();
     this.reconnectTimes = 0;
     this.reconnectable = false;
-    this.socket?.close();
+    this.socket?.destroy();
   }
 
   private connectOnline() {

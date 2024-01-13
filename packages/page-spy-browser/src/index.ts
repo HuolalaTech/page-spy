@@ -1,6 +1,6 @@
 import type { InitConfig } from 'page-spy-browser/types/index';
 import copy from 'copy-to-clipboard';
-import { getRandomId, isClass, psLog } from 'base/src';
+import { getRandomId, isArray, isClass, psLog } from 'base/src';
 import { ROOM_SESSION_KEY } from 'base/src/constants';
 import type {
   PageSpyPlugin,
@@ -55,6 +55,9 @@ class PageSpy {
   static instance: PageSpy | null = null;
 
   static registerPlugin(plugin: PageSpyPlugin) {
+    if (!plugin) {
+      return;
+    }
     if (isClass(plugin)) {
       psLog.error(
         'PageSpy.registerPlugin() expect to pass an instance, not a class',
@@ -71,8 +74,8 @@ class PageSpy {
     if (isExist) {
       psLog.error(
         `The ${plugin.name} has registered. Consider the following reasons:
-      - Duplicate register one plugin;
-      - "name" property conflict;`,
+      - Duplicate register one same plugin;
+      - Plugin's "name" conflict with others, you can print all registered plugins by "PageSpy.plugins";`,
       );
       return;
     }
@@ -97,18 +100,17 @@ class PageSpy {
   triggerPlugins<T extends PageSpyPluginLifecycle = PageSpyPluginLifecycle>(
     lifecycle: T,
     // TODO: args 对应到 PageSpyPlugin[lifecycle] 的参数
-    args: any,
+    args?: any,
   ) {
     const { disabledPlugins } = this.config.get();
     PageSpy.plugins.forEach((plugin) => {
       if (
-        disabledPlugins &&
+        isArray(disabledPlugins) &&
         disabledPlugins.length &&
         disabledPlugins.includes(plugin.name)
       ) {
         return;
       }
-      // eslint-disable-next-line prefer-spread
       plugin[lifecycle]?.(args);
     });
   }
@@ -146,6 +148,11 @@ class PageSpy {
     if (config.autoRender) {
       this.render();
     }
+  }
+
+  abort() {
+    this.triggerPlugins('onReset');
+    socketStore.close();
   }
 
   async createNewConnection() {
