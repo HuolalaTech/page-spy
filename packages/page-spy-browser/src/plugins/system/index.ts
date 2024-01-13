@@ -36,7 +36,7 @@ export default class SystemPlugin implements PageSpyPlugin {
   public static hasInitd = false;
 
   // eslint-disable-next-line class-methods-use-this
-  public async onCreated() {
+  public async onInit() {
     if (SystemPlugin.hasInitd) return;
     SystemPlugin.hasInitd = true;
 
@@ -53,5 +53,9 @@ export default class SystemPlugin implements PageSpyPlugin {
       } as SpySystem.DataItem),
       false,
     );
+  }
+
+  public onReset() {
+    SystemPlugin.hasInitd = false;
   }
 }

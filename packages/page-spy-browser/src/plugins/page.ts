@@ -8,7 +8,7 @@ export default class PagePlugin implements PageSpyPlugin {
   public static hasInitd = false;
 
   // eslint-disable-next-line class-methods-use-this
-  public onCreated() {
+  public onInit() {
     if (PagePlugin.hasInitd) return;
     PagePlugin.hasInitd = true;
 
@@ -19,6 +19,10 @@ export default class PagePlugin implements PageSpyPlugin {
         reply(msg);
       }
     });
+  }
+
+  public onReset() {
+    PagePlugin.hasInitd = false;
   }
 
   private static collectHtml() {

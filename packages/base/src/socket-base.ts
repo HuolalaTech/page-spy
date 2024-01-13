@@ -188,10 +188,10 @@ export abstract class SocketStoreBase {
 
   public broadcastMessage(
     msg: SpyMessage.MessageItem,
-    isCache: boolean = false,
+    noCache: boolean = false,
   ) {
     const message = makeBroadcastMessage(msg);
-    this.send(message, isCache);
+    this.send(message, noCache);
   }
 
   public close() {
@@ -449,7 +449,7 @@ export abstract class SocketStoreBase {
     }
   }
 
-  private send(msg: SpySocket.ClientEvent, isCache: boolean = false) {
+  private send(msg: SpySocket.ClientEvent, noCache: boolean = false) {
     if (this.connectionStatus) {
       /* c8 ignore start */
       try {
@@ -462,7 +462,7 @@ export abstract class SocketStoreBase {
       }
       /* c8 ignore stop */
     }
-    if (!isCache) {
+    if (!noCache) {
       if (
         [SERVER_MESSAGE_TYPE.MESSAGE, SERVER_MESSAGE_TYPE.PING].indexOf(
           msg.type,

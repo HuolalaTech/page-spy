@@ -7,13 +7,61 @@ export class StoragePlugin implements PageSpyPlugin {
 
   public static hasInitd = false;
 
+  private originSetItem: Storage['setItem'] | null = null;
+
+  private originRemoveItem: Storage['removeItem'] | null = null;
+
+  private originClear: Storage['clear'] | null = null;
+
+  private cookieStoreChangeListener = (e: Event) => {
+    const { changed, deleted } = e as CookieChangeEvent;
+    if (changed.length > 0) {
+      changed.forEach((cookie) => {
+        const data = {
+          type: 'cookie',
+          action: 'set',
+          ...cookie,
+        } as const;
+        StoragePlugin.sendStorageItem(data);
+      });
+    }
+    if (deleted.length > 0) {
+      deleted.forEach((cookie) => {
+        const data = {
+          type: 'cookie',
+          action: 'remove',
+          name: cookie.name,
+        } as const;
+        StoragePlugin.sendStorageItem(data);
+      });
+    }
+  };
+
   // eslint-disable-next-line class-methods-use-this
-  public onCreated() {
+  public onInit() {
     if (StoragePlugin.hasInitd) return;
     StoragePlugin.hasInitd = true;
 
     StoragePlugin.listenRefreshEvent();
-    StoragePlugin.initStorageProxy();
+    this.initStorageProxy();
+  }
+
+  public onReset() {
+    if (this.originClear) {
+      Storage.prototype.clear = this.originClear;
+    }
+    if (this.originRemoveItem) {
+      Storage.prototype.removeItem = this.originRemoveItem;
+    }
+    if (this.originSetItem) {
+      Storage.prototype.setItem = this.originSetItem;
+    }
+    if (this.cookieStoreChangeListener) {
+      window.cookieStore.removeEventListener(
+        'change',
+        this.cookieStoreChangeListener,
+      );
+    }
   }
 
   static async sendRefresh(type: string) {
@@ -89,9 +137,12 @@ export class StoragePlugin implements PageSpyPlugin {
     return data;
   }
 
-  private static initStorageProxy() {
+  private initStorageProxy() {
     const { getStorageType, sendStorageItem } = StoragePlugin;
     const { clear, removeItem, setItem } = Storage.prototype;
+    this.originClear = clear;
+    this.originRemoveItem = removeItem;
+    this.originSetItem = setItem;
 
     Storage.prototype.clear = function () {
       clear.call(this);
@@ -122,29 +173,10 @@ export class StoragePlugin implements PageSpyPlugin {
     };
 
     if (window.cookieStore) {
-      window.cookieStore.addEventListener('change', (e) => {
-        const { changed, deleted } = e as CookieChangeEvent;
-        if (changed.length > 0) {
-          changed.forEach((cookie) => {
-            const data = {
-              type: 'cookie',
-              action: 'set',
-              ...cookie,
-            } as const;
-            StoragePlugin.sendStorageItem(data);
-          });
-        }
-        if (deleted.length > 0) {
-          deleted.forEach((cookie) => {
-            const data = {
-              type: 'cookie',
-              action: 'remove',
-              name: cookie.name,
-            } as const;
-            StoragePlugin.sendStorageItem(data);
-          });
-        }
-      });
+      window.cookieStore.addEventListener(
+        'change',
+        this.cookieStoreChangeListener,
+      );
     }
   }
 

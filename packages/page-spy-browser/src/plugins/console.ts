@@ -1,29 +1,29 @@
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import socketStore from 'page-spy-browser/src/helpers/socket';
-import type { SpyConsole } from '@huolala-tech/page-spy-types';
+import type { SpyConsole, PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import atom from 'base/src/atom';
-import type { PageSpyPlugin } from '@huolala-tech/page-spy-types';
 
 export default class ConsolePlugin implements PageSpyPlugin {
   public name: string = 'ConsolePlugin';
 
-  private console: Record<string, any> = {};
-
   public static hasInitd = false;
 
+  private proxyTypes: SpyConsole.ProxyType[] = [
+    'log',
+    'info',
+    'error',
+    'warn',
+    'debug',
+  ];
+
+  private console: Record<string, any> = {};
+
   // eslint-disable-next-line class-methods-use-this
-  public async onCreated() {
+  public async onInit() {
     if (ConsolePlugin.hasInitd) return;
     ConsolePlugin.hasInitd = true;
 
-    const type: SpyConsole.ProxyType[] = [
-      'log',
-      'info',
-      'error',
-      'warn',
-      'debug',
-    ];
-    type.forEach((item) => {
+    this.proxyTypes.forEach((item) => {
       this.console[item] =
         window.console[item] || window.console.log || (() => {});
       window.console[item] = (...args: any[]) => {
@@ -34,6 +34,13 @@ export default class ConsolePlugin implements PageSpyPlugin {
         });
       };
     });
+  }
+
+  public onReset() {
+    this.proxyTypes.forEach((item) => {
+      window.console[item] = this.console[item];
+    });
+    ConsolePlugin.hasInitd = false;
   }
 
   private printLog(data: SpyConsole.DataItem) {

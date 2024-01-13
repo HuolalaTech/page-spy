@@ -112,6 +112,10 @@ export function isURL(value: unknown): value is URL {
   return value instanceof URL;
 }
 
+export function isClass(obj: unknown): obj is Function {
+  return typeof obj === 'function' && typeof obj.prototype !== 'undefined';
+}
+
 type TypedArray =
   | Int8Array
   | Uint8Array
