@@ -2,6 +2,7 @@ import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import socketStore from 'page-spy-browser/src/helpers/socket';
 import type { SpyConsole, PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import atom from 'base/src/atom';
+import { PUBLIC_DATA } from 'base/src/message/debug-type';
 
 export default class ConsolePlugin implements PageSpyPlugin {
   public name: string = 'ConsolePlugin';
@@ -52,6 +53,7 @@ export default class ConsolePlugin implements PageSpyPlugin {
         time: Date.now(),
         ...data,
       });
+      socketStore.dispatchEvent(PUBLIC_DATA, log);
       socketStore.broadcastMessage(log);
     }
   }

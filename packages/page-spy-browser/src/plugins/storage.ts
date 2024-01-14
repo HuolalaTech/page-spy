@@ -1,6 +1,7 @@
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import { SpyStorage, PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import socketStore from 'page-spy-browser/src/helpers/socket';
+import { PUBLIC_DATA } from 'base/src/message/debug-type';
 
 export class StoragePlugin implements PageSpyPlugin {
   public name = 'StoragePlugin';
@@ -188,6 +189,7 @@ export class StoragePlugin implements PageSpyPlugin {
 
   private static sendStorageItem(info: Omit<SpyStorage.DataItem, 'id'>) {
     const data = makeMessage(DEBUG_MESSAGE_TYPE.STORAGE, info);
+    socketStore.dispatchEvent(PUBLIC_DATA, data);
     // The user wouldn't want to get the stale data, so here we set the 2nd parameter to true.
     socketStore.broadcastMessage(data, true);
   }

@@ -4,6 +4,7 @@ import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import { parseUserAgent } from 'base/src/device';
 import '../../deps/modernizr';
 import { SpySystem, PageSpyPlugin } from '@huolala-tech/page-spy-types';
+import { PUBLIC_DATA } from 'base/src/message/debug-type';
 import { computeResult } from './feature';
 
 window.Modernizr.addTest(
@@ -42,17 +43,16 @@ export default class SystemPlugin implements PageSpyPlugin {
 
     const id = getRandomId();
     const features = await computeResult();
-    socketStore.broadcastMessage(
-      makeMessage(DEBUG_MESSAGE_TYPE.SYSTEM, {
-        id,
-        system: {
-          ua: navigator.userAgent,
-          ...parseUserAgent(),
-        },
-        features,
-      } as SpySystem.DataItem),
-      false,
-    );
+    const data = makeMessage(DEBUG_MESSAGE_TYPE.SYSTEM, {
+      id,
+      system: {
+        ua: navigator.userAgent,
+        ...parseUserAgent(),
+      },
+      features,
+    } as SpySystem.DataItem);
+    socketStore.dispatchEvent(PUBLIC_DATA, data);
+    socketStore.broadcastMessage(data);
   }
 
   public onReset() {

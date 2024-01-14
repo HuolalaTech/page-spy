@@ -17,3 +17,7 @@ export const ATOM_DETAIL = 'atom-detail';
 export const ATOM_GETTER = 'atom-getter';
 export const DEBUGGER_ONLINE = 'debugger-online';
 export const DATABASE_PAGINATION = 'database-pagination';
+/**
+ * Internal types used in PageSpy self, such as plugin-plugin communication.
+ */
+export const PUBLIC_DATA = 'public-data';

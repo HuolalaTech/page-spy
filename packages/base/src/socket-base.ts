@@ -3,7 +3,11 @@
  * 不同平台 socket 的 api 不同但功能相同，这里抽象一层
  */
 
-import type { SpyMessage, SpySocket } from '@huolala-tech/page-spy-types';
+import type {
+  SpyMessage,
+  SpySocket,
+  SpyBase,
+} from '@huolala-tech/page-spy-types';
 import { PackedEvent } from '@huolala-tech/page-spy-types/lib/socket-event';
 import { getRandomId, psLog, stringifyData } from './index';
 import {
@@ -14,19 +18,15 @@ import {
 } from './message';
 import * as SERVER_MESSAGE_TYPE from './message/server-type';
 import atom from './atom';
-
-interface SocketEvent<T = any> {
-  source: {
-    type: SpyMessage.MessageType;
-    data: T;
-  };
-  from: SpySocket.Connection;
-  to: SpySocket.Connection;
-}
-type SocketEventCallback = (
-  data: SocketEvent,
-  reply: (data: any) => void,
-) => void;
+import {
+  ATOM_DETAIL,
+  ATOM_GETTER,
+  DATABASE_PAGINATION,
+  DEBUG,
+  DEBUGGER_ONLINE,
+  PUBLIC_DATA,
+  REFRESH,
+} from './message/debug-type';
 
 interface GetterMember {
   key: string; // 属性名
@@ -116,13 +116,17 @@ export abstract class SocketStoreBase {
   private messages: (SpySocket.BroadcastEvent | SpySocket.UnicastEvent)[] = [];
 
   // events center
-  private events: Record<SpyMessage.InteractiveType, SocketEventCallback[]> = {
-    refresh: [],
-    debug: [],
-    'atom-detail': [],
-    'atom-getter': [],
-    'debugger-online': [],
-    'database-pagination': [],
+  private events: Record<
+    SpyMessage.InteractiveType | SpyMessage.InternalType,
+    SpyBase.EventCallback[]
+  > = {
+    [REFRESH]: [],
+    [DEBUG]: [],
+    [ATOM_DETAIL]: [],
+    [ATOM_GETTER]: [],
+    [DEBUGGER_ONLINE]: [],
+    [DATABASE_PAGINATION]: [],
+    [PUBLIC_DATA]: [],
   };
 
   // Don't try to reconnect if error occupied
@@ -177,8 +181,13 @@ export abstract class SocketStoreBase {
 
   public addListener(
     type: SpyMessage.InteractiveType,
-    fn: SocketEventCallback,
-  ) {
+    fn: SpyBase.InteractiveEventCallback,
+  ): void;
+  public addListener(
+    type: SpyMessage.InternalType,
+    fn: SpyBase.InternalEventCallback,
+  ): void;
+  public addListener(type: any, fn: any) {
     /* c8 ignore next 3 */
     if (!this.events[type]) {
       this.events[type] = [];
@@ -199,6 +208,10 @@ export abstract class SocketStoreBase {
     this.reconnectTimes = 0;
     this.reconnectable = false;
     this.socket?.destroy();
+    this.messages = [];
+    Object.entries(this.events).forEach(([, fns]) => {
+      fns.splice(0);
+    });
   }
 
   private connectOnline() {
@@ -332,7 +345,18 @@ export abstract class SocketStoreBase {
     this.handlePong();
   }
 
-  private dispatchEvent(type: SpyMessage.InteractiveType, data: SocketEvent) {
+  public dispatchEvent(
+    type: SpyMessage.InteractiveType,
+    data: SpyBase.InteractiveEvent,
+  ): void;
+  public dispatchEvent(type: SpyMessage.InternalType, data: any): void;
+  public dispatchEvent(type: any, data: any) {
+    if ([PUBLIC_DATA].includes(type)) {
+      this.events[type].forEach((fn) => {
+        (fn as SpyBase.InternalEventCallback)(data);
+      });
+      return;
+    }
     this.events[type].forEach((fn) => {
       fn.call(this, data, (d: SpyMessage.MessageItem) => {
         this.unicastMessage(d, data.from);
@@ -348,7 +372,9 @@ export abstract class SocketStoreBase {
     this.send(message);
   }
 
-  private handleFlushBuffer(message: SocketEvent<{ latestId: string }>) {
+  private handleFlushBuffer(
+    message: SpyBase.InteractiveEvent<{ latestId: string }>,
+  ) {
     const { latestId } = message.source.data;
 
     const msgIndex = this.messages.findIndex(
@@ -374,7 +400,7 @@ export abstract class SocketStoreBase {
 
   // run executable code which received from remote and send back the result
   private static handleDebugger(
-    { source }: SocketEvent<string>,
+    { source }: SpyBase.InteractiveEvent<string>,
     reply: (data: any) => void,
   ) {
     const { type, data } = source;
@@ -414,7 +440,7 @@ export abstract class SocketStoreBase {
   }
 
   private static handleResolveAtom(
-    { source }: SocketEvent<string>,
+    { source }: SpyBase.InteractiveEvent<string>,
     reply: (data: any) => void,
   ) {
     const { type, data } = source;
@@ -426,7 +452,7 @@ export abstract class SocketStoreBase {
   }
 
   private static handleAtomPropertyGetter(
-    { source }: SocketEvent<GetterMember>,
+    { source }: SpyBase.InteractiveEvent<GetterMember>,
     reply: (data: any) => void,
   ) {
     const { type, data } = source;
