@@ -1,4 +1,4 @@
-import { SocketStoreType } from './socket-base';
+import { SocketStoreType } from './base';
 
 export interface InitConfigBase {
   /**
