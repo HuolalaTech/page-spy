@@ -12,8 +12,11 @@ import { Config } from 'page-spy-browser/src/config';
 import { isBrowser } from 'base/src';
 import Request from 'page-spy-browser/src/api';
 import { JSDOM } from 'jsdom';
+import { DatabasePlugin } from 'page-spy-browser/src/plugins/database';
 
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
+
+let sdk: SDK | null;
 
 const rootId = '#__pageSpy';
 afterEach(() => {
@@ -21,13 +24,9 @@ afterEach(() => {
   jest.useRealTimers();
   document.querySelector(rootId)?.remove();
   sessionStorage.removeItem(ROOM_SESSION_KEY);
+  sdk?.abort();
+  sdk = null;
   SDK.instance = null;
-  ConsolePlugin.hasInitd = false;
-  ErrorPlugin.hasInitd = false;
-  NetworkPlugin.hasInitd = false;
-  SystemPlugin.hasInitd = false;
-  PagePlugin.hasInitd = false;
-  StoragePlugin.hasInitd = false;
 });
 
 describe('Im in the right env', () => {
@@ -38,10 +37,7 @@ describe('Im in the right env', () => {
 
 describe('new PageSpy([config])', () => {
   it('Auto detect config by parsing `document.currentScript.src`', () => {
-    jest.useFakeTimers();
-    const sdk = new SDK();
-
-    jest.advanceTimersByTime(100000);
+    sdk = new SDK();
 
     // The config value inited from /tests/setup.ts
     const config = sdk.config.get();
@@ -60,27 +56,31 @@ describe('new PageSpy([config])', () => {
       enableSSL: true,
     };
 
-    const sdk = new SDK(userCfg);
+    sdk = new SDK(userCfg);
     const config = sdk.config.get();
     expect(config).toEqual(expect.objectContaining(userCfg));
   });
 
   it('Load plugins will run `<plugin>.onInit()`', () => {
-    const cPlugin = new ConsolePlugin();
-    const ePlugin = new ErrorPlugin();
-    const nPlugin = new NetworkPlugin();
-    const s1Plugin = new SystemPlugin();
-    const pPlugin = new PagePlugin();
-    const s2Plugin = new StoragePlugin();
-    const plugins = [cPlugin, ePlugin, nPlugin, s1Plugin, pPlugin, s2Plugin];
+    const INTERNAL_PLUGINS = [
+      ConsolePlugin,
+      ErrorPlugin,
+      NetworkPlugin,
+      StoragePlugin,
+      DatabasePlugin,
+      PagePlugin,
+      SystemPlugin,
+    ];
+
+    expect(INTERNAL_PLUGINS.every((i) => i.hasInitd === false)).toBe(true);
 
     const onInitFn = jest.fn();
-    plugins.forEach((i) => {
-      jest.spyOn(i, 'onInit').mockImplementation(onInitFn);
+    INTERNAL_PLUGINS.forEach((i) => {
+      jest.spyOn(i.prototype, 'onInit').mockImplementation(onInitFn);
     });
 
-    const sdk = new SDK();
-    expect(onInitFn).toHaveBeenCalledTimes(plugins.length);
+    sdk = new SDK();
+    expect(onInitFn).toHaveBeenCalledTimes(INTERNAL_PLUGINS.length);
   });
 
   it('With ConsolePlugin loaded, ths console.<type> menthods be wrapped', () => {
@@ -89,7 +89,7 @@ describe('new PageSpy([config])', () => {
       'info',
       'warn',
       'error',
-      'warn',
+      'debug',
     ];
     const originConsole = consoleKey.map((i) => console[i]);
     expect(consoleKey.map((i) => console[i])).toEqual(originConsole);

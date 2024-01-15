@@ -63,6 +63,7 @@ export class StoragePlugin implements PageSpyPlugin {
         this.cookieStoreChangeListener,
       );
     }
+    StoragePlugin.hasInitd = false;
   }
 
   static async sendRefresh(type: string) {
