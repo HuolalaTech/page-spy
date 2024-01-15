@@ -23,7 +23,7 @@ const plugins = [
   nodeResolve(),
   commonjs(),
   typescript({
-    // exclude: 'tests/**/*',
+    // exclude: '**/tests/**/*.test.ts',
   }),
   replace({
     PKG_VERSION: `"${pkg.version}"`,
@@ -36,7 +36,7 @@ const plugins = [
   }),
   alias({
     entries: [
-      { find: 'web', replacement: resolve(root, '../web') },
+      { find: 'page-spy-browser', replacement: root },
       { find: 'base', replacement: resolve(root, '../base') },
     ],
   }),

@@ -23,7 +23,7 @@ const plugins = [
   nodeResolve(),
   commonjs(),
   typescript({
-    // exclude: 'tests/**/*',
+    // exclude: '**/tests/**/*.test.ts',
   }),
   replace({
     PKG_VERSION: `"${pkg.version}"`,
@@ -36,7 +36,7 @@ const plugins = [
   }),
   alias({
     entries: [
-      { find: 'miniprogram', replacement: resolve(root, '../miniprogram') },
+      { find: 'page-spy-wechat', replacement: root },
       { find: 'base', replacement: resolve(root, '../base') },
     ],
   }),
