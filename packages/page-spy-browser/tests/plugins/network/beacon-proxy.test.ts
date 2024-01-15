@@ -20,13 +20,13 @@ describe('navigator.sendBeacon proxy', () => {
       value: undefined,
       writable: true,
     });
-    new NetworkPlugin().onCreated();
+    new NetworkPlugin().onInit();
     expect(window.navigator.sendBeacon).toBe(undefined);
   });
   it('Wrap the navigator.sendBeacon', async () => {
     const sendBeaconSpy = jest.spyOn(window.navigator, 'sendBeacon');
     expect(window.navigator.sendBeacon).toBe(sendBeaconSpy);
-    new NetworkPlugin().onCreated();
+    new NetworkPlugin().onInit();
     expect(window.navigator.sendBeacon).not.toBe(sendBeaconSpy);
   });
 
@@ -36,7 +36,7 @@ describe('navigator.sendBeacon proxy', () => {
     const body = new FormData();
     navigator.sendBeacon(api, body);
 
-    expect(spyBeacon).toBeCalledTimes(1);
+    expect(spyBeacon).toHaveBeenCalledTimes(1);
   });
 
   it('Mock the truthy / falsy result', () => {
@@ -44,7 +44,7 @@ describe('navigator.sendBeacon proxy', () => {
       return true;
     });
     const np = new NetworkPlugin();
-    np.onCreated();
+    np.onInit();
     const { beaconProxy } = np;
     window.navigator.sendBeacon(`${apiPrefix}/posts`);
 
@@ -59,7 +59,7 @@ describe('navigator.sendBeacon proxy', () => {
       return false;
     });
     const np = new NetworkPlugin();
-    np.onCreated();
+    np.onInit();
     const { beaconProxy } = np;
     window.navigator.sendBeacon(`${apiPrefix}/posts`);
 
@@ -71,7 +71,7 @@ describe('navigator.sendBeacon proxy', () => {
 
   it('The SDK record the request information', () => {
     const np = new NetworkPlugin();
-    np.onCreated();
+    np.onInit();
     const { beaconProxy } = np;
     expect(beaconProxy).not.toBe(null);
     expect(computeRequestMapInfo(beaconProxy).size).toBe(0);
@@ -86,7 +86,7 @@ describe('navigator.sendBeacon proxy', () => {
   it('The cached request items will be freed when no longer needed', async () => {
     jest.useFakeTimers();
     const np = new NetworkPlugin();
-    np.onCreated();
+    np.onInit();
     const { beaconProxy } = np;
     expect(beaconProxy).not.toBe(null);
     expect(computeRequestMapInfo(beaconProxy).size).toBe(0);

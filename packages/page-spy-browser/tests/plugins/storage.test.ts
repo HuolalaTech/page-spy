@@ -5,7 +5,7 @@ const trigger = jest.spyOn(StoragePlugin, 'sendStorageItem');
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 
 beforeAll(() => {
-  new StoragePlugin().onCreated();
+  new StoragePlugin().onInit();
 });
 afterEach(() => {
   localStorage.clear();

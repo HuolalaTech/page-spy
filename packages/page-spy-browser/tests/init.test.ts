@@ -65,7 +65,7 @@ describe('new PageSpy([config])', () => {
     expect(config).toEqual(expect.objectContaining(userCfg));
   });
 
-  it('Load plugins will run `<plugin>.onCreated()`', () => {
+  it('Load plugins will run `<plugin>.onInit()`', () => {
     const cPlugin = new ConsolePlugin();
     const ePlugin = new ErrorPlugin();
     const nPlugin = new NetworkPlugin();
@@ -74,20 +74,13 @@ describe('new PageSpy([config])', () => {
     const s2Plugin = new StoragePlugin();
     const plugins = [cPlugin, ePlugin, nPlugin, s1Plugin, pPlugin, s2Plugin];
 
-    const onCreatedFn = jest.fn();
+    const onInitFn = jest.fn();
     plugins.forEach((i) => {
-      jest.spyOn(i, 'onCreated').mockImplementation(onCreatedFn);
+      jest.spyOn(i, 'onInit').mockImplementation(onInitFn);
     });
 
     const sdk = new SDK();
-    expect(onCreatedFn).toHaveBeenCalledTimes(0);
-
-    sdk.loadPlugins(cPlugin);
-    expect(onCreatedFn).toHaveBeenCalledTimes(1);
-
-    onCreatedFn.mockReset();
-    sdk.loadPlugins(...plugins);
-    expect(onCreatedFn).toHaveBeenCalledTimes(plugins.length);
+    expect(onInitFn).toHaveBeenCalledTimes(plugins.length);
   });
 
   it('With ConsolePlugin loaded, ths console.<type> menthods be wrapped', () => {
@@ -106,7 +99,7 @@ describe('new PageSpy([config])', () => {
     expect(Object.keys(cPlugin.console)).toHaveLength(0);
 
     // changed!
-    cPlugin.onCreated();
+    cPlugin.onInit();
     expect(consoleKey.map((i) => console[i])).not.toEqual(originConsole);
     // @ts-ignore
     expect(Object.keys(cPlugin.console)).toHaveLength(consoleKey.length);
@@ -120,7 +113,7 @@ describe('new PageSpy([config])', () => {
     );
 
     // changed!
-    new StoragePlugin().onCreated();
+    new StoragePlugin().onInit();
     expect(protoKey.map((i) => Storage.prototype[i])).not.toEqual(
       originProtoMethods,
     );
@@ -141,7 +134,7 @@ describe('new PageSpy([config])', () => {
     const originBeacon = window.navigator.sendBeacon;
 
     // changed!
-    new NetworkPlugin().onCreated();
+    new NetworkPlugin().onInit();
     expect(
       xhrProtoKey.map((i) => window.XMLHttpRequest.prototype[i]),
     ).not.toEqual(originXhrProtoMethods);

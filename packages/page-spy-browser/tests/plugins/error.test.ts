@@ -1,7 +1,7 @@
 import ErrorPlugin from 'page-spy-browser/src/plugins/error';
 
 beforeAll(() => {
-  new ErrorPlugin().onCreated();
+  new ErrorPlugin().onInit();
 });
 
 const errorOccupied = jest.spyOn(ErrorPlugin, 'sendMessage');
