@@ -1,5 +1,6 @@
 import NetworkPlugin from 'mp-base/src/plugins/network';
 import { computeRequestMapInfo } from './util';
+import { mp } from '../setup';
 
 const port = 6688;
 const apiPrefix = `http://localhost:${port}`;

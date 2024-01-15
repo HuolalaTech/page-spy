@@ -114,6 +114,7 @@ type MPNetworkAPI = {
   connectSocket(
     params: {
       url: string;
+      multiple?: boolean;
       header?: Record<string, string>;
     } & AsyncCallback,
   ): MPSocket;

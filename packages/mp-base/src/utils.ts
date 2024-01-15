@@ -25,7 +25,7 @@ export const joinQuery = (args: Record<string, unknown>) => {
 
 let mpSDK: MPSDK;
 
-export const mp = () => {
+export const getMPSDK = () => {
   if (!mpSDK) {
     throw Error('the mp sdk is not set');
   }

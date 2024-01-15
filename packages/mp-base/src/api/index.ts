@@ -1,6 +1,6 @@
 import { InitConfig } from 'mp-base/types/index';
 import { combineName } from 'base/src/device';
-import { joinQuery, promisifyMPApi } from 'mp-base/src/utils';
+import { getMPSDK, joinQuery, promisifyMPApi } from 'mp-base/src/utils';
 import { Config } from '../config';
 import Device from '../device';
 
@@ -45,7 +45,7 @@ export default class Request {
       title: config.title,
     });
 
-    return promisifyMPApi(mp.request)({
+    return promisifyMPApi(getMPSDK().request)({
       url: `${scheme[0]}${this.base}/api/v1/room/create?${query}`,
       method: 'POST',
     }).then(

@@ -22,8 +22,10 @@ export default class ConsolePlugin implements PageSpyPlugin {
     const type: SpyConsole.ProxyType[] = ['log', 'info', 'error', 'warn'];
     const that = this;
     type.forEach((item) => {
-      this.console[item] = globalThis.console[item];
-      Object.defineProperty(globalThis.console, item, {
+      // Not using globalThis or global, cause "console" exists in any env,
+      // but global may be blocked.
+      this.console[item] = console[item];
+      Object.defineProperty(console, item, {
         value(...args: any[]) {
           const page = getCurrentPages().pop();
           let url = '/';

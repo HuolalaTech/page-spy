@@ -1,27 +1,28 @@
 export type OS =
-  | 'Windows'
-  | 'iPhone'
-  | 'iPad'
-  | 'Mac'
-  | 'Android'
-  | 'Linux'
-  | 'Unknown';
+  | 'windows'
+  | 'ios'
+  | 'ipad'
+  | 'mac'
+  | 'android'
+  | 'linux'
+  | 'harmony'
+  | 'unknown';
 
-export type MPType = 'MPWeChat' | 'MPAliPay' | 'MPDouYin';
+export type MPType = 'mp-wechat' | 'mp-alipay' | 'mp-douyin';
 
 export type Browser =
-  | 'WeChat'
-  | 'QQ'
-  | 'UC'
-  | 'Baidu'
-  | 'Edge'
-  | 'Chrome'
-  | 'Firefox'
-  | 'Safari'
-  | 'Unknown'
+  | 'wechat'
+  | 'qq'
+  | 'uc'
+  | 'baidu'
+  | 'edge'
+  | 'chrome'
+  | 'firefox'
+  | 'safari'
+  | 'unknown'
   | MPType;
 
-export type Framework = 'UniApp' | 'Taro' | 'Unknown';
+export type Framework = 'uniapp' | 'taro' | 'unknown';
 
 export interface DeviceInfo {
   osName: OS;

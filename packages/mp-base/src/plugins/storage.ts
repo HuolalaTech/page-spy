@@ -2,7 +2,7 @@ import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import type { SpyStorage, PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import socketStore from 'mp-base/src/helpers/socket';
 import { psLog } from 'base/src';
-import { mp } from '../utils';
+import { getMPSDK } from '../utils';
 
 export function mpDataStringify(data: any) {
   const typeOfValue = typeof data;
@@ -40,6 +40,7 @@ export default class StoragePlugin implements PageSpyPlugin {
   }
 
   static sendRefresh() {
+    const mp = getMPSDK();
     try {
       const info = mp.getStorageInfoSync();
 
@@ -73,6 +74,7 @@ export default class StoragePlugin implements PageSpyPlugin {
   /* c8 ignore stop */
 
   private static initStorageProxy() {
+    const mp = getMPSDK();
     const { sendClearItem, sendRemoveItem, sendSetItem } = StoragePlugin;
     const proxyFunctions = [
       'setStorage',

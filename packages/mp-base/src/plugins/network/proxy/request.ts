@@ -5,7 +5,7 @@ import {
   resolveUrlInfo,
   toLowerKeys,
 } from 'base/src/network/common';
-import { mp } from 'mp-base/src/utils';
+import { getMPSDK } from 'mp-base/src/utils';
 import MPNetworkProxyBase from './base';
 
 export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
@@ -18,14 +18,15 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
 
   private initProxyHandler() {
     const that = this;
-    const originRequest = mp().request;
+    const mp = getMPSDK();
+    const originRequest = mp.request;
 
     if (!originRequest) {
       return;
     }
     this.request = originRequest;
 
-    Object.defineProperty(mp(), 'request', {
+    Object.defineProperty(mp, 'request', {
       value(params: Parameters<MPNetworkAPI['request']>[0]) {
         const id = getRandomId();
         that.createRequest(id);

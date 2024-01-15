@@ -1,30 +1,24 @@
 import type { SpyDevice } from '@huolala-tech/page-spy-types';
-import { mp } from './utils';
-
-const OSMap: Record<string, SpyDevice.DeviceInfo['osName']> = {
-  ios: 'iPhone',
-  android: 'Android',
-  windows: 'Windows',
-  mac: 'Mac',
-};
+import { getMPSDK } from './utils';
 
 export default class Device {
   static info: SpyDevice.DeviceInfo = {
     // browserName and framework should be overwritten by upper implementations
-    osName: 'Unknown',
-    osVersion: 'Unknown',
-    browserName: 'Unknown',
-    browserVersion: 'Unknown',
-    framework: 'Unknown',
+    osName: 'unknown',
+    osVersion: 'unknown',
+    browserName: 'unknown',
+    browserVersion: 'unknown',
+    framework: 'unknown',
   };
 
   static getInfo() {
-    const info = mp.getSystemInfoSync();
+    const info = getMPSDK().getSystemInfoSync();
     const [osName, osVersion] = info.system.split(' ');
-    Device.info.osName =
+    Device.info.osName = (
       info.platform !== 'devtools' // NOTE: 小程序独有
-        ? OSMap[info.platform.toLowerCase()]
-        : (osName as SpyDevice.OS);
+        ? info.platform.toLowerCase()
+        : osName
+    ) as SpyDevice.OS;
 
     Device.info.osVersion = osVersion;
 

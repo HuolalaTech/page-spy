@@ -6,7 +6,7 @@ import type {
   SpyConsole,
   PageSpyPlugin,
 } from '@huolala-tech/page-spy-types/index';
-import { mp } from '../utils';
+import { getMPSDK } from '../utils';
 
 // const formatErrorObj = (err: Error) => {
 //   if (typeof err !== 'object') return null;
@@ -35,6 +35,7 @@ export default class ErrorPlugin implements PageSpyPlugin {
   }
 
   private onUncaughtError() {
+    const mp = getMPSDK();
     if (mp.canIUse('onError')) {
       mp.onError((error) => {
         if (error.stack || error.message) {
@@ -56,6 +57,7 @@ export default class ErrorPlugin implements PageSpyPlugin {
   }
 
   private onUnhandledRejectionError() {
+    const mp = getMPSDK();
     // Promise unhandledRejection Error
     if (mp.canIUse('onUnHandledRejection')) {
       mp.onUnHandledRejection((evt) => {

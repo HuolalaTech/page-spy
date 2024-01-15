@@ -4,16 +4,18 @@ import {
   SocketState,
   SocketWrapper,
 } from 'base/src/socket-base';
+import { getMPSDK } from '../utils';
 
-export class MPWeixinSocketWrapper extends SocketWrapper {
+export class MPSocketWrapper extends SocketWrapper {
   private socket: MPSocket | null = null;
 
   private state: SocketState = 0;
 
   init(url: string) {
     this.state = SocketState.CONNECTING;
-    this.socket = mp.connectSocket({
+    this.socket = getMPSDK().connectSocket({
       url,
+      multiple: true, // for alipay mp to return a task
       complete() {}, // make sure the uniapp return a task
     });
     this.socket.onClose((data) => {
@@ -33,7 +35,7 @@ export class MPWeixinSocketWrapper extends SocketWrapper {
     });
   }
 
-  send(data: Object) {
+  send(data: string) {
     this.socket?.send({
       data,
     });
@@ -55,9 +57,9 @@ export class MPWeixinSocketWrapper extends SocketWrapper {
   }
 }
 
-export class MPWeixinSocketStore extends SocketStoreBase {
+export class MPSocketStore extends SocketStoreBase {
   // websocket instance
-  protected socket = new MPWeixinSocketWrapper();
+  protected socket = new MPSocketWrapper();
 
   public getSocket() {
     return this.socket;
@@ -66,8 +68,11 @@ export class MPWeixinSocketStore extends SocketStoreBase {
   // this is an abstract method of parent class, cannot be static
   /* eslint-disable-next-line */
   onOffline() {
-    mp.setStorageSync(ROOM_SESSION_KEY, JSON.stringify({ usable: false }));
+    getMPSDK().setStorageSync(
+      ROOM_SESSION_KEY,
+      JSON.stringify({ usable: false }),
+    );
   }
 }
 
-export default new MPWeixinSocketStore();
+export default new MPSocketStore();

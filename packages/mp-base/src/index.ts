@@ -17,7 +17,7 @@ import Request from './api';
 // eslint-disable-next-line import/order
 import { Config } from './config';
 import Device from './device';
-import { mp } from './utils';
+import { getMPSDK } from './utils';
 
 export default class PageSpy {
   root: HTMLElement | null = null;
@@ -44,6 +44,7 @@ export default class PageSpy {
   static instance: PageSpy | null = null;
 
   constructor(init: InitConfig) {
+    const mp = getMPSDK();
     if (PageSpy.instance) {
       psLog.warn('Cannot initialize PageSpy multiple times');
       // eslint-disable-next-line no-constructor-return
@@ -60,8 +61,6 @@ export default class PageSpy {
         return;
       }
     }
-
-    Device.getInfo();
 
     PageSpy.instance = this;
 
@@ -89,6 +88,7 @@ export default class PageSpy {
   async init() {
     const ok = this.checkConfig();
     if (!ok) return;
+    const mp = getMPSDK();
 
     const config = this.config.get();
     const roomCache = mp.getStorageSync(ROOM_SESSION_KEY);
@@ -153,7 +153,7 @@ export default class PageSpy {
     /* c8 ignore start */
     this.saveSession();
     const timerId = setInterval(() => {
-      const roomCache = mp.getStorageSync(ROOM_SESSION_KEY);
+      const roomCache = getMPSDK().getStorageSync(ROOM_SESSION_KEY);
       if (roomCache && typeof roomCache === 'object') {
         const { usable } = roomCache;
         // unusable or time is expired, the room is not usable
@@ -182,7 +182,7 @@ export default class PageSpy {
       project: this.config.get().project,
       time: Date.now(),
     };
-    mp.setStorageSync(ROOM_SESSION_KEY, roomCache);
+    getMPSDK().setStorageSync(ROOM_SESSION_KEY, roomCache);
   }
 
   // eslint-disable-next-line class-methods-use-this

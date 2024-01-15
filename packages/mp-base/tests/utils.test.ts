@@ -1,5 +1,6 @@
 import Device from 'mp-base/src/device';
 import { joinQuery, promisifyMPApi } from 'mp-base/src/utils';
+import { mp } from './setup';
 
 afterEach(() => {
   jest.clearAllMocks();

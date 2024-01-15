@@ -1,3 +1,5 @@
+import { mp } from '../setup';
+
 export function mockWXStorage(): MPStorageAPI {
   let store: Record<string, any> = {};
   return {

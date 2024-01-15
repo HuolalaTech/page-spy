@@ -1,4 +1,5 @@
 import ErrorPlugin from 'mp-base/src/plugins/error';
+import { mp } from '../setup';
 
 beforeAll(() => {
   new ErrorPlugin().onCreated();

@@ -8,6 +8,7 @@ import NetworkPlugin from 'mp-base/src/plugins/network';
 import { SpyConsole } from '@huolala-tech/page-spy-types/index';
 import { ROOM_SESSION_KEY } from 'base/src/constants';
 import { initStorageMock } from './mock/storage';
+import { mp } from './setup';
 
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 

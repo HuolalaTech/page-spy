@@ -46,12 +46,12 @@ export enum SocketState {
   CLOSED = 3,
 }
 
-const HEARTBAET_INTERVAL = 5000;
+const HEARTBEAT_INTERVAL = 5000;
 
 // 封装不同平台的 socket
 export abstract class SocketWrapper {
   abstract init(url: string): void;
-  abstract send(data: object): void;
+  abstract send(data: string): void;
   abstract close(data?: {}): void;
   abstract destroy(): void;
   abstract getState(): SocketState;
@@ -110,7 +110,7 @@ export abstract class SocketStoreBase {
   // pong timer used for waiting for pong, if pong not received, close the connection
   private pongTimer: ReturnType<typeof setTimeout> | null = null;
 
-  private retryTimer: number | null = null;
+  private retryTimer: ReturnType<typeof setTimeout> | null = null;
 
   // messages store
   private messages: (SpySocket.BroadcastEvent | SpySocket.UnicastEvent)[] = [];
@@ -132,6 +132,9 @@ export abstract class SocketStoreBase {
 
   // indicated connected  whether or not
   public connectionStatus: boolean = false;
+
+  // response message filters, to handle some wired messages
+  public static messageFilters: ((data: any) => any)[] = [];
 
   constructor() {
     this.addListener('debug', SocketStoreBase.handleDebugger);
@@ -222,7 +225,7 @@ export abstract class SocketStoreBase {
       clearTimeout(this.retryTimer);
     }
 
-    this.retryTimer = window.setTimeout(() => {
+    this.retryTimer = setTimeout(() => {
       this.retryTimer = null;
       this.tryReconnect();
     }, 2000);
@@ -240,6 +243,9 @@ export abstract class SocketStoreBase {
     if (this.pingTimer) {
       clearTimeout(this.pingTimer);
     }
+    if (this.pongTimer) {
+      clearTimeout(this.pongTimer);
+    }
     /* c8 ignore start */
     this.pingTimer = setTimeout(() => {
       this.send({
@@ -251,8 +257,8 @@ export abstract class SocketStoreBase {
         // lost connection
         this.connectOffline();
         this.pongTimer = null;
-      }, HEARTBAET_INTERVAL);
-    }, HEARTBAET_INTERVAL);
+      }, HEARTBEAT_INTERVAL);
+    }, HEARTBEAT_INTERVAL);
     /* c8 ignore stop */
   }
 
@@ -270,16 +276,16 @@ export abstract class SocketStoreBase {
   private handlePong() {
     clearTimeout(this.pongTimer!);
     this.pongTimer = null;
-
-    if (this.pingTimer) {
-      clearTimeout(this.pingTimer);
-      this.pingTimer = null;
-    }
     this.ping();
   }
 
   // get the data which we expected from nested structure of the message
   protected handleMessage(evt: any) {
+    if (SocketStoreBase.messageFilters.length) {
+      SocketStoreBase.messageFilters.forEach((filter) => {
+        evt = filter(evt);
+      });
+    }
     const {
       CONNECT,
       MESSAGE,
@@ -456,11 +462,14 @@ export abstract class SocketStoreBase {
         const pkMsg = msg as PackedEvent;
         pkMsg.createdAt = Date.now();
         pkMsg.requestId = getRandomId();
-        this.socket?.send(stringifyData(msg));
+        const dataString = stringifyData(pkMsg);
+        this.socket?.send(dataString);
       } catch (e) {
         throw Error(`Incompatible: ${(e as Error).message}`);
       }
       /* c8 ignore stop */
+    } else {
+      psLog.log('connection not inited', msg);
     }
     if (!isCache) {
       if (
@@ -470,6 +479,7 @@ export abstract class SocketStoreBase {
       ) {
         return;
       }
+      psLog.log('push msg to cache', msg);
 
       this.messages.push(
         msg as Exclude<SpySocket.ClientEvent, SpySocket.PingEvent>,

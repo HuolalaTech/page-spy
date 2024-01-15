@@ -157,6 +157,9 @@ export function makePrimitiveValue(value: unknown): PrimitiveResult {
   if (typeof value === 'symbol' || typeof value === 'function') {
     return primitive(stringify(value.toString()));
   }
+  if (typeof value === 'string') {
+    return primitive(value);
+  }
   if (value instanceof Error) {
     return primitive(stringify(value.stack!));
   }
@@ -203,17 +206,24 @@ export function getValueType(value: any) {
  * The methods are used for internal calls.
  */
 interface PSLog {
-  log(message: string): void;
-  info(message: string): void;
-  warn(message: string): void;
-  error(message: string): void;
+  log(...message: any[]): void;
+  info(...message: any[]): void;
+  warn(...message: any[]): void;
+  error(...message: any[]): void;
 }
+
+const originConsole = { ...console };
+
+// Usage 1: to print system level debug info to developer
+// Usage 2: to print debug info for self debugging. It use origin console,
+// thus can avoid loop call of console.
 export const psLog = (['log', 'info', 'error', 'warn'] as const).reduce(
   (result, method) => {
     // eslint-disable-next-line no-param-reassign
-    result[method] = (message: string) => {
-      console[method](
-        `[PageSpy] [${method.toLocaleUpperCase()}]: ${message.toString()}`,
+    result[method] = (...message: any[]) => {
+      originConsole[method](
+        `[PageSpy] [${method.toLocaleUpperCase()}]: `,
+        ...message,
       );
     };
     return result;
