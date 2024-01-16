@@ -1,13 +1,13 @@
 English | [中文](./README_ZH.md)
 
-# `@huolala-tech/page-spy-wechat`
+# `@huolala-tech/page-spy-uniapp`
 
-> The SDK used in wechat miniprogram environment.
+> The SDK used in UniAPP miniprogram environment.
 
 ## Usage
 
 ```ts
-import PageSpy from '@huolala-tech/page-spy-wechat'
+import PageSpy from '@huolala-tech/page-spy-uniapp'
 
 const pageSpy = new PageSpy(config?: InitConfig)
 ```

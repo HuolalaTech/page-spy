@@ -1,5 +1,5 @@
 // eslint-disable no-case-declarations
-import type { PageSpyPlugin } from '@huolala-tech/page-spy-types/index';
+import type { PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import RequestProxy from './proxy/request';
 
 export default class NetworkPlugin implements PageSpyPlugin {

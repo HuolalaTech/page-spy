@@ -42,7 +42,7 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
           req.getData = urlInfo.query;
 
           req.method = method.toUpperCase();
-          req.requestType = 'wx-request'; // TODO more types
+          req.requestType = 'mp-request';
           req.status = 0;
           // TODO statusText 要不要标准化
           req.statusText = 'Pending';

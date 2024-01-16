@@ -1,13 +1,13 @@
 [English](./README.md) | 中文
 
-# `@huolala-tech/page-spy-wechat`
+# `@huolala-tech/page-spy-uniapp`
 
-> 这个 SDK 用于调试微信小程序.
+> 这个 SDK 用于调试 UniAPP 开发的小程序.
 
 ## 使用
 
 ```ts
-import PageSpy from '@huolala-tech/page-spy-wechat'
+import PageSpy from '@huolala-tech/page-spy-uniapp'
 
 const pageSpy = new PageSpy(config?: InitConfig)
 ```
