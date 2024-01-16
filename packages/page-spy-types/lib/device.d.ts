@@ -1,3 +1,4 @@
+// all use lower case for convenience in comparing.
 export type OS =
   | 'windows'
   | 'ios'
@@ -10,6 +11,7 @@ export type OS =
 
 export type MPType = 'mp-wechat' | 'mp-alipay' | 'mp-douyin';
 
+// all use lower case for convenience in comparing.
 export type Browser =
   | 'wechat'
   | 'qq'

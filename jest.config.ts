@@ -58,7 +58,7 @@ const config: Config = {
       preset: 'ts-jest',
       testMatch: ['**/packages/page-spy-wechat/tests/**/*.test.ts'],
       moduleNameMapper,
-      setupFilesAfterEnv: ['<rootDir>/packages/page-spy-wechat/tests/setup.ts'],
+      setupFilesAfterEnv: ['<rootDir>/packages/mp-base/tests/setup.ts'],
     },
   ],
 };

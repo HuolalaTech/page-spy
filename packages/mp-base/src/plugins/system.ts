@@ -16,7 +16,6 @@ export default class SystemPlugin implements PageSpyPlugin {
 
     const id = getRandomId();
     const deviceInfo = Device.info;
-    psLog.log('system oncreate');
     socketStore.broadcastMessage(
       makeMessage(DEBUG_MESSAGE_TYPE.SYSTEM, {
         id,

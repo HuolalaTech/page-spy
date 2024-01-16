@@ -1,1 +1,1 @@
-export type * from '../../mini-base/types';
+export type * from '../../mp-base/types';

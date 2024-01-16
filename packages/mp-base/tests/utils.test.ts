@@ -7,29 +7,6 @@ afterEach(() => {
 });
 
 describe('Miniprogram utils', () => {
-  it('Get device info', () => {
-    expect(Device.getInfo()).toMatchObject({
-      osName: 'iOS',
-      osVersion: '14.0.1',
-      browserName: 'MPWeChat',
-      browserVersion: '1.0.0',
-    });
-
-    jest.spyOn(mp, 'getSystemInfoSync').mockImplementation(() => {
-      return {
-        platform: 'devtools',
-        system: 'iOS 14.0.1',
-        version: '1.0.0',
-      };
-    });
-    expect(Device.getInfo()).toMatchObject({
-      osName: 'iOS',
-      osVersion: '14.0.1',
-      browserName: 'MPWeChat',
-      browserVersion: '1.0.0',
-    });
-  });
-
   it('Join query', () => {
     expect(joinQuery({ a: 1, b: 2 })).toBe('a=1&b=2');
     expect(joinQuery({ a: 1 })).toBe('a=1');

@@ -22,7 +22,7 @@ export class WebSocketWrapper extends SocketWrapper {
     });
   }
 
-  send(data: object) {
+  send(data: string) {
     this.socket?.send(stringifyData(data));
   }
 

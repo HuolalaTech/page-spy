@@ -4,24 +4,19 @@ import Device from 'mp-base/src/device';
 import { SpyDevice } from 'packages/page-spy-types';
 // reassign the global.mp to uni
 
-// Object.defineProperty(getGlobal(), 'mp', {
-//   value: uni,
-//   configurable: false,
-//   writable: false,
-// });
-
 declare const wx: MPSDK;
 
 setMPSDK(wx);
 
-// Device.getInfo = function() {
-//   const info = wx.getSystemInfoSync();
-//   return {
-//     browserName: 'mp-wechat', // TODO: TEMP
-//     osName: info.osName.toLowerCase() as SpyDevice.OS,
-//     osVersion: info.osVersion,
-//     browserVersion: info.appVersion
-//   }
-// };
+const info = wx.getSystemInfoSync();
+const [osName, osVersion] = info.system.toLowerCase().split(' ');
+Device.info.osName = (
+  info.platform !== 'devtools' // NOTE: 小程序独有
+    ? info.platform.toLowerCase()
+    : osName
+) as SpyDevice.OS;
+Device.info.browserName = 'mp-wechat';
+Device.info.osVersion = osVersion;
+Device.info.browserVersion = info.version;
 
 export default PageSpy;

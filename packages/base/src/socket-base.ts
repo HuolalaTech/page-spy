@@ -160,9 +160,11 @@ export abstract class SocketStoreBase {
       }
       this.socket?.onOpen(() => {
         this.connectOnline();
-        this.socket?.onMessage((evt) => {
-          this.handleMessage(evt);
-        });
+      });
+      // Strictly, the onMessage should be called after onOpen. But for some platform(alipay,)
+      // this may cause some message losing.
+      this.socket?.onMessage((evt) => {
+        this.handleMessage(evt);
       });
       this.socket?.onClose(() => {
         this.connectOffline();
@@ -468,8 +470,6 @@ export abstract class SocketStoreBase {
         throw Error(`Incompatible: ${(e as Error).message}`);
       }
       /* c8 ignore stop */
-    } else {
-      psLog.log('connection not inited', msg);
     }
     if (!isCache) {
       if (
@@ -479,8 +479,6 @@ export abstract class SocketStoreBase {
       ) {
         return;
       }
-      psLog.log('push msg to cache', msg);
-
       this.messages.push(
         msg as Exclude<SpySocket.ClientEvent, SpySocket.PingEvent>,
       );

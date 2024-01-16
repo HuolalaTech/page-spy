@@ -1,7 +1,7 @@
 {
-  "name": "@huolala-tech/page-spy-uniapp",
+  "name": "@huolala-tech/page-spy-wechat",
   "version": "1.6.0-beta.0",
-  "description": "A developer tool for debugging uniapp miniprogram",
+  "description": "A developer tool for debugging wechat miniprogram",
   "license": "MIT",
   "main": "dist/cjs/index.min.js",
   "module": "dist/esm/index.min.js",
