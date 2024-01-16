@@ -31,53 +31,43 @@ const plugins = [
     plugins: [autoprefixer()],
   }),
   alias({
-    entries: [
-      { find: 'web', replacement: resolve(root, '../web') },
-      { find: 'base', replacement: resolve(root, '../base') },
-    ],
+    entries: [{ find: 'base', replacement: resolve(root, '../base') }],
   }),
   terser(),
+  babel({
+    /**
+     * Why exclude core-js?
+     * See: https://github.com/rollup/rollup-plugin-babel/issues/254
+     */
+    exclude: ['node_modules/**', /\/core-js\//, /deps\/modernizr/],
+    babelHelpers: 'bundled',
+    extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx'],
+    presets: [
+      [
+        '@babel/env',
+        {
+          useBuiltIns: 'usage',
+          corejs: '3.30',
+        },
+      ],
+      '@babel/preset-typescript',
+    ],
+  }),
+  del({ targets: ['dist/*'] }),
 ];
 
 /**
- * @type {import('rollup').RollupOptions}
+ * @type {import('rollup').RollupOptions[]}
  */
-export default {
-  input: 'src/index.ts',
-  output: [
-    {
-      file: pkg.main,
+export default [
+  {
+    input: 'src/rrweb-record/index.ts',
+    output: {
+      file: 'dist/rrweb-record.min.js',
       format: 'iife',
-      name: 'PageSpy',
+      name: 'SpyRRWebPlugin',
       sourcemap: true,
     },
-    {
-      file: pkg.module,
-      format: 'esm',
-      sourcemap: true,
-    },
-  ],
-  plugins: [
-    ...plugins,
-    babel({
-      /**
-       * Why exclude core-js?
-       * See: https://github.com/rollup/rollup-plugin-babel/issues/254
-       */
-      exclude: ['node_modules/**', /\/core-js\//, /deps\/modernizr/],
-      babelHelpers: 'bundled',
-      extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx'],
-      presets: [
-        [
-          '@babel/env',
-          {
-            useBuiltIns: 'usage',
-            corejs: '3.30',
-          },
-        ],
-        '@babel/preset-typescript',
-      ],
-    }),
-    del({ targets: ['dist/*'] }),
-  ],
-};
+    plugins: plugins,
+  },
+];
