@@ -157,9 +157,6 @@ export function makePrimitiveValue(value: unknown): PrimitiveResult {
   if (typeof value === 'symbol' || typeof value === 'function') {
     return primitive(stringify(value.toString()));
   }
-  if (typeof value === 'string') {
-    return primitive(value);
-  }
   if (value instanceof Error) {
     return primitive(stringify(value.stack!));
   }
