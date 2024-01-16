@@ -3,6 +3,7 @@ import { psLog } from '../index';
 import RequestItem from '../request-item';
 import { SocketStoreBase } from '../socket-base';
 import { ReqReadyState } from './common';
+import { PUBLIC_DATA } from '../message/debug-type';
 
 type RequestStore = Record<string, RequestItem | null>;
 export default class NetworkProxyBase {
@@ -52,6 +53,9 @@ export default class NetworkProxyBase {
       },
       false,
     );
+    if (Number(req.status) >= 200) {
+      this.socketStore.dispatchEvent(PUBLIC_DATA, message);
+    }
     this.socketStore.broadcastMessage(
       message,
       req.readyState !== ReqReadyState.DONE,

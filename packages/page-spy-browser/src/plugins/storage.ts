@@ -1,19 +1,69 @@
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import { SpyStorage, PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import socketStore from 'page-spy-browser/src/helpers/socket';
+import { PUBLIC_DATA } from 'base/src/message/debug-type';
 
 export class StoragePlugin implements PageSpyPlugin {
   public name = 'StoragePlugin';
 
   public static hasInitd = false;
 
+  private originSetItem: Storage['setItem'] | null = null;
+
+  private originRemoveItem: Storage['removeItem'] | null = null;
+
+  private originClear: Storage['clear'] | null = null;
+
+  private cookieStoreChangeListener = (e: Event) => {
+    const { changed, deleted } = e as CookieChangeEvent;
+    if (changed.length > 0) {
+      changed.forEach((cookie) => {
+        const data = {
+          type: 'cookie',
+          action: 'set',
+          ...cookie,
+        } as const;
+        StoragePlugin.sendStorageItem(data);
+      });
+    }
+    if (deleted.length > 0) {
+      deleted.forEach((cookie) => {
+        const data = {
+          type: 'cookie',
+          action: 'remove',
+          name: cookie.name,
+        } as const;
+        StoragePlugin.sendStorageItem(data);
+      });
+    }
+  };
+
   // eslint-disable-next-line class-methods-use-this
-  public onCreated() {
+  public onInit() {
     if (StoragePlugin.hasInitd) return;
     StoragePlugin.hasInitd = true;
 
     StoragePlugin.listenRefreshEvent();
-    StoragePlugin.initStorageProxy();
+    this.initStorageProxy();
+  }
+
+  public onReset() {
+    if (this.originClear) {
+      Storage.prototype.clear = this.originClear;
+    }
+    if (this.originRemoveItem) {
+      Storage.prototype.removeItem = this.originRemoveItem;
+    }
+    if (this.originSetItem) {
+      Storage.prototype.setItem = this.originSetItem;
+    }
+    if (this.cookieStoreChangeListener) {
+      window.cookieStore.removeEventListener(
+        'change',
+        this.cookieStoreChangeListener,
+      );
+    }
+    StoragePlugin.hasInitd = false;
   }
 
   static async sendRefresh(type: string) {
@@ -89,9 +139,12 @@ export class StoragePlugin implements PageSpyPlugin {
     return data;
   }
 
-  private static initStorageProxy() {
+  private initStorageProxy() {
     const { getStorageType, sendStorageItem } = StoragePlugin;
     const { clear, removeItem, setItem } = Storage.prototype;
+    this.originClear = clear;
+    this.originRemoveItem = removeItem;
+    this.originSetItem = setItem;
 
     Storage.prototype.clear = function () {
       clear.call(this);
@@ -122,29 +175,10 @@ export class StoragePlugin implements PageSpyPlugin {
     };
 
     if (window.cookieStore) {
-      window.cookieStore.addEventListener('change', (e) => {
-        const { changed, deleted } = e as CookieChangeEvent;
-        if (changed.length > 0) {
-          changed.forEach((cookie) => {
-            const data = {
-              type: 'cookie',
-              action: 'set',
-              ...cookie,
-            } as const;
-            StoragePlugin.sendStorageItem(data);
-          });
-        }
-        if (deleted.length > 0) {
-          deleted.forEach((cookie) => {
-            const data = {
-              type: 'cookie',
-              action: 'remove',
-              name: cookie.name,
-            } as const;
-            StoragePlugin.sendStorageItem(data);
-          });
-        }
-      });
+      window.cookieStore.addEventListener(
+        'change',
+        this.cookieStoreChangeListener,
+      );
     }
   }
 
@@ -156,6 +190,7 @@ export class StoragePlugin implements PageSpyPlugin {
 
   private static sendStorageItem(info: Omit<SpyStorage.DataItem, 'id'>) {
     const data = makeMessage(DEBUG_MESSAGE_TYPE.STORAGE, info);
+    socketStore.dispatchEvent(PUBLIC_DATA, data);
     // The user wouldn't want to get the stale data, so here we set the 2nd parameter to true.
     socketStore.broadcastMessage(data, true);
   }

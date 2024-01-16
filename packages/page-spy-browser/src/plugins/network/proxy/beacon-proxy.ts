@@ -14,6 +14,12 @@ export default class BeaconProxy extends WebNetworkProxyBase {
     this.initProxyHandler();
   }
 
+  reset() {
+    if (this.sendBeacon) {
+      window.navigator.sendBeacon = this.sendBeacon;
+    }
+  }
+
   private initProxyHandler() {
     const originSendBeacon = window.navigator.sendBeacon;
     if (!originSendBeacon) {

@@ -3,6 +3,7 @@ import { psLog } from 'base/src';
 import socketStore from 'page-spy-browser/src/helpers/socket';
 import { DEBUG_MESSAGE_TYPE, makeMessage } from 'base/src/message';
 import { SpyDatabase, PageSpyPlugin } from '@huolala-tech/page-spy-types';
+import { PUBLIC_DATA } from 'base/src/message/debug-type';
 
 export function promisify<T = any>(req: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -20,6 +21,16 @@ export class DatabasePlugin implements PageSpyPlugin {
 
   public static hasInitd = false;
 
+  private originAdd: IDBObjectStore['add'] | null = null;
+
+  private originPut: IDBObjectStore['put'] | null = null;
+
+  private originDelete: IDBObjectStore['delete'] | null = null;
+
+  private originClear: IDBObjectStore['clear'] | null = null;
+
+  private originDrop: IDBFactory['deleteDatabase'] | null = null;
+
   public static get isSupport() {
     if (
       !IDBFactory ||
@@ -33,14 +44,33 @@ export class DatabasePlugin implements PageSpyPlugin {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  public onCreated() {
+  public onInit() {
     if (!DatabasePlugin.isSupport) return;
 
     if (DatabasePlugin.hasInitd) return;
     DatabasePlugin.hasInitd = true;
 
     DatabasePlugin.listenEvents();
-    DatabasePlugin.initIndexedDBProxy();
+    this.initIndexedDBProxy();
+  }
+
+  public onReset() {
+    if (this.originAdd) {
+      IDBObjectStore.prototype.add = this.originAdd;
+    }
+    if (this.originPut) {
+      IDBObjectStore.prototype.put = this.originPut;
+    }
+    if (this.originClear) {
+      IDBObjectStore.prototype.clear = this.originClear;
+    }
+    if (this.originDelete) {
+      IDBObjectStore.prototype.delete = this.originDelete;
+    }
+    if (this.originDrop) {
+      IDBFactory.prototype.deleteDatabase = this.originDrop;
+    }
+    DatabasePlugin.hasInitd = false;
   }
 
   private static listenEvents() {
@@ -68,13 +98,19 @@ export class DatabasePlugin implements PageSpyPlugin {
     );
   }
 
-  private static initIndexedDBProxy() {
+  private initIndexedDBProxy() {
     const {
       put: originPut,
       add: originAdd,
       delete: originDelete,
       clear: originClear,
     } = IDBObjectStore.prototype;
+
+    this.originAdd = originAdd;
+    this.originPut = originPut;
+    this.originDelete = originDelete;
+    this.originClear = originClear;
+
     const { sendData } = DatabasePlugin;
 
     const originProxyList = [
@@ -112,6 +148,8 @@ export class DatabasePlugin implements PageSpyPlugin {
     });
 
     const originDrop = IDBFactory.prototype.deleteDatabase;
+    this.originDrop = originDrop;
+
     IDBFactory.prototype.deleteDatabase = function (name: string) {
       const req = originDrop.call(this, name);
       const data: SpyDatabase.DropTypeDataItem = {
@@ -235,6 +273,7 @@ export class DatabasePlugin implements PageSpyPlugin {
 
   private static sendData(info: Omit<SpyDatabase.DataItem, 'id'>) {
     const data = makeMessage(DEBUG_MESSAGE_TYPE.DATABASE, info);
+    socketStore.dispatchEvent(PUBLIC_DATA, data);
     // The user wouldn't want to get the stale data, so here we set the 2nd parameter to true.
     socketStore.broadcastMessage(data, true);
   }

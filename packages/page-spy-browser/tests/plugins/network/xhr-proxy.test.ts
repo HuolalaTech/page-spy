@@ -35,12 +35,12 @@ describe('XMLHttpRequest proxy', () => {
       value: undefined,
       writable: true,
     });
-    new NetworkPlugin().onCreated();
+    new NetworkPlugin().onInit();
     expect(window.XMLHttpRequest).toBe(undefined);
     window.XMLHttpRequest = originXHR;
   });
   it('Wrap the XMLHttpRequest prototype method', () => {
-    new NetworkPlugin().onCreated();
+    new NetworkPlugin().onInit();
 
     expect(XMLHttpRequest.prototype.open).not.toBe(spyOpen);
     expect(XMLHttpRequest.prototype.setRequestHeader).not.toBe(spySetHeader);
@@ -48,7 +48,7 @@ describe('XMLHttpRequest proxy', () => {
   });
 
   it("The origin's method will be called and get the response", (done) => {
-    new NetworkPlugin().onCreated();
+    new NetworkPlugin().onInit();
 
     const api = `${apiPrefix}/posts`;
     const xhr = new XMLHttpRequest();
@@ -66,7 +66,7 @@ describe('XMLHttpRequest proxy', () => {
   });
 
   it('Request different type response', () => {
-    new NetworkPlugin().onCreated();
+    new NetworkPlugin().onInit();
 
     const genPromise = (xhr: XMLHttpRequest) => {
       return new Promise<XMLHttpRequest>((resolve, reject) => {
@@ -141,7 +141,7 @@ describe('XMLHttpRequest proxy', () => {
 
   it('Big response entity will not be converted to base64 by PageSpy', (done) => {
     const np = new NetworkPlugin();
-    np.onCreated();
+    np.onInit();
     const { xhrProxy } = np;
     expect(xhrProxy).not.toBe(null);
     expect(computeRequestMapInfo(xhrProxy!).size).toBe(0);
@@ -168,7 +168,7 @@ describe('XMLHttpRequest proxy', () => {
 
   it('The SDK record the request information', () => {
     const np = new NetworkPlugin();
-    np.onCreated();
+    np.onInit();
     const { xhrProxy } = np;
     expect(xhrProxy).not.toBe(null);
     expect(computeRequestMapInfo(xhrProxy).size).toBe(0);
@@ -184,7 +184,7 @@ describe('XMLHttpRequest proxy', () => {
 
   it('The cached request items will be freed when no longer needed', () => {
     const np = new NetworkPlugin();
-    np.onCreated();
+    np.onInit();
     const { xhrProxy } = np;
     expect(xhrProxy).not.toBe(null);
     expect(computeRequestMapInfo(xhrProxy).size).toBe(0);

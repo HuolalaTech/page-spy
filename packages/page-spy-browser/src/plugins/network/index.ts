@@ -15,12 +15,19 @@ export default class NetworkPlugin implements PageSpyPlugin {
 
   public static hasInitd = false;
 
-  public onCreated() {
+  public onInit() {
     if (NetworkPlugin.hasInitd) return;
     NetworkPlugin.hasInitd = true;
 
     this.xhrProxy = new XhrProxy();
     this.fetchProxy = new FetchProxy();
     this.beaconProxy = new BeaconProxy();
+  }
+
+  public onReset() {
+    this.xhrProxy?.reset();
+    this.fetchProxy?.reset();
+    this.beaconProxy?.reset();
+    NetworkPlugin.hasInitd = false;
   }
 }

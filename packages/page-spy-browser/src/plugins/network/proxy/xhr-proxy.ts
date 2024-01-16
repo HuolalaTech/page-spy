@@ -171,6 +171,19 @@ class XhrProxy extends WebNetworkProxyBase {
     };
   }
 
+  public reset() {
+    if (this.xhrOpen) {
+      window.XMLHttpRequest.prototype.open = this.xhrOpen;
+    }
+    if (this.xhrSend) {
+      window.XMLHttpRequest.prototype.send = this.xhrSend;
+    }
+    if (this.xhrSetRequestHeader) {
+      window.XMLHttpRequest.prototype.setRequestHeader =
+        this.xhrSetRequestHeader;
+    }
+  }
+
   // eslint-disable-next-line class-methods-use-this
   private async formatResponse(XMLReq: XMLHttpRequest) {
     const result: {
