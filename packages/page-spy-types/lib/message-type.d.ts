@@ -5,7 +5,8 @@ export type DataType =
   | 'network'
   | 'page'
   | 'storage'
-  | 'database';
+  | 'database'
+  | 'rrweb-event';
 
 /**
  * Interactive: some type which sended by developer and need to reply something

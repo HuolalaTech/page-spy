@@ -1,15 +1,10 @@
 import typescript from 'rollup-plugin-typescript2';
 import del from 'rollup-plugin-delete';
 import babel from '@rollup/plugin-babel';
-import postcss from 'rollup-plugin-postcss';
-import autoprefixer from 'autoprefixer';
-import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from '@rollup/plugin-node-resolve';
-import json from '@rollup/plugin-json';
 import replace from '@rollup/plugin-replace';
 import terser from '@rollup/plugin-terser';
 import alias from '@rollup/plugin-alias';
-import image from '@rollup/plugin-image';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
 import fs from 'fs';
 import { resolve } from 'path';
@@ -18,17 +13,13 @@ const root = process.cwd();
 const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 
 const plugins = [
-  image(),
-  json(),
   nodeResolve(),
-  commonjs(),
   typescript({
-    // exclude: 'tests/**/*',
+    tsconfigOverride: { include: ['packages/page-spy-plugin-data-harbor/src'] },
   }),
-  postcss({
-    extensions: ['.css', '.less'],
-    extract: false,
-    plugins: [autoprefixer()],
+  replace({
+    PKG_VERSION: `"${pkg.version}"`,
+    preventAssignment: true,
   }),
   alias({
     entries: [{ find: 'base', replacement: resolve(root, '../base') }],
@@ -39,9 +30,9 @@ const plugins = [
      * Why exclude core-js?
      * See: https://github.com/rollup/rollup-plugin-babel/issues/254
      */
-    exclude: ['node_modules/**', /\/core-js\//, /deps\/modernizr/],
+    exclude: ['node_modules/**', /\/core-js\//],
     babelHelpers: 'bundled',
-    extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx'],
+    extensions: [...DEFAULT_EXTENSIONS, '.ts'],
     presets: [
       [
         '@babel/env',
@@ -59,15 +50,18 @@ const plugins = [
 /**
  * @type {import('rollup').RollupOptions[]}
  */
-export default [
-  {
-    input: 'src/rrweb-record/index.ts',
-    output: {
-      file: 'dist/rrweb-record.min.js',
+export default {
+  input: 'src/index.ts',
+  output: [
+    {
+      file: 'dist/index.min.js',
       format: 'iife',
-      name: 'SpyRRWebPlugin',
-      sourcemap: true,
+      name: 'DataHarborPlugin',
     },
-    plugins: plugins,
-  },
-];
+    {
+      file: 'dist/esm.min.js',
+      format: 'esm',
+    },
+  ],
+  plugins: [...plugins],
+};
