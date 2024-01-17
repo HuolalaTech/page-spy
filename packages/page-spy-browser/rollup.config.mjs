@@ -36,7 +36,7 @@ const plugins = [
   }),
   alias({
     entries: [
-      { find: 'web', replacement: resolve(root, '../web') },
+      { find: 'page-spy-browser', replacement: root },
       { find: 'base', replacement: resolve(root, '../base') },
     ],
   }),
