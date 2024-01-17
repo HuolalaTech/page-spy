@@ -160,6 +160,7 @@ class PageSpy {
   abort() {
     this.triggerPlugins('onReset');
     socketStore.close();
+    PageSpy.instance = null;
   }
 
   async createNewConnection() {
