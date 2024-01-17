@@ -8,13 +8,13 @@ import {
 } from 'base/src/socket-base';
 
 export class WebSocketWrapper extends SocketWrapper {
-  private socket: WebSocket | null = null;
+  private socketInstance: WebSocket | null = null;
 
   init(url: string) {
-    this.socket = new WebSocket(url);
+    this.socketInstance = new WebSocket(url);
     const eventNames: WebSocketEvents[] = ['open', 'close', 'error', 'message'];
     eventNames.forEach((eventName) => {
-      this.socket!.addEventListener(eventName, (data) => {
+      this.socketInstance!.addEventListener(eventName, (data) => {
         this.events[eventName].forEach((cb) => {
           cb(data);
         });
@@ -22,31 +22,25 @@ export class WebSocketWrapper extends SocketWrapper {
     });
   }
 
-  send(data: object) {
-    this.socket?.send(stringifyData(data));
+  send(data: string) {
+    this.socketInstance?.send(stringifyData(data));
   }
 
   close() {
-    this.socket?.close();
-    // this.clearListeners();
-  }
-
-  destroy(): void {
-    this.close();
-    this.socket = null;
+    this.socketInstance?.close();
   }
 
   getState(): SocketState {
-    return this.socket?.readyState as SocketState;
+    return this.socketInstance?.readyState as SocketState;
   }
 }
 
 export class WebSocketStore extends SocketStoreBase {
   // websocket instance
-  protected socket: WebSocketWrapper = new WebSocketWrapper();
+  protected socketWrapper: WebSocketWrapper = new WebSocketWrapper();
 
   public getSocket() {
-    return this.socket;
+    return this.socketWrapper;
   }
 
   // disable lint: this is an abstract method of parent class, so it cannot be static

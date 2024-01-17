@@ -46,14 +46,13 @@ export enum SocketState {
   CLOSED = 3,
 }
 
-const HEARTBAET_INTERVAL = 5000;
+const HEARTBEAT_INTERVAL = 5000;
 
 // 封装不同平台的 socket
 export abstract class SocketWrapper {
   abstract init(url: string): void;
-  abstract send(data: object): void;
+  abstract send(data: string): void;
   abstract close(data?: {}): void;
-  abstract destroy(): void;
   abstract getState(): SocketState;
   protected events: Record<WebSocketEvents, CallbackType[]> = {
     open: [],
@@ -97,7 +96,7 @@ export abstract class SocketWrapper {
 }
 
 export abstract class SocketStoreBase {
-  protected abstract socket: SocketWrapper;
+  protected abstract socketWrapper: SocketWrapper;
 
   private socketUrl: string = '';
 
@@ -110,7 +109,7 @@ export abstract class SocketStoreBase {
   // pong timer used for waiting for pong, if pong not received, close the connection
   private pongTimer: ReturnType<typeof setTimeout> | null = null;
 
-  private retryTimer: number | null = null;
+  private retryTimer: ReturnType<typeof setTimeout> | null = null;
 
   // messages store
   private messages: (SpySocket.BroadcastEvent | SpySocket.UnicastEvent)[] = [];
@@ -137,6 +136,9 @@ export abstract class SocketStoreBase {
   // indicated connected  whether or not
   public connectionStatus: boolean = false;
 
+  // response message filters, to handle some wired messages
+  public static messageFilters: ((data: any) => any)[] = [];
+
   constructor() {
     this.addListener('debug', SocketStoreBase.handleDebugger);
     this.addListener('atom-detail', SocketStoreBase.handleResolveAtom);
@@ -154,26 +156,28 @@ export abstract class SocketStoreBase {
       }
       // close existing connection
       if (
-        this.socket.getState() === SocketState.OPEN ||
-        this.socket.getState() === SocketState.CONNECTING
+        this.socketWrapper.getState() === SocketState.OPEN ||
+        this.socketWrapper.getState() === SocketState.CONNECTING
       ) {
-        this.socket.destroy();
+        this.socketWrapper.close();
       }
-      this.socket?.onOpen(() => {
+      this.socketWrapper?.onOpen(() => {
         this.connectOnline();
-        this.socket?.onMessage((evt) => {
-          this.handleMessage(evt);
-        });
       });
-      this.socket?.onClose(() => {
+      // Strictly, the onMessage should be called after onOpen. But for some platform(alipay,)
+      // this may cause some message losing.
+      this.socketWrapper?.onMessage((evt) => {
+        this.handleMessage(evt);
+      });
+      this.socketWrapper?.onClose(() => {
         this.connectOffline();
       });
-      this.socket?.onError(() => {
+      this.socketWrapper?.onError(() => {
         // we treat on error the same with on close.
         this.connectOffline();
       });
       this.socketUrl = url;
-      this.socket?.init(url);
+      this.socketWrapper?.init(url);
     } catch (e: any) {
       psLog.error(e.message);
     }
@@ -207,7 +211,7 @@ export abstract class SocketStoreBase {
     this.clearPing();
     this.reconnectTimes = 0;
     this.reconnectable = false;
-    this.socket?.destroy();
+    this.socketWrapper?.close();
     this.messages = [];
     Object.entries(this.events).forEach(([, fns]) => {
       fns.splice(0);
@@ -221,13 +225,11 @@ export abstract class SocketStoreBase {
   }
 
   private connectOffline() {
-    this.socket.destroy();
     this.connectionStatus = false;
     this.socketConnection = null;
     this.clearPing();
     if (!this.reconnectable || this.reconnectTimes <= 0) {
       this.onOffline();
-
       return;
     }
 
@@ -235,7 +237,7 @@ export abstract class SocketStoreBase {
       clearTimeout(this.retryTimer);
     }
 
-    this.retryTimer = window.setTimeout(() => {
+    this.retryTimer = setTimeout(() => {
       this.retryTimer = null;
       this.tryReconnect();
     }, 2000);
@@ -253,6 +255,9 @@ export abstract class SocketStoreBase {
     if (this.pingTimer) {
       clearTimeout(this.pingTimer);
     }
+    if (this.pongTimer) {
+      clearTimeout(this.pongTimer);
+    }
     /* c8 ignore start */
     this.pingTimer = setTimeout(() => {
       this.send({
@@ -264,8 +269,8 @@ export abstract class SocketStoreBase {
         // lost connection
         this.connectOffline();
         this.pongTimer = null;
-      }, HEARTBAET_INTERVAL);
-    }, HEARTBAET_INTERVAL);
+      }, HEARTBEAT_INTERVAL);
+    }, HEARTBEAT_INTERVAL);
     /* c8 ignore stop */
   }
 
@@ -283,16 +288,16 @@ export abstract class SocketStoreBase {
   private handlePong() {
     clearTimeout(this.pongTimer!);
     this.pongTimer = null;
-
-    if (this.pingTimer) {
-      clearTimeout(this.pingTimer);
-      this.pingTimer = null;
-    }
     this.ping();
   }
 
   // get the data which we expected from nested structure of the message
   protected handleMessage(evt: any) {
+    if (SocketStoreBase.messageFilters.length) {
+      SocketStoreBase.messageFilters.forEach((filter) => {
+        evt = filter(evt);
+      });
+    }
     const {
       CONNECT,
       MESSAGE,
@@ -482,7 +487,8 @@ export abstract class SocketStoreBase {
         const pkMsg = msg as PackedEvent;
         pkMsg.createdAt = Date.now();
         pkMsg.requestId = getRandomId();
-        this.socket?.send(stringifyData(msg));
+        const dataString = stringifyData(pkMsg);
+        this.socketWrapper?.send(dataString);
       } catch (e) {
         throw Error(`Incompatible: ${(e as Error).message}`);
       }
@@ -496,7 +502,6 @@ export abstract class SocketStoreBase {
       ) {
         return;
       }
-
       this.messages.push(
         msg as Exclude<SpySocket.ClientEvent, SpySocket.PingEvent>,
       );

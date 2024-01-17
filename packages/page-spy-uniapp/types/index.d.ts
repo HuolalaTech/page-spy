@@ -4,6 +4,7 @@ import type {
 } from '@huolala-tech/page-spy-types/lib';
 
 export { InitConfig };
+
 interface PageSpyConstructor {
   new (config: InitConfig): PageSpyBase;
   instance: PageSpyBase | null;

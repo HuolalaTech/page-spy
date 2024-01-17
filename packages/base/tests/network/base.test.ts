@@ -10,7 +10,7 @@ class PlatformSocketWrapper extends SocketWrapper {
   init(url: string): void {
     throw new Error('Method not implemented.');
   }
-  send(data: object): void {
+  send(data: string): void {
     throw new Error('Method not implemented.');
   }
   close(data?: {} | undefined): void {
@@ -25,7 +25,7 @@ class PlatformSocketWrapper extends SocketWrapper {
 }
 
 class PlatformSocket extends SocketStoreBase {
-  protected socket: SocketWrapper = new PlatformSocketWrapper();
+  protected socketWrapper: SocketWrapper = new PlatformSocketWrapper();
   onOffline(): void {
     throw new Error('Method not implemented.');
   }
