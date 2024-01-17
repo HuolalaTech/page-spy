@@ -153,6 +153,11 @@ class PageSpy {
   abort() {
     this.triggerPlugins('onReset');
     socketStore.close();
+    PageSpy.instance = null;
+    const root = document.querySelector(`#${Identifier}`);
+    if (root) {
+      document.documentElement.removeChild(root);
+    }
   }
 
   async createNewConnection() {
