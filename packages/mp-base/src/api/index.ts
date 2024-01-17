@@ -1,4 +1,4 @@
-import { InitConfig } from 'mp-base/types/index';
+import type { SpyMP } from '@huolala-tech/page-spy-types';
 import { combineName } from 'base/src/device';
 import { getMPSDK, joinQuery, promisifyMPApi } from 'mp-base/src/utils';
 import { Config } from '../config';
@@ -19,7 +19,7 @@ interface TCreateRoom {
   tags: Record<string, any>;
 }
 
-const getScheme = (enableSSL: InitConfig['enableSSL']) => {
+const getScheme = (enableSSL: SpyMP.MPInitConfig['enableSSL']) => {
   return enableSSL === false ? ['http://', 'ws://'] : ['https://', 'wss://'];
 };
 

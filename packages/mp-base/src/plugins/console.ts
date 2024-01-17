@@ -5,6 +5,7 @@ import type {
   PageSpyPlugin,
 } from '@huolala-tech/page-spy-types/index';
 import atom from 'base/src/atom';
+import { PUBLIC_DATA } from 'base/src/message/debug-type';
 import { joinQuery } from '../utils';
 
 export default class ConsolePlugin implements PageSpyPlugin {
@@ -14,17 +15,24 @@ export default class ConsolePlugin implements PageSpyPlugin {
 
   public static hasInitd = false;
 
+  private proxyTypes: SpyConsole.ProxyType[] = [
+    'log',
+    'info',
+    'error',
+    'warn',
+    'debug',
+  ];
+
   // eslint-disable-next-line class-methods-use-this
-  public async onCreated() {
+  public async onInit() {
     if (ConsolePlugin.hasInitd) return;
     ConsolePlugin.hasInitd = true;
 
-    const type: SpyConsole.ProxyType[] = ['log', 'info', 'error', 'warn'];
     const that = this;
-    type.forEach((item) => {
+    this.proxyTypes.forEach((item) => {
       // Not using globalThis or global, cause "console" exists in any env,
       // but global may be blocked.
-      this.console[item] = console[item];
+      this.console[item] = console[item] || console.log || (() => {});
       Object.defineProperty(console, item, {
         value(...args: any[]) {
           const page = getCurrentPages().pop();
@@ -48,6 +56,13 @@ export default class ConsolePlugin implements PageSpyPlugin {
     });
   }
 
+  public onReset() {
+    this.proxyTypes.forEach((item) => {
+      console[item] = this.console[item];
+    });
+    ConsolePlugin.hasInitd = false;
+  }
+
   private printLog(data: SpyConsole.DataItem) {
     if (data.logs && data.logs.length) {
       this.console[data.logType](...data.logs);
@@ -57,6 +72,7 @@ export default class ConsolePlugin implements PageSpyPlugin {
         time: Date.now(),
         ...data,
       });
+      socketStore.dispatchEvent(PUBLIC_DATA, log);
       socketStore.broadcastMessage(log);
     }
   }

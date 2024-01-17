@@ -9,10 +9,15 @@ export default class NetworkPlugin implements PageSpyPlugin {
 
   public static hasInitd = false;
 
-  public onCreated() {
+  public onInit() {
     if (NetworkPlugin.hasInitd) return;
     NetworkPlugin.hasInitd = true;
 
     this.requestProxy = new RequestProxy();
+  }
+
+  public onReset() {
+    this.requestProxy?.reset();
+    NetworkPlugin.hasInitd = false;
   }
 }

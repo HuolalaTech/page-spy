@@ -2,6 +2,7 @@ import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import type { SpyStorage, PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import socketStore from 'mp-base/src/helpers/socket';
 import { psLog } from 'base/src';
+import { PUBLIC_DATA } from 'base/src/message/debug-type';
 import { getMPSDK } from '../utils';
 
 export function mpDataStringify(data: any) {
@@ -28,15 +29,25 @@ export default class StoragePlugin implements PageSpyPlugin {
 
   public static hasInitd = false;
 
-  private static originFunctions: MPStorageAPI | null = null;
+  private static originFunctions = {} as MPStorageAPI;
 
   // eslint-disable-next-line class-methods-use-this
-  public onCreated() {
+  public onInit() {
     if (StoragePlugin.hasInitd) return;
     StoragePlugin.hasInitd = true;
 
     StoragePlugin.initStorageProxy();
     StoragePlugin.listenRefreshEvent();
+  }
+
+  public onReset() {
+    const mp = getMPSDK();
+    Object.entries(StoragePlugin.originFunctions).forEach(([key, fn]) => {
+      Object.defineProperty(mp, key, {
+        value: fn,
+      });
+    });
+    StoragePlugin.hasInitd = false;
   }
 
   static sendRefresh() {
@@ -83,13 +94,15 @@ export default class StoragePlugin implements PageSpyPlugin {
       'removeStorageSync',
       'clearStorage',
       'clearStorageSync',
+      'batchSetStorageSync',
+      'batchSetStorage',
     ] as (keyof MPStorageAPI)[];
 
-    StoragePlugin.originFunctions = {} as MPStorageAPI;
-
     proxyFunctions.forEach((name) => {
-      // @ts-ignore
-      StoragePlugin.originFunctions![name] = mp[name];
+      if (mp[name]) {
+        // @ts-ignore
+        StoragePlugin.originFunctions[name] = mp[name];
+      }
     });
 
     Object.defineProperties(mp, {
@@ -240,6 +253,7 @@ export default class StoragePlugin implements PageSpyPlugin {
 
   private static sendStorageItem(info: Omit<SpyStorage.DataItem, 'id'>) {
     const data = makeMessage(DEBUG_MESSAGE_TYPE.STORAGE, info);
+    socketStore.dispatchEvent(PUBLIC_DATA, data);
     // The user wouldn't want to get the stale data, so here we set the 2nd parameter to true.
     socketStore.broadcastMessage(data, true);
   }

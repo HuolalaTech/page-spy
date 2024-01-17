@@ -132,8 +132,14 @@ export class MockMP implements MPSystemAPI, MPNetworkAPI, MPStorageAPI {
   onError(cb: CBType) {
     this.listeners.get('onError')?.push(cb);
   }
+  offError(cb: CBType) {
+    this.off('onError', cb);
+  }
   onUnHandledRejection(cb: CBType) {
     this.listeners.get('onUnHandledRejection')?.push(cb);
+  }
+  offUnHandledRejection(cb: CBType) {
+    this.off('onUnHandledRejection', cb);
   }
   onAppShow(cb: CBType) {
     this.listeners.get('onAppShow')?.push(cb);

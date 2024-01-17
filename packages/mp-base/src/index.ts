@@ -1,6 +1,9 @@
-import type { InitConfig } from 'mp-base/types/index';
-import { getRandomId, psLog } from 'base/src';
-import type { PageSpyPlugin } from '@huolala-tech/page-spy-types';
+import { getRandomId, isArray, isClass, psLog } from 'base/src';
+import type {
+  SpyMP,
+  PageSpyPlugin,
+  PageSpyPluginLifecycle,
+} from '@huolala-tech/page-spy-types';
 import { SocketState } from 'base/src/socket-base';
 import { ROOM_SESSION_KEY } from 'base/src/constants';
 
@@ -16,15 +19,14 @@ import Request from './api';
 // import './index.less';
 // eslint-disable-next-line import/order
 import { Config } from './config';
-import Device from './device';
 import { getMPSDK } from './utils';
 
-export default class PageSpy {
+class PageSpy {
   root: HTMLElement | null = null;
 
   version = PKG_VERSION;
 
-  plugins: Record<string, PageSpyPlugin> = {};
+  static plugins: PageSpyPlugin[] = [];
 
   request: Request | null = null;
 
@@ -43,53 +45,87 @@ export default class PageSpy {
 
   static instance: PageSpy | null = null;
 
-  constructor(init: InitConfig) {
-    const mp = getMPSDK();
+  static registerPlugin(plugin: PageSpyPlugin) {
+    if (!plugin) {
+      return;
+    }
+    if (isClass(plugin)) {
+      psLog.error(
+        'PageSpy.registerPlugin() expect to pass an instance, not a class',
+      );
+      return;
+    }
+    if (!plugin.name) {
+      psLog.error(
+        `The ${plugin.constructor.name} plugin should provide a "name" property`,
+      );
+      return;
+    }
+    const isExist = PageSpy.plugins.some((i) => i.name === plugin.name);
+    if (isExist) {
+      psLog.error(
+        `The ${plugin.name} has registered. Consider the following reasons:
+      - Duplicate register one same plugin;
+      - Plugin's "name" conflict with others, you can print all registered plugins by "PageSpy.plugins";`,
+      );
+      return;
+    }
+    PageSpy.plugins.push(plugin);
+  }
+
+  constructor(init: SpyMP.MPInitConfig) {
     if (PageSpy.instance) {
       psLog.warn('Cannot initialize PageSpy multiple times');
       // eslint-disable-next-line no-constructor-return
       return PageSpy.instance;
     }
 
-    const { disabledOnProd } = this.config.mergeConfig(init);
+    const config = this.config.mergeConfig(init);
+
+    const mp = getMPSDK();
 
     if (mp.canIUse('getAccountInfoSync')) {
       const accountInfo = mp.getAccountInfoSync().miniProgram;
-      if (accountInfo.envVersion === 'release' && disabledOnProd !== false) {
+      if (
+        accountInfo.envVersion === 'release' &&
+        config.disabledOnProd !== false
+      ) {
         psLog.warn('PageSpy is not allowed on release env of mini program');
         // eslint-disable-next-line consistent-return
         return;
       }
     }
 
-    PageSpy.instance = this;
-
+    // Here will check the config api
     this.request = new Request(this.config);
 
-    this.loadPlugins(
-      new ConsolePlugin(),
-      new ErrorPlugin(),
-      new NetworkPlugin(),
-      new SystemPlugin(),
-      new StoragePlugin(),
-    );
+    PageSpy.instance = this;
+
+    this.triggerPlugins('onInit', { socketStore, config });
+
     this.init();
   }
 
-  loadPlugins(...args: PageSpyPlugin[]) {
-    args.forEach((plugin) => {
-      this.plugins[plugin.name] = plugin;
-      if (plugin.onCreated) {
-        plugin.onCreated();
+  triggerPlugins<T extends PageSpyPluginLifecycle = PageSpyPluginLifecycle>(
+    lifecycle: T,
+    // TODO: args 对应到 PageSpyPlugin[lifecycle] 的参数
+    args?: any,
+  ) {
+    const { disabledPlugins } = this.config.get();
+    PageSpy.plugins.forEach((plugin) => {
+      if (
+        isArray(disabledPlugins) &&
+        disabledPlugins.length &&
+        disabledPlugins.includes(plugin.name)
+      ) {
+        return;
       }
+      plugin[lifecycle]?.(args);
     });
   }
 
   async init() {
-    const ok = this.checkConfig();
-    if (!ok) return;
     const mp = getMPSDK();
-
     const config = this.config.get();
     const roomCache = mp.getStorageSync(ROOM_SESSION_KEY);
     if (!roomCache || typeof roomCache !== 'object') {
@@ -121,10 +157,12 @@ export default class PageSpy {
     psLog.log('Plugins inited');
   }
 
-  async createNewConnection() {
-    const configOK = this.checkConfig();
-    if (!configOK) return;
+  abort() {
+    this.triggerPlugins('onReset');
+    socketStore.close();
+  }
 
+  async createNewConnection() {
     if (!this.request) {
       psLog.error('Cannot get the Request');
       return;
@@ -170,9 +208,6 @@ export default class PageSpy {
   }
 
   saveSession() {
-    const ok = this.checkConfig();
-    if (!ok) return;
-
     const { name, address, roomUrl } = this;
     const roomCache = {
       name,
@@ -184,15 +219,18 @@ export default class PageSpy {
     };
     getMPSDK().setStorageSync(ROOM_SESSION_KEY, roomCache);
   }
-
-  // eslint-disable-next-line class-methods-use-this
-  checkConfig() {
-    const config = this.config.get();
-    /* c8 ignore next 3 */
-    if (!config || !config.api) {
-      psLog.error('Cannot get the config info');
-      return false;
-    }
-    return true;
-  }
 }
+
+const INTERNAL_PLUGINS = [
+  new ConsolePlugin(),
+  new ErrorPlugin(),
+  new NetworkPlugin(),
+  new StoragePlugin(),
+  new SystemPlugin(),
+];
+
+INTERNAL_PLUGINS.forEach((p) => {
+  PageSpy.registerPlugin(p);
+});
+
+export default PageSpy;

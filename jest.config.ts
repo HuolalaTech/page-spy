@@ -52,11 +52,11 @@ const config: Config = {
     },
     {
       displayName: {
-        name: 'Wechat',
+        name: 'MPBase',
         color: 'green',
       },
       preset: 'ts-jest',
-      testMatch: ['**/packages/page-spy-wechat/tests/**/*.test.ts'],
+      testMatch: ['**/packages/mp-base/tests/**/*.test.ts'],
       moduleNameMapper,
       setupFilesAfterEnv: ['<rootDir>/packages/mp-base/tests/setup.ts'],
     },

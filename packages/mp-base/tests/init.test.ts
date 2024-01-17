@@ -4,6 +4,8 @@ import SDK from 'mp-base/src/index';
 import ConsolePlugin from 'mp-base/src/plugins/console';
 import StoragePlugin from 'mp-base/src/plugins/storage';
 import NetworkPlugin from 'mp-base/src/plugins/network';
+import ErrorPlugin from 'mp-base/src/plugins/error';
+import SystemPlugin from 'mp-base/src/plugins/system';
 
 import { SpyConsole } from '@huolala-tech/page-spy-types/index';
 import { ROOM_SESSION_KEY } from 'base/src/constants';
@@ -11,16 +13,15 @@ import { initStorageMock } from './mock/storage';
 import { mp } from './setup';
 
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
+let sdk: SDK | null;
 
 beforeEach(() => {
   initStorageMock();
 });
 afterEach(() => {
   jest.restoreAllMocks();
+  SDK.instance?.abort();
   SDK.instance = null;
-  ConsolePlugin.hasInitd = false;
-  NetworkPlugin.hasInitd = false;
-  StoragePlugin.hasInitd = false;
 });
 
 describe('Im in the right env', () => {
@@ -44,27 +45,24 @@ describe('new PageSpy([config])', () => {
     expect(SDK.instance).toEqual(instance);
   });
 
-  it('Load plugins will run `<plugin>.onCreated()`', () => {
-    const cPlugin = new ConsolePlugin();
-    // const ePlugin = new ErrorPlugin();
-    const nPlugin = new NetworkPlugin();
-    const s2Plugin = new StoragePlugin();
-    const plugins = [cPlugin, nPlugin, s2Plugin];
+  it('Load plugins will run `<plugin>.onInit()`', () => {
+    const INTERNAL_PLUGINS = [
+      ConsolePlugin,
+      ErrorPlugin,
+      NetworkPlugin,
+      StoragePlugin,
+      SystemPlugin,
+    ];
 
-    const onCreatedFn = jest.fn();
-    plugins.forEach((i) => {
-      jest.spyOn(i, 'onCreated').mockImplementation(onCreatedFn);
+    expect(INTERNAL_PLUGINS.every((i) => i.hasInitd === false)).toBe(true);
+
+    const onInitFn = jest.fn();
+    INTERNAL_PLUGINS.forEach((i) => {
+      jest.spyOn(i.prototype, 'onInit').mockImplementation(onInitFn);
     });
 
-    const sdk = new SDK({ api: 'test-api.com' });
-    expect(onCreatedFn).toHaveBeenCalledTimes(0);
-
-    sdk.loadPlugins(cPlugin);
-    expect(onCreatedFn).toHaveBeenCalledTimes(1);
-
-    onCreatedFn.mockReset();
-    sdk.loadPlugins(...plugins);
-    expect(onCreatedFn).toHaveBeenCalledTimes(plugins.length);
+    sdk = new SDK({ api: 'test-api.com' });
+    expect(onInitFn).toHaveBeenCalledTimes(INTERNAL_PLUGINS.length);
   });
 
   it('With StoragePlugin loaded, the mp storage apis be wrapped', () => {
@@ -73,10 +71,7 @@ describe('new PageSpy([config])', () => {
       'setStorageSync',
       'batchSetStorage',
       'batchSetStorageSync',
-      'getStorage',
-      'getStorageSync',
       'batchGetStorage',
-      'batchGetStorageSync',
       'removeStorage',
       'removeStorageSync',
       'clearStorage',
@@ -86,12 +81,23 @@ describe('new PageSpy([config])', () => {
     expect(storageAPIs.map((i) => mp[i])).toEqual(originStorageMethods);
 
     // changed!
-    new StoragePlugin().onCreated();
+    const plugin = new StoragePlugin();
+    plugin.onInit();
     expect(storageAPIs.map((i) => mp[i])).not.toEqual(originStorageMethods);
+
+    // reset
+    plugin.onReset();
+    expect(storageAPIs.map((i) => mp[i])).toEqual(originStorageMethods);
   });
 
   it('With ConsolePlugin loaded, ths console.<type> menthods be wrapped', () => {
-    const consoleKey: SpyConsole.ProxyType[] = ['log', 'info', 'warn', 'error'];
+    const consoleKey: SpyConsole.ProxyType[] = [
+      'log',
+      'info',
+      'warn',
+      'error',
+      'debug',
+    ];
     const originConsole = consoleKey.map((i) => console[i]);
     expect(consoleKey.map((i) => console[i])).toEqual(originConsole);
 
@@ -100,46 +106,55 @@ describe('new PageSpy([config])', () => {
     expect(Object.keys(cPlugin.console)).toHaveLength(0);
 
     // changed!
-    cPlugin.onCreated();
+    cPlugin.onInit();
     expect(consoleKey.map((i) => console[i])).not.toEqual(originConsole);
     // @ts-ignore
-    expect(Object.keys(cPlugin.console)).toHaveLength(4);
+    expect(Object.keys(cPlugin.console)).toHaveLength(5);
+
+    // reset
+    cPlugin.onReset();
+    expect(consoleKey.map((i) => console[i])).toEqual(originConsole);
   });
 
   it('With NetworkPlugin loaded, the network request methods be wrapped', () => {
     const originRequest = mp.request;
-    // changed!
     const plugin = new NetworkPlugin();
-    plugin.onCreated();
+    // origin
+    expect(mp.request).toBe(originRequest);
+    // changed!
+    plugin.onInit();
     expect(mp.request).not.toBe(originRequest);
-    const originProxy = plugin.requestProxy;
-    plugin.onCreated();
+    // reset
+    plugin.onReset();
+    expect(mp.request).toBe(originRequest);
   });
 
   it('Plugins can only be inited once', () => {
     const nPlugin = new NetworkPlugin();
-    nPlugin.onCreated();
+    nPlugin.onInit();
     const cPlugin = new ConsolePlugin();
-    cPlugin.onCreated();
+    cPlugin.onInit();
     const sPlugin = new StoragePlugin();
-    sPlugin.onCreated();
+    sPlugin.onInit();
     const originRequestProxy = nPlugin.requestProxy;
     const originConsoleWrap = console.log;
     const originStorageWrap = mp.setStorageSync;
-    nPlugin.onCreated();
-    cPlugin.onCreated();
-    sPlugin.onCreated();
+    nPlugin.onInit();
+    cPlugin.onInit();
+    sPlugin.onInit();
 
     expect(nPlugin.requestProxy).toEqual(originRequestProxy);
     expect(console.log).toEqual(originConsoleWrap);
     expect(mp.setStorageSync).toEqual(originStorageWrap);
+    cPlugin.onReset();
+    sPlugin.onReset();
+    nPlugin.onReset();
   });
 
   it('Init connection', async () => {
     expect(mp.getStorageSync(ROOM_SESSION_KEY)).toBeFalsy();
 
     const sdk = new SDK({ api: 'test-api.com' });
-    // await sdk.init();
     await sleep();
 
     expect(mp.getStorageSync(ROOM_SESSION_KEY)).toEqual({
@@ -170,6 +185,17 @@ describe('new PageSpy([config])', () => {
 
     await sleep();
     expect(spy).toBeCalled();
+  });
+
+  it('Will get the same instance with duplicate init', () => {
+    expect(SDK.instance).toBe(null);
+
+    // 1st init
+    const ins1 = new SDK({ api: 'sss' });
+    // 2nd init
+    const ins2 = new SDK({ api: 'bbb' });
+
+    expect(ins1).toBe(ins2);
   });
 });
 

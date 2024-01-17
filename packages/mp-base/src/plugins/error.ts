@@ -6,27 +6,16 @@ import type {
   SpyConsole,
   PageSpyPlugin,
 } from '@huolala-tech/page-spy-types/index';
+import { PUBLIC_DATA } from 'base/src/message/debug-type';
 import { getMPSDK } from '../utils';
 
-// const formatErrorObj = (err: Error) => {
-//   if (typeof err !== 'object') return null;
-//   const { name, message, stack } = Object(err);
-//   if ([name, message, stack].every(Boolean) === false) {
-//     return null;
-//   }
-//   return {
-//     name,
-//     message,
-//     stack,
-//   };
-// };
-
+// TODO this plugin should test on multiple platforms
 export default class ErrorPlugin implements PageSpyPlugin {
   public name = 'ErrorPlugin';
 
   public static hasInitd = false;
 
-  public onCreated() {
+  public onInit() {
     if (ErrorPlugin.hasInitd) return;
     ErrorPlugin.hasInitd = true;
 
@@ -34,25 +23,51 @@ export default class ErrorPlugin implements PageSpyPlugin {
     this.onUnhandledRejectionError();
   }
 
+  public onReset() {
+    const mp = getMPSDK();
+    if (mp.canIUse('offError')) {
+      mp.offError(this.errorHandler);
+    }
+    if (mp.canIUse('offUnHandledRejection')) {
+      mp.offUnHandledRejection(this.unhandledRejectionHandler);
+    }
+    ErrorPlugin.hasInitd = false;
+  }
+
+  private errorHandler(error: { message: string; stack: string }) {
+    if (!ErrorPlugin.hasInitd) {
+      return;
+    }
+    if (error.stack || error.message) {
+      /* c8 ignore start */
+      const { message, stack } = error;
+      ErrorPlugin.sendMessage(stack || message, {
+        name: 'uncaught error',
+        ...error,
+      });
+      /* c8 ignore stop */
+    } else {
+      // When the error does not exist, use default information
+      const defaultMessage =
+        '[PageSpy] An unknown error occurred and no message or stack trace available';
+      ErrorPlugin.sendMessage(defaultMessage, null);
+    }
+  }
+
+  private unhandledRejectionHandler(evt: { reason: string }) {
+    if (!ErrorPlugin.hasInitd) {
+      return;
+    }
+    ErrorPlugin.sendMessage('UnHandled Rejection', {
+      name: 'unhandledrejection',
+      message: evt.reason,
+    });
+  }
+
   private onUncaughtError() {
     const mp = getMPSDK();
     if (mp.canIUse('onError')) {
-      mp.onError((error) => {
-        if (error.stack || error.message) {
-          /* c8 ignore start */
-          const { message, stack } = error;
-          ErrorPlugin.sendMessage(stack || message, {
-            name: 'uncaught error',
-            ...error,
-          });
-          /* c8 ignore stop */
-        } else {
-          // When the error does not exist, use default information
-          const defaultMessage =
-            '[PageSpy] An unknown error occurred and no message or stack trace available';
-          ErrorPlugin.sendMessage(defaultMessage, null);
-        }
-      });
+      mp.onError(this.errorHandler);
     }
   }
 
@@ -60,12 +75,7 @@ export default class ErrorPlugin implements PageSpyPlugin {
     const mp = getMPSDK();
     // Promise unhandledRejection Error
     if (mp.canIUse('onUnHandledRejection')) {
-      mp.onUnHandledRejection((evt) => {
-        ErrorPlugin.sendMessage('UnHandled Rejection', {
-          name: 'unhandledrejection',
-          message: evt.reason,
-        });
-      });
+      mp.onUnHandledRejection(this.unhandledRejectionHandler);
     }
   }
 
@@ -83,6 +93,7 @@ export default class ErrorPlugin implements PageSpyPlugin {
       errorDetail,
     };
     const message = makeMessage(DEBUG_MESSAGE_TYPE.CONSOLE, error);
+    socketStore.dispatchEvent(PUBLIC_DATA, message);
     socketStore.broadcastMessage(message);
   }
 }

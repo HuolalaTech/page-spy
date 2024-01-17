@@ -1,21 +1,9 @@
-import { InitConfigBase, PageSpyBase } from '@huolala-tech/page-spy-types/lib';
+import type {
+  MPInitConfig as InitConfig,
+  PageSpyBase,
+} from '@huolala-tech/page-spy-types/lib';
 
-export interface InitConfig extends InitConfigBase {
-  /**
-   * The server base url. For example, "example.com".
-   * - Create room: `https://${api}/room/create`
-   * - Filter room: `https://${api}/room/list`
-   * - Join WebSocket room: `wss://${api}/ws/room/join`
-   */
-  api: string;
-
-  /**
-   * Disable pagespy on release environment.
-   * - true (Default): only allow pagespy init on develop and trail environment.
-   * - false
-   */
-  disabledOnProd?: boolean | null;
-}
+export { InitConfig };
 
 interface PageSpyConstructor {
   new (config: InitConfig): PageSpyBase;

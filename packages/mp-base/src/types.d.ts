@@ -140,7 +140,9 @@ type MPSystemAPI = {
     SDKVersion?: string;
   };
   onError(listener: (res: { message: string; stack: string }) => void);
+  offError(listener: (res: { message: string; stack: string }) => void);
   onUnHandledRejection(listener: (res: { reason: string }) => void);
+  offUnHandledRejection(listener: (res: { reason: string }) => void);
   onAppShow(
     listener: (res: {
       path: string;

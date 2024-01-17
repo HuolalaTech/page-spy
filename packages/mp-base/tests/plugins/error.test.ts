@@ -1,13 +1,16 @@
 import ErrorPlugin from 'mp-base/src/plugins/error';
 import { mp } from '../setup';
 
-beforeAll(() => {
-  new ErrorPlugin().onCreated();
+const plugin = new ErrorPlugin();
+
+beforeEach(() => {
+  plugin.onInit();
 });
 
 const errorOccupied = jest.spyOn(ErrorPlugin, 'sendMessage');
 afterEach(() => {
   errorOccupied.mockClear();
+  plugin.onReset();
 });
 
 describe('Error plugin', () => {

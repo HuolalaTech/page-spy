@@ -10,10 +10,12 @@ const apiPrefix = `http://localhost:${port}`;
 const originRequest = mp.request;
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 
+const plugin = new NetworkPlugin();
+
 afterEach(() => {
   jest.restoreAllMocks();
   mp.request = originRequest;
-  NetworkPlugin.hasInitd = false;
+  plugin.onReset();
 });
 
 describe('mp.request proxy', () => {
@@ -22,20 +24,20 @@ describe('mp.request proxy', () => {
       value: undefined,
       writable: true,
     });
-    new NetworkPlugin().onCreated();
+    plugin.onInit();
     expect(mp.request).toBe(undefined);
   });
   it('Wrap mp request', () => {
     const reqSpy = jest.spyOn(mp, 'request');
     expect(mp.request).toBe(reqSpy);
 
-    new NetworkPlugin().onCreated();
+    plugin.onInit();
     expect(mp.request).not.toBe(reqSpy);
   });
 
   it('The origin request will be called and get response', (done) => {
     const reqSpy = jest.spyOn(mp, 'request');
-    new NetworkPlugin().onCreated();
+    plugin.onInit();
 
     // fetch(url, init)
     const url = `/`;
@@ -51,7 +53,7 @@ describe('mp.request proxy', () => {
 
   it('The origin callback will be called', async () => {
     const reqSpy = jest.spyOn(mp, 'request');
-    new NetworkPlugin().onCreated();
+    plugin.onInit();
 
     const successCallback = jest.fn();
     const completeCallback = jest.fn();
@@ -79,7 +81,7 @@ describe('mp.request proxy', () => {
   });
 
   it('Request plain text', (done) => {
-    new NetworkPlugin().onCreated();
+    plugin.onInit();
     mp.request({
       url: '/plain-text',
       success(res) {
@@ -112,9 +114,8 @@ describe('mp.request proxy', () => {
   });
 
   it('Array buffer response will not be converted to base64', (done) => {
-    const np = new NetworkPlugin();
-    np.onCreated();
-    const { requestProxy } = np;
+    plugin.onInit();
+    const { requestProxy } = plugin;
     expect(computeRequestMapInfo(requestProxy).size).toBe(0);
 
     mp.request({
@@ -133,9 +134,8 @@ describe('mp.request proxy', () => {
   });
 
   it('The SDK record the request information', () => {
-    const np = new NetworkPlugin();
-    np.onCreated();
-    const { requestProxy } = np;
+    plugin.onInit();
+    const { requestProxy } = plugin;
     expect(requestProxy).not.toBe(null);
     expect(computeRequestMapInfo(requestProxy).size).toBe(0);
 

@@ -1,4 +1,3 @@
-import { mockRequest } from './mock/request';
 import { initStorageMock, mockWXStorage } from './mock/storage';
 import { MockMP } from './mock/mp';
 import { getMPSDK, setMPSDK } from 'mp-base/src/utils';

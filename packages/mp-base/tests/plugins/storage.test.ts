@@ -7,13 +7,17 @@ const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 // @ts-ignore
 const trigger = jest.spyOn(StoragePlugin, 'sendStorageItem');
 
+const plugin = new StoragePlugin();
+
 beforeAll(() => {
   initStorageMock();
-  new StoragePlugin().onCreated();
 });
-
+beforeEach(() => {
+  plugin.onInit();
+});
 afterEach(() => {
   trigger.mockReset();
+  plugin.onReset();
   // console.log(trigger.mock);
 });
 

@@ -1,5 +1,5 @@
 import Device from 'mp-base/src/device';
-import { getRandomId, psLog } from 'base/src';
+import { getRandomId } from 'base/src';
 import socketStore from 'mp-base/src/helpers/socket';
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import type { SpySystem, PageSpyPlugin } from '@huolala-tech/page-spy-types';
@@ -10,7 +10,7 @@ export default class SystemPlugin implements PageSpyPlugin {
   public static hasInitd = false;
 
   // eslint-disable-next-line class-methods-use-this
-  public async onCreated() {
+  public onInit() {
     if (SystemPlugin.hasInitd) return;
     SystemPlugin.hasInitd = true;
 
@@ -20,12 +20,16 @@ export default class SystemPlugin implements PageSpyPlugin {
       makeMessage(DEBUG_MESSAGE_TYPE.SYSTEM, {
         id,
         system: {
-          ua: deviceInfo.browserName, // TODO: for different mp type
+          ua: deviceInfo.browserName,
           ...deviceInfo,
         },
         features: {},
       } as SpySystem.DataItem),
       false,
     );
+  }
+
+  public onReset() {
+    SystemPlugin.hasInitd = false;
   }
 }

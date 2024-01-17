@@ -44,6 +44,7 @@ export class MPSocketWrapper extends SocketWrapper {
   close() {
     this.socket?.close({});
     this.state = SocketState.CLOSED;
+    this.emit('close', {});
     this.clearListeners();
   }
 

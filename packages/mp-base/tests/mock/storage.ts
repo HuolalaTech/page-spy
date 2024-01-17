@@ -1,4 +1,4 @@
-import { mp } from '../setup';
+import { getMPSDK } from 'mp-base/src/utils';
 
 export function mockWXStorage(): MPStorageAPI {
   let store: Record<string, any> = {};
@@ -76,7 +76,7 @@ export function mockWXStorage(): MPStorageAPI {
 export function initStorageMock() {
   const mock = mockWXStorage();
   Object.entries(mock).forEach(([key, value]) => {
-    Object.defineProperty(mp, key, {
+    Object.defineProperty(getMPSDK(), key, {
       value,
       writable: true,
     });

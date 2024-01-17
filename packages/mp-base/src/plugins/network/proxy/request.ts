@@ -16,6 +16,15 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
     this.initProxyHandler();
   }
 
+  public reset() {
+    if (this.request) {
+      const mp = getMPSDK();
+      Object.defineProperty(mp, 'request', {
+        value: this.request,
+      });
+    }
+  }
+
   private initProxyHandler() {
     const that = this;
     const mp = getMPSDK();
