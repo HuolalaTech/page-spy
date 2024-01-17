@@ -1,4 +1,4 @@
-import { InitConfigBase } from './index.d';
+import { InitConfigBase } from './index';
 
 type InternalPlugins =
   | 'ConsolePlugin'
