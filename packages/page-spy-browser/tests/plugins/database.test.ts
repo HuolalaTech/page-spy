@@ -42,7 +42,7 @@ describe('Database plugin', () => {
 
     expect(DatabasePlugin.isSupport).toBe(false);
 
-    new DatabasePlugin().onCreated();
+    new DatabasePlugin().onInit();
 
     expect(DatabasePlugin.hasInitd).toBe(false);
 
@@ -53,7 +53,7 @@ describe('Database plugin', () => {
     const db = await indexedDB.databases();
     expect(db.length).toBe(1);
 
-    new DatabasePlugin().onCreated();
+    new DatabasePlugin().onInit();
 
     await promisify(indexedDB.deleteDatabase('blog'));
     const db2 = await indexedDB.databases();
@@ -72,7 +72,7 @@ describe('Database plugin', () => {
     // @ts-ignore
     const originDelete = jest.spyOn(IDBObjectStore.prototype, 'delete');
 
-    new DatabasePlugin().onCreated();
+    new DatabasePlugin().onInit();
 
     const db = await promisify(window.indexedDB.open('blog'));
     const store = db.transaction('posts', 'readwrite').objectStore('posts');
@@ -95,7 +95,7 @@ describe('Database plugin', () => {
   });
 
   it('DATABASE_PAGINATION event and REFRESH event', async () => {
-    new DatabasePlugin().onCreated();
+    new DatabasePlugin().onInit();
 
     // @ts-ignore
     socket.dispatchEvent(DEBUG_MESSAGE_TYPE.REFRESH, {

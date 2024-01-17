@@ -8,7 +8,7 @@ describe('Page plugin', () => {
   it('Collect outerHTML', () => {
     expect(trigger).toHaveBeenCalledTimes(0);
 
-    new PagePlugin().onCreated();
+    new PagePlugin().onInit();
     window.dispatchEvent(new Event('load'));
     expect(trigger).toHaveBeenCalledTimes(0);
 

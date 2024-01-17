@@ -36,7 +36,7 @@ const plugins = [
   }),
   alias({
     entries: [
-      { find: 'page-spy-wechat', replacement: root },
+      { find: 'mp-base', replacement: resolve(root, '../mp-base') },
       { find: 'base', replacement: resolve(root, '../base') },
     ],
   }),

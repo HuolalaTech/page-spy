@@ -25,6 +25,12 @@ export default class FetchProxy extends WebNetworkProxyBase {
     this.initProxyHandler();
   }
 
+  public reset() {
+    if (this.fetch) {
+      window.fetch = this.fetch;
+    }
+  }
+
   private initProxyHandler() {
     const that = this;
     const originFetch = window.fetch;

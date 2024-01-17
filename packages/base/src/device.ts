@@ -26,10 +26,10 @@ const platforms = {
 export function parseUserAgent(
   uaString: string = window.navigator.userAgent,
 ): DeviceInfo {
-  let osName: SpyDevice.OS = 'Unknown';
-  let osVersion = 'Unknown';
-  let browserName: SpyDevice.Browser = 'Unknown';
-  let browserVersion = 'Unknown';
+  let osName: SpyDevice.OS = 'unknown';
+  let osVersion = 'unknown';
+  let browserName: SpyDevice.Browser = 'unknown';
+  let browserVersion = 'unknown';
 
   // 判断操作系统
   for (const platform in platforms) {

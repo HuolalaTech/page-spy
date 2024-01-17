@@ -1,0 +1,73 @@
+{
+  "name": "@huolala-tech/page-spy-uniapp",
+  "version": "1.6.0-beta.0",
+  "description": "A developer tool for debugging uniapp miniprogram",
+  "license": "MIT",
+  "main": "dist/cjs/index.min.js",
+  "module": "dist/esm/index.min.js",
+  "types": "types/index.d.ts",
+  "files": [
+    "dist",
+    "types"
+  ],
+  "homepage": "https://www.pagespy.org/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HuolalaTech/page-spy"
+  },
+  "keywords": [
+    "pagespy",
+    "debug",
+    "remote",
+    "inspect",
+    "devtools"
+  ],
+  "engines": {
+    "node": ">=12"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "build:watch": "rollup -c -w"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.13.0",
+    "@huolala-tech/page-spy-types": "^1.6.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.14.0",
+    "@babel/plugin-transform-runtime": "^7.23.6",
+    "@babel/preset-env": "^7.14.1",
+    "@babel/preset-typescript": "^7.13.0",
+    "@rollup/plugin-alias": "^4.0.3",
+    "@rollup/plugin-babel": "^6.0.3",
+    "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-image": "^2.1.1",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@rollup/plugin-replace": "^5.0.5",
+    "@rollup/plugin-terser": "^0.4.4",
+    "autoprefixer": "^10.3.4",
+    "core-js": "3",
+    "less": "^4.1.1",
+    "postcss": "^8.4.21",
+    "rollup": "^3.10.0",
+    "rollup-plugin-delete": "^2.0.0",
+    "rollup-plugin-postcss": "^4.0.1",
+    "rollup-plugin-typescript2": "^0.34.1"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "all",
+    "printWidth": 80
+  },
+  "browserslist": [
+    "chrome > 75",
+    "safari > 12",
+    "> 0.1%",
+    "not dead",
+    "not op_mini all"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

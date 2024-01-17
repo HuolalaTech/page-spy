@@ -22,6 +22,7 @@
     "baseUrl": ".",
     "paths": {
       "base/*": ["./packages/base/*"],
+      "mp-base/*": ["./packages/mp-base/*"],
       "page-spy-browser/*": ["./packages/page-spy-browser/*"],
       "page-spy-wechat/*": ["./packages/page-spy-wechat/*"]
     }

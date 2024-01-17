@@ -16,6 +16,7 @@ export class Config extends ConfigBase<InitConfig> {
       autoRender: true,
       title: '',
       enableSSL: null,
+      disabledPlugins: [],
     };
 
     if (!Config.scriptLink) {
