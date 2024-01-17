@@ -23,7 +23,7 @@ const plugins = [
   nodeResolve(),
   commonjs(),
   typescript({
-    // exclude: 'tests/**/*',
+    // exclude: '**/tests/**/*.test.ts',
   }),
   replace({
     PKG_VERSION: `"${pkg.version}"`,
