@@ -1,3 +1,4 @@
+import { SocketState } from 'base/src/socket-base';
 import { mockRequest } from './request';
 type CBType = (event?: any) => any;
 
@@ -95,9 +96,11 @@ export class MockMP implements MPSystemAPI, MPNetworkAPI, MPStorageAPI {
     let openHandler: (res: any) => void;
     let messageHandler: (data: object) => void;
     let errorHandler: (msg: string) => void;
+    let status: SocketState = SocketState.OPEN;
     return {
       send(data: object) {},
       onOpen(handler: (res: any) => void) {
+        status = SocketState.OPEN;
         openHandler = handler;
       },
       onClose(handler: (res: any) => void) {
@@ -107,6 +110,10 @@ export class MockMP implements MPSystemAPI, MPNetworkAPI, MPStorageAPI {
         errorHandler = handler;
       },
       close() {
+        if (status !== SocketState.CLOSED) {
+          return;
+        }
+        status = SocketState.CLOSED;
         if (closeHandler) {
           closeHandler({});
         }

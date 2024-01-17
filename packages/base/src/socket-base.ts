@@ -53,7 +53,6 @@ export abstract class SocketWrapper {
   abstract init(url: string): void;
   abstract send(data: string): void;
   abstract close(data?: {}): void;
-  abstract destroy(): void;
   abstract getState(): SocketState;
   protected events: Record<WebSocketEvents, CallbackType[]> = {
     open: [],
@@ -97,7 +96,7 @@ export abstract class SocketWrapper {
 }
 
 export abstract class SocketStoreBase {
-  protected abstract socket: SocketWrapper;
+  protected abstract socketWrapper: SocketWrapper;
 
   private socketUrl: string = '';
 
@@ -157,28 +156,28 @@ export abstract class SocketStoreBase {
       }
       // close existing connection
       if (
-        this.socket.getState() === SocketState.OPEN ||
-        this.socket.getState() === SocketState.CONNECTING
+        this.socketWrapper.getState() === SocketState.OPEN ||
+        this.socketWrapper.getState() === SocketState.CONNECTING
       ) {
-        this.socket.destroy();
+        this.socketWrapper.close();
       }
-      this.socket?.onOpen(() => {
+      this.socketWrapper?.onOpen(() => {
         this.connectOnline();
       });
       // Strictly, the onMessage should be called after onOpen. But for some platform(alipay,)
       // this may cause some message losing.
-      this.socket?.onMessage((evt) => {
+      this.socketWrapper?.onMessage((evt) => {
         this.handleMessage(evt);
       });
-      this.socket?.onClose(() => {
+      this.socketWrapper?.onClose(() => {
         this.connectOffline();
       });
-      this.socket?.onError(() => {
+      this.socketWrapper?.onError(() => {
         // we treat on error the same with on close.
         this.connectOffline();
       });
       this.socketUrl = url;
-      this.socket?.init(url);
+      this.socketWrapper?.init(url);
     } catch (e: any) {
       psLog.error(e.message);
     }
@@ -212,7 +211,7 @@ export abstract class SocketStoreBase {
     this.clearPing();
     this.reconnectTimes = 0;
     this.reconnectable = false;
-    this.socket?.destroy();
+    this.socketWrapper?.close();
     this.messages = [];
     Object.entries(this.events).forEach(([, fns]) => {
       fns.splice(0);
@@ -226,13 +225,11 @@ export abstract class SocketStoreBase {
   }
 
   private connectOffline() {
-    this.socket.destroy();
     this.connectionStatus = false;
     this.socketConnection = null;
     this.clearPing();
     if (!this.reconnectable || this.reconnectTimes <= 0) {
       this.onOffline();
-
       return;
     }
 
@@ -491,7 +488,7 @@ export abstract class SocketStoreBase {
         pkMsg.createdAt = Date.now();
         pkMsg.requestId = getRandomId();
         const dataString = stringifyData(pkMsg);
-        this.socket?.send(dataString);
+        this.socketWrapper?.send(dataString);
       } catch (e) {
         throw Error(`Incompatible: ${(e as Error).message}`);
       }

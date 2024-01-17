@@ -7,50 +7,44 @@ import {
 import { getMPSDK } from '../utils';
 
 export class MPSocketWrapper extends SocketWrapper {
-  private socket: MPSocket | null = null;
+  private socketInstance: MPSocket | null = null;
 
   private state: SocketState = 0;
 
   init(url: string) {
     this.state = SocketState.CONNECTING;
-    this.socket = getMPSDK().connectSocket({
+    this.socketInstance = getMPSDK().connectSocket({
       url,
       multiple: true, // for alipay mp to return a task
       complete() {}, // make sure the uniapp return a task
     });
-    this.socket.onClose((data) => {
+    this.socketInstance.onClose((data) => {
       this.state = SocketState.CLOSED;
       this.emit('close', data);
     });
-    this.socket.onError((data) => {
+    this.socketInstance.onError((data) => {
       this.state = SocketState.CLOSED;
       this.emit('error', data);
     });
-    this.socket.onOpen((data) => {
+    this.socketInstance.onOpen((data) => {
       this.state = SocketState.OPEN;
       this.emit('open', data);
     });
-    this.socket.onMessage((data) => {
+    this.socketInstance.onMessage((data) => {
       this.emit('message', data);
     });
   }
 
   send(data: string) {
-    this.socket?.send({
+    this.socketInstance?.send({
       data,
     });
   }
 
   close() {
-    this.socket?.close({});
+    this.socketInstance?.close({});
     this.state = SocketState.CLOSED;
-    this.emit('close', {});
     this.clearListeners();
-  }
-
-  destroy(): void {
-    this.close();
-    this.socket = null;
   }
 
   getState(): SocketState {
@@ -59,11 +53,11 @@ export class MPSocketWrapper extends SocketWrapper {
 }
 
 export class MPSocketStore extends SocketStoreBase {
-  // websocket instance
-  protected socket = new MPSocketWrapper();
+  // websocket socketInstance
+  protected socketWrapper = new MPSocketWrapper();
 
   public getSocket() {
-    return this.socket;
+    return this.socketWrapper;
   }
 
   // this is an abstract method of parent class, cannot be static
