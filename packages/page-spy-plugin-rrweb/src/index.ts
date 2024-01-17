@@ -36,7 +36,7 @@ export default class RRWebPlugin implements PageSpyPlugin {
         const data = makeMessage(DEBUG_MESSAGE_TYPE.RRWEB_EVENT, evt);
 
         socketStore.dispatchEvent(PUBLIC_DATA, data);
-        socketStore.broadcastMessage(data);
+        socketStore.broadcastMessage(data, true);
       },
     });
     if (handler) {
