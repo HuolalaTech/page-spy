@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.0",
-    "@huolala-tech/page-spy-types": "^1.6.1",
+    "@huolala-tech/page-spy-types": "^1.6.2",
     "copy-to-clipboard": "^3.3.1"
   },
   "devDependencies": {
