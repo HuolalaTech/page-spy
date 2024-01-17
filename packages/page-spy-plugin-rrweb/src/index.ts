@@ -26,6 +26,9 @@ export default class RRWebPlugin implements PageSpyPlugin {
       );
       return;
     }
+    if (RRWebPlugin.hasInited) return;
+    RRWebPlugin.hasInited = true;
+
     const handler = record({
       packFn: pack,
       ...this.recordOptions,

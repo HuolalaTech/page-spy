@@ -63,10 +63,19 @@ export default class Harbor {
     }
   }
 
-  // Wonder if the drop successful? Use `await this.drop() !== false`.
+  public async clear() {
+    try {
+      const store = await this.getStore('readwrite');
+      await promisify(store.clear());
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   public async drop() {
     try {
-      const result = await window.indexedDB.deleteDatabase(DB_NAME);
+      const result = await promisify(window.indexedDB.deleteDatabase(DB_NAME));
       return result;
     } catch (e) {
       return false;
