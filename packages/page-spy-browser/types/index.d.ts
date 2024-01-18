@@ -1,5 +1,13 @@
 import { InitConfigBase, PageSpyBase } from '@huolala-tech/page-spy-types';
 
+type InternalPlugins =
+  | 'ConsolePlugin'
+  | 'ErrorPlugin'
+  | 'NetworkPlugin'
+  | 'StoragePlugin'
+  | 'DatabasePlugin'
+  | 'PagePlugin'
+  | 'SystemPlugin';
 export interface InitConfig extends InitConfigBase {
   /**
    * Client host. Form example, "https://example.com".
@@ -12,6 +20,11 @@ export interface InitConfig extends InitConfigBase {
    * @default true
    */
   autoRender?: boolean;
+  /**
+   * All internal plugins are carried with PageSpy by default out of the box.
+   * You can disable some plugins as needed.
+   */
+  disabledPlugins?: (InternalPlugins | string)[];
 }
 
 interface PageSpyBrowser extends PageSpyBase {

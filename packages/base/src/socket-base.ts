@@ -3,7 +3,11 @@
  * 不同平台 socket 的 api 不同但功能相同，这里抽象一层
  */
 
-import type { SpyMessage, SpySocket } from '@huolala-tech/page-spy-types';
+import type {
+  SpyMessage,
+  SpySocket,
+  SpyBase,
+} from '@huolala-tech/page-spy-types';
 import { PackedEvent } from '@huolala-tech/page-spy-types/lib/socket-event';
 import { getRandomId, psLog, stringifyData } from './index';
 import {
@@ -14,19 +18,15 @@ import {
 } from './message';
 import * as SERVER_MESSAGE_TYPE from './message/server-type';
 import atom from './atom';
-
-interface SocketEvent<T = any> {
-  source: {
-    type: SpyMessage.MessageType;
-    data: T;
-  };
-  from: SpySocket.Connection;
-  to: SpySocket.Connection;
-}
-type SocketEventCallback = (
-  data: SocketEvent,
-  reply: (data: any) => void,
-) => void;
+import {
+  ATOM_DETAIL,
+  ATOM_GETTER,
+  DATABASE_PAGINATION,
+  DEBUG,
+  DEBUGGER_ONLINE,
+  PUBLIC_DATA,
+  REFRESH,
+} from './message/debug-type';
 
 interface GetterMember {
   key: string; // 属性名
@@ -46,14 +46,13 @@ export enum SocketState {
   CLOSED = 3,
 }
 
-const HEARTBAET_INTERVAL = 5000;
+const HEARTBEAT_INTERVAL = 5000;
 
 // 封装不同平台的 socket
 export abstract class SocketWrapper {
   abstract init(url: string): void;
-  abstract send(data: object): void;
+  abstract send(data: string): void;
   abstract close(data?: {}): void;
-  abstract destroy(): void;
   abstract getState(): SocketState;
   protected events: Record<WebSocketEvents, CallbackType[]> = {
     open: [],
@@ -97,7 +96,7 @@ export abstract class SocketWrapper {
 }
 
 export abstract class SocketStoreBase {
-  protected abstract socket: SocketWrapper;
+  protected abstract socketWrapper: SocketWrapper;
 
   private socketUrl: string = '';
 
@@ -110,19 +109,23 @@ export abstract class SocketStoreBase {
   // pong timer used for waiting for pong, if pong not received, close the connection
   private pongTimer: ReturnType<typeof setTimeout> | null = null;
 
-  private retryTimer: number | null = null;
+  private retryTimer: ReturnType<typeof setTimeout> | null = null;
 
   // messages store
   private messages: (SpySocket.BroadcastEvent | SpySocket.UnicastEvent)[] = [];
 
   // events center
-  private events: Record<SpyMessage.InteractiveType, SocketEventCallback[]> = {
-    refresh: [],
-    debug: [],
-    'atom-detail': [],
-    'atom-getter': [],
-    'debugger-online': [],
-    'database-pagination': [],
+  private events: Record<
+    SpyMessage.InteractiveType | SpyMessage.InternalType,
+    SpyBase.EventCallback[]
+  > = {
+    [REFRESH]: [],
+    [DEBUG]: [],
+    [ATOM_DETAIL]: [],
+    [ATOM_GETTER]: [],
+    [DEBUGGER_ONLINE]: [],
+    [DATABASE_PAGINATION]: [],
+    [PUBLIC_DATA]: [],
   };
 
   // Don't try to reconnect if error occupied
@@ -132,6 +135,9 @@ export abstract class SocketStoreBase {
 
   // indicated connected  whether or not
   public connectionStatus: boolean = false;
+
+  // response message filters, to handle some wired messages
+  public static messageFilters: ((data: any) => any)[] = [];
 
   constructor() {
     this.addListener('debug', SocketStoreBase.handleDebugger);
@@ -150,26 +156,28 @@ export abstract class SocketStoreBase {
       }
       // close existing connection
       if (
-        this.socket.getState() === SocketState.OPEN ||
-        this.socket.getState() === SocketState.CONNECTING
+        this.socketWrapper.getState() === SocketState.OPEN ||
+        this.socketWrapper.getState() === SocketState.CONNECTING
       ) {
-        this.socket.destroy();
+        this.socketWrapper.close();
       }
-      this.socket?.onOpen(() => {
+      this.socketWrapper?.onOpen(() => {
         this.connectOnline();
-        this.socket?.onMessage((evt) => {
-          this.handleMessage(evt);
-        });
       });
-      this.socket?.onClose(() => {
+      // Strictly, the onMessage should be called after onOpen. But for some platform(alipay,)
+      // this may cause some message losing.
+      this.socketWrapper?.onMessage((evt) => {
+        this.handleMessage(evt);
+      });
+      this.socketWrapper?.onClose(() => {
         this.connectOffline();
       });
-      this.socket?.onError(() => {
+      this.socketWrapper?.onError(() => {
         // we treat on error the same with on close.
         this.connectOffline();
       });
       this.socketUrl = url;
-      this.socket?.init(url);
+      this.socketWrapper?.init(url);
     } catch (e: any) {
       psLog.error(e.message);
     }
@@ -177,8 +185,13 @@ export abstract class SocketStoreBase {
 
   public addListener(
     type: SpyMessage.InteractiveType,
-    fn: SocketEventCallback,
-  ) {
+    fn: SpyBase.InteractiveEventCallback,
+  ): void;
+  public addListener(
+    type: SpyMessage.InternalType,
+    fn: SpyBase.InternalEventCallback,
+  ): void;
+  public addListener(type: any, fn: any) {
     /* c8 ignore next 3 */
     if (!this.events[type]) {
       this.events[type] = [];
@@ -188,17 +201,21 @@ export abstract class SocketStoreBase {
 
   public broadcastMessage(
     msg: SpyMessage.MessageItem,
-    isCache: boolean = false,
+    noCache: boolean = false,
   ) {
     const message = makeBroadcastMessage(msg);
-    this.send(message, isCache);
+    this.send(message, noCache);
   }
 
   public close() {
     this.clearPing();
     this.reconnectTimes = 0;
     this.reconnectable = false;
-    this.socket?.close();
+    this.socketWrapper?.close();
+    this.messages = [];
+    Object.entries(this.events).forEach(([, fns]) => {
+      fns.splice(0);
+    });
   }
 
   private connectOnline() {
@@ -208,13 +225,11 @@ export abstract class SocketStoreBase {
   }
 
   private connectOffline() {
-    this.socket.destroy();
     this.connectionStatus = false;
     this.socketConnection = null;
     this.clearPing();
     if (!this.reconnectable || this.reconnectTimes <= 0) {
       this.onOffline();
-
       return;
     }
 
@@ -222,7 +237,7 @@ export abstract class SocketStoreBase {
       clearTimeout(this.retryTimer);
     }
 
-    this.retryTimer = window.setTimeout(() => {
+    this.retryTimer = setTimeout(() => {
       this.retryTimer = null;
       this.tryReconnect();
     }, 2000);
@@ -240,6 +255,9 @@ export abstract class SocketStoreBase {
     if (this.pingTimer) {
       clearTimeout(this.pingTimer);
     }
+    if (this.pongTimer) {
+      clearTimeout(this.pongTimer);
+    }
     /* c8 ignore start */
     this.pingTimer = setTimeout(() => {
       this.send({
@@ -251,8 +269,8 @@ export abstract class SocketStoreBase {
         // lost connection
         this.connectOffline();
         this.pongTimer = null;
-      }, HEARTBAET_INTERVAL);
-    }, HEARTBAET_INTERVAL);
+      }, HEARTBEAT_INTERVAL);
+    }, HEARTBEAT_INTERVAL);
     /* c8 ignore stop */
   }
 
@@ -270,16 +288,16 @@ export abstract class SocketStoreBase {
   private handlePong() {
     clearTimeout(this.pongTimer!);
     this.pongTimer = null;
-
-    if (this.pingTimer) {
-      clearTimeout(this.pingTimer);
-      this.pingTimer = null;
-    }
     this.ping();
   }
 
   // get the data which we expected from nested structure of the message
   protected handleMessage(evt: any) {
+    if (SocketStoreBase.messageFilters.length) {
+      SocketStoreBase.messageFilters.forEach((filter) => {
+        evt = filter(evt);
+      });
+    }
     const {
       CONNECT,
       MESSAGE,
@@ -332,7 +350,18 @@ export abstract class SocketStoreBase {
     this.handlePong();
   }
 
-  private dispatchEvent(type: SpyMessage.InteractiveType, data: SocketEvent) {
+  public dispatchEvent(
+    type: SpyMessage.InteractiveType,
+    data: SpyBase.InteractiveEvent,
+  ): void;
+  public dispatchEvent(type: SpyMessage.InternalType, data: any): void;
+  public dispatchEvent(type: any, data: any) {
+    if ([PUBLIC_DATA].includes(type)) {
+      this.events[type].forEach((fn) => {
+        (fn as SpyBase.InternalEventCallback)(data);
+      });
+      return;
+    }
     this.events[type].forEach((fn) => {
       fn.call(this, data, (d: SpyMessage.MessageItem) => {
         this.unicastMessage(d, data.from);
@@ -348,7 +377,9 @@ export abstract class SocketStoreBase {
     this.send(message);
   }
 
-  private handleFlushBuffer(message: SocketEvent<{ latestId: string }>) {
+  private handleFlushBuffer(
+    message: SpyBase.InteractiveEvent<{ latestId: string }>,
+  ) {
     const { latestId } = message.source.data;
 
     const msgIndex = this.messages.findIndex(
@@ -374,7 +405,7 @@ export abstract class SocketStoreBase {
 
   // run executable code which received from remote and send back the result
   private static handleDebugger(
-    { source }: SocketEvent<string>,
+    { source }: SpyBase.InteractiveEvent<string>,
     reply: (data: any) => void,
   ) {
     const { type, data } = source;
@@ -414,7 +445,7 @@ export abstract class SocketStoreBase {
   }
 
   private static handleResolveAtom(
-    { source }: SocketEvent<string>,
+    { source }: SpyBase.InteractiveEvent<string>,
     reply: (data: any) => void,
   ) {
     const { type, data } = source;
@@ -426,7 +457,7 @@ export abstract class SocketStoreBase {
   }
 
   private static handleAtomPropertyGetter(
-    { source }: SocketEvent<GetterMember>,
+    { source }: SpyBase.InteractiveEvent<GetterMember>,
     reply: (data: any) => void,
   ) {
     const { type, data } = source;
@@ -449,20 +480,21 @@ export abstract class SocketStoreBase {
     }
   }
 
-  private send(msg: SpySocket.ClientEvent, isCache: boolean = false) {
+  private send(msg: SpySocket.ClientEvent, noCache: boolean = false) {
     if (this.connectionStatus) {
       /* c8 ignore start */
       try {
         const pkMsg = msg as PackedEvent;
         pkMsg.createdAt = Date.now();
         pkMsg.requestId = getRandomId();
-        this.socket?.send(stringifyData(msg));
+        const dataString = stringifyData(pkMsg);
+        this.socketWrapper?.send(dataString);
       } catch (e) {
         throw Error(`Incompatible: ${(e as Error).message}`);
       }
       /* c8 ignore stop */
     }
-    if (!isCache) {
+    if (!noCache) {
       if (
         [SERVER_MESSAGE_TYPE.MESSAGE, SERVER_MESSAGE_TYPE.PING].indexOf(
           msg.type,
@@ -470,7 +502,6 @@ export abstract class SocketStoreBase {
       ) {
         return;
       }
-
       this.messages.push(
         msg as Exclude<SpySocket.ClientEvent, SpySocket.PingEvent>,
       );

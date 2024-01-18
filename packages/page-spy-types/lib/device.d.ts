@@ -1,26 +1,35 @@
+// all use lower case for convenience in comparing.
 export type OS =
-  | 'Windows'
-  | 'iPhone'
-  | 'iPad'
-  | 'Mac'
-  | 'Android'
-  | 'Linux'
-  | 'Unknown';
+  | 'windows'
+  | 'ios'
+  | 'ipad'
+  | 'mac'
+  | 'android'
+  | 'linux'
+  | 'harmony'
+  | 'unknown';
+
+export type MPType = 'mp-wechat' | 'mp-alipay' | 'mp-douyin';
+
+// all use lower case for convenience in comparing.
 export type Browser =
-  | 'WeChat'
-  | 'QQ'
-  | 'UC'
-  | 'Baidu'
-  | 'Edge'
-  | 'Chrome'
-  | 'Firefox'
-  | 'Safari'
-  | 'MPWeChat'
-  | 'Unknown';
+  | 'wechat'
+  | 'qq'
+  | 'uc'
+  | 'baidu'
+  | 'edge'
+  | 'chrome'
+  | 'firefox'
+  | 'safari'
+  | 'unknown'
+  | MPType;
+
+export type Framework = 'uniapp' | 'taro' | 'unknown';
 
 export interface DeviceInfo {
   osName: OS;
   osVersion: string;
   browserName: Browser;
-  browserVersion: string; // TODO 加入小程序，这里是不是要加个 非浏览器的枚举
+  browserVersion: string;
+  framework?: Framework; // Currently only for miniprogram
 }

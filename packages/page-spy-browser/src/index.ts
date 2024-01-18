@@ -1,8 +1,11 @@
 import type { InitConfig } from 'page-spy-browser/types/index';
 import copy from 'copy-to-clipboard';
-import { getRandomId, psLog } from 'base/src';
+import { getRandomId, isArray, isClass, psLog } from 'base/src';
 import { ROOM_SESSION_KEY } from 'base/src/constants';
-import type { PageSpyPlugin } from '@huolala-tech/page-spy-types';
+import type {
+  PageSpyPlugin,
+  PageSpyPluginLifecycle,
+} from '@huolala-tech/page-spy-types';
 import { Modal } from './component/modal';
 import { Content } from './component/content';
 
@@ -27,12 +30,12 @@ import { Toast } from './component/toast';
 
 const Identifier = '__pageSpy';
 
-export default class PageSpy {
+class PageSpy {
   root: HTMLElement | null = null;
 
   version = PKG_VERSION;
 
-  plugins: Record<string, PageSpyPlugin> = {};
+  static plugins: PageSpyPlugin[] = [];
 
   request: Request | null = null;
 
@@ -51,6 +54,34 @@ export default class PageSpy {
 
   static instance: PageSpy | null = null;
 
+  static registerPlugin(plugin: PageSpyPlugin) {
+    if (!plugin) {
+      return;
+    }
+    if (isClass(plugin)) {
+      psLog.error(
+        'PageSpy.registerPlugin() expect to pass an instance, not a class',
+      );
+      return;
+    }
+    if (!plugin.name) {
+      psLog.error(
+        `The ${plugin.constructor.name} plugin should provide a "name" property`,
+      );
+      return;
+    }
+    const isExist = PageSpy.plugins.some((i) => i.name === plugin.name);
+    if (isExist) {
+      psLog.error(
+        `The ${plugin.name} has registered. Consider the following reasons:
+      - Duplicate register one same plugin;
+      - Plugin's "name" conflict with others, you can print all registered plugins by "PageSpy.plugins";`,
+      );
+      return;
+    }
+    PageSpy.plugins.push(plugin);
+  }
+
   constructor(init: InitConfig = {}) {
     if (PageSpy.instance) {
       psLog.warn('Cannot initialize PageSpy multiple times');
@@ -59,27 +90,28 @@ export default class PageSpy {
     }
     PageSpy.instance = this;
 
-    this.config.mergeConfig(init);
+    const config = this.config.mergeConfig(init);
     this.request = new Request(this.config);
 
-    this.loadPlugins(
-      new ConsolePlugin(),
-      new ErrorPlugin(),
-      new NetworkPlugin(),
-      new SystemPlugin(),
-      new PagePlugin(),
-      new StoragePlugin(),
-      new DatabasePlugin(),
-    );
+    this.triggerPlugins('onInit', { socketStore, config });
     this.init();
   }
 
-  loadPlugins(...args: PageSpyPlugin[]) {
-    args.forEach((plugin) => {
-      this.plugins[plugin.name] = plugin;
-      if (plugin.onCreated) {
-        plugin.onCreated();
+  triggerPlugins<T extends PageSpyPluginLifecycle = PageSpyPluginLifecycle>(
+    lifecycle: T,
+    // TODO: args 对应到 PageSpyPlugin[lifecycle] 的参数
+    args?: any,
+  ) {
+    const { disabledPlugins } = this.config.get();
+    PageSpy.plugins.forEach((plugin) => {
+      if (
+        isArray(disabledPlugins) &&
+        disabledPlugins.length &&
+        disabledPlugins.includes(plugin.name)
+      ) {
+        return;
       }
+      plugin[lifecycle]?.(args);
     });
   }
 
@@ -115,6 +147,16 @@ export default class PageSpy {
     psLog.log('Plugins inited');
     if (config.autoRender) {
       this.render();
+    }
+  }
+
+  abort() {
+    this.triggerPlugins('onReset');
+    socketStore.close();
+    PageSpy.instance = null;
+    const root = document.querySelector(`#${Identifier}`);
+    if (root) {
+      document.documentElement.removeChild(root);
     }
   }
 
@@ -206,7 +248,8 @@ export default class PageSpy {
   }
 
   startRender() {
-    const { project, clientOrigin } = this.config.get();
+    const config = this.config.get();
+    const { project, clientOrigin } = config;
 
     const root = document.createElement('div');
     root.id = Identifier;
@@ -238,9 +281,9 @@ export default class PageSpy {
       <p><b>Project:</b> ${project}</p>
       `,
       onOk: () => {
-        const text = `${clientOrigin}/#/devtools?version=${encodeURIComponent(
-          this.name,
-        )}&address=${encodeURIComponent(this.address)}`;
+        const text = `${clientOrigin}/#/devtools?address=${encodeURIComponent(
+          this.address,
+        )}`;
         const copyRes = copy(text);
         let message = '';
         const langs = navigator.languages;
@@ -272,6 +315,11 @@ export default class PageSpy {
     logo.addEventListener('touchend', showModal, false);
     document.documentElement.insertAdjacentElement('beforeend', root);
     moveable(logo);
+    this.triggerPlugins('onMounted', {
+      root,
+      content,
+      socketStore,
+    });
     this.handleDeviceDPR();
 
     psLog.log('Render success');
@@ -293,3 +341,19 @@ export default class PageSpy {
     }
   }
 }
+
+const INTERNAL_PLUGINS = [
+  new ConsolePlugin(),
+  new ErrorPlugin(),
+  new NetworkPlugin(),
+  new StoragePlugin(),
+  new DatabasePlugin(),
+  new PagePlugin(),
+  new SystemPlugin(),
+];
+
+INTERNAL_PLUGINS.forEach((p) => {
+  PageSpy.registerPlugin(p);
+});
+
+export default PageSpy;
