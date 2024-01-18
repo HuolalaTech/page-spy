@@ -1,6 +1,6 @@
-## 插件
+# 插件
 
-### 插件的定义
+## 插件的定义
 
 ```ts
 import { SocketStoreType } from '@huolala-tech/page-spy-types/lib/base';
@@ -12,48 +12,52 @@ export abstract class PageSpyPlugin {
    * 在 PageSpy 内部的注册插件、禁用插件的功能都依赖 name 属性
    */
   public abstract name: string;
+
   /**
-   * @description `new PageSpy()` 时调用
+   * `new PageSpy()` 时调用
    */
   public abstract onInit: (params: OnInitParams) => any;
 
   /**
-   * @description 在 PageSpy 渲染完成后调用（如果有渲染过程的话）
+   * 在 PageSpy 渲染完成后调用（如果有渲染过程的话）
    */
   public abstract onMounted?: (params: OnMountedParams) => any;
 
   /**
-   * @description 当用户不再需要 PageSpy 时，插件应具备 重置/恢复 功能
+   * 当用户不再需要 PageSpy 时，插件应具备 重置/恢复 功能
    */
   public abstract onReset?: () => any;
 }
 
 export interface OnInitParams {
   /**
-   * @description 已经合并了用户传入的关于 PageSpy 实例化参数的配置信息
+   * 已经合并了用户传入的关于 PageSpy 实例化参数的配置信息
    */
   config: Required<InitConfig>;
+
   /**
-   * @description 包装了 socket 实例，插件开发者可以通过该属性与调试端 / API 交互
+   * 包装了 socket 实例，插件开发者可以通过该属性与调试端 / API 交互
    */
-  socketStore: SocketStore;
+  socketStore: SocketStoreType;
 }
 
 export interface OnMountedParams {
   // PageSpy 渲染的根节点
   root?: HTMLDivElement;
+
   // PageSpy 渲染的弹窗的根节点
   content?: HTMLDivElement;
+
   // 包装了 socket 实例，插件开发者可以通过该属性与调试端 / API 交互
-  socketStore: SocketStore;
+  socketStore: SocketStoreType;
 }
 ```
 
-### 行为约定
+## 行为约定
 
-如果当前插件会收集（或者希望对外公开）平台的某种行为「数据」，那么除了在 socketStore 广播数据外，我们约定插件在 socketStore 实例上额外派发一个 "public-data" 内部事件（Internal Event）。此举的目的是为了满足有统计需求或者持久化需求的插件能够从这个事件中统一收集数据，插件如果觉得某类数据不应该被 “公开”，则无需派发 "public-data" 事件。
+如果当前插件会收集（或者希望对外公开）平台的某种行为「数据」，那么除了在 `socketStore` 广播数据外，我们约定插件在 `socketStore` 实例上额外派发一个 "public-data" 内部事件（Internal Event）。此举的目的是为了满足有统计需求或者持久化需求的插件能够从这个事件中统一收集数据，插件如果觉得某类数据不应该被 “公开”，则无需派发 "public-data" 事件。
 
-### 插件实现案例
+## 插件实现案例
 
 案例说明：通过 rrweb 在客户端录制 DOM，功能包含：
 
@@ -156,7 +160,7 @@ export default class RRWebRecordPlugin implements PageSpyPlugin {
 }
 ```
 
-### 插件的使用方式
+## 插件的使用方式
 
 ```html
 <!-- 引入 SDK -->

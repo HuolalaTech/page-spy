@@ -1,6 +1,6 @@
-## Plugins
+# Plugins
 
-### Definition of a Plugin
+## Definition of a Plugin
 
 ```ts
 import { SocketStoreType } from '@huolala-tech/page-spy-types/lib/base';
@@ -12,48 +12,52 @@ export abstract class PageSpyPlugin {
    * The functionalities of registering and disabling plugins within PageSpy rely on the name property.
    */
   public abstract name: string;
+
   /**
-   * @description Called when `new PageSpy()` is invoked.
+   * Called when `new PageSpy()` is invoked.
    */
   public abstract onInit: (params: OnInitParams) => any;
 
   /**
-   * @description Called after the rendering of PageSpy is completed (if there is a rendering process).
+   * Called after the rendering of PageSpy is completed (if there is a rendering process).
    */
   public abstract onMounted?: (params: OnMountedParams) => any;
 
   /**
-   * @description When PageSpy is no longer needed, plugins should have a reset/recovery functionality.
+   * When PageSpy is no longer needed, plugins should have a reset/recovery functionality.
    */
   public abstract onReset?: () => any;
 }
 
 export interface OnInitParams {
   /**
-   * @description Merged configuration information about PageSpy instantiation parameters provided by the user.
+   * Merged configuration information about PageSpy instantiation parameters provided by the user.
    */
   config: Required<InitConfig>;
+
   /**
-   * @description Wraps the socket instance, allowing plugin developers to interact with the debugging terminal/API through this property.
+   * Wraps the socket instance, allowing plugin developers to interact with the debugging terminal/API through this property.
    */
-  socketStore: SocketStore;
+  socketStore: SocketStoreType;
 }
 
 export interface OnMountedParams {
   // Root node of the PageSpy rendering
   root?: HTMLDivElement;
+
   // Root node of the PageSpy rendering pop-up
   content?: HTMLDivElement;
+
   // Wraps the socket instance, allowing plugin developers to interact with the debugging terminal/API through this property.
-  socketStore: SocketStore;
+  socketStore: SocketStoreType;
 }
 ```
 
-### Behavioral Conventions
+## Behavioral Conventions
 
-If the current plugin collects (or wishes to publicly expose) some form of "data" regarding platform behavior, in addition to broadcasting data on `socketStore`, we conventionally dispatch an "public-data" internal event on the socketStore instance. This is done to meet the needs of plugins that require statistics or persistent data, allowing them to uniformly collect data from this event. If a plugin feels that certain data should not be "publicly" exposed, there is no need to dispatch the "public-data" event.
+If the current plugin collects (or wishes to publicly expose) some form of "data" regarding platform behavior, in addition to broadcasting data on `socketStore`, we conventionally dispatch an "public-data" internal event on the `socketStore` instance. This is done to meet the needs of plugins that require statistics or persistent data, allowing them to uniformly collect data from this event. If a plugin feels that certain data should not be "publicly" exposed, there is no need to dispatch the "public-data" event.
 
-### Plugin Implementation Example
+## Plugin Implementation Example
 
 Use case: Recording DOM on the client-side using rrweb, including:
 
@@ -156,7 +160,7 @@ export default class RRWebRecordPlugin implements PageSpyPlugin {
 }
 ```
 
-### Usage of the Plugin
+## Usage of the Plugin
 
 ```html
 <!-- Include SDK -->
