@@ -14,11 +14,18 @@ const info = uni.getSystemInfoSync() as {
   appVersion: string;
   hostName: string;
 };
+
+const HOST_MAP: Record<string, SpyDevice.Browser> = {
+  alipay: 'mp-alipay',
+  WeChat: 'mp-wechat',
+  Douyin: 'mp-douyin',
+};
+
 Device.info = {
   framework: 'uniapp',
   osName: info.osName.toLowerCase() as SpyDevice.OS,
   osVersion: info.osVersion,
-  browserName: 'mp-wechat', // TODO: TEMP
+  browserName: HOST_MAP[info.hostName] || 'unknown',
   browserVersion: info.appVersion,
 };
 
