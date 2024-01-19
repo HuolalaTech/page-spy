@@ -37,6 +37,6 @@ to get more detail.
 | Common types     | [`@huolala-tech/page-spy-types`](./packages/page-spy-types/)     | Done   |
 | Web sdk          | [`@huolala-tech/page-spy-browser`](./packages/page-spy-browser/) | Done   |
 | Wechat sdk       | [`@huolala-tech/page-spy-wechat`](./packages/page-spy-wechat/)   | Done   |
-| uniApp sdk       | `@huolala-tech/page-spy-uniapp`                                  | WIP    |
+| uniApp sdk       | [`@huolala-tech/page-spy-uniapp`](./packages/page-spy-uniapp)    | Done   |
 | Taro sdk         | `@huolala-tech/page-spy-taro`                                    | WIP    |
 | React Native sdk | `@huolala-tech/page-spy-rn`                                      | WIP    |
