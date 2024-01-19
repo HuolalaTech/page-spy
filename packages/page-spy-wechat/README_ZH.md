@@ -52,7 +52,17 @@ interface InitConfig {
   //  - true (Default)：默认仅允许 PageSpy 在开发版 ("develop") 和体验版 ("trial") 使用
   //  - false：允许正式版里开启
   disabledOnProd?: boolean;
+
+  // PageSpy 所有内置插件默认开启，可以按需禁用指定插件。
+  disabledPlugins?: (InternalPlugins | string)[];
 }
+
+type InternalPlugins =
+  | 'ConsolePlugin'
+  | 'ErrorPlugin'
+  | 'NetworkPlugin'
+  | 'StoragePlugin'
+  | 'SystemPlugin';
 
 ```
 

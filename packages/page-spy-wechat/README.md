@@ -50,7 +50,18 @@ interface InitConfig {
   // - true (Default): only allow pagespy init on develop and trail environment.
   // - false: allow using in release environment
   disabledOnProd?: boolean | null;
+
+  // All internal plugins are carried with PageSpy by default out of the box.
+  // You can disable some plugins as needed.
+  disabledPlugins?: (InternalPlugins | string)[];
 }
+
+type InternalPlugins =
+  | 'ConsolePlugin'
+  | 'ErrorPlugin'
+  | 'NetworkPlugin'
+  | 'StoragePlugin'
+  | 'SystemPlugin';
 ```
 
 For more details of mini-program usage, please refer to [Mini-Program Usage](https://github.com/HuolalaTech/page-spy/wiki/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E)

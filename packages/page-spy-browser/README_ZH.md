@@ -66,5 +66,17 @@ interface InitConfig {
   //     - true：SDK 将通过 ["https://", "wss://"] 访问 PageSpy 服务
   //     - false：SDK 将通过 ["http://", "ws://"] 访问 PageSpy 服务
   enableSSL?: boolean | null;
+
+  // PageSpy 所有内置插件默认开启，可以按需禁用指定插件。
+  disabledPlugins?: (InternalPlugins | string)[];
 }
+
+type InternalPlugins =
+  | 'ConsolePlugin'
+  | 'ErrorPlugin'
+  | 'NetworkPlugin'
+  | 'StoragePlugin'
+  | 'DatabasePlugin'
+  | 'PagePlugin'
+  | 'SystemPlugin';
 ```

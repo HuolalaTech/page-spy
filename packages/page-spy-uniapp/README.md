@@ -1,6 +1,14 @@
+[npm-image]: https://img.shields.io/npm/v/@huolala-tech/page-spy-uniapp?logo=npm&label=version
+[npm-url]: https://www.npmjs.com/package/@huolala-tech/page-spy-uniapp
+[minified-image]: https://img.shields.io/bundlephobia/min/@huolala-tech/page-spy-uniapp
+[minified-url]: https://unpkg.com/browse/@huolala-tech/page-spy-uniapp/dist/esm/index.min.js
+
 English | [中文](./README_ZH.md)
 
 # `@huolala-tech/page-spy-uniapp`
+
+[![SDK version][npm-image]][npm-url]
+[![SDK size][minified-image]][minified-url]
 
 > The SDK used in UniAPP miniprogram environment.
 
@@ -42,7 +50,18 @@ interface InitConfig {
   // - true (Default): only allow pagespy init on develop and trail environment.
   // - false: allow using in release environment
   disabledOnProd?: boolean | null;
+
+  // All internal plugins are carried with PageSpy by default out of the box.
+  // You can disable some plugins as needed.
+  disabledPlugins?: (InternalPlugins | string)[];
 }
+
+type InternalPlugins =
+  | 'ConsolePlugin'
+  | 'ErrorPlugin'
+  | 'NetworkPlugin'
+  | 'StoragePlugin'
+  | 'SystemPlugin';
 ```
 
 For more details of mini-program usage, please refer to [Mini-Program Usage](https://github.com/HuolalaTech/page-spy/wiki/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E)

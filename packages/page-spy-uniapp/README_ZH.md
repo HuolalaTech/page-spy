@@ -1,6 +1,14 @@
+[npm-image]: https://img.shields.io/npm/v/@huolala-tech/page-spy-uniapp?logo=npm&label=version
+[npm-url]: https://www.npmjs.com/package/@huolala-tech/page-spy-uniapp
+[minified-image]: https://img.shields.io/bundlephobia/min/@huolala-tech/page-spy-uniapp
+[minified-url]: https://unpkg.com/browse/@huolala-tech/page-spy-uniapp/dist/esm/index.min.js
+
 [English](./README.md) | 中文
 
 # `@huolala-tech/page-spy-uniapp`
+
+[![SDK version][npm-image]][npm-url]
+[![SDK size][minified-image]][minified-url]
 
 > 这个 SDK 用于调试 UniAPP 开发的小程序.
 
@@ -44,7 +52,17 @@ interface InitConfig {
   //  - true (Default)：默认仅允许 PageSpy 在开发版 ("develop") 和体验版 ("trial") 使用
   //  - false：允许正式版里开启
   disabledOnProd?: boolean;
+
+  // PageSpy 所有内置插件默认开启，可以按需禁用指定插件。
+  disabledPlugins?: (InternalPlugins | string)[];
 }
+
+type InternalPlugins =
+  | 'ConsolePlugin'
+  | 'ErrorPlugin'
+  | 'NetworkPlugin'
+  | 'StoragePlugin'
+  | 'SystemPlugin';
 
 ```
 

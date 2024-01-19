@@ -69,5 +69,18 @@ interface InitConfig {
   //     - true: the SDK will access the PageSpy service via ["https://", "wss://"].
   //     - false: the SDK will access the PageSpy service via ["http://", "wss://"]
   enableSSL?: boolean | null;
+
+  // All internal plugins are carried with PageSpy by default out of the box.
+  // You can disable some plugins as needed.
+  disabledPlugins?: (InternalPlugins | string)[];
 }
+
+type InternalPlugins =
+  | 'ConsolePlugin'
+  | 'ErrorPlugin'
+  | 'NetworkPlugin'
+  | 'StoragePlugin'
+  | 'DatabasePlugin'
+  | 'PagePlugin'
+  | 'SystemPlugin';
 ```
