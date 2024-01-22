@@ -10,12 +10,12 @@ setMPSDK(wx);
 
 const info = wx.getSystemInfoSync();
 const [osName, osVersion] = info.system.toLowerCase().split(' ');
-Device.info.osName = (
+Device.info.osType = (
   info.platform !== 'devtools' // NOTE: 小程序独有
     ? info.platform.toLowerCase()
     : osName
 ) as SpyDevice.OS;
-Device.info.browserName = 'mp-wechat';
+Device.info.browserType = 'mp-wechat';
 Device.info.osVersion = osVersion;
 Device.info.browserVersion = info.version;
 

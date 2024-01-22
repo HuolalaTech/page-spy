@@ -1,6 +1,5 @@
 import { psLog } from 'base/src';
 import { Config } from 'page-spy-browser/src/config';
-import { combineName, parseUserAgent } from 'base/src/device';
 
 interface TResponse<T> {
   code: string;
@@ -62,10 +61,8 @@ export default class Request {
   createRoom(): Promise<TResponse<TCreateRoom>> {
     const config = this.config.get();
     const scheme = this.getScheme();
-    const device = parseUserAgent();
-    const name = combineName(device);
     const query = joinQuery({
-      name,
+      name: navigator.userAgent,
       group: config.project,
       title: config.title,
     });

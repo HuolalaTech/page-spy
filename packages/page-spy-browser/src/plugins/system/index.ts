@@ -1,7 +1,6 @@
 import { getRandomId } from 'base/src';
 import socketStore from 'page-spy-browser/src/helpers/socket';
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
-import { parseUserAgent } from 'base/src/device';
 import '../../deps/modernizr';
 import { SpySystem, PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import { PUBLIC_DATA } from 'base/src/message/debug-type';
@@ -47,7 +46,6 @@ export default class SystemPlugin implements PageSpyPlugin {
       id,
       system: {
         ua: navigator.userAgent,
-        ...parseUserAgent(),
       },
       features,
     } as SpySystem.DataItem);

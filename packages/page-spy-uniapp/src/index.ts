@@ -13,19 +13,36 @@ const info = uni.getSystemInfoSync() as {
   osVersion: string;
   appVersion: string;
   hostName: string;
+  uniPlatform: string;
 };
 
+let browserType: SpyDevice.DeviceInfo['browserType'] = 'unknown';
+
 const HOST_MAP: Record<string, SpyDevice.Browser> = {
-  alipay: 'mp-alipay',
-  WeChat: 'mp-wechat',
-  Douyin: 'mp-douyin',
+  'mp-weixin': 'mp-wechat',
 };
+
+const TOUTIAO_MAP: Record<string, SpyDevice.Browser> = {
+  Toutiao: 'mp-toutiao',
+  Douyin: 'mp-douyin',
+  news_article_lite: 'mp-toutiao-lt',
+  douyin_lite: 'mp-douyin-lt',
+  live_stream: 'mp-huoshan',
+  XiGua: 'mp-xigua',
+  PPX: 'mp-ppx',
+};
+
+if (info.uniPlatform === 'mp-toutiao') {
+  browserType = TOUTIAO_MAP[info.hostName] || browserType;
+} else {
+  browserType = HOST_MAP[info.uniPlatform] || browserType;
+}
 
 Device.info = {
   framework: 'uniapp',
-  osName: info.osName.toLowerCase() as SpyDevice.OS,
+  osType: info.osName.toLowerCase() as SpyDevice.OS,
   osVersion: info.osVersion,
-  browserName: HOST_MAP[info.hostName] || 'unknown',
+  browserType,
   browserVersion: info.appVersion,
 };
 

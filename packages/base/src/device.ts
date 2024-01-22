@@ -26,9 +26,9 @@ const platforms = {
 export function parseUserAgent(
   uaString: string = window.navigator.userAgent,
 ): DeviceInfo {
-  let osName: SpyDevice.OS = 'unknown';
+  let osType: SpyDevice.OS = 'unknown';
   let osVersion = 'unknown';
-  let browserName: SpyDevice.Browser = 'unknown';
+  let browserType: SpyDevice.Browser = 'unknown';
   let browserVersion = 'unknown';
 
   // 判断操作系统
@@ -37,7 +37,7 @@ export function parseUserAgent(
       const reg = platforms[platform as keyof typeof platforms];
       const match = uaString.match(reg);
       if (match) {
-        osName = platform as SpyDevice.OS;
+        osType = platform as SpyDevice.OS;
         osVersion = match[1]?.replaceAll('_', '.');
         break;
       }
@@ -49,7 +49,7 @@ export function parseUserAgent(
     if (Object.prototype.hasOwnProperty.call(browsers, browser)) {
       const match = uaString.match(browsers[browser as keyof typeof browsers]);
       if (match) {
-        browserName = browser as SpyDevice.Browser;
+        browserType = browser as SpyDevice.Browser;
         // eslint-disable-next-line prefer-destructuring
         browserVersion = match[1];
         break;
@@ -58,16 +58,16 @@ export function parseUserAgent(
   }
 
   return {
-    osName,
+    osType,
     osVersion,
-    browserName,
+    browserType,
     browserVersion,
   };
 }
 
 export const combineName = ({
-  osName,
+  osType,
   osVersion,
-  browserName,
+  browserType,
   browserVersion,
-}: DeviceInfo) => `${osName}/${osVersion} ${browserName}/${browserVersion}`;
+}: DeviceInfo) => `${osType}/${osVersion} ${browserType}/${browserVersion}`;

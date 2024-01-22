@@ -12,7 +12,7 @@ interface TResponse<T> {
 }
 
 interface TCreateRoom {
-  name: string;
+  name: string; // TODO this `name` is used for browser and os info, should be reconsidered.
   address: string;
   password: string;
   group: string;
