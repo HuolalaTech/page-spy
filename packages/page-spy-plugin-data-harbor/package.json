@@ -4,8 +4,8 @@
   "description": "Used for caching data and downloading.",
   "homepage": "https://github.com/HuolalaTech/page-spy/tree/main/packages/page-spy-plugin-data-harbor",
   "license": "MIT",
-  "main": "dist/index.min.js",
-  "module": "dist/esm.min.js",
+  "main": "dist/iife/index.min.js",
+  "module": "dist/esm/index.min.js",
   "files": [
     "dist"
   ],
@@ -25,7 +25,9 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.0",
-    "@huolala-tech/page-spy-types": "^1.6.1"
+    "@huolala-tech/page-spy-types": "^1.6.1",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "fflate": "^0.8.1"
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",

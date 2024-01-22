@@ -1,3 +1,10 @@
+import {
+  Container,
+  PRIVATE_DB_NAME,
+  INDEXEDDB_SUPPORTED,
+  STORE_NAME,
+} from './base';
+
 /* eslint-disable @typescript-eslint/no-use-before-define */
 const promisify = <T>(request: IDBRequest<T>): Promise<T> => {
   return new Promise((resolve, reject) => {
@@ -18,23 +25,21 @@ const promisify = <T>(request: IDBRequest<T>): Promise<T> => {
   });
 };
 
-const DB_NAME = 'page-spy';
-const STORE_NAME = 'data-harbor';
-const INDEXEDDB_SUPPORTED = IDBFactory && IDBObjectStore && window.indexedDB;
-
-export default class Harbor {
-  constructor() {
+export default class IDBContainer implements Container {
+  public init() {
     if (INDEXEDDB_SUPPORTED) {
-      const req = window.indexedDB.open(DB_NAME);
+      const req = window.indexedDB.open(PRIVATE_DB_NAME);
       req.addEventListener('upgradeneeded', (evt) => {
         const db = (evt.target as IDBRequest).result;
         db.createObjectStore(STORE_NAME, { autoIncrement: true });
       });
+      return true;
     }
+    return false;
   }
 
   get database() {
-    return promisify(window.indexedDB.open(DB_NAME));
+    return promisify(window.indexedDB.open(PRIVATE_DB_NAME));
   }
 
   async getStore(mode: IDBTransactionMode = 'readonly') {
@@ -75,7 +80,9 @@ export default class Harbor {
 
   public async drop() {
     try {
-      const result = await promisify(window.indexedDB.deleteDatabase(DB_NAME));
+      const result = await promisify(
+        window.indexedDB.deleteDatabase(PRIVATE_DB_NAME),
+      );
       return result;
     } catch (e) {
       return false;

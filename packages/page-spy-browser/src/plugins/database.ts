@@ -4,6 +4,7 @@ import socketStore from 'page-spy-browser/src/helpers/socket';
 import { DEBUG_MESSAGE_TYPE, makeMessage } from 'base/src/message';
 import { SpyDatabase, PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import { PUBLIC_DATA } from 'base/src/message/debug-type';
+import { SKIP_PUBLIC_IDB_PREFIX } from 'base/src/skip-public';
 
 export function promisify<T = any>(req: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -273,8 +274,14 @@ export class DatabasePlugin implements PageSpyPlugin {
 
   private static sendData(info: Omit<SpyDatabase.DataItem, 'id'>) {
     const data = makeMessage(DEBUG_MESSAGE_TYPE.DATABASE, info);
-    socketStore.dispatchEvent(PUBLIC_DATA, data);
     // The user wouldn't want to get the stale data, so here we set the 2nd parameter to true.
     socketStore.broadcastMessage(data, true);
+
+    if (['update', 'clear', 'drop'].includes(info.action)) {
+      const dbName = (info as any).database;
+      if (!dbName.includes(SKIP_PUBLIC_IDB_PREFIX)) {
+        socketStore.dispatchEvent(PUBLIC_DATA, data);
+      }
+    }
   }
 }

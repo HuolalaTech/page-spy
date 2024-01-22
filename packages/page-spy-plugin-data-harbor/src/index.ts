@@ -4,20 +4,25 @@ import {
   PageSpyPlugin,
 } from '@huolala-tech/page-spy-types';
 import { PUBLIC_DATA } from 'base/src/message/debug-type';
-import { isCN, isNumber } from 'base/src';
-import Harbor from './harbor';
+import { isCN, isNumber, isString } from 'base/src';
+import { Harbor, SaveAs } from './harbor';
 
 interface DataHarborConfig {
   maximum?: number;
+  saveAs?: SaveAs;
 }
 
 export default class DataHarborPlugin implements PageSpyPlugin {
-  private harbor = new Harbor();
+  public name = 'DataHarborPlugin';
+
+  // "Harbor" is an abstraction for scheduling data actions.
+  private harbor: Harbor;
+
+  // Specify the place to save data.
+  private saveAs: SaveAs = 'indexedDB';
 
   // Specify the maximum number of data entries for caching.
   private maximum = 5000;
-
-  public name = 'DataHarborPlugin';
 
   public static hasInited = false;
 
@@ -27,6 +32,10 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     if (isNumber(config.maximum)) {
       this.maximum = config.maximum;
     }
+    if (isString(config.saveAs)) {
+      this.saveAs = config.saveAs;
+    }
+    this.harbor = new Harbor({ saveAs: this.saveAs });
   }
 
   public onInit({ socketStore }: OnInitParams) {
@@ -35,16 +44,18 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
     socketStore.addListener(PUBLIC_DATA, async (message) => {
       const { data, type } = message;
-      const key = (await this.harbor.add({
+      const timestamp = Date.now();
+      const key = (await this.harbor.container.add({
         data,
         type,
+        timestamp,
       })) as number;
       if (key > this.maximum) {
-        await this.harbor.clear();
+        await this.harbor.container.clear();
       }
     });
     window.addEventListener('beforeunload', async () => {
-      await this.harbor.drop();
+      await this.harbor.container.drop();
     });
   }
 
@@ -58,7 +69,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     div.textContent = isCN() ? '下载日志数据' : 'Download the data';
 
     div.addEventListener('click', async () => {
-      const data = await this.harbor.getAll();
+      const data = await this.harbor.container.getAll();
       const blob = new Blob([JSON.stringify(data)], {
         type: 'application/json',
       });

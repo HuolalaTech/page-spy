@@ -2,6 +2,7 @@ import typescript from 'rollup-plugin-typescript2';
 import del from 'rollup-plugin-delete';
 import babel from '@rollup/plugin-babel';
 import nodeResolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
 import terser from '@rollup/plugin-terser';
 import alias from '@rollup/plugin-alias';
@@ -14,6 +15,7 @@ const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 
 const plugins = [
   nodeResolve(),
+  commonjs(),
   typescript({
     tsconfigOverride: { include: ['packages/page-spy-plugin-data-harbor/src'] },
   }),
@@ -24,7 +26,7 @@ const plugins = [
   alias({
     entries: [{ find: 'base', replacement: resolve(root, '../base') }],
   }),
-  terser(),
+  // terser(),
   babel({
     /**
      * Why exclude core-js?
@@ -54,12 +56,12 @@ export default {
   input: 'src/index.ts',
   output: [
     {
-      file: 'dist/index.min.js',
+      file: pkg.main,
       format: 'iife',
       name: 'DataHarborPlugin',
     },
     {
-      file: 'dist/esm.min.js',
+      file: pkg.module,
       format: 'esm',
     },
   ],
