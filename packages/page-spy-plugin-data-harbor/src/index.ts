@@ -1,16 +1,24 @@
 import {
+  SpyMessage,
   OnInitParams,
   OnMountedParams,
   PageSpyPlugin,
 } from '@huolala-tech/page-spy-types';
 import { PUBLIC_DATA } from 'base/src/message/debug-type';
 import { isCN, isNumber, isString } from 'base/src';
+import { DEBUG_MESSAGE_TYPE } from 'base/src/message';
+import { strFromU8, zlibSync, strToU8 } from 'fflate';
 import { Harbor, SaveAs } from './harbor';
+import { SKIP_PUBLIC_IDB_PREFIX } from './skip-public';
 
 interface DataHarborConfig {
   maximum?: number;
   saveAs?: SaveAs;
 }
+
+const minifyData = (d: any) => {
+  return strFromU8(zlibSync(strToU8(JSON.stringify(d)), { level: 9 }), true);
+};
 
 export default class DataHarborPlugin implements PageSpyPlugin {
   public name = 'DataHarborPlugin';
@@ -22,7 +30,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
   private saveAs: SaveAs = 'indexedDB';
 
   // Specify the maximum number of data entries for caching.
-  private maximum = 5000;
+  private maximum = 10000;
 
   public static hasInited = false;
 
@@ -43,12 +51,14 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     DataHarborPlugin.hasInited = true;
 
     socketStore.addListener(PUBLIC_DATA, async (message) => {
-      const { data, type } = message;
+      if (!this.isCaredPublicData(message)) return;
+
       const timestamp = Date.now();
       const key = (await this.harbor.container.add({
-        data,
-        type,
+        type: message.type,
         timestamp,
+        // data: message.data,
+        data: minifyData(message.data),
       })) as number;
       if (key > this.maximum) {
         await this.harbor.container.clear();
@@ -95,5 +105,28 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     if (node) {
       node.remove();
     }
+  }
+
+  private isCaredPublicData(message: SpyMessage.MessageItem) {
+    if (!message) return false;
+    const { type, data } = message;
+    switch (type) {
+      case DEBUG_MESSAGE_TYPE.CONSOLE:
+      case DEBUG_MESSAGE_TYPE.NETWORK:
+      case DEBUG_MESSAGE_TYPE.STORAGE:
+      case DEBUG_MESSAGE_TYPE.RRWEB_EVENT:
+        return true;
+      case DEBUG_MESSAGE_TYPE.DATABASE:
+        if (['update', 'clear', 'drop'].includes(data.action)) {
+          if (data.database?.includes(SKIP_PUBLIC_IDB_PREFIX)) {
+            return false;
+          }
+          return true;
+        }
+        break;
+      default:
+        return false;
+    }
+    return false;
   }
 }

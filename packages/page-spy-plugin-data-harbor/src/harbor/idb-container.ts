@@ -26,14 +26,19 @@ const promisify = <T>(request: IDBRequest<T>): Promise<T> => {
 };
 
 export default class IDBContainer implements Container {
-  public init() {
+  public async init() {
     if (INDEXEDDB_SUPPORTED) {
       const req = window.indexedDB.open(PRIVATE_DB_NAME);
       req.addEventListener('upgradeneeded', (evt) => {
-        const db = (evt.target as IDBRequest).result;
+        const db = (evt.target as IDBRequest<IDBDatabase>).result;
         db.createObjectStore(STORE_NAME, { autoIncrement: true });
       });
-      return true;
+      try {
+        await promisify(req);
+        return true;
+      } catch (e) {
+        return false;
+      }
     }
     return false;
   }

@@ -6,4 +6,4 @@
  * we define specific identifiers to assist PageSpy in sending "public-data" events at the right
  * moments.
  */
-export const SKIP_PUBLIC_IDB_PREFIX = '__SKIP__';
+export const SKIP_PUBLIC_IDB_PREFIX = '__PUBLIC__';

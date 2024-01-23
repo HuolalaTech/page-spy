@@ -3,7 +3,7 @@ import { Container } from './base';
 export default class MemoryContainer implements Container {
   data: any[] = [];
 
-  public init() {
+  public async init() {
     return true;
   }
 
