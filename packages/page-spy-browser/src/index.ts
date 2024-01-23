@@ -27,7 +27,6 @@ import logoUrl from './assets/logo.svg';
 import { Config } from './config';
 import { DatabasePlugin } from './plugins/database';
 import { Toast } from './component/toast';
-import { parseUserAgent } from 'base/src/device';
 
 const Identifier = '__pageSpy';
 
