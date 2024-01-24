@@ -5,15 +5,18 @@ import {
   PageSpyPlugin,
 } from '@huolala-tech/page-spy-types';
 import { PUBLIC_DATA } from 'base/src/message/debug-type';
-import { isCN, isNumber, isString } from 'base/src';
+import { isCN, isNumber, isPlainObject, isString } from 'base/src';
 import { DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import { strFromU8, zlibSync, strToU8 } from 'fflate';
 import { Harbor, SaveAs } from './harbor';
-import { SKIP_PUBLIC_IDB_PREFIX } from './skip-public';
+// import { SKIP_PUBLIC_IDB_PREFIX } from './skip-public';
+
+type DataType = 'console' | 'network' | 'rrweb-event';
 
 interface DataHarborConfig {
   maximum?: number;
   saveAs?: SaveAs;
+  caredData?: Record<DataType, boolean>;
 }
 
 const minifyData = (d: any) => {
@@ -30,18 +33,32 @@ export default class DataHarborPlugin implements PageSpyPlugin {
   private saveAs: SaveAs = 'indexedDB';
 
   // Specify the maximum number of data entries for caching.
-  private maximum = 10000;
+  // Default no limitation.
+  private maximum = 0;
+
+  // Specify which types of data to collect.
+  private caredData = {
+    console: true,
+    network: true,
+    'rrweb-event': true,
+  };
 
   public static hasInited = false;
 
   public static hasMounted = false;
 
   constructor(config: DataHarborConfig = {}) {
-    if (isNumber(config.maximum)) {
+    if (isNumber(config.maximum) && config.maximum >= 0) {
       this.maximum = config.maximum;
     }
     if (isString(config.saveAs)) {
       this.saveAs = config.saveAs;
+    }
+    if (isPlainObject(config.caredData)) {
+      this.caredData = {
+        ...this.caredData,
+        ...config.caredData,
+      };
     }
     this.harbor = new Harbor({ saveAs: this.saveAs });
   }
@@ -60,7 +77,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
         // data: message.data,
         data: minifyData(message.data),
       })) as number;
-      if (key > this.maximum) {
+      if (this.maximum !== 0 && key > this.maximum) {
         await this.harbor.container.clear();
       }
     });
@@ -109,24 +126,28 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
   private isCaredPublicData(message: SpyMessage.MessageItem) {
     if (!message) return false;
-    const { type, data } = message;
+    const { type } = message;
     switch (type) {
+      // case DEBUG_MESSAGE_TYPE.STORAGE:
       case DEBUG_MESSAGE_TYPE.CONSOLE:
+        if (this.caredData.console) return true;
+        return false;
       case DEBUG_MESSAGE_TYPE.NETWORK:
-      case DEBUG_MESSAGE_TYPE.STORAGE:
+        if (this.caredData.network) return true;
+        return false;
       case DEBUG_MESSAGE_TYPE.RRWEB_EVENT:
-        return true;
-      case DEBUG_MESSAGE_TYPE.DATABASE:
-        if (['update', 'clear', 'drop'].includes(data.action)) {
-          if (data.database?.includes(SKIP_PUBLIC_IDB_PREFIX)) {
-            return false;
-          }
-          return true;
-        }
-        break;
+        if (this.caredData['rrweb-event']) return true;
+        return false;
+      // case DEBUG_MESSAGE_TYPE.DATABASE:
+      //   if (['update', 'clear', 'drop'].includes(data.action)) {
+      //     if (data.database?.includes(SKIP_PUBLIC_IDB_PREFIX)) {
+      //       return false;
+      //     }
+      //     return true;
+      //   }
+      //   break;
       default:
         return false;
     }
-    return false;
   }
 }
