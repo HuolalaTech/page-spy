@@ -1,8 +1,8 @@
 # `@huolala-tech/page-spy-plugin-rrweb`
 
-> Record the DOM mutation within PageSpy (only be available in browser environment).
+> 配合 PageSpy 录制 DOM 更新（仅适用于浏览器环境）。
 
-## Definition
+## 类型定义
 
 ```ts
 import { PageSpyPlugin } from '@huolala-tech/page-spy-types';
@@ -20,37 +20,37 @@ declare class RRWebPlugin implements PageSpyPlugin {
 export default RRWebPlugin;
 ```
 
-## Usage
+## 使用
 
-### Options 1: Load with script
+### 方式 1：使用 `<script>` 加载
 
 ```html
 <html>
   <head>
-    <!-- 1. Load PageSpy -->
+    <!-- 1. 加载 PageSpy -->
     <script src="https://<your-host>/page-spy/index.min.js"></script>
-    <!-- 2. Load the plugin -->
+    <!-- 2. 加载插件 -->
     <script src="https://<your-host>/plugin/rrweb/index.min.js"></script>
-    <!-- 3. Register plugin && Init PageSpy -->
+    <!-- 3. 注册插件 && 初始化 PageSpy -->
     <script>
-      // Register plugin
+      // 注册插件
       PageSpy.registerPlugin(new RRWebPlugin(options));
-      // Init PageSpy
+      // 实例化 PageSpy
       window.$pageSpy = new PageSpy();
     </script>
   </head>
 </html>
 ```
 
-### Option 2: Import with ESM
+### 方式 2：使用 `import` 引入
 
 ```ts
-// In your entry file like "main.ts"
+// 在你的入口文件中（如 "main.ts"）导入
 import PageSpy from '@huolala-tech/page-spy-browser';
 import RRWebPlugin from '@huolala-tech/page-spy-plugin-rrweb';
 
-// Register plugin
+// 注册插件
 PageSpy.registerPlugin(new RRWebPlugin(options));
-// Init PageSpy
+// 实例化 PageSpy
 window.$pageSpy = new PageSpy();
 ```

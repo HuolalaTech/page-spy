@@ -30,14 +30,14 @@ export default DataHarborPlugin;
   <head>
     <!-- 1. Load PageSpy -->
     <script src="https://<your-host>/page-spy/index.min.js"></script>
-    <!-- 2. Load the DataHarborPlugin -->
+    <!-- 2. Load the plugin -->
     <script src="https://<your-host>/plugin/data-harbor/index.min.js"></script>
     <!-- 3. Register plugin && Init PageSpy -->
     <script>
       // Register plugin
-      PageSpy.registerPlugin(new DataHarborPlugin(config?: DataHarborConfig))
+      PageSpy.registerPlugin(new DataHarborPlugin(config));
       // Init PageSpy
-      window.$pageSpy = new PageSpy()
+      window.$pageSpy = new PageSpy();
     </script>
   </head>
 </html>
@@ -51,7 +51,7 @@ import PageSpy from '@huolala-tech/page-spy-browser';
 import DataHarborPlugin from '@huolala-tech/page-spy-plugin-data-harbor';
 
 // Register plugin
-PageSpy.registerPlugin(new DataHarborPlugin(config?: DataHarborConfig))
+PageSpy.registerPlugin(new DataHarborPlugin(config));
 // Init PageSpy
-window.$pageSpy = new PageSpy()
+window.$pageSpy = new PageSpy();
 ```

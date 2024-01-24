@@ -30,14 +30,14 @@ export default DataHarborPlugin;
   <head>
     <!-- 1. 加载 PageSpy -->
     <script src="https://<your-host>/page-spy/index.min.js"></script>
-    <!-- 2. 加载插件 DataHarborPlugin -->
+    <!-- 2. 加载插件 -->
     <script src="https://<your-host>/plugin/data-harbor/index.min.js"></script>
     <!-- 3. 注册插件 && 实例化 PageSpy -->
     <script>
       // 注册插件
-      PageSpy.registerPlugin(new DataHarborPlugin(config?: DataHarborConfig))
+      PageSpy.registerPlugin(new DataHarborPlugin(config));
       // 实例化
-      window.$pageSpy = new PageSpy()
+      window.$pageSpy = new PageSpy();
     </script>
   </head>
 </html>
@@ -51,7 +51,7 @@ import PageSpy from '@huolala-tech/page-spy-browser';
 import DataHarborPlugin from '@huolala-tech/page-spy-plugin-data-harbor';
 
 // 注册插件
-PageSpy.registerPlugin(new DataHarborPlugin(config?: DataHarborConfig))
+PageSpy.registerPlugin(new DataHarborPlugin(config));
 // 实例化 PageSpy
-window.$pageSpy = new PageSpy()
+window.$pageSpy = new PageSpy();
 ```
