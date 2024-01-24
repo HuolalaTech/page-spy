@@ -6,7 +6,6 @@ export type OS =
   | 'mac'
   | 'android'
   | 'linux'
-  | 'harmony'
   | 'unknown';
 
 export type MPType =
@@ -21,10 +20,11 @@ export type MPType =
   | 'mp-jd'
   | 'mp-toutiao-lt'
   | 'mp-douyin-lt'
-  | 'mp-huoshan'
+  | 'mp-douyin-huoshan'
   | 'mp-xigua'
   | 'mp-ppx' // 皮皮虾
-  | 'mp-dingtalk';
+  | 'mp-dingtalk'
+  | 'mp-xhs';
 
 // all use lower case for convenience in comparing.
 export type Browser =

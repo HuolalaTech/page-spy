@@ -28,7 +28,7 @@ const TOUTIAO_MAP: Record<string, SpyDevice.Browser> = {
   Douyin: 'mp-douyin',
   news_article_lite: 'mp-toutiao-lt',
   douyin_lite: 'mp-douyin-lt',
-  live_stream: 'mp-huoshan',
+  live_stream: 'mp-douyin-huoshan',
   XiGua: 'mp-xigua',
   PPX: 'mp-ppx',
 };
@@ -41,7 +41,7 @@ if (info.uniPlatform === 'web') {
 } else if (info.uniPlatform === 'mp-toutiao') {
   browserType = TOUTIAO_MAP[info.hostName] || 'mp-toutiao';
 } else {
-  browserType = HOST_MAP[info.uniPlatform] || browserType;
+  browserType = HOST_MAP[info.uniPlatform] || info.uniPlatform;
 }
 
 Device.info = {
