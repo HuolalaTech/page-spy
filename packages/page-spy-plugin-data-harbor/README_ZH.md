@@ -1,8 +1,8 @@
 # `@huolala-tech/page-spy-plugin-data-harbor`
 
-> Used for caching data and downloading (only be available in browser environment).
+> 用于缓存、下载数据（当前只支持在浏览器环境中使用）。
 
-## Definition
+## 类型定义
 
 ```ts
 type DataType = 'console' | 'network' | 'rrweb-event';
@@ -21,37 +21,37 @@ declare class DataHarborPlugin {
 export default DataHarborPlugin;
 ```
 
-## Usage
+## 使用
 
-### Options 1: Load with script
+### 方式 1：使用 `<script>` 加载
 
 ```html
 <html>
   <head>
-    <!-- 1. Load PageSpy -->
+    <!-- 1. 加载 PageSpy -->
     <script src="https://<your-host>/page-spy/index.min.js"></script>
-    <!-- 2. Load the DataHarborPlugin -->
+    <!-- 2. 加载插件 DataHarborPlugin -->
     <script src="https://<your-host>/plugin/data-harbor/index.min.js"></script>
-    <!-- 3. Register plugin && Init PageSpy -->
+    <!-- 3. 注册插件 && 实例化 PageSpy -->
     <script>
-      // Register plugin
+      // 注册插件
       PageSpy.registerPlugin(new DataHarborPlugin(config?: DataHarborConfig))
-      // Init PageSpy
+      // 实例化
       window.$pageSpy = new PageSpy()
     </script>
   </head>
 </html>
 ```
 
-### Option 2: Import with ESM
+### 方式 2：使用 `import` 导入
 
 ```ts
-// In your entry file like "main.ts"
+// 在你的入口文件中（如 "main.ts"）导入
 import PageSpy from '@huolala-tech/page-spy-browser';
 import DataHarborPlugin from '@huolala-tech/page-spy-plugin-data-harbor';
 
-// Register plugin
+// 注册插件
 PageSpy.registerPlugin(new DataHarborPlugin(config?: DataHarborConfig))
-// Init PageSpy
+// 实例化 PageSpy
 window.$pageSpy = new PageSpy()
 ```
