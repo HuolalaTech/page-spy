@@ -35,6 +35,5 @@ export class Harbor {
     }
     // eslint-disable-next-line new-cap
     this.container = new targetContainer.container();
-    this.container.init();
   }
 }

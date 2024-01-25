@@ -20,6 +20,13 @@ interface DataHarborConfig {
   caredData?: Record<DataType, boolean>;
 }
 
+type CacheMessageItem = Pick<
+  SpyMessage.MessageItem<SpyMessage.DataType, any>,
+  'type' | 'data'
+> & {
+  timestamp: number;
+};
+
 const minifyData = (d: any) => {
   return strFromU8(zlibSync(strToU8(JSON.stringify(d)), { level: 9 }), true);
 };
@@ -28,7 +35,11 @@ export default class DataHarborPlugin implements PageSpyPlugin {
   public name = 'DataHarborPlugin';
 
   // "Harbor" is an abstraction for scheduling data actions.
-  private harbor: Harbor;
+  private harbor: Harbor | null = null;
+
+  private harborIsReady = false;
+
+  private waitForFillHarbor: CacheMessageItem[] = [];
 
   // Specify the place to save data.
   private saveAs: SaveAs = 'indexedDB';
@@ -61,15 +72,27 @@ export default class DataHarborPlugin implements PageSpyPlugin {
         ...config.caredData,
       };
     }
-    this.harbor = new Harbor({ saveAs: this.saveAs });
+    this.initHarbor();
   }
 
-  public onInit({ socketStore }: OnInitParams) {
+  public async onInit({ socketStore }: OnInitParams) {
     if (DataHarborPlugin.hasInited) return;
     DataHarborPlugin.hasInited = true;
 
     socketStore.addListener(PUBLIC_DATA, async (message) => {
       if (!this.isCaredPublicData(message)) return;
+
+      const timestamp = Date.now();
+      const data = {
+        type: message.type,
+        timestamp,
+        data: minifyData(message.data),
+      };
+
+      if (!this.harbor || !this.harborIsReady) {
+        this.waitForFillHarbor.push(data);
+        return;
+      }
 
       const count = await this.harbor.container.count();
       if (count === IDB_ERROR_COUNT) return;
@@ -77,15 +100,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
         return;
       }
 
-      const timestamp = Date.now();
-      await this.harbor.container.add({
-        type: message.type,
-        timestamp,
-        data: minifyData(message.data),
-      });
-    });
-    window.addEventListener('beforeunload', async () => {
-      await this.harbor.container.drop();
+      await this.harbor.container.add(data);
     });
   }
 
@@ -99,7 +114,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     div.textContent = isCN() ? '下载日志数据' : 'Download the data';
 
     div.addEventListener('click', async () => {
-      const data = await this.harbor.container.getAll();
+      const data = await this.harbor?.container.getAll();
       const blob = new Blob([JSON.stringify(data)], {
         type: 'application/json',
       });
@@ -125,6 +140,20 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     if (node) {
       node.remove();
     }
+  }
+
+  private async initHarbor() {
+    this.harbor = new Harbor({ saveAs: this.saveAs });
+    await this.harbor.container.drop();
+    await this.harbor.container.init();
+    if (this.waitForFillHarbor.length) {
+      const task = this.waitForFillHarbor.map((data) => {
+        return this.harbor?.container.add(data);
+      });
+      await Promise.all(task);
+    }
+    this.waitForFillHarbor = [];
+    this.harborIsReady = true;
   }
 
   private isCaredPublicData(message: SpyMessage.MessageItem) {

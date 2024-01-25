@@ -101,7 +101,7 @@ export default class IDBContainer implements Container {
     try {
       await promisify(window.indexedDB.deleteDatabase(PRIVATE_DB_NAME));
     } catch (e: any) {
-      psLog.error(`idbContainer.drop() failed. The error detail: ${e.message}`);
+      //
     }
   }
 }
