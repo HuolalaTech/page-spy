@@ -53,7 +53,7 @@ export default class NetworkProxyBase {
       },
       false,
     );
-    if (Number(req.status) >= 200) {
+    if (Number(req.readyState) === ReqReadyState.DONE) {
       this.socketStore.dispatchEvent(PUBLIC_DATA, message);
     }
     this.socketStore.broadcastMessage(

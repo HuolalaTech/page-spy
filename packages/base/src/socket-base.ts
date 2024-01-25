@@ -363,9 +363,13 @@ export abstract class SocketStoreBase {
       return;
     }
     this.events[type].forEach((fn) => {
-      fn.call(this, data, (d: SpyMessage.MessageItem) => {
-        this.unicastMessage(d, data.from);
-      });
+      (fn as SpyBase.InteractiveEventCallback).call(
+        this,
+        data,
+        (d: SpyMessage.MessageItem) => {
+          this.unicastMessage(d, data.from);
+        },
+      );
     });
   }
 
