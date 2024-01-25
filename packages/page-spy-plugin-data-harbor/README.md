@@ -66,10 +66,10 @@ export default DataHarborPlugin;
 
 Upon successful integration, the popup that appears after clicking on the client-side rendering control should include a "Download Log Data" button. Clicking on this button will initiate the export of JSON data file.
 
-![Download](./screenshots/download.jpg)
+<img src="./screenshots/download.jpg" alt="Download" height="400" />
 
 ### Replay log
 
 Goto the debugger's room list page and click the "Replay log" button, select the file exported in prev step, now you can use the replay to debug.
 
-![Entry](./screenshots/entry.jpg)
+<img src="./screenshots/entry.jpg" alt="Entry" height="400" />

@@ -66,10 +66,10 @@ export default DataHarborPlugin;
 
 引入成功后，点击客户端渲染的控件后出现的弹窗中应该包含「下载日志数据」按钮，点击后会导出 json 数据。
 
-![Download](./screenshots/download-zh.jpg)
+<img src="./screenshots/download-zh.jpg" alt="Download" height="400" />
 
 ### 离线数据回放
 
 点击「离线日志回放」，选择上一步中导出的 json 数据即可开始使用回放功能！
 
-![Entry](./screenshots/entry-zh.jpg)
+<img src="./screenshots/entry-zh.jpg" alt="Entry" height="400" />
