@@ -1,7 +1,9 @@
-[npm-image]: https://img.shields.io/npm/v/@huolala-tech/page-spy-data-harbor?logo=npm&label=version
-[npm-url]: https://www.npmjs.com/package/@huolala-tech/page-spy-data-harbor
-[minified-image]: https://img.shields.io/bundlephobia/min/@huolala-tech/page-spy-data-harbor
-[minified-url]: https://unpkg.com/browse/@huolala-tech/page-spy-data-harbor/dist/iife/index.min.js
+[npm-image]: https://img.shields.io/npm/v/@huolala-tech/page-spy-plugin-data-harbor?logo=npm&label=version
+[npm-url]: https://www.npmjs.com/package/@huolala-tech/page-spy-plugin-data-harbor
+[minified-image]: https://img.shields.io/bundlephobia/min/@huolala-tech/page-spy-plugin-data-harbor
+[minified-url]: https://unpkg.com/browse/@huolala-tech/page-spy-plugin-data-harbor/dist/iife/index.min.js
+
+English | [中文](./README_ZH.md)
 
 # `@huolala-tech/page-spy-plugin-data-harbor`
 

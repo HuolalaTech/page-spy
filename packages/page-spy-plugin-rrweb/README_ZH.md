@@ -1,4 +1,14 @@
+[npm-image]: https://img.shields.io/npm/v/@huolala-tech/page-spy-plugin-rrweb?logo=npm&label=version
+[npm-url]: https://www.npmjs.com/package/@huolala-tech/page-spy-plugin-rrweb
+[minified-image]: https://img.shields.io/bundlephobia/min/@huolala-tech/page-spy-plugin-rrweb
+[minified-url]: https://unpkg.com/browse/@huolala-tech/page-spy-plugin-rrweb/dist/iife/index.min.js
+
+[English](./README.md) | 中文
+
 # `@huolala-tech/page-spy-plugin-rrweb`
+
+[![SDK version][npm-image]][npm-url]
+[![SDK size][minified-image]][minified-url]
 
 > `RRWebPlugin` 使用 `rrweb` 记录 DOM 更新（该插件可用于浏览器环境）。
 

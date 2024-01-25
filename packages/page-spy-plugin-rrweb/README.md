@@ -1,7 +1,9 @@
-[npm-image]: https://img.shields.io/npm/v/@huolala-tech/page-spy-rrweb?logo=npm&label=version
-[npm-url]: https://www.npmjs.com/package/@huolala-tech/page-spy-rrweb
-[minified-image]: https://img.shields.io/bundlephobia/min/@huolala-tech/page-spy-rrweb
-[minified-url]: https://unpkg.com/browse/@huolala-tech/page-spy-rrweb/dist/iife/index.min.js
+[npm-image]: https://img.shields.io/npm/v/@huolala-tech/page-spy-plugin-rrweb?logo=npm&label=version
+[npm-url]: https://www.npmjs.com/package/@huolala-tech/page-spy-plugin-rrweb
+[minified-image]: https://img.shields.io/bundlephobia/min/@huolala-tech/page-spy-plugin-rrweb
+[minified-url]: https://unpkg.com/browse/@huolala-tech/page-spy-plugin-rrweb/dist/iife/index.min.js
+
+English | [中文](./README_ZH.md)
 
 # `@huolala-tech/page-spy-plugin-rrweb`
 
