@@ -18,10 +18,6 @@ export interface DataItem {
   id: string;
   system: {
     ua: string;
-    osName: OS;
-    osVersion: string;
-    browserName: Browser;
-    browserVersion: string;
   };
   features: Record<Category, FeatureDescriptor[]>;
 }

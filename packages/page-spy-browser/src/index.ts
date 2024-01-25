@@ -249,7 +249,7 @@ class PageSpy {
 
   startRender() {
     const config = this.config.get();
-    const { project, clientOrigin } = config;
+    const { project, clientOrigin, title } = config;
 
     const root = document.createElement('div');
     root.id = Identifier;
@@ -269,16 +269,14 @@ class PageSpy {
     });
 
     const modal = new Modal();
-    const [os, browser] = this.name.split(' ');
     const content = new Content({
       content: `
       <p><b>Device ID:</b> <span style="font-family: 'Monaco'">${this.address.slice(
         0,
         4,
       )}</span></p>
-      <p><b>System:</b> ${os}</p>
-      <p><b>Browser:</b> ${browser}</p>
       <p><b>Project:</b> ${project}</p>
+      <p><b>Title:</b> ${title}</p>
       `,
       onOk: () => {
         const text = `${clientOrigin}/#/devtools?address=${encodeURIComponent(

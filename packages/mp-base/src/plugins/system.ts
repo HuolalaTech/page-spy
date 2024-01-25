@@ -3,6 +3,7 @@ import { getRandomId } from 'base/src';
 import socketStore from 'mp-base/src/helpers/socket';
 import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import type { SpySystem, PageSpyPlugin } from '@huolala-tech/page-spy-types';
+import { combineName } from 'base/src/device';
 
 export default class SystemPlugin implements PageSpyPlugin {
   public name = 'SystemPlugin';
@@ -20,8 +21,7 @@ export default class SystemPlugin implements PageSpyPlugin {
       makeMessage(DEBUG_MESSAGE_TYPE.SYSTEM, {
         id,
         system: {
-          ua: deviceInfo.browserName,
-          ...deviceInfo,
+          ua: combineName(deviceInfo),
         },
         features: {},
       } as SpySystem.DataItem),
