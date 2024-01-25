@@ -1,6 +1,6 @@
 # `@huolala-tech/page-spy-plugin-rrweb`
 
-> Record the DOM mutation within PageSpy (only be available in browser environment).
+> Use `rrweb` under the hood, record the DOM mutation within PageSpy (only be available in browser environment).
 
 ## Definition
 
@@ -22,35 +22,41 @@ export default RRWebPlugin;
 
 ## Usage
 
-### Options 1: Load with script
+### Load plugin
 
-```html
-<html>
-  <head>
-    <!-- 1. Load PageSpy -->
-    <script src="https://<your-host>/page-spy/index.min.js"></script>
-    <!-- 2. Load the plugin -->
-    <script src="https://<your-host>/plugin/rrweb/index.min.js"></script>
-    <!-- 3. Register plugin && Init PageSpy -->
-    <script>
-      // Register plugin
-      PageSpy.registerPlugin(new RRWebPlugin(options));
-      // Init PageSpy
-      window.$pageSpy = new PageSpy();
-    </script>
-  </head>
-</html>
-```
+- Options 1: Load with script
 
-### Option 2: Import with ESM
+  ```html
+  <html>
+    <head>
+      <!-- 1. Load PageSpy -->
+      <script src="https://<your-host>/page-spy/index.min.js"></script>
+      <!-- 2. Load the plugin -->
+      <script src="https://<your-host>/plugin/rrweb/index.min.js"></script>
+      <!-- 3. Register plugin && Init PageSpy -->
+      <script>
+        // Register plugin
+        PageSpy.registerPlugin(new RRWebPlugin(options));
+        // Init PageSpy
+        window.$pageSpy = new PageSpy();
+      </script>
+    </head>
+  </html>
+  ```
 
-```ts
-// In your entry file like "main.ts"
-import PageSpy from '@huolala-tech/page-spy-browser';
-import RRWebPlugin from '@huolala-tech/page-spy-plugin-rrweb';
+- Option 2: Import within ESM
 
-// Register plugin
-PageSpy.registerPlugin(new RRWebPlugin(options));
-// Init PageSpy
-window.$pageSpy = new PageSpy();
-```
+  ```ts
+  // In your entry file like "main.ts"
+  import PageSpy from '@huolala-tech/page-spy-browser';
+  import RRWebPlugin from '@huolala-tech/page-spy-plugin-rrweb';
+
+  // Register plugin
+  PageSpy.registerPlugin(new RRWebPlugin(options));
+  // Init PageSpy
+  window.$pageSpy = new PageSpy();
+  ```
+
+### Replay
+
+The data from 'rrweb-event' is typically larger (more interactions and complex webpage structures result in larger data). When developers debug, real-time transmission can impose a burden on network overhead, and page interactions are not always critical information. Considering these factors, this plugin only dispatch the 'public-data' event ([what's the `public-data` event?](../../docs/plugin.md#behavioral-conventions)) for statistical plugins to collect.

@@ -48,7 +48,8 @@ export default class RRWebPlugin implements PageSpyPlugin {
 
         socketStore.dispatchEvent(PUBLIC_DATA, data);
         if (allowOnline) {
-          socketStore.broadcastMessage(data);
+          // TODO
+          // socketStore.broadcastMessage(data);
         }
       },
     });
