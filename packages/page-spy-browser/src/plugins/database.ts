@@ -273,8 +273,11 @@ export class DatabasePlugin implements PageSpyPlugin {
 
   private static sendData(info: Omit<SpyDatabase.DataItem, 'id'>) {
     const data = makeMessage(DEBUG_MESSAGE_TYPE.DATABASE, info);
-    socketStore.dispatchEvent(PUBLIC_DATA, data);
     // The user wouldn't want to get the stale data, so here we set the 2nd parameter to true.
     socketStore.broadcastMessage(data, true);
+
+    if (['update', 'clear', 'drop'].includes(info.action)) {
+      socketStore.dispatchEvent(PUBLIC_DATA, data);
+    }
   }
 }

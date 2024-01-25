@@ -116,6 +116,13 @@ export function isClass(obj: unknown): obj is Function {
   return typeof obj === 'function' && typeof obj.prototype !== 'undefined';
 }
 
+export function isCN() {
+  const langs = navigator.languages;
+  return ['zh-CN', 'zh-HK', 'zh-TW', 'zh'].some((l) => {
+    return langs.includes(l);
+  });
+}
+
 type TypedArray =
   | Int8Array
   | Uint8Array

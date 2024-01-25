@@ -315,7 +315,7 @@ class PageSpy {
     moveable(logo);
     this.triggerPlugins('onMounted', {
       root,
-      content,
+      content: content.el,
       socketStore,
     });
     this.handleDeviceDPR();

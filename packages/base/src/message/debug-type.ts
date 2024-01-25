@@ -8,6 +8,7 @@ export const NETWORK = 'network';
 export const PAGE = 'page';
 export const STORAGE = 'storage';
 export const DATABASE = 'database';
+export const RRWEB_EVENT = 'rrweb-event';
 /**
  * Interactive: some type which sended by developer and need to reply something
  */

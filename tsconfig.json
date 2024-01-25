@@ -24,7 +24,8 @@
       "base/*": ["./packages/base/*"],
       "mp-base/*": ["./packages/mp-base/*"],
       "page-spy-browser/*": ["./packages/page-spy-browser/*"],
-      "page-spy-wechat/*": ["./packages/page-spy-wechat/*"]
+      "page-spy-wechat/*": ["./packages/page-spy-wechat/*"],
+      "page-spy-plugins/*": ["./packages/page-spy-plugins/*"]
     }
   },
   "exclude": ["**/node_modules", "**/dist"]

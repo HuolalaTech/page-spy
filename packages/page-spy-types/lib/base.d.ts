@@ -1,4 +1,5 @@
 import type {
+  DataType,
   InteractiveType,
   InternalType,
   MessageItem,
@@ -20,7 +21,7 @@ export type InteractiveEventCallback = (
   reply: (data: any) => void,
 ) => void;
 
-export type InternalEventCallback = (data: any) => void;
+export type InternalEventCallback = (data: MessageItem<DataType>) => void;
 
 export type EventType = InteractiveType | InternalType;
 
