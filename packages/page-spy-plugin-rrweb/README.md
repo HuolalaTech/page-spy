@@ -1,4 +1,12 @@
+[npm-image]: https://img.shields.io/npm/v/@huolala-tech/page-spy-rrweb?logo=npm&label=version
+[npm-url]: https://www.npmjs.com/package/@huolala-tech/page-spy-rrweb
+[minified-image]: https://img.shields.io/bundlephobia/min/@huolala-tech/page-spy-rrweb
+[minified-url]: https://unpkg.com/browse/@huolala-tech/page-spy-rrweb/dist/iife/index.min.js
+
 # `@huolala-tech/page-spy-plugin-rrweb`
+
+[![SDK version][npm-image]][npm-url]
+[![SDK size][minified-image]][minified-url]
 
 > Use `rrweb` under the hood, record the DOM mutation within PageSpy (only be available in browser environment).
 
