@@ -1,3 +1,4 @@
+import { psLog } from 'base/src';
 import {
   Container,
   PRIVATE_DB_NAME,
@@ -59,9 +60,9 @@ export default class IDBContainer implements Container {
     try {
       const store = await this.getStore('readwrite');
       const key = await promisify(store.add(data));
-      return key;
+      return key as number;
     } catch (e) {
-      return null;
+      return IDB_ERROR_COUNT;
     }
   }
 
@@ -89,20 +90,18 @@ export default class IDBContainer implements Container {
     try {
       const store = await this.getStore('readwrite');
       await promisify(store.clear());
-      return true;
-    } catch (e) {
-      return false;
+    } catch (e: any) {
+      psLog.error(
+        `idbContainer.clear() failed. The error detail: ${e.message}`,
+      );
     }
   }
 
   public async drop() {
     try {
-      const result = await promisify(
-        window.indexedDB.deleteDatabase(PRIVATE_DB_NAME),
-      );
-      return result;
-    } catch (e) {
-      return false;
+      await promisify(window.indexedDB.deleteDatabase(PRIVATE_DB_NAME));
+    } catch (e: any) {
+      psLog.error(`idbContainer.drop() failed. The error detail: ${e.message}`);
     }
   }
 }

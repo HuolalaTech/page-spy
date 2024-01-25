@@ -7,7 +7,7 @@ export default class MemoryContainer implements Container {
     return true;
   }
 
-  public add(d: any) {
+  public async add(d: any) {
     this.data.push(d);
     return this.data.length - 1;
   }
