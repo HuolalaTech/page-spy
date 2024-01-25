@@ -14,7 +14,7 @@
     "preversion": "yarn run test",
     "prepublishOnly": "lerna run build",
     "release:major": "lerna publish major",
-    "release:minor": "lerna publish patch",
+    "release:minor": "lerna publish minor",
     "release:patch": "lerna publish patch",
     "release:beta": "lerna publish prerelease --dist-tag beta"
   },
