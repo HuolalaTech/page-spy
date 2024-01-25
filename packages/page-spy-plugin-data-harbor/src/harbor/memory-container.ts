@@ -16,6 +16,10 @@ export default class MemoryContainer implements Container {
     return this.data;
   }
 
+  public async count() {
+    return this.data.length;
+  }
+
   public clear() {
     this.data = [];
   }

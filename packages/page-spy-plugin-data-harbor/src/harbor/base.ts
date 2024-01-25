@@ -7,6 +7,7 @@ export abstract class Container {
   public abstract init(): Promise<boolean>;
   public abstract add(data: any): any;
   public abstract getAll(): any;
+  public abstract count(): Promise<number>;
   public abstract clear(): any;
   public abstract drop(): any;
 }

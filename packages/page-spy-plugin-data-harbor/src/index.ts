@@ -9,6 +9,7 @@ import { isCN, isNumber, isPlainObject, isString } from 'base/src';
 import { DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import { strFromU8, zlibSync, strToU8 } from 'fflate';
 import { Harbor, SaveAs } from './harbor';
+import { IDB_ERROR_COUNT } from './harbor/idb-container';
 // import { SKIP_PUBLIC_IDB_PREFIX } from './skip-public';
 
 type DataType = 'console' | 'network' | 'rrweb-event';
@@ -70,16 +71,18 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     socketStore.addListener(PUBLIC_DATA, async (message) => {
       if (!this.isCaredPublicData(message)) return;
 
+      const count = await this.harbor.container.count();
+      if (count === IDB_ERROR_COUNT) return;
+      if (this.maximum !== 0 && count > this.maximum) {
+        return;
+      }
+
       const timestamp = Date.now();
-      const key = (await this.harbor.container.add({
+      await this.harbor.container.add({
         type: message.type,
         timestamp,
-        // data: message.data,
         data: minifyData(message.data),
-      })) as number;
-      if (this.maximum !== 0 && key > this.maximum) {
-        await this.harbor.container.clear();
-      }
+      });
     });
     window.addEventListener('beforeunload', async () => {
       await this.harbor.container.drop();

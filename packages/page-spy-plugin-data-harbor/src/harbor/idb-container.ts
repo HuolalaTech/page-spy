@@ -25,6 +25,8 @@ const promisify = <T>(request: IDBRequest<T>): Promise<T> => {
   });
 };
 
+export const IDB_ERROR_COUNT = -1;
+
 export default class IDBContainer implements Container {
   public async init() {
     if (INDEXEDDB_SUPPORTED) {
@@ -70,6 +72,16 @@ export default class IDBContainer implements Container {
       return data;
     } catch (e) {
       return [];
+    }
+  }
+
+  public async count() {
+    try {
+      const store = await this.getStore();
+      const count = await promisify(store.count());
+      return count;
+    } catch (e) {
+      return IDB_ERROR_COUNT;
     }
   }
 
