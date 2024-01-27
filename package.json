@@ -13,10 +13,10 @@
     "typecheck": "tsc --noEmit",
     "preversion": "yarn run test",
     "prepublishOnly": "lerna run build",
-    "release:major": "lerna publish major",
-    "release:minor": "lerna publish minor",
-    "release:patch": "lerna publish patch",
-    "release:beta": "lerna publish prerelease --dist-tag beta"
+    "release:major": "lerna publish major --yes",
+    "release:minor": "lerna publish minor --yes",
+    "release:patch": "lerna publish patch --yes",
+    "release:beta": "lerna publish prerelease --dist-tag beta --yes"
   },
   "gitHooks": {
     "pre-commit": "lint-staged"
