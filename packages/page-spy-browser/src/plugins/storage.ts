@@ -14,29 +14,7 @@ export class StoragePlugin implements PageSpyPlugin {
 
   private originClear: Storage['clear'] | null = null;
 
-  private cookieStoreChangeListener = (e: Event) => {
-    const { changed, deleted } = e as CookieChangeEvent;
-    if (changed.length > 0) {
-      changed.forEach((cookie) => {
-        const data = {
-          type: 'cookie',
-          action: 'set',
-          ...cookie,
-        } as const;
-        StoragePlugin.sendStorageItem(data);
-      });
-    }
-    if (deleted.length > 0) {
-      deleted.forEach((cookie) => {
-        const data = {
-          type: 'cookie',
-          action: 'remove',
-          name: cookie.name,
-        } as const;
-        StoragePlugin.sendStorageItem(data);
-      });
-    }
-  };
+  private cookieStoreChangeListener: ((evt: Event) => void) | null = null;
 
   // eslint-disable-next-line class-methods-use-this
   public onInit() {
@@ -57,7 +35,7 @@ export class StoragePlugin implements PageSpyPlugin {
     if (this.originSetItem) {
       Storage.prototype.setItem = this.originSetItem;
     }
-    if (this.cookieStoreChangeListener) {
+    if (this.cookieStoreChangeListener && window.cookieStore) {
       window.cookieStore.removeEventListener(
         'change',
         this.cookieStoreChangeListener,
@@ -175,6 +153,29 @@ export class StoragePlugin implements PageSpyPlugin {
     };
 
     if (window.cookieStore) {
+      this.cookieStoreChangeListener = (e: Event) => {
+        const { changed, deleted } = e as CookieChangeEvent;
+        if (changed.length > 0) {
+          changed.forEach((cookie) => {
+            const data = {
+              type: 'cookie',
+              action: 'set',
+              ...cookie,
+            } as const;
+            StoragePlugin.sendStorageItem(data);
+          });
+        }
+        if (deleted.length > 0) {
+          deleted.forEach((cookie) => {
+            const data = {
+              type: 'cookie',
+              action: 'remove',
+              name: cookie.name,
+            } as const;
+            StoragePlugin.sendStorageItem(data);
+          });
+        }
+      };
       window.cookieStore.addEventListener(
         'change',
         this.cookieStoreChangeListener,
