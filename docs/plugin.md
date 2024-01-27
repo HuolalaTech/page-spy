@@ -1,5 +1,16 @@
 # Plugins
 
+## SDK that supports plugin registration
+
+- `@huolala-tech/page-spy-browser@^1.7.0`;
+- `@huolala-tech/page-spy-wechat@^1.7.0`;
+- `@huolala-tech/page-spy-uniapp@^1.7.0`;
+
+## Official plugins
+
+- [`@huolala-tech/page-spy-plugin-rrweb`](../packages/page-spy-plugin-rrweb): use `rrweb` to record the DOM mutation;
+- [`@huolala-tech/page-spy-plugin-data-harbor`](../packages/page-spy-plugin-data-harbor): providing offline caching and data downloading capabilities;
+
 ## Definition of a Plugin
 
 ```ts
