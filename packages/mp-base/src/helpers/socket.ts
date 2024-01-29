@@ -11,6 +11,9 @@ export class MPSocketWrapper extends SocketWrapper {
 
   private state: SocketState = 0;
 
+  // some ali-family app only support single socket connection...
+  public static isSingleSocket = false;
+
   init(url: string) {
     this.state = SocketState.CONNECTING;
     this.socketInstance = getMPSDK().connectSocket({

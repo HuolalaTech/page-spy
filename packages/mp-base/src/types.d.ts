@@ -11,13 +11,23 @@ type KVList = {
   value: any;
 }[];
 
+declare type SocketOnOpenHandler = (res: {
+  header?: Record<string, string>;
+}) => void;
+declare type SocketOnCloseHandler = (res: {
+  code: number;
+  reason: string;
+}) => void;
+declare type SocketOnErrorHandler = (msg: string) => void;
+declare type SocketOnMessageHandler = (data: string | ArrayBuffer) => void;
+
 declare type MPSocket = {
   send(data: object): void;
   close(data: {}): void;
-  onOpen(fun: (res: { header?: Record<string, string> }) => void): void;
-  onClose(fun: (res: { code: number; reason: string }) => void): void;
-  onError(fun: (msg: string) => void): void;
-  onMessage(fun: (data: string | ArrayBuffer) => void): void;
+  onOpen(fun: SocketOnOpenHandler): void;
+  onClose(fun: SocketOnCloseHandler): void;
+  onError(fun: SocketOnErrorHandler): void;
+  onMessage(fun: SocketOnMessageHandler): void;
 };
 
 type StorageParams = {
@@ -118,6 +128,13 @@ type MPNetworkAPI = {
       header?: Record<string, string>;
     } & AsyncCallback,
   ): MPSocket;
+
+  onSocketOpen(handler: SocketOnOpenHandler): void;
+  onSocketClose(handler: SocketOnCloseHandler): void;
+  onSocketError(handler: SocketOnErrorHandler): void;
+  onSocketMessage(handler: SocketOnMessageHandler): void;
+  sendSocketMessage(data: string | ArrayBuffer): void;
+  closeSocket(params: AsyncCallback): void;
 };
 
 type MPSystemAPI = {
