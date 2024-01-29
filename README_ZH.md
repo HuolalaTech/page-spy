@@ -23,7 +23,7 @@
 
 ## 简介
 
-这个仓库是 [HuolalaTech/page-spy-web][page-spy-web] 使用的 SDK。具体而言 [SDKs]('./packages') 负责收集页面信息；[HuolalaTech/page-spy-web][page-spy-web] 消费收集的信息，对数据进行过滤和整理，并将其转换成一种标准格式，最后在页面上呈现。
+这个仓库是 [HuolalaTech/page-spy-web][page-spy-web] 使用的 SDK。具体而言 [SDKs](./packages) 负责收集页面信息；[HuolalaTech/page-spy-web][page-spy-web] 消费收集的信息，对数据进行过滤和整理，并将其转换成一种标准格式，最后在页面上呈现。
 
 ## 使用
 
@@ -31,11 +31,20 @@
 
 ## SDKs
 
-| Type             | Repo                                                             | Status |
-| ---------------- | ---------------------------------------------------------------- | ------ |
-| Common types     | [`@huolala-tech/page-spy-types`](./packages/page-spy-types/)     | Done   |
-| Web sdk          | [`@huolala-tech/page-spy-browser`](./packages/page-spy-browser/) | Done   |
-| Wechat sdk       | [`@huolala-tech/page-spy-wechat`](./packages/page-spy-wechat/)   | Done   |
-| uniApp sdk       | `@huolala-tech/page-spy-uniapp`                                  | WIP    |
-| Taro sdk         | `@huolala-tech/page-spy-taro`                                    | WIP    |
-| React Native sdk | `@huolala-tech/page-spy-rn`                                      | WIP    |
+| Repo                                                             | Type             | Status |
+| ---------------------------------------------------------------- | ---------------- | ------ |
+| [`@huolala-tech/page-spy-types`](./packages/page-spy-types/)     | Common types     | Done   |
+| [`@huolala-tech/page-spy-browser`](./packages/page-spy-browser/) | Web sdk          | Done   |
+| [`@huolala-tech/page-spy-wechat`](./packages/page-spy-wechat/)   | Wechat sdk       | Done   |
+| [`@huolala-tech/page-spy-uniapp`](./packages/page-spy-uniapp/)   | uniApp sdk       | Done   |
+| `@huolala-tech/page-spy-taro`                                    | Taro sdk         | WIP    |
+| `@huolala-tech/page-spy-rn`                                      | React Native sdk | WIP    |
+
+## 官方插件
+
+> 插件文档：[PageSpy 插件]('./docs/plugin_zh.md')
+
+| Repo                                                                                   | Platform | Type                        | Status |
+| -------------------------------------------------------------------------------------- | -------- | --------------------------- | ------ |
+| [`@huolala-tech/page-spy-plugin-rrweb`](./packages/page-spy-plugin-rrweb/)             | Web      | 监听 DOM 更新，记录操作轨迹 | Done   |
+| [`@huolala-tech/page-spy-plugin-data-harbor`](./packages/page-spy-plugin-data-harbor/) | Web      | 离线缓存数据，支持下载日志  | Done   |

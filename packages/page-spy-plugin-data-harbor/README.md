@@ -14,7 +14,7 @@ The `DataHarborPlugin` can be used in browser environment, providing offline cac
 
 In the past, remote debugging had a prerequisite that "both the client and debugging server must be online simultaneously." By utilizing the `DataHarborPlugin`, it internally listens for the `"public-data"` event ([what is the `public-data` event?](../../docs/plugin.md#behavioral-conventions)), allowing the offline caching of data. This innovation breaks the previous prerequisite of both the client and debugging server needing to be online simultaneously. When issues are identified by the client, testing colleagues can directly export the data, marking a significant departure from the historical requirement of simultaneous online status for both the client and debugging server.
 
-`DataHarborPlugin` defaults to storing data in `indexedDB` and does not impose any limitations on the quantity of cached data; these behaviors can be configured during plugin initialization. If a data limit is specified by `maximum` field, the cached data will not exceed this value. Prior to page unload (`"beforeunload"`), cached data is discarded and re-cached.
+`DataHarborPlugin` defaults to storing data in `indexedDB` and does not impose any limitations on the quantity of cached data; these behaviors can be configured during plugin initialization. If a data limit is specified by `maximum` field, the cached data will not exceed this value. The `DataHarborPlugin` plugin, upon each instantiation, discards any cached data and recaches it.
 
 ## Definition
 
@@ -25,8 +25,15 @@ type DataType = 'console' | 'network' | 'rrweb-event';
 type SaveAs = 'indexedDB' | 'memory';
 
 interface DataHarborConfig {
+  // Specify the maximum number of data to cache
+  // Default value is 0, indicating no limitation
   maximum?: number;
+
+  // Specify where the cache should be stored
+  // Default value is "indexedDB"
   saveAs?: SaveAs;
+
+  // Specify which types of data should be collected
   caredData?: Record<DataType, boolean>;
 }
 
