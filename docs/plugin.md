@@ -1,3 +1,5 @@
+English | [中文](./plugin_zh.md)
+
 # Plugins
 
 ## SDK that supports plugin registration

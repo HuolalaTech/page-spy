@@ -2,6 +2,8 @@
 [npm-url]: https://www.npmjs.com/package/@huolala-tech/page-spy-plugin-rrweb
 [minified-image]: https://img.shields.io/bundlephobia/min/@huolala-tech/page-spy-plugin-rrweb
 [minified-url]: https://unpkg.com/browse/@huolala-tech/page-spy-plugin-rrweb/dist/iife/index.min.js
+[rrweb-repo]: https://github.com/rrweb-io/rrweb
+[rrweb-record-options]: https://github.com/rrweb-io/rrweb/blob/master/guide.zh_CN.md#配置参数-1
 
 [English](./README.md) | 中文
 
@@ -10,7 +12,7 @@
 [![SDK version][npm-image]][npm-url]
 [![SDK size][minified-image]][minified-url]
 
-> `RRWebPlugin` 使用 `rrweb` 记录 DOM 更新（该插件可用于浏览器环境）。
+> `RRWebPlugin` 使用 `rrweb` 记录 DOM 更新，该插件可用于浏览器环境。
 
 ## 类型定义
 
@@ -27,6 +29,8 @@ declare class RRWebPlugin implements PageSpyPlugin {
 
 export default RRWebPlugin;
 ```
+
+`RRWebPlugin` 在内部使用 [`rrweb-record`][rrweb-repo] 记录 DOM 更新，实例化时的参数请参考 [录制参数][rrweb-record-options]。
 
 ## 使用
 

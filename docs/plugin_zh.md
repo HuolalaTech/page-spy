@@ -1,3 +1,5 @@
+[English](./plugin.md) | 中文
+
 # 插件
 
 ## 支持注册插件的 SDK

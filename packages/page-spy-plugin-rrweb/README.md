@@ -2,6 +2,8 @@
 [npm-url]: https://www.npmjs.com/package/@huolala-tech/page-spy-plugin-rrweb
 [minified-image]: https://img.shields.io/bundlephobia/min/@huolala-tech/page-spy-plugin-rrweb
 [minified-url]: https://unpkg.com/browse/@huolala-tech/page-spy-plugin-rrweb/dist/iife/index.min.js
+[rrweb-repo]: https://github.com/rrweb-io/rrweb
+[rrweb-record-options]: https://github.com/rrweb-io/rrweb/blob/master/guide.md#options
 
 English | [中文](./README_ZH.md)
 
@@ -10,7 +12,7 @@ English | [中文](./README_ZH.md)
 [![SDK version][npm-image]][npm-url]
 [![SDK size][minified-image]][minified-url]
 
-> Use `rrweb` under the hood, record the DOM mutation within PageSpy (only be available in browser environment).
+> Use `rrweb` under the hood, record the DOM mutation within PageSpy, only be available in browser environment.
 
 ## Definition
 
@@ -29,6 +31,8 @@ declare class RRWebPlugin implements PageSpyPlugin {
 
 export default RRWebPlugin;
 ```
+
+`RRWebPlugin` use [`rrweb-record`][rrweb-repo] under the hood, the instantiate options reference [record options][rrweb-record-options].
 
 ## Usage
 
