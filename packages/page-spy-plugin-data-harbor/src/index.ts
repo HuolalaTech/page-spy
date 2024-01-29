@@ -5,7 +5,7 @@ import {
   PageSpyPlugin,
 } from '@huolala-tech/page-spy-types';
 import { PUBLIC_DATA } from 'base/src/message/debug-type';
-import { isCN, isNumber, isPlainObject, isString } from 'base/src';
+import { isCN, isNumber, isPlainObject, isString, psLog } from 'base/src';
 import { DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import { strFromU8, zlibSync, strToU8 } from 'fflate';
 import { Harbor, SaveAs } from './harbor';
@@ -118,15 +118,23 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       const blob = new Blob([JSON.stringify(data)], {
         type: 'application/json',
       });
+      const root: HTMLElement =
+        document.getElementsByTagName('body')[0] || document.documentElement;
+      if (!root) {
+        psLog.error(
+          'Download file failed because cannot find the document.body & document.documentElement',
+        );
+        return;
+      }
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.download = `${new Date().toLocaleString()}.json`;
       a.href = url;
       a.style.display = 'none';
-      document.body.appendChild(a);
+      root.insertAdjacentElement('beforeend', a);
       a.click();
 
-      document.body.removeChild(a);
+      root.removeChild(a);
       URL.revokeObjectURL(url);
     });
 
