@@ -7,6 +7,7 @@ export { InitConfig };
 interface PageSpyConstructor {
   new (config: InitConfig): PageSpyBase;
   instance: PageSpyBase | null;
+  abort(): void;
 }
 
 declare const PageSpy: PageSpyConstructor;

@@ -33,9 +33,10 @@ interface PageSpyBrowser extends PageSpyBase {
 }
 
 interface PageSpyConstructor {
-  new (config: InitConfig): PageSpyBrowser;
+  new (config?: InitConfig): PageSpyBrowser;
   instance: PageSpyBrowser | null;
   render(): void;
+  abort(): void;
 }
 
 declare const PageSpy: PageSpyConstructor;
