@@ -16,36 +16,58 @@ export class MPSocketWrapper extends SocketWrapper {
 
   init(url: string) {
     this.state = SocketState.CONNECTING;
-    this.socketInstance = getMPSDK().connectSocket({
-      url,
-      multiple: true, // for alipay mp to return a task
-      complete() {}, // make sure the uniapp return a task
-    });
-    this.socketInstance.onClose((data) => {
+    const mp = getMPSDK();
+    const closeHandler: SocketOnCloseHandler = (data) => {
       this.state = SocketState.CLOSED;
       this.emit('close', data);
-    });
-    this.socketInstance.onError((data) => {
-      this.state = SocketState.CLOSED;
-      this.emit('error', data);
-    });
-    this.socketInstance.onOpen((data) => {
+    };
+    const openHandler: SocketOnOpenHandler = (data) => {
       this.state = SocketState.OPEN;
       this.emit('open', data);
-    });
-    this.socketInstance.onMessage((data) => {
+    };
+    const errorHandler: SocketOnErrorHandler = (data) => {
+      this.state = SocketState.CLOSED;
+      this.emit('error', data);
+    };
+    const messageHandler: SocketOnMessageHandler = (data) => {
       this.emit('message', data);
-    });
+    };
+
+    if (!MPSocketWrapper.isSingleSocket) {
+      this.socketInstance = mp.connectSocket({
+        url,
+        multiple: true, // for alipay mp to return a task
+        complete() {}, // make sure the uniapp return a task
+      });
+      this.socketInstance.onClose(closeHandler);
+      this.socketInstance.onError(errorHandler);
+      this.socketInstance.onOpen(openHandler);
+      this.socketInstance.onMessage(messageHandler);
+    } else {
+      mp.connectSocket({ url });
+      mp.onSocketClose(closeHandler);
+      mp.onSocketError(errorHandler);
+      mp.onSocketMessage(messageHandler);
+      mp.onSocketOpen(openHandler);
+    }
   }
 
   send(data: string) {
-    this.socketInstance?.send({
-      data,
-    });
+    if (MPSocketWrapper.isSingleSocket) {
+      getMPSDK().sendSocketMessage({ data });
+    } else {
+      this.socketInstance?.send({
+        data,
+      });
+    }
   }
 
   close() {
-    this.socketInstance?.close({});
+    if (MPSocketWrapper.isSingleSocket) {
+      getMPSDK().closeSocket({});
+    } else {
+      this.socketInstance?.close({});
+    }
     this.state = SocketState.CLOSED;
     this.clearListeners();
   }

@@ -133,7 +133,9 @@ type MPNetworkAPI = {
   onSocketClose(handler: SocketOnCloseHandler): void;
   onSocketError(handler: SocketOnErrorHandler): void;
   onSocketMessage(handler: SocketOnMessageHandler): void;
-  sendSocketMessage(data: string | ArrayBuffer): void;
+  sendSocketMessage(
+    params: { data: string | ArrayBuffer } & AsyncCallback,
+  ): void;
   closeSocket(params: AsyncCallback): void;
 };
 
