@@ -43,13 +43,17 @@ export default RRWebPlugin;
     <head>
       <!-- 1. Load PageSpy -->
       <script src="https://<your-host>/page-spy/index.min.js"></script>
-      <!-- 2. Load the plugin -->
+      <!-- 2. Load the DataHarborPlugin plugin -->
+      <script src="https://<your-host>/plugin/data-harbor/index.min.js"></script>
+      <!-- 3. Load the RRWebPlugin plugin -->
       <script src="https://<your-host>/plugin/rrweb/index.min.js"></script>
-      <!-- 3. Register plugin && Init PageSpy -->
+      <!-- 4. Register plugin && Init PageSpy -->
       <script>
-        // Register plugin
+        // 1. Register DataHarborPlugin plugin
+        PageSpy.registerPlugin(new DataHarborPlugin(config));
+        // 2. Register RRWebPlugin plugin
         PageSpy.registerPlugin(new RRWebPlugin(options));
-        // Init PageSpy
+        // 3. Init PageSpy
         window.$pageSpy = new PageSpy();
       </script>
     </head>
