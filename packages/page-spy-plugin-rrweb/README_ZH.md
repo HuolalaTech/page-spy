@@ -43,13 +43,17 @@ export default RRWebPlugin;
     <head>
       <!-- 1. 加载 PageSpy -->
       <script src="https://<your-host>/page-spy/index.min.js"></script>
-      <!-- 2. 加载插件 -->
+      <!-- 2. 加载 DataHarborPlugin 插件 -->
+      <script src="https://<your-host>/plugin/data-harbor/index.min.js"></script>
+      <!-- 3. 加载 RRWebPlugin 插件 -->
       <script src="https://<your-host>/plugin/rrweb/index.min.js"></script>
-      <!-- 3. 注册插件 && 初始化 PageSpy -->
+      <!-- 4. 注册插件 && 初始化 PageSpy -->
       <script>
-        // 注册插件
+        // 1.注册 DataHarborPlugin 插件
+        PageSpy.registerPlugin(new DataHarborPlugin(config));
+        // 2.注册 RRWebPlugin 插件
         PageSpy.registerPlugin(new RRWebPlugin(options));
-        // 实例化 PageSpy
+        // 3.实例化 PageSpy
         window.$pageSpy = new PageSpy();
       </script>
     </head>
