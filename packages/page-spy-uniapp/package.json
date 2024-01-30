@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-uniapp",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "description": "A developer tool for debugging uniapp miniprogram",
   "license": "MIT",
   "main": "dist/cjs/index.min.js",
