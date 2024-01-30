@@ -155,10 +155,7 @@ export abstract class SocketStoreBase {
         throw Error('WebSocket url cannot be empty');
       }
       // close existing connection
-      if (
-        this.socketWrapper.getState() === SocketState.OPEN ||
-        this.socketWrapper.getState() === SocketState.CONNECTING
-      ) {
+      if (this.socketWrapper.getState() === SocketState.OPEN) {
         this.socketWrapper.close();
       }
       this.socketWrapper?.onOpen(() => {

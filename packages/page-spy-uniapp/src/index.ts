@@ -4,6 +4,7 @@ import Device from 'mp-base/src/device';
 import { SpyDevice } from 'packages/page-spy-types';
 import { SocketStoreBase } from 'base/src/socket-base';
 import { psLog } from 'base/src';
+import { MPSocketWrapper } from 'mp-base/src/helpers/socket';
 
 declare const uni: any;
 
@@ -33,6 +34,7 @@ const TOUTIAO_MAP: Record<string, SpyDevice.Browser> = {
   PPX: 'mp-ppx',
 };
 
+// get browser type
 if (info.uniPlatform === 'web') {
   browserType = 'unknown';
   psLog.warn(
@@ -51,6 +53,14 @@ Device.info = {
   browserType,
   browserVersion: info.appVersion,
 };
+
+// some ali apps have to use single socket instance
+if (
+  info.uniPlatform === 'mp-alipay' &&
+  (info.hostName === 'DingTalk' || info.hostName === 'mPaaS')
+) {
+  MPSocketWrapper.isSingleSocket = true;
+}
 
 // Really disgusting... alipay mp has different message format even in uniapp...
 SocketStoreBase.messageFilters.push((data) => {
