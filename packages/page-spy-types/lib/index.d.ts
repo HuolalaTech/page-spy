@@ -59,8 +59,19 @@ export interface OnMountedParams {
   socketStore: SocketStoreType;
 }
 
+export type PluginOrder = 'pre' | 'post';
+
 export abstract class PageSpyPlugin {
   name: string;
+
+  /**
+   * @description Specify the plugin ordering.
+   * The plugin invocation will be in the following order:
+   *   1. Plugins with `enforce: "pre"`;
+   *   2. Plugins without enforce value;
+   *   3. Plugins with `enforce: "post"`;
+   */
+  enforce?: PluginOrder;
 
   /**
    * @description Called after "new PageSpy()".

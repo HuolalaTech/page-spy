@@ -3,6 +3,7 @@ import {
   OnInitParams,
   OnMountedParams,
   PageSpyPlugin,
+  PluginOrder,
 } from '@huolala-tech/page-spy-types';
 import { PUBLIC_DATA } from 'base/src/message/debug-type';
 import { isCN, isNumber, isPlainObject, isString, psLog } from 'base/src';
@@ -32,6 +33,8 @@ const minifyData = (d: any) => {
 };
 
 export default class DataHarborPlugin implements PageSpyPlugin {
+  public enforce: PluginOrder = 'pre';
+
   public name = 'DataHarborPlugin';
 
   // "Harbor" is an abstraction for scheduling data actions.

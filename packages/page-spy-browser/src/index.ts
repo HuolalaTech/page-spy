@@ -5,6 +5,7 @@ import { ROOM_SESSION_KEY } from 'base/src/constants';
 import type {
   PageSpyPlugin,
   PageSpyPluginLifecycle,
+  PluginOrder,
 } from '@huolala-tech/page-spy-types';
 import { Modal } from './component/modal';
 import { Content } from './component/content';
@@ -35,7 +36,19 @@ class PageSpy {
 
   version = PKG_VERSION;
 
-  static plugins: PageSpyPlugin[] = [];
+  static plugins: Record<PluginOrder | 'normal', PageSpyPlugin[]> = {
+    pre: [],
+    normal: [],
+    post: [],
+  };
+
+  static get pluginsWithOrder() {
+    return [
+      ...PageSpy.plugins.pre,
+      ...PageSpy.plugins.normal,
+      ...PageSpy.plugins.post,
+    ];
+  }
 
   request: Request | null = null;
 
@@ -70,7 +83,9 @@ class PageSpy {
       );
       return;
     }
-    const isExist = PageSpy.plugins.some((i) => i.name === plugin.name);
+    const isExist = PageSpy.pluginsWithOrder.some(
+      (i) => i.name === plugin.name,
+    );
     if (isExist) {
       psLog.error(
         `The ${plugin.name} has registered. Consider the following reasons:
@@ -79,7 +94,8 @@ class PageSpy {
       );
       return;
     }
-    PageSpy.plugins.push(plugin);
+    const currentPluginSet = PageSpy.plugins[plugin.enforce || 'normal'];
+    currentPluginSet.push(plugin);
   }
 
   constructor(init: InitConfig = {}) {
@@ -103,7 +119,7 @@ class PageSpy {
     args?: any,
   ) {
     const { disabledPlugins } = this.config.get();
-    PageSpy.plugins.forEach((plugin) => {
+    PageSpy.pluginsWithOrder.forEach((plugin) => {
       if (
         isArray(disabledPlugins) &&
         disabledPlugins.length &&
