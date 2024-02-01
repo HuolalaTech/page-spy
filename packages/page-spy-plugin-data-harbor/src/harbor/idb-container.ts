@@ -36,6 +36,12 @@ export default class IDBContainer implements Container {
         const db = (evt.target as IDBRequest<IDBDatabase>).result;
         db.createObjectStore(STORE_NAME, { autoIncrement: true });
       });
+      req.addEventListener('blocked', (evt) => {
+        psLog.warn('[IDBContainer] open database blocked: ', {
+          oldVersion: evt.oldVersion,
+          newVersion: evt.newVersion,
+        });
+      });
       try {
         await promisify(req);
         return true;

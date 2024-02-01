@@ -17,40 +17,39 @@
 
 ```ts
 import { SocketStoreType } from '@huolala-tech/page-spy-types/lib/base';
+import { PluginOrder } from '@huolala-tech/page-spy-types';
 import { InitConfig } from 'types';
 
 export abstract class PageSpyPlugin {
   /**
-   * 每个插件都要求指定 name，会作为当前插件的 "身份标识"
+   * 每个插件都要求指定 name，会作为当前插件的 "身份标识"。
    * 在 PageSpy 内部的注册插件、禁用插件的功能都依赖 name 属性
    */
   public abstract name: string;
 
   /**
-   * `new PageSpy()` 时调用
+   * 指定插件加载顺序，插件调用顺序遵循：
+   *   1. 插件包含 `enforce: "pre"` 属性；
+   *   2. 插件不包含 `enforce` 属性；
+   *   3. 插件包含 `enforce: "post"` 属性；
    */
+  public abstract enforce?: PluginOrder;
+
+  // `new PageSpy()` 时调用
   public abstract onInit: (params: OnInitParams) => any;
 
-  /**
-   * 在 PageSpy 渲染完成后调用（如果有渲染过程的话）
-   */
+  // 在 PageSpy 渲染完成后调用（如果有渲染过程的话）
   public abstract onMounted?: (params: OnMountedParams) => any;
 
-  /**
-   * 当用户不再需要 PageSpy 时，插件应具备 重置/恢复 功能
-   */
+  // 当用户不再需要 PageSpy 时，插件应具备 重置/恢复 功能
   public abstract onReset?: () => any;
 }
 
 export interface OnInitParams {
-  /**
-   * 已经合并了用户传入的关于 PageSpy 实例化参数的配置信息
-   */
+  // 已经合并了用户传入的关于 PageSpy 实例化参数的配置信息
   config: Required<InitConfig>;
 
-  /**
-   * 包装了 socket 实例，插件开发者可以通过该属性与调试端 / API 交互
-   */
+  // 包装了 socket 实例，插件开发者可以通过该属性与调试端 / API 交互
   socketStore: SocketStoreType;
 }
 

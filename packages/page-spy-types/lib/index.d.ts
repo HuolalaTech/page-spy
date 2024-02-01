@@ -8,16 +8,19 @@ export interface InitConfigBase {
    * - Join WebSocket room: `wss://${api}/ws/room/join`
    */
   api?: string;
+
   /**
    * Project name, used for group connections
    */
   project?: string;
+
   /**
    * Custom title for displaying some data like user info to
    * help you to distinguish the client. The title value will
    * show in the room-list route page.
    */
   title?: string;
+
   /**
    * Specify the server <scheme> manually.
    * - false: sdk will use ['http://', 'ws://'];
@@ -42,6 +45,7 @@ interface OnInitParams<T extends InitConfigBase = InitConfigBase> {
    * Config info which has merged the user passed value.
    */
   config: Required<T>;
+
   /**
    * Wrap the origin websocket instance, plugin developers can
    * communicate with Web / API by it.
@@ -52,15 +56,28 @@ interface OnInitParams<T extends InitConfigBase = InitConfigBase> {
 export interface OnMountedParams {
   // The root node which has `id="__pageSpy"` in DOM tree.
   root: HTMLDivElement;
+
   // The content node which has `class="page-spy-content"` inside modal.
   content: HTMLDivElement;
+
   // Wrap the origin socket instance, plugin developers can
   // communicate with Web / API by it.
   socketStore: SocketStoreType;
 }
 
+export type PluginOrder = 'pre' | 'post';
+
 export abstract class PageSpyPlugin {
-  name: string;
+  public abstract name: string;
+
+  /**
+   * @description Specify the plugin ordering.
+   * The plugin invocation will be in the following order:
+   *   1. Plugins with `enforce: "pre"`;
+   *   2. Plugins without enforce value;
+   *   3. Plugins with `enforce: "post"`;
+   */
+  public abstract enforce?: PluginOrder;
 
   /**
    * @description Called after "new PageSpy()".
