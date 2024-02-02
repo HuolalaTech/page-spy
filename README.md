@@ -23,7 +23,7 @@ English | [中文](./README_ZH.md)
 
 ## What's this
 
-This repo is the SDK which be used in [HuolalaTech/page-spy-web][page-spy-web], where [SDKs]('./packages') collects information and [HuolalaTech/page-spy-web][page-spy-web] consumes and filters, organizes, and converts information into a standardized format, which is then showed on the page.
+This repo is the SDK which be used in [HuolalaTech/page-spy-web][page-spy-web], where [SDKs](./packages) collects information and [HuolalaTech/page-spy-web][page-spy-web] consumes and filters, organizes, and converts information into a standardized format, which is then showed on the page.
 
 ## Usage
 
@@ -32,11 +32,20 @@ to get more detail.
 
 ## SDKs
 
-| Type             | Repo                                                             | Status |
-| ---------------- | ---------------------------------------------------------------- | ------ |
-| Common types     | [`@huolala-tech/page-spy-types`](./packages/page-spy-types/)     | Done   |
-| Web sdk          | [`@huolala-tech/page-spy-browser`](./packages/page-spy-browser/) | Done   |
-| Wechat sdk       | [`@huolala-tech/page-spy-wechat`](./packages/page-spy-wechat/)   | Done   |
-| uniApp sdk       | [`@huolala-tech/page-spy-uniapp`](./packages/page-spy-uniapp)    | Done   |
-| Taro sdk         | `@huolala-tech/page-spy-taro`                                    | WIP    |
-| React Native sdk | `@huolala-tech/page-spy-rn`                                      | WIP    |
+| Repo                                                             | Type             | Status |
+| ---------------------------------------------------------------- | ---------------- | ------ |
+| [`@huolala-tech/page-spy-types`](./packages/page-spy-types/)     | Common types     | Done   |
+| [`@huolala-tech/page-spy-browser`](./packages/page-spy-browser/) | Web sdk          | Done   |
+| [`@huolala-tech/page-spy-wechat`](./packages/page-spy-wechat/)   | Wechat sdk       | Done   |
+| [`@huolala-tech/page-spy-uniapp`](./packages/page-spy-uniapp/)   | uniApp sdk       | Done   |
+| `@huolala-tech/page-spy-taro`                                    | Taro sdk         | WIP    |
+| `@huolala-tech/page-spy-rn`                                      | React Native sdk | WIP    |
+
+## Official plugins
+
+> Plugin document: [PageSpy plugins](./docs/plugin.md)
+
+| Repo                                                                                   | Platform | Type                              | Status |
+| -------------------------------------------------------------------------------------- | -------- | --------------------------------- | ------ |
+| [`@huolala-tech/page-spy-plugin-rrweb`](./packages/page-spy-plugin-rrweb/)             | Web      | Record the DOM mutations          | Done   |
+| [`@huolala-tech/page-spy-plugin-data-harbor`](./packages/page-spy-plugin-data-harbor/) | Web      | Offline caching data and download | Done   |

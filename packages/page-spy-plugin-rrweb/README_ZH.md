@@ -2,6 +2,8 @@
 [npm-url]: https://www.npmjs.com/package/@huolala-tech/page-spy-plugin-rrweb
 [minified-image]: https://img.shields.io/bundlephobia/min/@huolala-tech/page-spy-plugin-rrweb
 [minified-url]: https://unpkg.com/browse/@huolala-tech/page-spy-plugin-rrweb/dist/iife/index.min.js
+[rrweb-repo]: https://github.com/rrweb-io/rrweb
+[rrweb-record-options]: https://github.com/rrweb-io/rrweb/blob/master/guide.zh_CN.md#配置参数-1
 
 [English](./README.md) | 中文
 
@@ -10,7 +12,7 @@
 [![SDK version][npm-image]][npm-url]
 [![SDK size][minified-image]][minified-url]
 
-> `RRWebPlugin` 使用 `rrweb` 记录 DOM 更新（该插件可用于浏览器环境）。
+> `RRWebPlugin` 使用 `rrweb` 记录 DOM 更新，该插件可用于浏览器环境。
 
 ## 类型定义
 
@@ -28,6 +30,8 @@ declare class RRWebPlugin implements PageSpyPlugin {
 export default RRWebPlugin;
 ```
 
+`RRWebPlugin` 在内部使用 [`rrweb-record`][rrweb-repo] 记录 DOM 更新，实例化时的参数请参考 [录制参数][rrweb-record-options]。
+
 ## 使用
 
 ### 加载插件
@@ -39,13 +43,17 @@ export default RRWebPlugin;
     <head>
       <!-- 1. 加载 PageSpy -->
       <script src="https://<your-host>/page-spy/index.min.js"></script>
-      <!-- 2. 加载插件 -->
+      <!-- 2. 加载 DataHarborPlugin 插件 -->
+      <script src="https://<your-host>/plugin/data-harbor/index.min.js"></script>
+      <!-- 3. 加载 RRWebPlugin 插件 -->
       <script src="https://<your-host>/plugin/rrweb/index.min.js"></script>
-      <!-- 3. 注册插件 && 初始化 PageSpy -->
+      <!-- 4. 注册插件 && 初始化 PageSpy -->
       <script>
-        // 注册插件
+        // 1.注册 DataHarborPlugin 插件
+        PageSpy.registerPlugin(new DataHarborPlugin(config));
+        // 2.注册 RRWebPlugin 插件
         PageSpy.registerPlugin(new RRWebPlugin(options));
-        // 实例化 PageSpy
+        // 3.实例化 PageSpy
         window.$pageSpy = new PageSpy();
       </script>
     </head>

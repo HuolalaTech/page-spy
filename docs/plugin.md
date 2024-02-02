@@ -1,4 +1,8 @@
+English | [中文](./plugin_zh.md)
+
 # Plugins
+
+<img src="../.github/assets/interaction.png" height="400" />
 
 ## SDK that supports plugin registration
 
@@ -15,6 +19,7 @@
 
 ```ts
 import { SocketStoreType } from '@huolala-tech/page-spy-types/lib/base';
+import { PluginOrder } from '@huolala-tech/page-spy-types';
 import { InitConfig } from 'types';
 
 export abstract class PageSpyPlugin {
@@ -25,30 +30,28 @@ export abstract class PageSpyPlugin {
   public abstract name: string;
 
   /**
-   * Called when `new PageSpy()` is invoked.
+   * Specify the plugin ordering. The plugin invocation will be in the following order:
+   *   1. Plugins with `enforce: "pre"`;
+   *   2. Plugins without enforce value;
+   *   3. Plugins with `enforce: "post"`;
    */
+  public abstract enforce?: PluginOrder;
+
+  // Called when `new PageSpy()` is invoked.
   public abstract onInit: (params: OnInitParams) => any;
 
-  /**
-   * Called after the rendering of PageSpy is completed (if there is a rendering process).
-   */
+  // Called after the rendering of PageSpy is completed (if there is a rendering process).
   public abstract onMounted?: (params: OnMountedParams) => any;
 
-  /**
-   * When PageSpy is no longer needed, plugins should have a reset/recovery functionality.
-   */
+  // When PageSpy is no longer needed, plugins should have a reset/recovery functionality.
   public abstract onReset?: () => any;
 }
 
 export interface OnInitParams {
-  /**
-   * Merged configuration information about PageSpy instantiation parameters provided by the user.
-   */
+  // Merged configuration information about PageSpy instantiation parameters provided by the user.
   config: Required<InitConfig>;
 
-  /**
-   * Wraps the socket instance, allowing plugin developers to interact with the debugging terminal/API through this property.
-   */
+  // Wraps the socket instance, allowing plugin developers to interact with the debugging terminal/API through this property.
   socketStore: SocketStoreType;
 }
 

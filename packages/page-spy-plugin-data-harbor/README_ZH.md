@@ -14,7 +14,9 @@
 
 以往，远程调试存在一个前提条件，即「客户端和调试端必须同时在线」。通过使用 `DataHarborPlugin` 插件，它在内部监听 `"public-data"` 事件（[什么是 `public-data` 事件？](../../docs/plugin_zh.md#行为约定)），现在可以实现离线缓存数据的功能。当客户端发现问题时，测试同学可以直接导出数据，这一创新打破了以往「客户端和调试端必须同时在线」的前提要求。
 
-`DataHarborPlugin` 默认将数据存储在 `indexedDB` 中，且不限制缓存数据的数量，这些行为都可在初始化插件时进行配置。如果指定了最大数据量 `maximum`，则缓存的数据量不会超过该值。在页面卸载前（`"beforeunload"`），已缓存的数据将被丢弃并重新缓存。
+`DataHarborPlugin` 默认将数据存储在 `indexedDB` 中，且不限制缓存数据的数量，这些行为都可在初始化插件时进行配置。如果指定了最大数据量 `maximum`，则缓存的数据量不会超过该值。
+
+`DataHarborPlugin` 会在 `new PageSpy()` 的时候开始录制，默认情况下不会结束，除非你指定了最多缓存多少条数据、或者触发了重新实例化插件，`DataHarborPlugin` 插件在每次实例化时，已缓存的数据都将被丢弃并重新缓存。
 
 ## 类型定义
 
@@ -25,8 +27,15 @@ type DataType = 'console' | 'network' | 'rrweb-event';
 type SaveAs = 'indexedDB' | 'memory';
 
 interface DataHarborConfig {
+  // 指定最多缓存多少条数据
+  // 默认值 0，不限制
   maximum?: number;
+
+  // 指定缓存在什么位置
+  // 默认值："indexedDB"
   saveAs?: SaveAs;
+
+  // 指定应该收集哪些类型的数据
   caredData?: Record<DataType, boolean>;
 }
 
@@ -82,6 +91,6 @@ export default DataHarborPlugin;
 
 ### 离线数据回放
 
-点击「离线日志回放」，选择上一步中导出的 json 数据即可开始使用回放功能！
+点击「日志回放」，选择上一步中导出的 json 数据即可开始使用回放功能！
 
 <img src="./screenshots/entry-zh.jpg" alt="Entry" height="400" />

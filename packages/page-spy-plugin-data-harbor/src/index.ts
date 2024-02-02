@@ -3,9 +3,10 @@ import {
   OnInitParams,
   OnMountedParams,
   PageSpyPlugin,
+  PluginOrder,
 } from '@huolala-tech/page-spy-types';
 import { PUBLIC_DATA } from 'base/src/message/debug-type';
-import { isCN, isNumber, isPlainObject, isString } from 'base/src';
+import { isCN, isNumber, isPlainObject, isString, psLog } from 'base/src';
 import { DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import { strFromU8, zlibSync, strToU8 } from 'fflate';
 import { Harbor, SaveAs } from './harbor';
@@ -31,7 +32,23 @@ const minifyData = (d: any) => {
   return strFromU8(zlibSync(strToU8(JSON.stringify(d)), { level: 9 }), true);
 };
 
+const makeData = (type: SpyMessage.DataType, data: any) => {
+  return {
+    type,
+    timestamp: Date.now(),
+    data: minifyData(data),
+  };
+};
+
+// We observed occasional failures in storing full snapshot data of "rrweb-event"
+// into indexedDB. Despite using the "waitForFillHarbor" variable to buffer the
+// received data until indexedDB is ready, we still encounter the peculiar issue
+// of losing the full snapshot
+const TEMP_DATA_IN_MEMORY: any = [];
+
 export default class DataHarborPlugin implements PageSpyPlugin {
+  public enforce: PluginOrder = 'pre';
+
   public name = 'DataHarborPlugin';
 
   // "Harbor" is an abstraction for scheduling data actions.
@@ -82,12 +99,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     socketStore.addListener(PUBLIC_DATA, async (message) => {
       if (!this.isCaredPublicData(message)) return;
 
-      const timestamp = Date.now();
-      const data = {
-        type: message.type,
-        timestamp,
-        data: minifyData(message.data),
-      };
+      const data = makeData(message.type, message.data);
 
       if (!this.harbor || !this.harborIsReady) {
         this.waitForFillHarbor.push(data);
@@ -115,18 +127,29 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
     div.addEventListener('click', async () => {
       const data = await this.harbor?.container.getAll();
-      const blob = new Blob([JSON.stringify(data)], {
-        type: 'application/json',
-      });
+      const blob = new Blob(
+        [JSON.stringify([...TEMP_DATA_IN_MEMORY, ...data])],
+        {
+          type: 'application/json',
+        },
+      );
+      const root: HTMLElement =
+        document.getElementsByTagName('body')[0] || document.documentElement;
+      if (!root) {
+        psLog.error(
+          'Download file failed because cannot find the document.body & document.documentElement',
+        );
+        return;
+      }
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.download = `${new Date().toLocaleString()}.json`;
       a.href = url;
       a.style.display = 'none';
-      document.body.appendChild(a);
+      root.insertAdjacentElement('beforeend', a);
       a.click();
 
-      document.body.removeChild(a);
+      root.removeChild(a);
       URL.revokeObjectURL(url);
     });
 
@@ -158,7 +181,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
   private isCaredPublicData(message: SpyMessage.MessageItem) {
     if (!message) return false;
-    const { type } = message;
+    const { type, data } = message;
     switch (type) {
       // case DEBUG_MESSAGE_TYPE.STORAGE:
       case DEBUG_MESSAGE_TYPE.CONSOLE:
@@ -168,7 +191,12 @@ export default class DataHarborPlugin implements PageSpyPlugin {
         if (this.caredData.network) return true;
         return false;
       case DEBUG_MESSAGE_TYPE.RRWEB_EVENT:
-        if (this.caredData['rrweb-event']) return true;
+        // What does "2" mean?
+        // See: https://github.com/rrweb-io/rrweb/blob/master/packages/types/src/index.ts#L8-L16
+        if (this.caredData['rrweb-event'] && data.type > 2) {
+          return true;
+        }
+        TEMP_DATA_IN_MEMORY.push(makeData(type, data));
         return false;
       // case DEBUG_MESSAGE_TYPE.DATABASE:
       //   if (['update', 'clear', 'drop'].includes(data.action)) {
