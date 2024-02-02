@@ -5,7 +5,7 @@ import type {
   PageSpyPluginLifecycle,
   PluginOrder,
 } from '@huolala-tech/page-spy-types';
-import { SocketState } from 'base/src/socket-base';
+import { SocketState, SocketStoreBase } from 'base/src/socket-base';
 import { ROOM_SESSION_KEY } from 'base/src/constants';
 
 import ConsolePlugin from './plugins/console';
@@ -14,7 +14,7 @@ import NetworkPlugin from './plugins/network';
 import SystemPlugin from './plugins/system';
 import StoragePlugin from './plugins/storage';
 
-import socketStore from './helpers/socket';
+import socketStore, { MPSocketWrapper } from './helpers/socket';
 import Request from './api';
 
 // import './index.less';
@@ -97,6 +97,10 @@ class PageSpy {
     }
 
     const config = this.config.mergeConfig(init);
+
+    if (config.singletonSocket) {
+      MPSocketWrapper.isSingleSocket = true;
+    }
 
     const mp = getMPSDK();
 
