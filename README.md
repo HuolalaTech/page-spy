@@ -43,7 +43,7 @@ to get more detail.
 
 ## Official plugins
 
-> Plugin document: [PageSpy plugins]('./docs/plugin.md')
+> Plugin document: [PageSpy plugins](./docs/plugin.md)
 
 | Repo                                                                                   | Platform | Type                              | Status |
 | -------------------------------------------------------------------------------------- | -------- | --------------------------------- | ------ |
