@@ -21,6 +21,13 @@ export interface MPInitConfig extends InitConfigBase {
    * - false
    */
   disabledOnProd?: boolean | null;
+
+  /**
+   * For some mp types like mPaaS, DingTalk and some old version of Alipay, only one socket connection is allowed. But for some reason we cannot detect this feature by code, so we provide this option for you.
+   * If you are developing mPaaS, DingTalk or some other ali-family mp which encounter a connection problem, you can set this option to true.
+   */
+  singletonSocket?: boolean;
+
   /**
    * All internal plugins are carried with PageSpy by default out of the box.
    * You can disable some plugins as needed.

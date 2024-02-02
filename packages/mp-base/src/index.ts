@@ -14,7 +14,7 @@ import NetworkPlugin from './plugins/network';
 import SystemPlugin from './plugins/system';
 import StoragePlugin from './plugins/storage';
 
-import socketStore from './helpers/socket';
+import socketStore, { MPSocketWrapper } from './helpers/socket';
 import Request from './api';
 
 // import './index.less';
@@ -97,6 +97,10 @@ class PageSpy {
     }
 
     const config = this.config.mergeConfig(init);
+
+    if (config.singletonSocket) {
+      MPSocketWrapper.isSingleSocket = true;
+    }
 
     const mp = getMPSDK();
 
