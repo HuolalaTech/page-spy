@@ -35,6 +35,9 @@ interface DataHarborConfig {
 
   // Specify which types of data should be collected
   caredData?: Record<DataType, boolean>;
+
+  // Customize the "Download Log Data"
+  onDownload?: (data: CacheMessageItem[]) => void;
 }
 
 declare class DataHarborPlugin implements PageSpyPlugin {

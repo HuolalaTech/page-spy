@@ -37,6 +37,9 @@ interface DataHarborConfig {
 
   // 指定应该收集哪些类型的数据
   caredData?: Record<DataType, boolean>;
+
+  // 自定义「下载日志数据」行为
+  onDownload?: (data: CacheMessageItem[]) => void;
 }
 
 declare class DataHarborPlugin implements PageSpyPlugin {
