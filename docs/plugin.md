@@ -2,6 +2,8 @@ English | [中文](./plugin_zh.md)
 
 # Plugins
 
+<img src="../.github/assets/interaction.png" height="400" />
+
 ## SDK that supports plugin registration
 
 - `@huolala-tech/page-spy-browser@^1.7.0`;

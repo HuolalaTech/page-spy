@@ -2,6 +2,8 @@
 
 # 插件
 
+<img src="../.github/assets/interaction.png" height="400" />
+
 ## 支持注册插件的 SDK
 
 - `@huolala-tech/page-spy-browser@^1.7.0`;
