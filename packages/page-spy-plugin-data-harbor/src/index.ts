@@ -8,18 +8,12 @@ import {
 import { PUBLIC_DATA } from 'base/src/message/debug-type';
 import { isCN, isNumber, isPlainObject, isString, psLog } from 'base/src';
 import { DEBUG_MESSAGE_TYPE } from 'base/src/message';
-import { strFromU8, zlibSync, strToU8 } from 'fflate';
+import { strFromU8, zlibSync, strToU8, unzlibSync } from 'fflate';
 import { Harbor, SaveAs } from './harbor';
 import { IDB_ERROR_COUNT } from './harbor/idb-container';
 // import { SKIP_PUBLIC_IDB_PREFIX } from './skip-public';
 
 type DataType = 'console' | 'network' | 'rrweb-event';
-
-interface DataHarborConfig {
-  maximum?: number;
-  saveAs?: SaveAs;
-  caredData?: Record<DataType, boolean>;
-}
 
 type CacheMessageItem = Pick<
   SpyMessage.MessageItem<SpyMessage.DataType, any>,
@@ -28,8 +22,19 @@ type CacheMessageItem = Pick<
   timestamp: number;
 };
 
+interface DataHarborConfig {
+  maximum?: number;
+  saveAs?: SaveAs;
+  caredData?: Record<DataType, boolean>;
+  onDownload?: (data: CacheMessageItem[]) => void;
+}
+
 const minifyData = (d: any) => {
   return strFromU8(zlibSync(strToU8(JSON.stringify(d)), { level: 9 }), true);
+};
+
+const unminifyData = (d: any) => {
+  return JSON.parse(strFromU8(unzlibSync(strToU8(d, true))));
 };
 
 const makeData = (type: SpyMessage.DataType, data: any) => {
@@ -44,7 +49,7 @@ const makeData = (type: SpyMessage.DataType, data: any) => {
 // into indexedDB. Despite using the "waitForFillHarbor" variable to buffer the
 // received data until indexedDB is ready, we still encounter the peculiar issue
 // of losing the full snapshot
-const TEMP_DATA_IN_MEMORY: any = [];
+const TEMP_DATA_IN_MEMORY: CacheMessageItem[] = [];
 
 export default class DataHarborPlugin implements PageSpyPlugin {
   public enforce: PluginOrder = 'pre';
@@ -72,6 +77,8 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     'rrweb-event': true,
   };
 
+  private onDownload: DataHarborConfig['onDownload'];
+
   public static hasInited = false;
 
   public static hasMounted = false;
@@ -88,6 +95,9 @@ export default class DataHarborPlugin implements PageSpyPlugin {
         ...this.caredData,
         ...config.caredData,
       };
+    }
+    if (typeof config.onDownload === 'function') {
+      this.onDownload = config.onDownload;
     }
     this.initHarbor();
   }
@@ -120,37 +130,65 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     if (DataHarborPlugin.hasMounted) return;
     DataHarborPlugin.hasMounted = true;
 
+    const cn = isCN();
     const div = document.createElement('div');
     div.id = 'data-harbor-plugin-download';
     div.className = 'page-spy-content__btn';
-    div.textContent = isCN() ? '下载日志数据' : 'Download the data';
+    div.textContent = cn ? '下载日志数据' : 'Download the data';
+
+    let idle = true;
 
     div.addEventListener('click', async () => {
-      const data = await this.harbor?.container.getAll();
-      const blob = new Blob(
-        [JSON.stringify([...TEMP_DATA_IN_MEMORY, ...data])],
-        {
-          type: 'application/json',
-        },
-      );
-      const root: HTMLElement =
-        document.getElementsByTagName('body')[0] || document.documentElement;
-      if (!root) {
-        psLog.error(
-          'Download file failed because cannot find the document.body & document.documentElement',
-        );
-        return;
-      }
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.download = `${new Date().toLocaleString()}.json`;
-      a.href = url;
-      a.style.display = 'none';
-      root.insertAdjacentElement('beforeend', a);
-      a.click();
+      if (!idle) return;
+      idle = false;
 
-      root.removeChild(a);
-      URL.revokeObjectURL(url);
+      try {
+        div.textContent = cn ? '准备数据...' : 'Handling data...';
+        const data = await this.harbor?.container.getAll();
+        if (this.onDownload) {
+          const unminified = data.map((i: CacheMessageItem) => ({
+            ...i,
+            data: unminifyData(i.data),
+          }));
+          div.textContent = cn ? '数据已处理完成' : 'Data is ready';
+          this.onDownload(unminified);
+          return;
+        }
+
+        const blob = new Blob(
+          [JSON.stringify([...TEMP_DATA_IN_MEMORY, ...data])],
+          {
+            type: 'application/json',
+          },
+        );
+        const root: HTMLElement =
+          document.getElementsByTagName('body')[0] || document.documentElement;
+        if (!root) {
+          psLog.error(
+            'Download file failed because cannot find the document.body & document.documentElement',
+          );
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.download = `${new Date().toLocaleString()}.json`;
+        a.href = url;
+        a.style.display = 'none';
+        root.insertAdjacentElement('beforeend', a);
+        a.click();
+
+        root.removeChild(a);
+        URL.revokeObjectURL(url);
+        div.textContent = cn ? '下载成功' : 'Download successful';
+      } catch (e) {
+        div.textContent = cn ? '下载失败' : 'Download failed';
+        psLog.error('Download failed.', e);
+      } finally {
+        setTimeout(() => {
+          div.textContent = cn ? '下载日志数据' : 'Download the data';
+          idle = true;
+        }, 3000);
+      }
     });
 
     content.insertAdjacentElement('beforeend', div);
