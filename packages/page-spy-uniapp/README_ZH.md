@@ -55,6 +55,11 @@ interface InitConfig {
 
   // PageSpy 所有内置插件默认开启，可以按需禁用指定插件。
   disabledPlugins?: (InternalPlugins | string)[];
+
+  // 某些小程序平台例如 mPaaS，钉钉以及老版本的支付宝小程序，他们只支持全局单个 socket 连接，而且由于某些原因我们无法用代码
+  // 区分出这些平台，所以我们提供了这个配置项来让你决定。
+  // 如果你在开发 mPaaS，钉钉或者其他阿里系小程序，遇到了连接问题，可以将该配置项设为 true。
+  singletonSocket?: boolean;
 }
 
 type InternalPlugins =
