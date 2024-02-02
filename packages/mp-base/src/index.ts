@@ -5,7 +5,7 @@ import type {
   PageSpyPluginLifecycle,
   PluginOrder,
 } from '@huolala-tech/page-spy-types';
-import { SocketState, SocketStoreBase } from 'base/src/socket-base';
+import { SocketState } from 'base/src/socket-base';
 import { ROOM_SESSION_KEY } from 'base/src/constants';
 
 import ConsolePlugin from './plugins/console';
