@@ -12,6 +12,7 @@ export class Config extends ConfigBase<SpyMP.MPInitConfig> {
       enableSSL: null,
       disabledOnProd: true,
       disabledPlugins: [],
+      singletonSocket: false,
     };
   }
 
