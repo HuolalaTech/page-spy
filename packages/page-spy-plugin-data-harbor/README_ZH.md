@@ -39,6 +39,7 @@ interface DataHarborConfig {
   caredData?: Record<DataType, boolean>;
 
   // 自定义「下载日志数据」行为
+  // (版本要求: @huolala-tech/page-spy-plugin-data-harbor^1.0.6)
   onDownload?: (data: CacheMessageItem[]) => void;
 }
 
