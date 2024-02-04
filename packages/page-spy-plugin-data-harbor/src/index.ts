@@ -8,7 +8,7 @@ import {
 import { PUBLIC_DATA } from 'base/src/message/debug-type';
 import { isCN, isNumber, isPlainObject, isString, psLog } from 'base/src';
 import { DEBUG_MESSAGE_TYPE } from 'base/src/message';
-import { strFromU8, zlibSync, strToU8, unzlibSync } from 'fflate';
+import { strFromU8, zlibSync, strToU8 } from 'fflate';
 import { Harbor, SaveAs } from './harbor';
 import { IDB_ERROR_COUNT } from './harbor/idb-container';
 // import { SKIP_PUBLIC_IDB_PREFIX } from './skip-public';
@@ -31,10 +31,6 @@ interface DataHarborConfig {
 
 const minifyData = (d: any) => {
   return strFromU8(zlibSync(strToU8(JSON.stringify(d)), { level: 9 }), true);
-};
-
-const unminifyData = (d: any) => {
-  return JSON.parse(strFromU8(unzlibSync(strToU8(d, true))));
 };
 
 const makeData = (type: SpyMessage.DataType, data: any) => {
@@ -146,12 +142,8 @@ export default class DataHarborPlugin implements PageSpyPlugin {
         div.textContent = cn ? '准备数据...' : 'Handling data...';
         const data = await this.harbor?.container.getAll();
         if (this.onDownload) {
-          const unminified = data.map((i: CacheMessageItem) => ({
-            ...i,
-            data: unminifyData(i.data),
-          }));
           div.textContent = cn ? '数据已处理完成' : 'Data is ready';
-          this.onDownload(unminified);
+          this.onDownload(data);
           return;
         }
 
