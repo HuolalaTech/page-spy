@@ -36,6 +36,7 @@
 | [`@huolala-tech/page-spy-types`](./packages/page-spy-types/)     | Common types     | Done   |
 | [`@huolala-tech/page-spy-browser`](./packages/page-spy-browser/) | Web sdk          | Done   |
 | [`@huolala-tech/page-spy-wechat`](./packages/page-spy-wechat/)   | Wechat sdk       | Done   |
+| [`@huolala-tech/page-spy-alipay`](./packages/page-spy-alipay/)   | Alipay sdk       | Done   |
 | [`@huolala-tech/page-spy-uniapp`](./packages/page-spy-uniapp/)   | uniApp sdk       | Done   |
 | `@huolala-tech/page-spy-taro`                                    | Taro sdk         | WIP    |
 | `@huolala-tech/page-spy-rn`                                      | React Native sdk | WIP    |
