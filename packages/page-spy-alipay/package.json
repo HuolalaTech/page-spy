@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-alipay",
-  "version": "1.7.5",
+  "version": "1.7.6",
   "description": "A developer tool for debugging alipay miniprogram",
   "license": "MIT",
   "main": "dist/cjs/index.min.js",
