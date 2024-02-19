@@ -107,7 +107,6 @@ class PageSpy {
     PageSpy.instance = this;
 
     const config = this.config.mergeConfig(init);
-    this.request = new Request(this.config);
 
     this.triggerPlugins('onInit', { socketStore, config });
     this.init();
@@ -133,33 +132,39 @@ class PageSpy {
 
   async init() {
     const config = this.config.get();
-    const roomCache = sessionStorage.getItem(ROOM_SESSION_KEY);
-    if (roomCache === null) {
-      await this.createNewConnection();
-    } else {
-      const {
-        name,
-        address,
-        roomUrl,
-        usable,
-        project: prev,
-      } = JSON.parse(roomCache);
-      if (!usable || config.project !== prev) {
+
+    // Online real-time mode
+    if (config.offline === false) {
+      this.request = new Request(config);
+
+      const roomCache = sessionStorage.getItem(ROOM_SESSION_KEY);
+      if (roomCache === null) {
         await this.createNewConnection();
       } else {
-        this.name = name;
-        this.address = address;
-        this.roomUrl = roomUrl;
-        this.useOldConnection();
+        const {
+          name,
+          address,
+          roomUrl,
+          usable,
+          project: prev,
+        } = JSON.parse(roomCache);
+        if (!usable || config.project !== prev) {
+          await this.createNewConnection();
+        } else {
+          this.name = name;
+          this.address = address;
+          this.roomUrl = roomUrl;
+          this.useOldConnection();
+        }
       }
+      // reconnect when page switch to front-ground.
+      document.addEventListener('visibilitychange', () => {
+        // For browser, if the connection exist, no need to recreate.
+        if (!document.hidden && !socketStore.connectionStatus) {
+          this.useOldConnection();
+        }
+      });
     }
-    // reconnect when page switch to front-ground.
-    document.addEventListener('visibilitychange', () => {
-      // For browser, if the connection exist, no need to recreate.
-      if (!document.hidden && !socketStore.connectionStatus) {
-        this.useOldConnection();
-      }
-    });
     psLog.log('Plugins inited');
     if (config.autoRender) {
       this.render();
@@ -287,10 +292,9 @@ class PageSpy {
     const modal = new Modal();
     const content = new Content({
       content: `
-      <p><b>Device ID:</b> <span style="font-family: 'Monaco'">${this.address.slice(
-        0,
-        4,
-      )}</span></p>
+      <p><b>Device ID:</b> <span style="font-family: 'Monaco'">${
+        this.address.slice(0, 4) || '--'
+      }</span></p>
       <p><b>Project:</b> ${project}</p>
       <p><b>Title:</b> ${title}</p>
       `,

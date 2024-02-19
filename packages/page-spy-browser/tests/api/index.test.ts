@@ -7,7 +7,7 @@ describe('Web API utils fn', () => {
     config.mergeConfig({
       api: 'init-api',
     });
-    const request = new Request(config);
+    const request = new Request(config.get());
     const originLink = Config.scriptLink;
 
     // <script src="https://exp.com/page-spy/index.min.js"></script>

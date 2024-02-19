@@ -1,5 +1,6 @@
 import { psLog } from 'base/src';
 import { Config } from 'page-spy-browser/src/config';
+import { InitConfig } from 'page-spy-browser/types';
 
 interface TResponse<T> {
   code: string;
@@ -25,15 +26,15 @@ const joinQuery = (args: Record<string, unknown>) => {
 };
 
 export default class Request {
-  constructor(public config: Config) {
+  constructor(public config: Required<InitConfig>) {
     /* c8 ignore next 3 */
-    if (!config.get().api) {
+    if (!config.api) {
       throw Error('The api base url cannot be empty');
     }
   }
 
   get base() {
-    return this.config.get().api;
+    return this.config.api;
   }
 
   parseSchemeWithScript() {
@@ -51,7 +52,7 @@ export default class Request {
   }
 
   getScheme() {
-    const { enableSSL } = this.config.get();
+    const { enableSSL } = this.config;
     if (typeof enableSSL !== 'boolean') {
       return this.parseSchemeWithScript();
     }
@@ -59,12 +60,12 @@ export default class Request {
   }
 
   createRoom(): Promise<TResponse<TCreateRoom>> {
-    const config = this.config.get();
+    const { project, title } = this.config;
     const scheme = this.getScheme();
     const query = joinQuery({
       name: navigator.userAgent,
-      group: config.project,
-      title: config.title,
+      group: project,
+      title,
     });
     return fetch(`${scheme[0]}${this.base}/api/v1/room/create?${query}`, {
       method: 'POST',

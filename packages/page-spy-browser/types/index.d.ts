@@ -25,6 +25,12 @@ export interface InitConfig extends InitConfigBase {
    * You can disable some plugins as needed.
    */
   disabledPlugins?: (InternalPlugins | string)[];
+  /**
+   * Indicate whether enable offline mode. Once enabled, PageSpy will not
+   * make network requests and send data by server. Collected data can be
+   * exported with "DataHarborPlugin" and then replayed in the debugger.
+   */
+  offline?: boolean;
 }
 
 interface PageSpyBrowser extends PageSpyBase {
