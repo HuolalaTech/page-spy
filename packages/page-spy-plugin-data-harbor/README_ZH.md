@@ -14,9 +14,7 @@
 
 以往，远程调试存在一个前提条件，即「客户端和调试端必须同时在线」。通过使用 `DataHarborPlugin` 插件，它在内部监听 `"public-data"` 事件（[什么是 `public-data` 事件？](../../docs/plugin_zh.md#行为约定)），现在可以实现离线缓存数据的功能。当客户端发现问题时，测试同学可以直接导出数据，这一创新打破了以往「客户端和调试端必须同时在线」的前提要求。
 
-`DataHarborPlugin` 默认将数据存储在 `indexedDB` 中，且不限制缓存数据的数量，这些行为都可在初始化插件时进行配置。如果指定了最大数据量 `maximum`，则缓存的数据量不会超过该值。
-
-`DataHarborPlugin` 会在 `new PageSpy()` 的时候开始录制，默认情况下不会结束，除非你指定了最多缓存多少条数据、或者触发了重新实例化插件，`DataHarborPlugin` 插件在每次实例化时，已缓存的数据都将被丢弃并重新缓存。
+`DataHarborPlugin` 会在 `new PageSpy()` 的时候开始收集数据，收集的数据都会放在客户端内存中，当数据体积累计达到 10MB 时（默认值，可通过 `maximum` 指定），将数据通过 `URL.createObjectUrl()` 生成 Object URL 暂存，并继续收集新的数据。
 
 ## 类型定义
 
@@ -24,16 +22,11 @@
 import { PageSpyPlugin } from '@huolala-tech/page-spy-types';
 
 type DataType = 'console' | 'network' | 'rrweb-event';
-type SaveAs = 'indexedDB' | 'memory';
 
 interface DataHarborConfig {
-  // 指定最多缓存多少条数据
-  // 默认值 0，不限制
+  // 指定单个 “集装箱” 中可存储的最大字节数
+  // 默认值 10 * 1024 * 1024
   maximum?: number;
-
-  // 指定缓存在什么位置
-  // 默认值："indexedDB"
-  saveAs?: SaveAs;
 
   // 指定应该收集哪些类型的数据
   caredData?: Record<DataType, boolean>;

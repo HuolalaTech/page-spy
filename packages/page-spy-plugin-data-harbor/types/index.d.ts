@@ -1,17 +1,16 @@
 type DataType = 'console' | 'network' | 'rrweb-event';
-type SaveAs = 'indexedDB' | 'memory';
 
 interface DataHarborConfig {
-  // Specify the maximum number of data entries for caching.
-  // Default no limitation.
+  // Specify the maximum bytes of single harbor's container.
+  // Default 10 * 1024 * 1024.
   maximum?: number;
-
-  // Specify the place to save data.
-  // Default using "indexedDB"
-  saveAs?: SaveAs;
 
   // Specify which types of data to collect.
   caredData?: Record<DataType, boolean>;
+
+  // Customize the "Download Log Data"
+  // (Version required: @huolala-tech/page-spy-plugin-data-harbor^1.0.6)
+  onDownload?: (data: CacheMessageItem[]) => void;
 }
 
 declare class DataHarborPlugin {
