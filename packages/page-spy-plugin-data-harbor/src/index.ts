@@ -6,11 +6,11 @@ import {
   PluginOrder,
 } from '@huolala-tech/page-spy-types';
 import { PUBLIC_DATA } from 'base/src/message/debug-type';
-import { isCN, isNumber, isPlainObject, isString, psLog } from 'base/src';
+import { isCN, isPlainObject, psLog } from 'base/src';
 import { DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import { strFromU8, zlibSync, strToU8 } from 'fflate';
-import { Harbor, SaveAs } from './harbor';
-import { IDB_ERROR_COUNT } from './harbor/idb-container';
+import type RequestItem from 'base/src/request-item';
+import { Harbor } from './harbor';
 // import { SKIP_PUBLIC_IDB_PREFIX } from './skip-public';
 
 type DataType = 'console' | 'network' | 'rrweb-event';
@@ -21,13 +21,6 @@ type CacheMessageItem = Pick<
 > & {
   timestamp: number;
 };
-
-interface DataHarborConfig {
-  maximum?: number;
-  saveAs?: SaveAs;
-  caredData?: Record<DataType, boolean>;
-  onDownload?: (data: CacheMessageItem[]) => void;
-}
 
 const minifyData = (d: any) => {
   return strFromU8(zlibSync(strToU8(JSON.stringify(d)), { level: 9 }), true);
@@ -41,11 +34,11 @@ const makeData = (type: SpyMessage.DataType, data: any) => {
   };
 };
 
-// We observed occasional failures in storing full snapshot data of "rrweb-event"
-// into indexedDB. Despite using the "waitForFillHarbor" variable to buffer the
-// received data until indexedDB is ready, we still encounter the peculiar issue
-// of losing the full snapshot
-const TEMP_DATA_IN_MEMORY: CacheMessageItem[] = [];
+interface DataHarborConfig {
+  maximum?: number;
+  caredData?: Record<DataType, boolean>;
+  onDownload?: (data: CacheMessageItem[]) => void;
+}
 
 export default class DataHarborPlugin implements PageSpyPlugin {
   public enforce: PluginOrder = 'pre';
@@ -53,18 +46,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
   public name = 'DataHarborPlugin';
 
   // "Harbor" is an abstraction for scheduling data actions.
-  private harbor: Harbor | null = null;
-
-  private harborIsReady = false;
-
-  private waitForFillHarbor: CacheMessageItem[] = [];
-
-  // Specify the place to save data.
-  private saveAs: SaveAs = 'indexedDB';
-
-  // Specify the maximum number of data entries for caching.
-  // Default no limitation.
-  private maximum = 0;
+  private harbor: Harbor;
 
   // Specify which types of data to collect.
   private caredData = {
@@ -80,12 +62,6 @@ export default class DataHarborPlugin implements PageSpyPlugin {
   public static hasMounted = false;
 
   constructor(config: DataHarborConfig = {}) {
-    if (isNumber(config.maximum) && config.maximum >= 0) {
-      this.maximum = config.maximum;
-    }
-    if (isString(config.saveAs)) {
-      this.saveAs = config.saveAs;
-    }
     if (isPlainObject(config.caredData)) {
       this.caredData = {
         ...this.caredData,
@@ -95,7 +71,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     if (typeof config.onDownload === 'function') {
       this.onDownload = config.onDownload;
     }
-    this.initHarbor();
+    this.harbor = new Harbor({ maximum: config.maximum });
   }
 
   public async onInit({ socketStore }: OnInitParams) {
@@ -107,18 +83,10 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
       const data = makeData(message.type, message.data);
 
-      if (!this.harbor || !this.harborIsReady) {
-        this.waitForFillHarbor.push(data);
-        return;
+      const ok = this.harbor.save(data);
+      if (!ok) {
+        psLog.warn(`[${this.name}] Save data failed`, data);
       }
-
-      const count = await this.harbor.container.count();
-      if (count === IDB_ERROR_COUNT) return;
-      if (this.maximum !== 0 && count > this.maximum) {
-        return;
-      }
-
-      await this.harbor.container.add(data);
     });
   }
 
@@ -140,19 +108,16 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
       try {
         div.textContent = cn ? '准备数据...' : 'Handling data...';
-        const data = await this.harbor?.container.getAll();
+        const data = await this.harbor.getHarborData();
         if (this.onDownload) {
           div.textContent = cn ? '数据已处理完成' : 'Data is ready';
           this.onDownload(data);
           return;
         }
 
-        const blob = new Blob(
-          [JSON.stringify([...TEMP_DATA_IN_MEMORY, ...data])],
-          {
-            type: 'application/json',
-          },
-        );
+        const blob = new Blob([JSON.stringify(data)], {
+          type: 'application/json',
+        });
         const root: HTMLElement =
           document.getElementsByTagName('body')[0] || document.documentElement;
         if (!root) {
@@ -187,6 +152,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
   }
 
   onReset() {
+    this.harbor.clear();
     DataHarborPlugin.hasInited = false;
     DataHarborPlugin.hasMounted = false;
     const node = document.getElementById('data-harbor-plugin-download');
@@ -195,38 +161,22 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     }
   }
 
-  private async initHarbor() {
-    this.harbor = new Harbor({ saveAs: this.saveAs });
-    await this.harbor.container.drop();
-    await this.harbor.container.init();
-    if (this.waitForFillHarbor.length) {
-      const task = this.waitForFillHarbor.map((data) => {
-        return this.harbor?.container.add(data);
-      });
-      await Promise.all(task);
-    }
-    this.waitForFillHarbor = [];
-    this.harborIsReady = true;
-  }
-
   private isCaredPublicData(message: SpyMessage.MessageItem) {
     if (!message) return false;
-    const { type, data } = message;
+    const { type } = message;
     switch (type) {
       // case DEBUG_MESSAGE_TYPE.STORAGE:
       case DEBUG_MESSAGE_TYPE.CONSOLE:
         if (this.caredData.console) return true;
         return false;
       case DEBUG_MESSAGE_TYPE.NETWORK:
-        if (this.caredData.network) return true;
+        const { url } = message.data as RequestItem;
+        const isFetchHarborStockUrl = this.harbor.stock.includes(url);
+
+        if (this.caredData.network && !isFetchHarborStockUrl) return true;
         return false;
       case DEBUG_MESSAGE_TYPE.RRWEB_EVENT:
-        // What does "2" mean?
-        // See: https://github.com/rrweb-io/rrweb/blob/master/packages/types/src/index.ts#L8-L16
-        if (this.caredData['rrweb-event'] && data.type > 2) {
-          return true;
-        }
-        TEMP_DATA_IN_MEMORY.push(makeData(type, data));
+        if (this.caredData['rrweb-event']) return true;
         return false;
       // case DEBUG_MESSAGE_TYPE.DATABASE:
       //   if (['update', 'clear', 'drop'].includes(data.action)) {
