@@ -36,13 +36,12 @@ export interface InitConfig extends InitConfigBase {
 interface PageSpyBrowser extends PageSpyBase {
   root: HTMLElement | null;
   config: Required<InitConfig> | null;
+  render(): void;
 }
 
 interface PageSpyConstructor {
   new (config?: InitConfig): PageSpyBrowser;
   instance: PageSpyBrowser | null;
-  render(): void;
-  abort(): void;
 }
 
 declare const PageSpy: PageSpyConstructor;
