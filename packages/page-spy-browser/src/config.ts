@@ -14,9 +14,10 @@ export class Config extends ConfigBase<InitConfig> {
       clientOrigin: '',
       project: 'default',
       autoRender: true,
-      title: '',
+      title: '--',
       enableSSL: null,
       disabledPlugins: [],
+      offline: false,
     };
 
     if (!Config.scriptLink) {

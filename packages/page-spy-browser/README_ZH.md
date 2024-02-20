@@ -69,6 +69,11 @@ interface InitConfig {
 
   // PageSpy 所有内置插件默认开启，可以按需禁用指定插件。
   disabledPlugins?: (InternalPlugins | string)[];
+
+  // 在 PageSpy@1.7.4 支持离线回放功能后，客户端集成的 SDK 可以不用和调试端建立连接，
+  // 只需通过 DataHarborPlugin 收集数据、导出离线日志即可。
+  // 默认值 false。用户设置为其他值时，会进入 "离线模式"，具体表现为 PageSpy 不会创建房间、建立 WebSocket 连接。
+  offline?: boolean;
 }
 
 type InternalPlugins =

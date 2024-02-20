@@ -73,6 +73,12 @@ interface InitConfig {
   // All internal plugins are carried with PageSpy by default out of the box.
   // You can disable some plugins as needed.
   disabledPlugins?: (InternalPlugins | string)[];
+
+  // After adding support for offline replay in PageSpy@1.7.4, the client-integrated SDK can work without
+  // establishing a connection with the debugger.
+  // Default value is false, when users set it to other values will enters "offline mode", where PageSpy
+  // will not create rooms or establish WebSocket connections.
+  offline?: boolean;
 }
 
 type InternalPlugins =

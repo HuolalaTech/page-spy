@@ -38,6 +38,7 @@ export interface PageSpyBase {
   name: string;
   address: string;
   roomUrl: string;
+  abort(): void;
 }
 
 interface OnInitParams<T extends InitConfigBase = InitConfigBase> {
