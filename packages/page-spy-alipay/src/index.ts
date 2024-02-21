@@ -5,9 +5,25 @@ import { SpyDevice } from 'packages/page-spy-types';
 import { SocketStoreBase } from 'base/src/socket-base';
 // reassign the global.mp to uni
 
-declare const my: MPSDK;
+declare const my: any;
 
-setMPSDK(my);
+setMPSDK({
+  ...my,
+  // alipay toxic storage api...
+  getStorageSync(key: string) {
+    const res = my.getStorageSync({ key });
+    if (res.success) {
+      return res.data;
+    }
+    return undefined;
+  },
+  setStorageSync(key: string, value: any) {
+    return my.setStorageSync({ key, data: value });
+  },
+  removeStorageSync(key) {
+    return my.removeStorageSync({ key });
+  },
+});
 
 const info = my.getSystemInfoSync();
 Device.info.osType = info.platform.toLowerCase() as SpyDevice.OS;
