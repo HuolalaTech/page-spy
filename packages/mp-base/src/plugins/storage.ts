@@ -122,7 +122,10 @@ export default class StoragePlugin implements PageSpyPlugin {
         value(keyOrObj: string | { key: string; data: any }, data: any) {
           try {
             let res: any;
-            if (Device.info.browserType === 'mp-alipay') {
+            if (
+              Device.info.browserType === 'mp-alipay' &&
+              !Device.info.framework
+            ) {
               // alipay is so disgusting, here the input is an object
               const obj = keyOrObj as { key: string; data: any };
               res = (StoragePlugin.originFunctions!.setStorageSync as any)(obj);
