@@ -3,7 +3,8 @@ import type { SpyStorage, PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import socketStore from 'mp-base/src/helpers/socket';
 import { psLog } from 'base/src';
 import { PUBLIC_DATA } from 'base/src/message/debug-type';
-import { getMPSDK } from '../utils';
+import { getMPSDK, utilAPI } from '../utils';
+import Device from '../device';
 
 export function mpDataStringify(data: any) {
   const typeOfValue = typeof data;
@@ -58,7 +59,7 @@ export default class StoragePlugin implements PageSpyPlugin {
       const data = info.keys.map((key) => {
         return {
           name: key,
-          value: mpDataStringify(mp.getStorageSync(key)),
+          value: mpDataStringify(utilAPI.getStorage(key)),
         };
       });
 
@@ -118,18 +119,24 @@ export default class StoragePlugin implements PageSpyPlugin {
         },
       },
       setStorageSync: {
-        value(key: string, data: any) {
+        value(keyOrObj: string | { key: string; data: any }, data: any) {
           try {
-            const res = StoragePlugin.originFunctions!.setStorageSync(
-              key,
-              data,
-            );
-            sendSetItem(key, data);
+            let res: any;
+            if (Device.info.browserType === 'mp-alipay') {
+              // alipay is so disgusting, here the input is an object
+              const obj = keyOrObj as { key: string; data: any };
+              res = (StoragePlugin.originFunctions!.setStorageSync as any)(obj);
+              sendSetItem(obj.key, obj.data);
+            } else {
+              const key = keyOrObj as string;
+              res = StoragePlugin.originFunctions!.setStorageSync(key, data);
+              sendSetItem(key, data);
+            }
             return res;
           } catch (e) {
             /* c8 ignore next 3 */
             // TODO e is unknown so we can't use it, for further investigation
-            psLog.error(`Failed to set storage synchronously: ${key}`);
+            psLog.error(`Failed to set storage synchronously: ${keyOrObj}`);
             throw e;
           }
         },
@@ -148,14 +155,16 @@ export default class StoragePlugin implements PageSpyPlugin {
       },
 
       removeStorageSync: {
-        value(key: string) {
+        // in alipay, the param is an object actually, but it works.
+        value(keyOrObj: string) {
           try {
-            const res = StoragePlugin.originFunctions!.removeStorageSync(key);
+            const res =
+              StoragePlugin.originFunctions!.removeStorageSync(keyOrObj);
             sendRemoveItem(res);
             return res;
             /* c8 ignore next 4 */
           } catch (e) {
-            psLog.error(`Failed to remove storage synchronously: ${key}`);
+            psLog.error(`Failed to remove storage synchronously: ${keyOrObj}`);
             throw e;
           }
         },
@@ -191,6 +200,7 @@ export default class StoragePlugin implements PageSpyPlugin {
     if (mp.canIUse('batchSetStorageSync')) {
       Object.defineProperty(mp, 'batchSetStorageSync', {
         value(kvList: KVList) {
+          // alipay doesn't have batch action, so do nothing
           try {
             const res =
               StoragePlugin.originFunctions!.batchSetStorageSync(kvList);
