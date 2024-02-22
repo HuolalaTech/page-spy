@@ -124,7 +124,7 @@ export default class StoragePlugin implements PageSpyPlugin {
             let res: any;
             if (
               Device.info.browserType === 'mp-alipay' &&
-              !Device.info.framework
+              (!Device.info.framework || Device.info.framework === 'unknown')
             ) {
               // alipay is so disgusting, here the input is an object
               const obj = keyOrObj as { key: string; data: any };

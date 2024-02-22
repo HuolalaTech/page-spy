@@ -31,6 +31,7 @@ Device.info.osType = info.platform.toLowerCase() as SpyDevice.OS;
 Device.info.browserType = 'mp-alipay';
 Device.info.osVersion = info.system;
 Device.info.browserVersion = info.version;
+// Device.info.framework is unknown by default
 
 SocketStoreBase.messageFilters.push((data) => {
   return data.data;
