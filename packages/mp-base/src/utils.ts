@@ -45,3 +45,17 @@ export const getGlobal = () => {
   }
   return undefined;
 };
+
+// wrap the mp api to smooth the platform differences, for internal usage only.
+// this api can be modified by mp sdk implementor.
+export const utilAPI = {
+  setStorage(key: string, data: any) {
+    return mpSDK?.setStorageSync(key, data);
+  },
+  getStorage(key: string) {
+    return mpSDK?.getStorageSync(key);
+  },
+  removeStorage(key: string) {
+    return mpSDK?.getStorageSync(key);
+  },
+};

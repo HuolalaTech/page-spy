@@ -20,7 +20,7 @@ import Request from './api';
 // import './index.less';
 // eslint-disable-next-line import/order
 import { Config } from './config';
-import { getMPSDK } from './utils';
+import { getMPSDK, utilAPI } from './utils';
 
 class PageSpy {
   root: HTMLElement | null = null;
@@ -147,7 +147,7 @@ class PageSpy {
   async init() {
     const mp = getMPSDK();
     const config = this.config.get();
-    const roomCache = mp.getStorageSync(ROOM_SESSION_KEY);
+    const roomCache = utilAPI.getStorage(ROOM_SESSION_KEY);
     if (!roomCache || typeof roomCache !== 'object') {
       await this.createNewConnection();
     } else {
@@ -212,7 +212,7 @@ class PageSpy {
     /* c8 ignore start */
     this.saveSession();
     const timerId = setInterval(() => {
-      const roomCache = getMPSDK().getStorageSync(ROOM_SESSION_KEY);
+      const roomCache = utilAPI.getStorage(ROOM_SESSION_KEY);
       if (roomCache && typeof roomCache === 'object') {
         const { usable } = roomCache;
         // unusable or time is expired, the room is not usable
@@ -238,7 +238,7 @@ class PageSpy {
       project: this.config.get().project,
       time: Date.now(),
     };
-    getMPSDK().setStorageSync(ROOM_SESSION_KEY, roomCache);
+    utilAPI.setStorage(ROOM_SESSION_KEY, roomCache);
   }
 }
 

@@ -4,7 +4,7 @@ import {
   SocketState,
   SocketWrapper,
 } from 'base/src/socket-base';
-import { getMPSDK } from '../utils';
+import { getMPSDK, utilAPI } from '../utils';
 
 export class MPSocketWrapper extends SocketWrapper {
   private socketInstance: MPSocket | null = null;
@@ -88,10 +88,7 @@ export class MPSocketStore extends SocketStoreBase {
   // this is an abstract method of parent class, cannot be static
   /* eslint-disable-next-line */
   onOffline() {
-    getMPSDK().setStorageSync(
-      ROOM_SESSION_KEY,
-      JSON.stringify({ usable: false }),
-    );
+    utilAPI.setStorage(ROOM_SESSION_KEY, JSON.stringify({ usable: false }));
   }
 }
 
