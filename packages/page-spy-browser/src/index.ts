@@ -5,6 +5,7 @@ import { ROOM_SESSION_KEY } from 'base/src/constants';
 import type {
   PageSpyPlugin,
   PageSpyPluginLifecycle,
+  PageSpyPluginLifecycleArgs,
   PluginOrder,
 } from '@huolala-tech/page-spy-types';
 import { Modal } from './component/modal';
@@ -108,14 +109,13 @@ class PageSpy {
 
     const config = this.config.mergeConfig(init);
 
-    this.triggerPlugins('onInit', { socketStore, config });
+    this.triggerPlugins('onInit', { config, socketStore });
     this.init();
   }
 
-  triggerPlugins<T extends PageSpyPluginLifecycle = PageSpyPluginLifecycle>(
+  triggerPlugins<T extends PageSpyPluginLifecycle>(
     lifecycle: T,
-    // TODO: args 对应到 PageSpyPlugin[lifecycle] 的参数
-    args?: any,
+    ...args: PageSpyPluginLifecycleArgs<T>
   ) {
     const { disabledPlugins } = this.config.get();
     PageSpy.pluginsWithOrder.forEach((plugin) => {
@@ -126,7 +126,8 @@ class PageSpy {
       ) {
         return;
       }
-      plugin[lifecycle]?.(args);
+      // eslint-disable-next-line prefer-spread
+      (plugin[lifecycle] as any)?.apply(plugin, args);
     });
   }
 
