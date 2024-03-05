@@ -1,12 +1,11 @@
 import { WS } from 'jest-websocket-mock';
-import { DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import { WebSocketStore } from 'page-spy-browser/src/helpers/socket';
-import {
+import type {
   ConnectEvent,
   ErrorEvent,
 } from '@huolala-tech/page-spy-types/lib/socket-event';
 import * as SERVER_MESSAGE_TYPE from 'base/src/message/server-type';
-
+import { SpyMessage } from '@huolala-tech/page-spy-types';
 // Mock micro task delay
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 
@@ -87,9 +86,14 @@ describe('Socket store', () => {
     expect(client.socketConnection).toEqual(connectMsg.content.selfConnection);
 
     // `Send` type message
-    const { DEBUG, ATOM_DETAIL, ATOM_GETTER, DEBUGGER_ONLINE } =
-      DEBUG_MESSAGE_TYPE;
-    [DEBUG, ATOM_DETAIL, ATOM_GETTER, DEBUGGER_ONLINE]
+    const debugMsgTypes: SpyMessage.MessageType[] = [
+      'debug',
+      'atom-detail',
+      'atom-getter',
+      'debugger-online',
+    ];
+
+    debugMsgTypes
       .map((type) => ({
         type: MESSAGE,
         content: {

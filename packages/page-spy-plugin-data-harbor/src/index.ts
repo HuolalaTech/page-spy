@@ -5,9 +5,7 @@ import {
   PageSpyPlugin,
   PluginOrder,
 } from '@huolala-tech/page-spy-types';
-import { PUBLIC_DATA } from 'base/src/message/debug-type';
 import { isCN, isPlainObject, psLog } from 'base/src';
-import { DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import { strFromU8, zlibSync, strToU8 } from 'fflate';
 import type RequestItem from 'base/src/request-item';
 import { Harbor } from './harbor';
@@ -78,7 +76,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     if (DataHarborPlugin.hasInited) return;
     DataHarborPlugin.hasInited = true;
 
-    socketStore.addListener(PUBLIC_DATA, async (message) => {
+    socketStore.addListener('public-data', async (message) => {
       if (!this.isCaredPublicData(message)) return;
 
       const data = makeData(message.type, message.data);
@@ -166,16 +164,16 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     const { type } = message;
     switch (type) {
       // case DEBUG_MESSAGE_TYPE.STORAGE:
-      case DEBUG_MESSAGE_TYPE.CONSOLE:
+      case 'console':
         if (this.caredData.console) return true;
         return false;
-      case DEBUG_MESSAGE_TYPE.NETWORK:
+      case 'network':
         const { url } = message.data as RequestItem;
         const isFetchHarborStockUrl = this.harbor.stock.includes(url);
 
         if (this.caredData.network && !isFetchHarborStockUrl) return true;
         return false;
-      case DEBUG_MESSAGE_TYPE.RRWEB_EVENT:
+      case 'rrweb-event':
         if (this.caredData['rrweb-event']) return true;
         return false;
       // case DEBUG_MESSAGE_TYPE.DATABASE:

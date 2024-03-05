@@ -3,31 +3,19 @@
  * 不同平台 socket 的 api 不同但功能相同，这里抽象一层
  */
 
-import type {
-  SpyMessage,
-  SpySocket,
-  SpyBase,
-} from '@huolala-tech/page-spy-types';
+import { SpyMessage, SpySocket, SpyBase } from '@huolala-tech/page-spy-types';
 import { PackedEvent } from '@huolala-tech/page-spy-types/lib/socket-event';
 import { getRandomId, psLog, stringifyData } from './index';
 import {
-  DEBUG_MESSAGE_TYPE,
   makeMessage,
   makeBroadcastMessage,
   makeUnicastMessage,
 } from './message';
 import * as SERVER_MESSAGE_TYPE from './message/server-type';
 import atom from './atom';
-import {
-  ATOM_DETAIL,
-  ATOM_GETTER,
-  DATABASE_PAGINATION,
-  DEBUG,
-  DEBUGGER_ONLINE,
-  PUBLIC_DATA,
-  REFRESH,
-} from './message/debug-type';
 
+type InteractiveType = SpyMessage.InteractiveType;
+type InternalMsgType = SpyMessage.InternalMsgType;
 interface GetterMember {
   key: string; // 属性名
   id: string; // 当前键的 id
@@ -116,16 +104,16 @@ export abstract class SocketStoreBase {
 
   // events center
   private events: Record<
-    SpyMessage.InteractiveType | SpyMessage.InternalType,
+    InteractiveType | InternalMsgType,
     SpyBase.EventCallback[]
   > = {
-    [REFRESH]: [],
-    [DEBUG]: [],
-    [ATOM_DETAIL]: [],
-    [ATOM_GETTER]: [],
-    [DEBUGGER_ONLINE]: [],
-    [DATABASE_PAGINATION]: [],
-    [PUBLIC_DATA]: [],
+    debug: [],
+    refresh: [],
+    'atom-detail': [],
+    'atom-getter': [],
+    'debugger-online': [],
+    'database-pagination': [],
+    'public-data': [],
   };
 
   // Don't try to reconnect if error occupied
@@ -140,7 +128,6 @@ export abstract class SocketStoreBase {
   public static messageFilters: ((data: any) => any)[] = [];
 
   constructor() {
-    this.addListener('debug', SocketStoreBase.handleDebugger);
     this.addListener('atom-detail', SocketStoreBase.handleResolveAtom);
     this.addListener('atom-getter', SocketStoreBase.handleAtomPropertyGetter);
     this.addListener('debugger-online', this.handleFlushBuffer);
@@ -185,7 +172,7 @@ export abstract class SocketStoreBase {
     fn: SpyBase.InteractiveEventCallback,
   ): void;
   public addListener(
-    type: SpyMessage.InternalType,
+    type: InternalMsgType,
     fn: SpyBase.InternalEventCallback,
   ): void;
   public addListener(type: any, fn: any) {
@@ -351,15 +338,15 @@ export abstract class SocketStoreBase {
     type: SpyMessage.InteractiveType,
     data: SpyBase.InteractiveEvent,
   ): void;
-  public dispatchEvent(type: SpyMessage.InternalType, data: any): void;
+  public dispatchEvent(type: InternalMsgType, data: any): void;
   public dispatchEvent(type: any, data: any) {
-    if ([PUBLIC_DATA].includes(type)) {
-      this.events[type].forEach((fn) => {
+    if (['public-data'].includes(type)) {
+      this.events['public-data'].forEach((fn) => {
         (fn as SpyBase.InternalEventCallback)(data);
       });
       return;
     }
-    this.events[type].forEach((fn) => {
+    this.events[type]?.forEach((fn) => {
       (fn as SpyBase.InteractiveEventCallback).call(
         this,
         data,
@@ -404,53 +391,12 @@ export abstract class SocketStoreBase {
     /* c8 ignore stop */
   }
 
-  // run executable code which received from remote and send back the result
-  private static handleDebugger(
-    { source }: SpyBase.InteractiveEvent<string>,
-    reply: (data: any) => void,
-  ) {
-    const { type, data } = source;
-    if (type === DEBUG_MESSAGE_TYPE.DEBUG) {
-      const originMsg = makeMessage(DEBUG_MESSAGE_TYPE.CONSOLE, {
-        logType: 'debug-origin',
-        logs: [
-          {
-            id: getRandomId(),
-            type: 'debug-origin',
-            value: data,
-          },
-        ],
-      });
-      reply(originMsg);
-      try {
-        // eslint-disable-next-line no-new-func, @typescript-eslint/no-implied-eval
-        const result = new Function(`return ${data}`)();
-        const evalMsg = makeMessage(DEBUG_MESSAGE_TYPE.CONSOLE, {
-          logType: 'debug-eval',
-          logs: [atom.transformToAtom(result)],
-        });
-        reply(evalMsg);
-      } catch (err) {
-        const errMsg = makeMessage(DEBUG_MESSAGE_TYPE.CONSOLE, {
-          logType: 'error',
-          logs: [
-            {
-              type: 'error',
-              value: (err as Error).stack,
-            },
-          ],
-        });
-        reply(errMsg);
-      }
-    }
-  }
-
   private static handleResolveAtom(
     { source }: SpyBase.InteractiveEvent<string>,
     reply: (data: any) => void,
   ) {
     const { type, data } = source;
-    if (type === DEBUG_MESSAGE_TYPE.ATOM_DETAIL) {
+    if (type === 'atom-detail') {
       const atomData = atom.get(data) || {};
       const msg = makeMessage(`atom-detail-${data}`, atomData, false);
       reply(msg);
@@ -462,7 +408,7 @@ export abstract class SocketStoreBase {
     reply: (data: any) => void,
   ) {
     const { type, data } = source;
-    if (type === DEBUG_MESSAGE_TYPE.ATOM_GETTER) {
+    if (type === 'atom-getter') {
       const { id, parentId, key, instanceId } = data;
       const instance = atom.getOrigin(instanceId);
       const current = atom.getOrigin(parentId);

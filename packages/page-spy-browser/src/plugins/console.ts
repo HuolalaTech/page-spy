@@ -1,8 +1,7 @@
-import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
+import { makeMessage } from 'base/src/message';
 import socketStore from 'page-spy-browser/src/helpers/socket';
 import type { SpyConsole, PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import atom from 'base/src/atom';
-import { PUBLIC_DATA } from 'base/src/message/debug-type';
 
 export default class ConsolePlugin implements PageSpyPlugin {
   public name: string = 'ConsolePlugin';
@@ -49,11 +48,11 @@ export default class ConsolePlugin implements PageSpyPlugin {
       this.console[data.logType](...data.logs);
       // eslint-disable-next-line no-param-reassign
       data.logs = data.logs.map((log) => atom.transformToAtom(log));
-      const log = makeMessage(DEBUG_MESSAGE_TYPE.CONSOLE, {
+      const log = makeMessage('console', {
         time: Date.now(),
         ...data,
       });
-      socketStore.dispatchEvent(PUBLIC_DATA, log);
+      socketStore.dispatchEvent('public-data', log);
       socketStore.broadcastMessage(log);
     }
   }

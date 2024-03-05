@@ -24,9 +24,9 @@ export type InteractiveType =
 /**
  * Internal types used in PageSpy self, such as plugin-plugin communication.
  */
-export type InternalType = 'public-data';
+export type InternalMsgType = 'public-data';
 
-export type MessageType = DataType | InteractiveType | InternalType;
+export type MessageType = DataType | InteractiveType | InternalMsgType;
 
 export interface MessageItem<T = MessageType, D = any> {
   role: 'client' | 'debugger';

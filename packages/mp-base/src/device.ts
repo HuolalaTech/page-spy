@@ -8,5 +8,6 @@ export default class Device {
     browserType: 'unknown',
     browserVersion: 'unknown',
     framework: 'unknown',
+    isDevTools: false,
   };
 }

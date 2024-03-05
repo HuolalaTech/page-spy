@@ -36,11 +36,14 @@ export const setMPSDK = (SDK: MPSDK) => {
   mpSDK = SDK;
 };
 
+// get the global context, and we assume the window is better than global, even in
+// mini program environment, mostly because of alipay...
 export const getGlobal = () => {
   if (typeof globalThis !== 'undefined') {
     return globalThis;
-  }
-  if (typeof global !== 'undefined') {
+  } else if (typeof window !== 'undefined') {
+    return window;
+  } else if (typeof global !== 'undefined') {
     return global;
   }
   return undefined;

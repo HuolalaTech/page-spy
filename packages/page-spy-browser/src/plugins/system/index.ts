@@ -1,9 +1,8 @@
 import { getRandomId } from 'base/src';
 import socketStore from 'page-spy-browser/src/helpers/socket';
-import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
+import { makeMessage } from 'base/src/message';
 import '../../deps/modernizr';
 import { SpySystem, PageSpyPlugin } from '@huolala-tech/page-spy-types';
-import { PUBLIC_DATA } from 'base/src/message/debug-type';
 import { computeResult } from './feature';
 
 window.Modernizr.addTest(
@@ -42,14 +41,14 @@ export default class SystemPlugin implements PageSpyPlugin {
 
     const id = getRandomId();
     const features = await computeResult();
-    const data = makeMessage(DEBUG_MESSAGE_TYPE.SYSTEM, {
+    const data = makeMessage('system', {
       id,
       system: {
         ua: navigator.userAgent,
       },
       features,
     } as SpySystem.DataItem);
-    socketStore.dispatchEvent(PUBLIC_DATA, data);
+    socketStore.dispatchEvent('public-data', data);
     socketStore.broadcastMessage(data);
   }
 

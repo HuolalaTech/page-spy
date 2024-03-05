@@ -2,8 +2,7 @@ import { OnInitParams, PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import { record } from 'rrweb';
 import type { recordOptions } from 'rrweb/typings/types';
 import type { eventWithTime, listenerHandler } from '@rrweb/types';
-import { DEBUG_MESSAGE_TYPE, makeMessage } from 'base/src/message';
-import { PUBLIC_DATA } from 'base/src/message/debug-type';
+import { makeMessage } from 'base/src/message';
 import { isBrowser, psLog } from 'base/src';
 
 interface Options extends recordOptions<eventWithTime> {
@@ -44,9 +43,9 @@ export default class RRWebPlugin implements PageSpyPlugin {
     const handler = record({
       ...rest,
       emit(evt) {
-        const data = makeMessage(DEBUG_MESSAGE_TYPE.RRWEB_EVENT, evt);
+        const data = makeMessage('rrweb-event', evt);
 
-        socketStore.dispatchEvent(PUBLIC_DATA, data);
+        socketStore.dispatchEvent('public-data', data);
         if (allowOnline) {
           // TODO
           // socketStore.broadcastMessage(data);

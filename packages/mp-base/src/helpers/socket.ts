@@ -85,6 +85,10 @@ export class MPSocketStore extends SocketStoreBase {
     return this.socketWrapper;
   }
 
+  constructor() {
+    super();
+  }
+
   // this is an abstract method of parent class, cannot be static
   /* eslint-disable-next-line */
   onOffline() {

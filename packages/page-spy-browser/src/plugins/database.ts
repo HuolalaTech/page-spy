@@ -1,9 +1,8 @@
 import { DBInfo, DBStoreInfo } from '@huolala-tech/page-spy-types/lib/database';
 import { psLog } from 'base/src';
 import socketStore from 'page-spy-browser/src/helpers/socket';
-import { DEBUG_MESSAGE_TYPE, makeMessage } from 'base/src/message';
+import { makeMessage } from 'base/src/message';
 import { SpyDatabase, PageSpyPlugin } from '@huolala-tech/page-spy-types';
-import { PUBLIC_DATA } from 'base/src/message/debug-type';
 
 export function promisify<T = any>(req: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -74,7 +73,7 @@ export class DatabasePlugin implements PageSpyPlugin {
   }
 
   private static listenEvents() {
-    socketStore.addListener(DEBUG_MESSAGE_TYPE.REFRESH, async ({ source }) => {
+    socketStore.addListener('refresh', async ({ source }) => {
       if (source.data === 'indexedDB') {
         const result = await this.takeBasicInfo();
         const data: SpyDatabase.BasicTypeDataItem = {
@@ -84,18 +83,15 @@ export class DatabasePlugin implements PageSpyPlugin {
         DatabasePlugin.sendData(data);
       }
     });
-    socketStore.addListener(
-      DEBUG_MESSAGE_TYPE.DATABASE_PAGINATION,
-      async ({ source }) => {
-        const { db, store, page } = source.data;
-        const result = await DatabasePlugin.getStoreDataWithPagination({
-          db,
-          store,
-          page,
-        });
-        DatabasePlugin.sendData(result);
-      },
-    );
+    socketStore.addListener('database-pagination', async ({ source }) => {
+      const { db, store, page } = source.data;
+      const result = await DatabasePlugin.getStoreDataWithPagination({
+        db,
+        store,
+        page,
+      });
+      DatabasePlugin.sendData(result);
+    });
   }
 
   private initIndexedDBProxy() {
@@ -272,12 +268,12 @@ export class DatabasePlugin implements PageSpyPlugin {
   }
 
   private static sendData(info: Omit<SpyDatabase.DataItem, 'id'>) {
-    const data = makeMessage(DEBUG_MESSAGE_TYPE.DATABASE, info);
+    const data = makeMessage('database', info);
     // The user wouldn't want to get the stale data, so here we set the 2nd parameter to true.
     socketStore.broadcastMessage(data, true);
 
     if (['update', 'clear', 'drop'].includes(info.action)) {
-      socketStore.dispatchEvent(PUBLIC_DATA, data);
+      socketStore.dispatchEvent('public-data', data);
     }
   }
 }

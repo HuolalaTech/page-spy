@@ -1,7 +1,6 @@
 import socketStore from 'page-spy-browser/src/helpers/socket';
 import type { PageSpyPlugin } from '@huolala-tech/page-spy-types';
-import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
-import { PUBLIC_DATA } from 'base/src/message/debug-type';
+import { makeMessage } from 'base/src/message';
 
 export default class PagePlugin implements PageSpyPlugin {
   public name = 'PagePlugin';
@@ -13,11 +12,11 @@ export default class PagePlugin implements PageSpyPlugin {
     if (PagePlugin.hasInitd) return;
     PagePlugin.hasInitd = true;
 
-    socketStore.addListener(DEBUG_MESSAGE_TYPE.REFRESH, ({ source }, reply) => {
+    socketStore.addListener('refresh', ({ source }, reply) => {
       const { data } = source;
       if (data === 'page') {
         const msg = PagePlugin.collectHtml();
-        socketStore.dispatchEvent(PUBLIC_DATA, msg);
+        socketStore.dispatchEvent('public-data', msg);
         reply(msg);
       }
     });
@@ -29,7 +28,7 @@ export default class PagePlugin implements PageSpyPlugin {
 
   private static collectHtml() {
     const originHtml = document.documentElement.outerHTML;
-    const msg = makeMessage(DEBUG_MESSAGE_TYPE.PAGE, {
+    const msg = makeMessage('page', {
       html: originHtml,
       location: window.location,
     });

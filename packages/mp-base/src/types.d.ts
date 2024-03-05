@@ -212,16 +212,38 @@ type MPSystemAPI = {
   };
 };
 
-type MPSDK = MPStorageAPI & MPNetworkAPI & MPSystemAPI;
+type MPRouterAPI = {
+  switchTab(params: { url: string } & AsyncCallback);
+  reLaunch(params: { url: string } & AsyncCallback);
+  redirectTo(params: { url: string } & AsyncCallback);
+  navigateTo(params: { url: string } & AsyncCallback);
+  navigateBack(params: { delta?: number } & AsyncCallback);
+};
+
+type MPSDK = MPStorageAPI & MPNetworkAPI & MPSystemAPI & MPRouterAPI;
 
 // declare const mp: MPSDK;
 // declare const uni: MPSDK;
 
-type PageInfo = {
+declare interface PageInfo {
   route: string;
   // page state data
   data: Record<string, any>;
   // page query string params
   options: Record<string, any>;
+
+  setData: (data: Record<string, any>) => void;
+
+  __proto__: Object;
+
+  [other: string]: any;
+}
+
+type AppData = {
+  globalData: Record<string, any>;
+  __proto__: Object;
 };
-declare function getCurrentPages(): PageInfo[];
+declare function getCurrentPages<T extends PageInfo = PageInfo>(): T[];
+declare function getApp(): AppData;
+
+declare function Page(config: any): void; // TODO 补完

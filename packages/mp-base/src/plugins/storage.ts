@@ -1,8 +1,7 @@
-import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
+import { makeMessage } from 'base/src/message';
 import type { SpyStorage, PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import socketStore from 'mp-base/src/helpers/socket';
 import { psLog } from 'base/src';
-import { PUBLIC_DATA } from 'base/src/message/debug-type';
 import { getMPSDK, utilAPI } from '../utils';
 import Device from '../device';
 
@@ -76,7 +75,7 @@ export default class StoragePlugin implements PageSpyPlugin {
 
   /* c8 ignore start */
   private static listenRefreshEvent() {
-    socketStore.addListener(DEBUG_MESSAGE_TYPE.REFRESH, async ({ source }) => {
+    socketStore.addListener('refresh', async ({ source }) => {
       const { data: storageType } = source;
       if (storageType === 'mpStorage') {
         StoragePlugin.sendRefresh();
@@ -265,8 +264,8 @@ export default class StoragePlugin implements PageSpyPlugin {
   }
 
   private static sendStorageItem(info: Omit<SpyStorage.DataItem, 'id'>) {
-    const data = makeMessage(DEBUG_MESSAGE_TYPE.STORAGE, info);
-    socketStore.dispatchEvent(PUBLIC_DATA, data);
+    const data = makeMessage('storage', info);
+    socketStore.dispatchEvent('public-data', data);
     // The user wouldn't want to get the stale data, so here we set the 2nd parameter to true.
     socketStore.broadcastMessage(data, true);
   }

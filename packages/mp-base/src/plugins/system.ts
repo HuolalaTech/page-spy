@@ -1,7 +1,7 @@
 import Device from 'mp-base/src/device';
 import { getRandomId } from 'base/src';
 import socketStore from 'mp-base/src/helpers/socket';
-import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
+import { makeMessage } from 'base/src/message';
 import type { SpySystem, PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import { combineName } from 'base/src/device';
 
@@ -18,7 +18,7 @@ export default class SystemPlugin implements PageSpyPlugin {
     const id = getRandomId();
     const deviceInfo = Device.info;
     socketStore.broadcastMessage(
-      makeMessage(DEBUG_MESSAGE_TYPE.SYSTEM, {
+      makeMessage('system', {
         id,
         system: {
           ua: combineName(deviceInfo),
