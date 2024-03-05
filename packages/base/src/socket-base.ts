@@ -197,7 +197,7 @@ export abstract class SocketStoreBase {
   }
 
   public broadcastMessage(
-    msg: SpyMessage.MessageItem,
+    msg: SpyMessage.MessageItem<SpyMessage.DataType>,
     noCache: boolean = false,
   ) {
     const message = makeBroadcastMessage(msg);
@@ -363,7 +363,7 @@ export abstract class SocketStoreBase {
       (fn as SpyBase.InteractiveEventCallback).call(
         this,
         data,
-        (d: SpyMessage.MessageItem) => {
+        (d: SpyMessage.MessageItem<SpyMessage.InteractiveType>) => {
           this.unicastMessage(d, data.from);
         },
       );
@@ -371,7 +371,7 @@ export abstract class SocketStoreBase {
   }
 
   private unicastMessage(
-    msg: SpyMessage.MessageItem,
+    msg: SpyMessage.MessageItem<SpyMessage.InteractiveType>,
     to: SpySocket.Connection,
   ) {
     const message = makeUnicastMessage(msg, this.socketConnection!, to);
