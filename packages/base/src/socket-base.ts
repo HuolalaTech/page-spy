@@ -112,7 +112,7 @@ export abstract class SocketStoreBase {
   private retryTimer: ReturnType<typeof setTimeout> | null = null;
 
   // messages store
-  private messages: (SpySocket.BroadcastEvent | SpySocket.UnicastEvent)[] = [];
+  private messages: SpySocket.BroadcastEvent[] = [];
 
   // events center
   private events: Record<
@@ -316,7 +316,7 @@ export abstract class SocketStoreBase {
       case MESSAGE:
         const { data, from, to } = result.content;
         if (to.address === this.socketConnection?.address) {
-          this.dispatchEvent(data.type as SpyMessage.InteractiveType, {
+          this.dispatchEvent(data.type, {
             source: data,
             from,
             to,
@@ -388,19 +388,17 @@ export abstract class SocketStoreBase {
     );
 
     /* c8 ignore start */
-    this.messages
-      .slice(msgIndex + 1)
-      .forEach((msg: SpySocket.BroadcastEvent | SpySocket.UnicastEvent) => {
-        const data = {
-          type: SERVER_MESSAGE_TYPE.MESSAGE,
-          content: {
-            data: msg.content.data,
-            from: this.socketConnection!,
-            to: message.from,
-          },
-        } as const;
-        this.send(data, true);
-      });
+    this.messages.slice(msgIndex + 1).forEach((msg) => {
+      const data: SpySocket.UnicastEvent = {
+        type: SERVER_MESSAGE_TYPE.MESSAGE,
+        content: {
+          data: msg.content.data as any,
+          from: this.socketConnection!,
+          to: message.from,
+        },
+      };
+      this.send(data, true);
+    });
     /* c8 ignore stop */
   }
 
@@ -503,9 +501,7 @@ export abstract class SocketStoreBase {
       ) {
         return;
       }
-      this.messages.push(
-        msg as Exclude<SpySocket.ClientEvent, SpySocket.PingEvent>,
-      );
+      this.messages.push(msg as SpySocket.BroadcastEvent);
     }
   }
 }
