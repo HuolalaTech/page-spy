@@ -56,6 +56,8 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     'rrweb-event': true,
   };
 
+  private uploadUrl: string = '';
+
   private onDownload: DataHarborConfig['onDownload'];
 
   public static hasInited = false;
@@ -75,9 +77,20 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     this.harbor = new Harbor({ maximum: config.maximum });
   }
 
-  public async onInit({ socketStore }: OnInitParams) {
+  public async onInit({ socketStore, config }: OnInitParams) {
     if (DataHarborPlugin.hasInited) return;
     DataHarborPlugin.hasInited = true;
+
+    const { api, enableSSL } = config;
+    if (!api) {
+      psLog.warn(
+        'Cannot upload log to PageSpy for wrong configuration. See: ',
+        config,
+      );
+    } else {
+      const apiScheme = enableSSL ? 'https://' : 'http://';
+      this.uploadUrl = `${apiScheme}${api}/upload`;
+    }
 
     socketStore.addListener(PUBLIC_DATA, async (message) => {
       if (!this.isCaredPublicData(message)) return;
@@ -96,23 +109,23 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     DataHarborPlugin.hasMounted = true;
 
     const cn = isCN();
-    const div = document.createElement('div');
-    div.id = 'data-harbor-plugin-download';
-    div.className = 'page-spy-content__btn';
-    div.textContent = cn ? '下载日志数据' : 'Download the data';
 
-    let idle = true;
+    const downloadBtn = document.createElement('div');
+    downloadBtn.id = 'data-harbor-plugin-download';
+    downloadBtn.className = 'page-spy-content__btn';
+    downloadBtn.textContent = cn ? '下载日志数据' : 'Download the data';
+    let idleWithDownload = true;
 
-    div.addEventListener('click', async () => {
-      if (!idle) return;
-      idle = false;
+    downloadBtn.addEventListener('click', async () => {
+      if (!idleWithDownload) return;
+      idleWithDownload = false;
 
       try {
-        div.textContent = cn ? '准备数据...' : 'Handling data...';
+        downloadBtn.textContent = cn ? '准备数据...' : 'Handling data...';
         const data = await this.harbor.getHarborData();
         if (this.onDownload) {
-          div.textContent = cn ? '数据已处理完成' : 'Data is ready';
-          await this.onDownload(data);
+          downloadBtn.textContent = cn ? '数据已处理完成' : 'Data is ready';
+          this.onDownload(data);
           return;
         }
 
@@ -137,19 +150,66 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
         root.removeChild(a);
         URL.revokeObjectURL(url);
-        div.textContent = cn ? '下载成功' : 'Download successful';
+        downloadBtn.textContent = cn ? '下载成功' : 'Download successful';
       } catch (e) {
-        div.textContent = cn ? '下载失败' : 'Download failed';
+        downloadBtn.textContent = cn ? '下载失败' : 'Download failed';
         psLog.error('Download failed.', e);
       } finally {
         setTimeout(() => {
-          div.textContent = cn ? '下载日志数据' : 'Download the data';
-          idle = true;
+          downloadBtn.textContent = cn ? '下载日志数据' : 'Download the data';
+          idleWithDownload = true;
         }, 3000);
       }
     });
 
-    content.insertAdjacentElement('beforeend', div);
+    const uploadBtn = document.createElement('div');
+    uploadBtn.id = 'data-harbor-plugin-upload';
+    uploadBtn.className = 'page-spy-content__btn';
+    uploadBtn.textContent = cn ? '上传到 PageSpy' : 'Upload to PageSpy';
+    let idleWithUpload = true;
+
+    uploadBtn.addEventListener('click', async () => {
+      if (!this.uploadUrl) {
+        uploadBtn.textContent = cn ? '配置有误，无法上传' : 'Cannot upload';
+        return;
+      }
+
+      if (!idleWithUpload) return;
+      idleWithUpload = false;
+
+      try {
+        uploadBtn.textContent = cn ? '准备数据...' : 'Handling data...';
+        const data = await this.harbor.getHarborData();
+
+        uploadBtn.textContent = cn ? '上传中...' : 'Uploading...';
+
+        const response = await fetch(this.uploadUrl, {
+          method: 'POST',
+          body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+          throw new Error('Upload failed');
+        }
+
+        const result = await response.json();
+
+        // TODO: Copy the online source url
+
+        uploadBtn.textContent = cn ? '上传成功' : 'Upload successful';
+      } catch (e: any) {
+        uploadBtn.textContent = cn ? '上传失败' : 'Upload failed';
+        psLog.error(e.message);
+      } finally {
+        setTimeout(() => {
+          uploadBtn.textContent = cn ? '上传到 PageSpy' : 'Upload to PageSpy';
+          idleWithUpload = true;
+        }, 3000);
+      }
+    });
+
+    content.insertAdjacentElement('beforeend', downloadBtn);
+    content.insertAdjacentElement('beforeend', uploadBtn);
   }
 
   onReset() {
