@@ -8,7 +8,7 @@ interface ContentParams {
 export class Content {
   options: ContentParams;
 
-  el: HTMLElement;
+  el: HTMLDivElement;
 
   constructor(args: ContentParams) {
     this.options = {

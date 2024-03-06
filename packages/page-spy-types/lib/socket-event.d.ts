@@ -1,4 +1,4 @@
-import type { MessageItem } from './message-type';
+import type { DataType, InteractiveType, MessageItem } from './message-type';
 
 export type EventType =
   | 'connect'
@@ -50,13 +50,13 @@ export type CloseEvent = EventConstructor<
 export type BroadcastEvent = EventConstructor<
   'broadcast',
   {
-    data: MessageItem;
+    data: MessageItem<DataType>;
   }
 >;
 export type UnicastEvent = EventConstructor<
   'message',
   {
-    data: MessageItem;
+    data: MessageItem<InteractiveType>;
     from: Connection;
     to: Connection;
   }
