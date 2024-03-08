@@ -180,7 +180,7 @@ export default class RRWebRecordPlugin implements PageSpyPlugin {
 <!-- Include SDK -->
 <script src="https://<your-host>/page-spy/index.min.js"></script>
 <!-- Include the plugin -->
-<script src="https://<your-host>/plugins/rrweb-record.min.js"></script>
+<script src="https://<your-host>/plugins/rrweb/index.min.js"></script>
 
 <!-- Register the plugin -->
 <script>
