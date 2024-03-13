@@ -73,6 +73,9 @@ export interface OnMountedParams {
 
 ## 插件实现案例
 
+> [!NOTE]
+> 下面的内容仅仅是个插件示例。
+
 案例说明：通过 rrweb 在客户端录制 DOM，功能包含：
 
 - 在客户端弹窗中新增一个 "下载录制数据" 按钮；按钮点击后开始下载文件；
@@ -90,8 +93,8 @@ import {
 
 type Options = Parameters<typeof record>[number];
 
-export default class RRWebRecordPlugin implements PageSpyPlugin {
-  name = 'RRWebRecordPlugin';
+export default class XXXPlugin implements PageSpyPlugin {
+  name = 'XXXPlugin';
 
   events: eventWithTime[] = [];
 
@@ -102,8 +105,8 @@ export default class RRWebRecordPlugin implements PageSpyPlugin {
   constructor(public options: Options = {}) {}
 
   onInit({ socketStore }: OnInitParams) {
-    if (RRWebRecordPlugin.hasInited) return;
-    RRWebRecordPlugin.hasInited = true;
+    if (XXXPlugin.hasInited) return;
+    XXXPlugin.hasInited = true;
 
     record({
       ...this.options,
@@ -134,8 +137,8 @@ export default class RRWebRecordPlugin implements PageSpyPlugin {
   }
 
   onMounted({ content, socketStore }: OnMountedParams) {
-    if (RRWebRecordPlugin.hasMounted) return;
-    RRWebRecordPlugin.hasMounted = true;
+    if (XXXPlugin.hasMounted) return;
+    XXXPlugin.hasMounted = true;
 
     const recordBtn = document.createElement('div');
     recordBtn.id = 'download-rrweb-event';
@@ -164,8 +167,8 @@ export default class RRWebRecordPlugin implements PageSpyPlugin {
 
   // 当用户调用 $pageSpy.abort() 时会触发 `onReset()`
   onReset() {
-    RRWebRecordPlugin.hasInited = false;
-    RRWebRecordPlugin.hasMounted = false;
+    XXXPlugin.hasInited = false;
+    XXXPlugin.hasMounted = false;
     const root = document.getElementById('download-rrweb-event');
     if (root) {
       root.remove();
@@ -180,11 +183,11 @@ export default class RRWebRecordPlugin implements PageSpyPlugin {
 <!-- 引入 SDK -->
 <script src="https://<your-host>/page-spy/index.min.js"></script>
 <!-- 引入插件 -->
-<script src="https://<your-host>/plugin/rrweb/index.min.js"></script>
+<script src="https://<your-host>/plugin/xxx/index.min.js"></script>
 
 <!-- 注册插件 -->
 <script>
-  PageSpy.registerPlugin(new RRWebRecordPlugin());
+  PageSpy.registerPlugin(new XXXPlugin());
   window.$pageSpy = new PageSpy();
 </script>
 ```
