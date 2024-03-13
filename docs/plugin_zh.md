@@ -180,7 +180,7 @@ export default class RRWebRecordPlugin implements PageSpyPlugin {
 <!-- 引入 SDK -->
 <script src="https://<your-host>/page-spy/index.min.js"></script>
 <!-- 引入插件 -->
-<script src="https://<your-host>/plugins/rrweb/index.min.js"></script>
+<script src="https://<your-host>/plugin/rrweb/index.min.js"></script>
 
 <!-- 注册插件 -->
 <script>
