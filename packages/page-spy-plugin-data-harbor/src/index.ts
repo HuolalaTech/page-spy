@@ -111,7 +111,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
         const data = await this.harbor.getHarborData();
         if (this.onDownload) {
           div.textContent = cn ? '数据已处理完成' : 'Data is ready';
-          this.onDownload(data);
+          await this.onDownload(data);
           return;
         }
 
