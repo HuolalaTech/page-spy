@@ -16,7 +16,9 @@ interface DataHarborConfig {
 }
 
 declare class DataHarborPlugin implements PageSpyPlugin {
+  name: string;
   constructor(config?: DataHarborConfig);
+  onInit({ socketStore }: OnInitParams): Promise<void>;
 }
 
 export default DataHarborPlugin;
