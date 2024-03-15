@@ -6,6 +6,7 @@
   "license": "MIT",
   "main": "dist/iife/index.min.js",
   "module": "dist/esm/index.min.js",
+  "types": "types/index.d.ts",
   "files": [
     "dist",
     "types"
