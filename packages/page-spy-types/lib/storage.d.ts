@@ -5,6 +5,17 @@ export type DataType =
   | 'mpStorage';
 export type ActionType = 'clear' | 'remove' | 'get' | 'set';
 
+export type CookieStoreValue = {
+  name: string;
+  value: string;
+  domain: null | string;
+  path: string;
+  partitioned: boolean;
+  secure: boolean;
+  sameSite: 'lax' | 'strict' | 'none';
+  expires: null | number;
+};
+
 type Data = Pick<CookieStoreValue, 'name' | 'value'> &
   Partial<Omit<CookieStoreValue, 'name' | 'value'>>;
 

@@ -24,7 +24,6 @@ import Request from './api';
 import type { UElement } from './helpers/moveable';
 import { moveable } from './helpers/moveable';
 import './index.less';
-import logoUrl from './assets/logo.svg';
 // eslint-disable-next-line import/order
 import { Config } from './config';
 import { DatabasePlugin } from './plugins/database';
@@ -271,7 +270,7 @@ class PageSpy {
 
   startRender() {
     const config = this.config.get();
-    const { project, clientOrigin, title } = config;
+    const { project, clientOrigin, title, logo: logoUrl, logoStyle } = config;
 
     const root = document.createElement('div');
     root.id = Identifier;
@@ -284,6 +283,9 @@ class PageSpy {
     img.src = logoUrl;
     img.width = 50;
     img.height = 50;
+    Object.entries(logoStyle).forEach(([key, value]) => {
+      img.style[key as any] = value;
+    });
     logo.insertAdjacentElement('beforeend', img);
     root.insertAdjacentElement('beforeend', logo);
     window.addEventListener('sdk-inactive', () => {
