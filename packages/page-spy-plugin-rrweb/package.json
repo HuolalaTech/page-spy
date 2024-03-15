@@ -7,7 +7,8 @@
   "main": "dist/iife/index.min.js",
   "module": "dist/esm/index.min.js",
   "files": [
-    "dist"
+    "dist",
+    "types"
   ],
   "publishConfig": {
     "access": "public"

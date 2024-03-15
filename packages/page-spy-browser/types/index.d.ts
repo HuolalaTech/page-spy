@@ -1,4 +1,8 @@
-import { InitConfigBase, PageSpyBase } from '@huolala-tech/page-spy-types';
+import {
+  InitConfigBase,
+  PageSpyBase,
+  PageSpyPlugin,
+} from '@huolala-tech/page-spy-types';
 
 type InternalPlugins =
   | 'ConsolePlugin'
@@ -31,6 +35,14 @@ export interface InitConfig extends InitConfigBase {
    * exported with "DataHarborPlugin" and then replayed in the debugger.
    */
   offline?: boolean;
+  /**
+   * Customize logo source url.
+   */
+  logo?: string;
+  /**
+   * Customize logo style.
+   */
+  logoStyle?: Object;
 }
 
 interface PageSpyBrowser extends PageSpyBase {
@@ -42,6 +54,7 @@ interface PageSpyBrowser extends PageSpyBase {
 interface PageSpyConstructor {
   new (config?: InitConfig): PageSpyBrowser;
   instance: PageSpyBrowser | null;
+  registerPlugin(plugin: PageSpyPlugin): void;
 }
 
 declare const PageSpy: PageSpyConstructor;
