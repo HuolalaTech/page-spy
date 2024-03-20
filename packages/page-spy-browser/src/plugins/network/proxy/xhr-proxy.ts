@@ -14,7 +14,6 @@ import {
   Reason,
   addContentTypeHeader,
   getFormattedBody,
-  isOkStatusCode,
   resolveUrlInfo,
 } from 'base/src/network/common';
 import WebNetworkProxyBase from './base';
@@ -194,7 +193,6 @@ class XhrProxy extends WebNetworkProxyBase {
       responseReason: null,
     } as const;
 
-    if (!isOkStatusCode(XMLReq.status)) return result;
     // How to format the response is depend on XMLReq.responseType.
     // The behavior is different with format fetch's response, which
     // is depend on response.headers.get('content-type')
