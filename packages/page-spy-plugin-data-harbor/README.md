@@ -59,7 +59,7 @@ export default DataHarborPlugin;
       <!-- 3. Register plugin && Init PageSpy -->
       <script>
         // Register plugin
-        PageSpy.registerPlugin(new DataHarborPlugin(config));
+        PageSpy.registerPlugin(new DataHarborPlugin(config: DataHarborConfig));
         // Init PageSpy
         window.$pageSpy = new PageSpy();
       </script>

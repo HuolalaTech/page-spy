@@ -59,7 +59,7 @@ export default DataHarborPlugin;
       <!-- 3. 注册插件 && 实例化 PageSpy -->
       <script>
         // 注册插件
-        PageSpy.registerPlugin(new DataHarborPlugin(config));
+        PageSpy.registerPlugin(new DataHarborPlugin(config: DataHarborConfig));
         // 实例化
         window.$pageSpy = new PageSpy();
       </script>
