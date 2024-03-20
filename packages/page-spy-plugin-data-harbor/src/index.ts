@@ -11,9 +11,8 @@ import { DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import { strFromU8, zlibSync, strToU8 } from 'fflate';
 import type RequestItem from 'base/src/request-item';
 import { Harbor } from './harbor';
-// import { SKIP_PUBLIC_IDB_PREFIX } from './skip-public';
 
-type DataType = 'console' | 'network' | 'rrweb-event';
+type DataType = 'console' | 'network' | 'system' | 'storage' | 'rrweb-event';
 
 type CacheMessageItem = Pick<
   SpyMessage.MessageItem<SpyMessage.DataType, any>,
@@ -21,6 +20,12 @@ type CacheMessageItem = Pick<
 > & {
   timestamp: number;
 };
+
+interface DataHarborConfig {
+  maximum?: number;
+  caredData?: Record<DataType, boolean>;
+  onDownload?: (data: CacheMessageItem[]) => void;
+}
 
 const minifyData = (d: any) => {
   return strFromU8(zlibSync(strToU8(JSON.stringify(d)), { level: 9 }), true);
@@ -34,12 +39,6 @@ const makeData = (type: SpyMessage.DataType, data: any) => {
   };
 };
 
-interface DataHarborConfig {
-  maximum?: number;
-  caredData?: Record<DataType, boolean>;
-  onDownload?: (data: CacheMessageItem[]) => void;
-}
-
 export default class DataHarborPlugin implements PageSpyPlugin {
   public enforce: PluginOrder = 'pre';
 
@@ -49,9 +48,11 @@ export default class DataHarborPlugin implements PageSpyPlugin {
   private harbor: Harbor;
 
   // Specify which types of data to collect.
-  private caredData = {
+  private caredData: Record<DataType, boolean> = {
     console: true,
     network: true,
+    storage: true,
+    system: true,
     'rrweb-event': true,
   };
 
@@ -165,18 +166,23 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     if (!message) return false;
     const { type } = message;
     switch (type) {
-      // case DEBUG_MESSAGE_TYPE.STORAGE:
       case DEBUG_MESSAGE_TYPE.CONSOLE:
         if (this.caredData.console) return true;
+        return false;
+      case DEBUG_MESSAGE_TYPE.STORAGE:
+        if (this.caredData.storage) return true;
+        return false;
+      case DEBUG_MESSAGE_TYPE.SYSTEM:
+        if (this.caredData.system) return true;
+        return false;
+      case DEBUG_MESSAGE_TYPE.RRWEB_EVENT:
+        if (this.caredData['rrweb-event']) return true;
         return false;
       case DEBUG_MESSAGE_TYPE.NETWORK:
         const { url } = message.data as RequestItem;
         const isFetchHarborStockUrl = this.harbor.stock.includes(url);
 
         if (this.caredData.network && !isFetchHarborStockUrl) return true;
-        return false;
-      case DEBUG_MESSAGE_TYPE.RRWEB_EVENT:
-        if (this.caredData['rrweb-event']) return true;
         return false;
       // case DEBUG_MESSAGE_TYPE.DATABASE:
       //   if (['update', 'clear', 'drop'].includes(data.action)) {
