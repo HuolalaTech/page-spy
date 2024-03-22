@@ -239,3 +239,7 @@ export const psLog = (['log', 'info', 'error', 'warn'] as const).reduce(
   },
   {} as PSLog,
 );
+
+export const removeEndSlash = (s: string) => {
+  return s.replace(/\/$/, '');
+};

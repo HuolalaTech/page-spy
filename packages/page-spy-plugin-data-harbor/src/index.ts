@@ -6,15 +6,18 @@ import {
   PluginOrder,
 } from '@huolala-tech/page-spy-types';
 import { PUBLIC_DATA } from 'base/src/message/debug-type';
-import { isCN, isPlainObject, psLog } from 'base/src';
+import { isPlainObject, psLog } from 'base/src';
 import { DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import { strFromU8, zlibSync, strToU8 } from 'fflate';
 import type RequestItem from 'base/src/request-item';
+import type { InitConfig } from 'page-spy-browser/types';
 import { Harbor } from './harbor';
+import { handleDownload } from './utils/download';
+import { handleUpload } from './utils/upload';
 
 type DataType = 'console' | 'network' | 'system' | 'storage' | 'rrweb-event';
 
-type CacheMessageItem = Pick<
+export type CacheMessageItem = Pick<
   SpyMessage.MessageItem<SpyMessage.DataType, any>,
   'type' | 'data'
 > & {
@@ -56,7 +59,9 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     'rrweb-event': true,
   };
 
-  private uploadUrl: string = '';
+  private apiBase: string = '';
+
+  private debugClient: string = '';
 
   private onDownload: DataHarborConfig['onDownload'];
 
@@ -89,7 +94,8 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       );
     } else {
       const apiScheme = enableSSL ? 'https://' : 'http://';
-      this.uploadUrl = `${apiScheme}${api}/upload`;
+      this.apiBase = `${apiScheme}${api}`;
+      this.debugClient = (config as InitConfig).clientOrigin || '';
     }
 
     socketStore.addListener(PUBLIC_DATA, async (message) => {
@@ -108,104 +114,14 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     if (DataHarborPlugin.hasMounted) return;
     DataHarborPlugin.hasMounted = true;
 
-    const cn = isCN();
-
-    const downloadBtn = document.createElement('div');
-    downloadBtn.id = 'data-harbor-plugin-download';
-    downloadBtn.className = 'page-spy-content__btn';
-    downloadBtn.textContent = cn ? '下载日志数据' : 'Download the data';
-    let idleWithDownload = true;
-
-    downloadBtn.addEventListener('click', async () => {
-      if (!idleWithDownload) return;
-      idleWithDownload = false;
-
-      try {
-        downloadBtn.textContent = cn ? '准备数据...' : 'Handling data...';
-        const data = await this.harbor.getHarborData();
-        if (this.onDownload) {
-          downloadBtn.textContent = cn ? '数据已处理完成' : 'Data is ready';
-          this.onDownload(data);
-          return;
-        }
-
-        const blob = new Blob([JSON.stringify(data)], {
-          type: 'application/json',
-        });
-        const root: HTMLElement =
-          document.getElementsByTagName('body')[0] || document.documentElement;
-        if (!root) {
-          psLog.error(
-            'Download file failed because cannot find the document.body & document.documentElement',
-          );
-          return;
-        }
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.download = `${new Date().toLocaleString()}.json`;
-        a.href = url;
-        a.style.display = 'none';
-        root.insertAdjacentElement('beforeend', a);
-        a.click();
-
-        root.removeChild(a);
-        URL.revokeObjectURL(url);
-        downloadBtn.textContent = cn ? '下载成功' : 'Download successful';
-      } catch (e) {
-        downloadBtn.textContent = cn ? '下载失败' : 'Download failed';
-        psLog.error('Download failed.', e);
-      } finally {
-        setTimeout(() => {
-          downloadBtn.textContent = cn ? '下载日志数据' : 'Download the data';
-          idleWithDownload = true;
-        }, 3000);
-      }
+    const downloadBtn = handleDownload({
+      harbor: this.harbor,
+      customDownload: this.onDownload,
     });
-
-    const uploadBtn = document.createElement('div');
-    uploadBtn.id = 'data-harbor-plugin-upload';
-    uploadBtn.className = 'page-spy-content__btn';
-    uploadBtn.textContent = cn ? '上传到 PageSpy' : 'Upload to PageSpy';
-    let idleWithUpload = true;
-
-    uploadBtn.addEventListener('click', async () => {
-      if (!this.uploadUrl) {
-        uploadBtn.textContent = cn ? '配置有误，无法上传' : 'Cannot upload';
-        return;
-      }
-
-      if (!idleWithUpload) return;
-      idleWithUpload = false;
-
-      try {
-        uploadBtn.textContent = cn ? '准备数据...' : 'Handling data...';
-        const data = await this.harbor.getHarborData();
-
-        uploadBtn.textContent = cn ? '上传中...' : 'Uploading...';
-
-        const response = await fetch(this.uploadUrl, {
-          method: 'POST',
-          body: JSON.stringify(data),
-        });
-
-        if (!response.ok) {
-          throw new Error('Upload failed');
-        }
-
-        const result = await response.json();
-
-        // TODO: Copy the online source url
-
-        uploadBtn.textContent = cn ? '上传成功' : 'Upload successful';
-      } catch (e: any) {
-        uploadBtn.textContent = cn ? '上传失败' : 'Upload failed';
-        psLog.error(e.message);
-      } finally {
-        setTimeout(() => {
-          uploadBtn.textContent = cn ? '上传到 PageSpy' : 'Upload to PageSpy';
-          idleWithUpload = true;
-        }, 3000);
-      }
+    const uploadBtn = handleUpload({
+      harbor: this.harbor,
+      uploadUrl: this.apiBase,
+      debugClient: this.debugClient,
     });
 
     content.insertAdjacentElement('beforeend', downloadBtn);
