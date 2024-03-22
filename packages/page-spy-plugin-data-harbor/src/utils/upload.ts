@@ -2,10 +2,59 @@ import { isCN, psLog, removeEndSlash } from 'base/src';
 import type { Harbor } from '../harbor';
 import { UPLOAD_TIPS } from './TIP_CONTENT';
 
+const lang = isCN() ? 'zh' : 'en';
+const TIPS = UPLOAD_TIPS[lang];
+
 type UploadArgs = {
   harbor: Harbor;
   uploadUrl: string;
   debugClient: string;
+};
+
+export const startUpload = async ({
+  harbor,
+  uploadUrl,
+  debugClient,
+}: UploadArgs) => {
+  const uploadBtn: HTMLDivElement | null = document.querySelector(
+    '#data-harbor-plugin-upload',
+  );
+
+  const data = await harbor.getHarborData();
+  const blob = new Blob([JSON.stringify(data)], {
+    type: 'application/json',
+  });
+  const file = new File([blob], `${new Date().toLocaleString()}.json`, {
+    type: 'application/json',
+  });
+  const form = new FormData();
+  form.append('log', file);
+
+  if (uploadBtn) {
+    uploadBtn.textContent = TIPS.uploading;
+  }
+
+  const uploadUrlWithoutSlash = removeEndSlash(uploadUrl);
+  const response = await fetch(`${uploadUrl}/api/v1/log/upload`, {
+    method: 'POST',
+    body: form,
+  });
+  if (!response.ok) {
+    throw new Error('Upload failed');
+  }
+
+  const result: H.UploadResult = await response.json();
+  if (!result.success) {
+    throw new Error(result.message);
+  }
+  const onlineLogUrl = `${uploadUrlWithoutSlash}/api/v1/log/download?fileId=${result.data.fileId}`;
+
+  const debugClientWithoutSlash = removeEndSlash(debugClient);
+  const debugUrl = `${debugClientWithoutSlash}/#/replay?url=${onlineLogUrl}`;
+
+  psLog.info(`${TIPS.success}: ${debugUrl}`);
+
+  return debugUrl;
 };
 
 export const handleUpload = ({
@@ -13,8 +62,6 @@ export const handleUpload = ({
   uploadUrl,
   debugClient,
 }: UploadArgs) => {
-  const lang = isCN() ? 'zh' : 'en';
-  const TIPS = UPLOAD_TIPS[lang];
   const uploadBtn = document.createElement('div');
   uploadBtn.id = 'data-harbor-plugin-upload';
   uploadBtn.className = 'page-spy-content__btn';
@@ -32,45 +79,16 @@ export const handleUpload = ({
 
     try {
       uploadBtn.textContent = TIPS.readying;
-      const data = await harbor.getHarborData();
-      const blob = new Blob([JSON.stringify(data)], {
-        type: 'application/json',
-      });
-      const file = new File([blob], `${new Date().toLocaleString()}.json`, {
-        type: 'application/json',
-      });
-      const form = new FormData();
-      form.append('log', file);
-
-      uploadBtn.textContent = TIPS.uploading;
-
-      const uploadUrlWithoutSlash = removeEndSlash(uploadUrl);
-      const response = await fetch(`${uploadUrl}/api/v1/log/upload`, {
-        method: 'POST',
-        body: form,
-      });
-      if (!response.ok) {
-        throw new Error('Upload failed');
-      }
-
-      const result: H.UploadResult = await response.json();
-      if (!result.success) {
-        throw new Error(result.message);
-      }
-      const onlineLogUrl = `${uploadUrlWithoutSlash}/api/v1/log/download?fileId=${result.data.fileId}`;
-
-      const debugClientWithoutSlash = removeEndSlash(debugClient);
-      const debugClientUrl = `${debugClientWithoutSlash}/#/replay?url=${onlineLogUrl}`;
-
+      const debugUrl = await startUpload({ harbor, uploadUrl, debugClient });
       // Ready to copy
       const root = document.body || document.documentElement;
       const input = document.createElement('input');
       root.insertAdjacentElement('beforeend', input);
-      input.value = debugClientUrl;
+      input.value = debugUrl;
       input.select();
       const isOk = document.execCommand('copy');
       root.removeChild(input);
-      if (!isOk) {
+      if (isOk) {
         uploadBtn.textContent = TIPS.copied;
       } else {
         //  If copy failed
@@ -85,7 +103,7 @@ export const handleUpload = ({
           uploadBtn.insertAdjacentElement('afterend', logUrlElement);
         }
         const tipPrefix = TIPS.copyTip;
-        logUrlElement.textContent = tipPrefix + debugClientUrl;
+        logUrlElement.textContent = tipPrefix + debugUrl;
         uploadBtn.textContent = TIPS.success;
       }
     } catch (e: any) {

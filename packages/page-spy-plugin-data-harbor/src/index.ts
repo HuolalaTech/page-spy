@@ -6,14 +6,14 @@ import {
   PluginOrder,
 } from '@huolala-tech/page-spy-types';
 import { PUBLIC_DATA } from 'base/src/message/debug-type';
-import { isPlainObject, psLog } from 'base/src';
+import { isBrowser, isPlainObject, psLog } from 'base/src';
 import { DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import { strFromU8, zlibSync, strToU8 } from 'fflate';
 import type RequestItem from 'base/src/request-item';
 import type { InitConfig } from 'page-spy-browser/types';
 import { Harbor } from './harbor';
-import { handleDownload } from './utils/download';
-import { handleUpload } from './utils/upload';
+import { handleDownload, startDownload } from './utils/download';
+import { handleUpload, startUpload } from './utils/upload';
 
 type DataType = 'console' | 'network' | 'system' | 'storage' | 'rrweb-event';
 
@@ -114,18 +114,37 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     if (DataHarborPlugin.hasMounted) return;
     DataHarborPlugin.hasMounted = true;
 
-    const downloadBtn = handleDownload({
-      harbor: this.harbor,
-      customDownload: this.onDownload,
-    });
-    const uploadBtn = handleUpload({
-      harbor: this.harbor,
-      uploadUrl: this.apiBase,
-      debugClient: this.debugClient,
-    });
+    if (isBrowser()) {
+      const downloadBtn = handleDownload({
+        harbor: this.harbor,
+        customDownload: this.onDownload,
+      });
+      const uploadBtn = handleUpload({
+        harbor: this.harbor,
+        uploadUrl: this.apiBase,
+        debugClient: this.debugClient,
+      });
 
-    content.insertAdjacentElement('beforeend', downloadBtn);
-    content.insertAdjacentElement('beforeend', uploadBtn);
+      content.insertAdjacentElement('beforeend', downloadBtn);
+      content.insertAdjacentElement('beforeend', uploadBtn);
+    }
+  }
+
+  onOfflineLog(type: 'download' | 'upload') {
+    switch (type) {
+      case 'download':
+        startDownload({ harbor: this.harbor, customDownload: this.onDownload });
+        break;
+      case 'upload':
+        startUpload({
+          harbor: this.harbor,
+          uploadUrl: this.apiBase,
+          debugClient: this.debugClient,
+        });
+        break;
+      default:
+        break;
+    }
   }
 
   onReset() {
