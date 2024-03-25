@@ -7,12 +7,14 @@ const TIPS = UPLOAD_TIPS[lang];
 
 type UploadArgs = {
   harbor: Harbor;
+  filename: () => string;
   uploadUrl: string;
   debugClient: string;
 };
 
 export const startUpload = async ({
   harbor,
+  filename,
   uploadUrl,
   debugClient,
 }: UploadArgs) => {
@@ -24,7 +26,7 @@ export const startUpload = async ({
   const blob = new Blob([JSON.stringify(data)], {
     type: 'application/json',
   });
-  const file = new File([blob], `${new Date().toLocaleString()}.json`, {
+  const file = new File([blob], `${filename()}.json`, {
     type: 'application/json',
   });
   const form = new FormData();
@@ -59,6 +61,7 @@ export const startUpload = async ({
 
 export const handleUpload = ({
   harbor,
+  filename,
   uploadUrl,
   debugClient,
 }: UploadArgs) => {
@@ -79,7 +82,12 @@ export const handleUpload = ({
 
     try {
       uploadBtn.textContent = TIPS.readying;
-      const debugUrl = await startUpload({ harbor, uploadUrl, debugClient });
+      const debugUrl = await startUpload({
+        harbor,
+        filename,
+        uploadUrl,
+        debugClient,
+      });
       // Ready to copy
       const root = document.body || document.documentElement;
       const input = document.createElement('input');

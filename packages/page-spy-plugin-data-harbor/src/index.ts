@@ -27,6 +27,7 @@ export type CacheMessageItem = Pick<
 interface DataHarborConfig {
   maximum?: number;
   caredData?: Record<DataType, boolean>;
+  filename?: () => string;
   onDownload?: (data: CacheMessageItem[]) => void;
 }
 
@@ -63,6 +64,10 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
   private debugClient: string = '';
 
+  private filename: DataHarborConfig['filename'] = () => {
+    return new Date().toLocaleString().replace(/\s/g, '_');
+  };
+
   private onDownload: DataHarborConfig['onDownload'];
 
   public static hasInited = false;
@@ -78,6 +83,9 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     }
     if (typeof config.onDownload === 'function') {
       this.onDownload = config.onDownload;
+    }
+    if (typeof config.filename === 'function') {
+      this.filename = config.filename;
     }
     this.harbor = new Harbor({ maximum: config.maximum });
   }
@@ -117,10 +125,12 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     if (isBrowser()) {
       const downloadBtn = handleDownload({
         harbor: this.harbor,
+        filename: this.filename!,
         customDownload: this.onDownload,
       });
       const uploadBtn = handleUpload({
         harbor: this.harbor,
+        filename: this.filename!,
         uploadUrl: this.apiBase,
         debugClient: this.debugClient,
       });
@@ -133,12 +143,17 @@ export default class DataHarborPlugin implements PageSpyPlugin {
   onOfflineLog(type: 'download' | 'upload') {
     switch (type) {
       case 'download':
-        startDownload({ harbor: this.harbor, customDownload: this.onDownload });
+        startDownload({
+          harbor: this.harbor,
+          filename: this.filename!,
+          customDownload: this.onDownload,
+        });
         break;
       case 'upload':
         startUpload({
           harbor: this.harbor,
           uploadUrl: this.apiBase,
+          filename: this.filename!,
           debugClient: this.debugClient,
         });
         break;

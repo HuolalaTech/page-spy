@@ -9,10 +9,12 @@ const TIPS = DOWNLOAD_TIPS[lang];
 type DownloadArgs = {
   harbor: Harbor;
   customDownload?: (data: CacheMessageItem[]) => void;
+  filename: () => string;
 };
 
 export const startDownload = async ({
   harbor,
+  filename,
   customDownload,
 }: DownloadArgs) => {
   const downloadBtn: HTMLDivElement | null = document.querySelector(
@@ -39,7 +41,7 @@ export const startDownload = async ({
   }
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.download = `${new Date().toLocaleString()}.json`;
+  a.download = `${filename()}.json`;
   a.href = url;
   a.style.display = 'none';
   root.insertAdjacentElement('beforeend', a);
@@ -51,7 +53,11 @@ export const startDownload = async ({
   psLog.info(`${TIPS.success}`);
 };
 
-export const handleDownload = ({ harbor, customDownload }: DownloadArgs) => {
+export const handleDownload = ({
+  harbor,
+  filename,
+  customDownload,
+}: DownloadArgs) => {
   const downloadBtn = document.createElement('div');
   downloadBtn.id = 'data-harbor-plugin-download';
   downloadBtn.className = 'page-spy-content__btn';
@@ -64,7 +70,7 @@ export const handleDownload = ({ harbor, customDownload }: DownloadArgs) => {
 
     try {
       downloadBtn.textContent = TIPS.readying;
-      await startDownload({ harbor, customDownload });
+      await startDownload({ harbor, filename, customDownload });
       downloadBtn.textContent = TIPS.success;
     } catch (e) {
       downloadBtn.textContent = TIPS.fail;

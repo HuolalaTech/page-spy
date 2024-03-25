@@ -31,6 +31,9 @@ interface DataHarborConfig {
   // 指定应该收集哪些类型的数据
   caredData?: Record<DataType, boolean>;
 
+  // 自定义日志文件的名称
+  filename?: () => string;
+
   // 自定义「下载日志数据」行为
   // (版本要求: @huolala-tech/page-spy-plugin-data-harbor^1.0.6)
   onDownload?: (data: CacheMessageItem[]) => void;
