@@ -4,6 +4,7 @@ import type {
   PageSpyPlugin,
   PageSpyPluginLifecycle,
   PluginOrder,
+  PageSpyPluginLifecycleArgs,
 } from '@huolala-tech/page-spy-types';
 import { SocketState } from 'base/src/socket-base';
 import { ROOM_SESSION_KEY } from 'base/src/constants';
@@ -126,10 +127,9 @@ class PageSpy {
     this.init();
   }
 
-  triggerPlugins<T extends PageSpyPluginLifecycle = PageSpyPluginLifecycle>(
+  triggerPlugins<T extends PageSpyPluginLifecycle>(
     lifecycle: T,
-    // TODO: args 对应到 PageSpyPlugin[lifecycle] 的参数
-    args?: any,
+    ...args: PageSpyPluginLifecycleArgs<T>
   ) {
     const { disabledPlugins } = this.config.get();
     PageSpy.pluginsWithOrder.forEach((plugin) => {
@@ -140,7 +140,7 @@ class PageSpy {
       ) {
         return;
       }
-      plugin[lifecycle]?.(args);
+      (plugin[lifecycle] as any)?.apply(plugin, args);
     });
   }
 

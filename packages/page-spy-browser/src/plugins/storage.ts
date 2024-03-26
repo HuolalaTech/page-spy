@@ -21,6 +21,7 @@ export class StoragePlugin implements PageSpyPlugin {
     StoragePlugin.hasInitd = true;
 
     StoragePlugin.listenRefreshEvent();
+    StoragePlugin.onceInitPublicData();
     this.initStorageProxy();
   }
 
@@ -180,6 +181,19 @@ export class StoragePlugin implements PageSpyPlugin {
         this.cookieStoreChangeListener,
       );
     }
+  }
+
+  // For statistics plugin
+  static async onceInitPublicData() {
+    const result = await Promise.all([
+      StoragePlugin.takeStorage('localStorage'),
+      StoragePlugin.takeStorage('sessionStorage'),
+      StoragePlugin.takeCookie(),
+    ]);
+    result.forEach((s) => {
+      const data = makeMessage(DEBUG_MESSAGE_TYPE.STORAGE, s);
+      socketStore.dispatchEvent(PUBLIC_DATA, data);
+    });
   }
 
   private static getStorageType(ins: Storage): SpyStorage.DataType {

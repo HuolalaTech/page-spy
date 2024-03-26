@@ -21,7 +21,7 @@ In the past, remote debugging had a prerequisite that "both the client and debug
 ```ts
 import { PageSpyPlugin } from '@huolala-tech/page-spy-types';
 
-type DataType = 'console' | 'network' | 'rrweb-event';
+type DataType = 'console' | 'network' | 'system' | 'storage' | 'rrweb-event';
 
 interface DataHarborConfig {
   // Specify the maximum bytes of single harbor's container.
@@ -59,7 +59,7 @@ export default DataHarborPlugin;
       <!-- 3. Register plugin && Init PageSpy -->
       <script>
         // Register plugin
-        PageSpy.registerPlugin(new DataHarborPlugin(config));
+        PageSpy.registerPlugin(new DataHarborPlugin(config: DataHarborConfig));
         // Init PageSpy
         window.$pageSpy = new PageSpy();
       </script>

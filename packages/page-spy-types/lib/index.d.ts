@@ -97,10 +97,13 @@ export abstract class PageSpyPlugin {
   public abstract onReset?: () => any;
 }
 
-type ExtractLifeCycle<T> = {
-  [K in keyof T]: K extends `on${string}` ? K : never;
-}[keyof T];
+// prettier-ignore
+export type PageSpyPluginLifecycle = keyof {
+  [K in keyof PageSpyPlugin as K extends `on${string}`
+    ? K
+    : never
+  ]: PageSpyPlugin[K];
+};
 
-export type PageSpyPluginLifecycle = NonNullable<
-  ExtractLifeCycle<PageSpyPlugin>
->;
+export type PageSpyPluginLifecycleArgs<T extends PageSpyPluginLifecycle> =
+  Parameters<NonNullable<PageSpyPlugin[T]>>;

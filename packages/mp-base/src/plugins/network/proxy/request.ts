@@ -1,6 +1,5 @@
 import { getRandomId, isObjectLike, psLog, toStringTag } from 'base/src/index';
 import {
-  isOkStatusCode,
   ReqReadyState,
   resolveUrlInfo,
   toLowerKeys,
@@ -102,48 +101,45 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
             req.readyState = ReqReadyState.HEADERS_RECEIVED;
             that.sendRequestItem(id, req);
 
-            // Loading ~ Done
-            if (isOkStatusCode(res!.statusCode)) {
-              const lowerHeaders = toLowerKeys(res?.header || {});
-              const contentType = lowerHeaders['content-type'];
-              if (contentType) {
-                if (contentType.includes('application/json')) {
-                  req.responseType = 'json';
-                }
-
-                if (
-                  contentType.includes('text/html') ||
-                  contentType.includes('text/plain')
-                ) {
-                  req.responseType = 'text';
-                }
-              }
-              if (!req.responseType) {
-                req.responseType = 'arraybuffer';
+            const lowerHeaders = toLowerKeys(res?.header || {});
+            const contentType = lowerHeaders['content-type'];
+            if (contentType) {
+              if (contentType.includes('application/json')) {
+                req.responseType = 'json';
               }
 
-              switch (req.responseType) {
-                case 'json':
-                case 'text':
-                  if (typeof res?.data === 'string') {
-                    try {
-                      req.response = JSON.parse(res!.data as string);
-                    } catch (e) {
-                      req.response = res.data;
-                      req.responseType = 'text';
-                    }
-                  } else {
-                    req.response = res?.data;
+              if (
+                contentType.includes('text/html') ||
+                contentType.includes('text/plain')
+              ) {
+                req.responseType = 'text';
+              }
+            }
+            if (!req.responseType) {
+              req.responseType = 'arraybuffer';
+            }
+
+            switch (req.responseType) {
+              case 'json':
+              case 'text':
+                if (typeof res?.data === 'string') {
+                  try {
+                    req.response = JSON.parse(res!.data as string);
+                  } catch (e) {
+                    req.response = res.data;
+                    req.responseType = 'text';
                   }
-                  break;
-                case 'arraybuffer':
-                  // NOTE: 小程序 arraybuffer 没有合适的方法转为 base64，一期暂时这样。
-                  req.response = '[object ArrayBuffer]';
-                  // req.responseReason = Reason.EXCEED_SIZE;
-                  break;
-                default:
-                  break;
-              }
+                } else {
+                  req.response = res?.data;
+                }
+                break;
+              case 'arraybuffer':
+                // NOTE: 小程序 arraybuffer 没有合适的方法转为 base64，一期暂时这样。
+                req.response = '[object ArrayBuffer]';
+                // req.responseReason = Reason.EXCEED_SIZE;
+                break;
+              default:
+                break;
             }
             originOnSuccess?.(res);
           };

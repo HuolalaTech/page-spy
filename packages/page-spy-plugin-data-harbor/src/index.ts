@@ -9,9 +9,8 @@ import { isCN, isPlainObject, psLog } from 'base/src';
 import { strFromU8, zlibSync, strToU8 } from 'fflate';
 import type RequestItem from 'base/src/request-item';
 import { Harbor } from './harbor';
-// import { SKIP_PUBLIC_IDB_PREFIX } from './skip-public';
 
-type DataType = 'console' | 'network' | 'rrweb-event';
+type DataType = 'console' | 'network' | 'system' | 'storage' | 'rrweb-event';
 
 type CacheMessageItem = Pick<
   SpyMessage.MessageItem<SpyMessage.DataType, any>,
@@ -19,6 +18,12 @@ type CacheMessageItem = Pick<
 > & {
   timestamp: number;
 };
+
+interface DataHarborConfig {
+  maximum?: number;
+  caredData?: Record<DataType, boolean>;
+  onDownload?: (data: CacheMessageItem[]) => void;
+}
 
 const minifyData = (d: any) => {
   return strFromU8(zlibSync(strToU8(JSON.stringify(d)), { level: 9 }), true);
@@ -32,12 +37,6 @@ const makeData = (type: SpyMessage.DataType, data: any) => {
   };
 };
 
-interface DataHarborConfig {
-  maximum?: number;
-  caredData?: Record<DataType, boolean>;
-  onDownload?: (data: CacheMessageItem[]) => void;
-}
-
 export default class DataHarborPlugin implements PageSpyPlugin {
   public enforce: PluginOrder = 'pre';
 
@@ -47,9 +46,11 @@ export default class DataHarborPlugin implements PageSpyPlugin {
   private harbor: Harbor;
 
   // Specify which types of data to collect.
-  private caredData = {
+  private caredData: Record<DataType, boolean> = {
     console: true,
     network: true,
+    storage: true,
+    system: true,
     'rrweb-event': true,
   };
 
@@ -109,7 +110,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
         const data = await this.harbor.getHarborData();
         if (this.onDownload) {
           div.textContent = cn ? '数据已处理完成' : 'Data is ready';
-          this.onDownload(data);
+          await this.onDownload(data);
           return;
         }
 
@@ -163,18 +164,23 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     if (!message) return false;
     const { type } = message;
     switch (type) {
-      // case DEBUG_MESSAGE_TYPE.STORAGE:
       case 'console':
         if (this.caredData.console) return true;
+        return false;
+      case 'storage':
+        if (this.caredData.storage) return true;
+        return false;
+      case 'system':
+        if (this.caredData.system) return true;
+        return false;
+      case 'rrweb-event':
+        if (this.caredData['rrweb-event']) return true;
         return false;
       case 'network':
         const { url } = message.data as RequestItem;
         const isFetchHarborStockUrl = this.harbor.stock.includes(url);
 
         if (this.caredData.network && !isFetchHarborStockUrl) return true;
-        return false;
-      case 'rrweb-event':
-        if (this.caredData['rrweb-event']) return true;
         return false;
       // case DEBUG_MESSAGE_TYPE.DATABASE:
       //   if (['update', 'clear', 'drop'].includes(data.action)) {

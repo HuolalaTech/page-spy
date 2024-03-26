@@ -18,7 +18,7 @@ export function makeMessage<
 }
 
 export function makeUnicastMessage(
-  msg: SpyMessage.MessageItem,
+  msg: SpyMessage.MessageItem<SpyMessage.InteractiveType>,
   from: SpySocket.Connection,
   to: SpySocket.Connection,
 ): SpySocket.UnicastEvent {
@@ -33,7 +33,7 @@ export function makeUnicastMessage(
 }
 
 export function makeBroadcastMessage(
-  msg: SpyMessage.MessageItem,
+  msg: SpyMessage.MessageItem<SpyMessage.DataType>,
 ): SpySocket.BroadcastEvent {
   return {
     type: SERVER_MESSAGE_TYPE.BROADCAST,

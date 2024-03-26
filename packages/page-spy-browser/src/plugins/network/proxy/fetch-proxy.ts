@@ -10,7 +10,6 @@ import { blob2base64Async } from 'page-spy-browser/src/helpers/blob';
 import {
   addContentTypeHeader,
   getFormattedBody,
-  isOkStatusCode,
   MAX_SIZE,
   Reason,
   resolveUrlInfo,
@@ -109,8 +108,6 @@ export default class FetchProxy extends WebNetworkProxyBase {
             req.readyState = XMLHttpRequest.HEADERS_RECEIVED;
             that.sendRequestItem(id, req);
 
-            // Loading ~ Done
-            if (!isOkStatusCode(res.status)) return '';
             const contentType = res.headers.get('content-type');
             if (contentType) {
               if (contentType.includes('application/json')) {

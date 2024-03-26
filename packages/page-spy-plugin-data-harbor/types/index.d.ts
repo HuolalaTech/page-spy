@@ -1,3 +1,5 @@
+import { PageSpyPlugin } from '@huolala-tech/page-spy-types';
+
 type DataType = 'console' | 'network' | 'rrweb-event';
 
 interface DataHarborConfig {
@@ -13,8 +15,10 @@ interface DataHarborConfig {
   onDownload?: (data: CacheMessageItem[]) => void;
 }
 
-declare class DataHarborPlugin {
+declare class DataHarborPlugin implements PageSpyPlugin {
+  name: string;
   constructor(config?: DataHarborConfig);
+  onInit({ socketStore }: OnInitParams): Promise<void>;
 }
 
 export default DataHarborPlugin;

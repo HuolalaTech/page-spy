@@ -1,5 +1,6 @@
 import { ConfigBase } from 'base/src/config';
 import type { InitConfig } from 'page-spy-browser/types/index';
+import logoUrl from './assets/logo.svg';
 
 export class Config extends ConfigBase<InitConfig> {
   /**
@@ -18,6 +19,8 @@ export class Config extends ConfigBase<InitConfig> {
       enableSSL: null,
       disabledPlugins: [],
       offline: false,
+      logo: logoUrl,
+      logoStyle: {},
     };
 
     if (!Config.scriptLink) {

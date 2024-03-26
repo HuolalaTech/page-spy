@@ -5,6 +5,7 @@ import { ROOM_SESSION_KEY } from 'base/src/constants';
 import type {
   PageSpyPlugin,
   PageSpyPluginLifecycle,
+  PageSpyPluginLifecycleArgs,
   PluginOrder,
 } from '@huolala-tech/page-spy-types';
 import { Modal } from './component/modal';
@@ -23,7 +24,6 @@ import Request from './api';
 import type { UElement } from './helpers/moveable';
 import { moveable } from './helpers/moveable';
 import './index.less';
-import logoUrl from './assets/logo.svg';
 // eslint-disable-next-line import/order
 import { Config } from './config';
 import { DatabasePlugin } from './plugins/database';
@@ -108,14 +108,13 @@ class PageSpy {
 
     const config = this.config.mergeConfig(init);
 
-    this.triggerPlugins('onInit', { socketStore, config });
+    this.triggerPlugins('onInit', { config, socketStore });
     this.init();
   }
 
-  triggerPlugins<T extends PageSpyPluginLifecycle = PageSpyPluginLifecycle>(
+  triggerPlugins<T extends PageSpyPluginLifecycle>(
     lifecycle: T,
-    // TODO: args 对应到 PageSpyPlugin[lifecycle] 的参数
-    args?: any,
+    ...args: PageSpyPluginLifecycleArgs<T>
   ) {
     const { disabledPlugins } = this.config.get();
     PageSpy.pluginsWithOrder.forEach((plugin) => {
@@ -126,7 +125,8 @@ class PageSpy {
       ) {
         return;
       }
-      plugin[lifecycle]?.(args);
+      // eslint-disable-next-line prefer-spread
+      (plugin[lifecycle] as any)?.apply(plugin, args);
     });
   }
 
@@ -270,7 +270,7 @@ class PageSpy {
 
   startRender() {
     const config = this.config.get();
-    const { project, clientOrigin, title } = config;
+    const { project, clientOrigin, title, logo: logoUrl, logoStyle } = config;
 
     const root = document.createElement('div');
     root.id = Identifier;
@@ -283,6 +283,9 @@ class PageSpy {
     img.src = logoUrl;
     img.width = 50;
     img.height = 50;
+    Object.entries(logoStyle).forEach(([key, value]) => {
+      img.style[key as any] = value;
+    });
     logo.insertAdjacentElement('beforeend', img);
     root.insertAdjacentElement('beforeend', logo);
     window.addEventListener('sdk-inactive', () => {

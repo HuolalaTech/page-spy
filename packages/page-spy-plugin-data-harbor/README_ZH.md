@@ -21,7 +21,7 @@
 ```ts
 import { PageSpyPlugin } from '@huolala-tech/page-spy-types';
 
-type DataType = 'console' | 'network' | 'rrweb-event';
+type DataType = 'console' | 'network' | 'system' | 'storage' | 'rrweb-event';
 
 interface DataHarborConfig {
   // 指定单个 “集装箱” 中可存储的最大字节数
@@ -59,7 +59,7 @@ export default DataHarborPlugin;
       <!-- 3. 注册插件 && 实例化 PageSpy -->
       <script>
         // 注册插件
-        PageSpy.registerPlugin(new DataHarborPlugin(config));
+        PageSpy.registerPlugin(new DataHarborPlugin(config: DataHarborConfig));
         // 实例化
         window.$pageSpy = new PageSpy();
       </script>

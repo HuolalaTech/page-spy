@@ -3,15 +3,11 @@ import type {
   InteractiveType,
   InternalType,
   MessageItem,
-  MessageType,
 } from './message-type';
 import { Connection } from './socket-event';
 
 export interface InteractiveEvent<T = any> {
-  source: {
-    type: MessageType;
-    data: T;
-  };
+  source: MessageItem<InteractiveType, T>;
   from: Connection;
   to: Connection;
 }

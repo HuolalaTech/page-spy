@@ -73,6 +73,9 @@ If the current plugin collects (or wishes to publicly expose) some form of "data
 
 ## Plugin Implementation Example
 
+> [!NOTE]
+> The following content is just an example.
+
 Use case: Recording DOM on the client-side using rrweb, including:
 
 - Adding a "Download Recording Data" button in the client-side popup; clicking the button initiates the file download.
@@ -90,8 +93,8 @@ import {
 
 type Options = Parameters<typeof record>[number];
 
-export default class RRWebRecordPlugin implements PageSpyPlugin {
-  name = 'RRWebRecordPlugin';
+export default class XXXPlugin implements PageSpyPlugin {
+  name = 'XXXPlugin';
 
   events: eventWithTime[] = [];
 
@@ -102,8 +105,8 @@ export default class RRWebRecordPlugin implements PageSpyPlugin {
   constructor(public options: Options = {}) {}
 
   onInit({ socketStore }: OnInitParams) {
-    if (RRWebRecordPlugin.hasInited) return;
-    RRWebRecordPlugin.hasInited = true;
+    if (XXXPlugin.hasInited) return;
+    XXXPlugin.hasInited = true;
 
     record({
       ...this.options,
@@ -134,8 +137,8 @@ export default class RRWebRecordPlugin implements PageSpyPlugin {
   }
 
   onMounted({ content, socketStore }: OnMountedParams) {
-    if (RRWebRecordPlugin.hasMounted) return;
-    RRWebRecordPlugin.hasMounted = true;
+    if (XXXPlugin.hasMounted) return;
+    XXXPlugin.hasMounted = true;
 
     const recordBtn = document.createElement('div');
     recordBtn.id = 'download-rrweb-event';
@@ -164,8 +167,8 @@ export default class RRWebRecordPlugin implements PageSpyPlugin {
 
   // When $pageSpy.abort() is called, `onReset()` is triggered
   onReset() {
-    RRWebRecordPlugin.hasInited = false;
-    RRWebRecordPlugin.hasMounted = false;
+    XXXPlugin.hasInited = false;
+    XXXPlugin.hasMounted = false;
     const root = document.getElementById('download-rrweb-event');
     if (root) {
       root.remove();
@@ -180,11 +183,11 @@ export default class RRWebRecordPlugin implements PageSpyPlugin {
 <!-- Include SDK -->
 <script src="https://<your-host>/page-spy/index.min.js"></script>
 <!-- Include the plugin -->
-<script src="https://<your-host>/plugins/rrweb-record.min.js"></script>
+<script src="https://<your-host>/plugin/xxx/index.min.js"></script>
 
 <!-- Register the plugin -->
 <script>
-  PageSpy.registerPlugin(new RRWebRecordPlugin());
+  PageSpy.registerPlugin(new XXXPlugin());
   window.$pageSpy = new PageSpy();
 </script>
 ```
