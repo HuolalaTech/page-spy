@@ -191,8 +191,8 @@ export class StoragePlugin implements PageSpyPlugin {
       StoragePlugin.takeCookie(),
     ]);
     result.forEach((s) => {
-      const data = makeMessage(DEBUG_MESSAGE_TYPE.STORAGE, s);
-      socketStore.dispatchEvent(PUBLIC_DATA, data);
+      const data = makeMessage('storage', s);
+      socketStore.dispatchEvent('public-data', data);
     });
   }
 
