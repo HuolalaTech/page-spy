@@ -6,7 +6,7 @@ import { DOWNLOAD_TIPS } from './TIP_CONTENT';
 const lang = isCN() ? 'zh' : 'en';
 const TIPS = DOWNLOAD_TIPS[lang];
 
-type DownloadArgs = {
+export type DownloadArgs = {
   harbor: Harbor;
   customDownload?: (data: CacheMessageItem[]) => void;
   filename: () => string;
@@ -79,7 +79,7 @@ export const handleDownload = ({
       setTimeout(() => {
         downloadBtn.textContent = TIPS.normal;
         idleWithDownload = true;
-      }, 3000);
+      }, 1500);
     }
   });
 

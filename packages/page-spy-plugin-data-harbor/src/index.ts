@@ -1,4 +1,4 @@
-import {
+import type {
   SpyMessage,
   OnInitParams,
   OnMountedParams,
@@ -12,8 +12,9 @@ import { strFromU8, zlibSync, strToU8 } from 'fflate';
 import type RequestItem from 'base/src/request-item';
 import type { InitConfig } from 'page-spy-browser/types';
 import { Harbor } from './harbor';
-import { handleDownload, startDownload } from './utils/download';
-import { handleUpload, startUpload } from './utils/upload';
+import { DownloadArgs, handleDownload, startDownload } from './utils/download';
+import { UploadArgs, handleUpload, startUpload } from './utils/upload';
+import { getDeviceId } from './utils/device-id';
 
 type DataType = 'console' | 'network' | 'system' | 'storage' | 'rrweb-event';
 
@@ -62,7 +63,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
   private apiBase: string = '';
 
-  private debugClient: string = '';
+  private $pageSpyConfig: InitConfig | null = null;
 
   private filename: DataHarborConfig['filename'] = () => {
     return new Date().toLocaleString().replace(/\s/g, '_');
@@ -94,16 +95,16 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     if (DataHarborPlugin.hasInited) return;
     DataHarborPlugin.hasInited = true;
 
+    this.$pageSpyConfig = config;
     const { api, enableSSL } = config;
     if (!api) {
       psLog.warn(
-        'Cannot upload log to PageSpy for wrong configuration. See: ',
+        "Cannot upload log to PageSpy for miss 'api' configuration. See: ",
         config,
       );
     } else {
       const apiScheme = enableSSL ? 'https://' : 'http://';
       this.apiBase = `${apiScheme}${api}`;
-      this.debugClient = (config as InitConfig).clientOrigin || '';
     }
 
     socketStore.addListener(PUBLIC_DATA, async (message) => {
@@ -123,39 +124,45 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     DataHarborPlugin.hasMounted = true;
 
     if (isBrowser()) {
-      const downloadBtn = handleDownload({
-        harbor: this.harbor,
-        filename: this.filename!,
-        customDownload: this.onDownload,
-      });
-      const uploadBtn = handleUpload({
-        harbor: this.harbor,
-        filename: this.filename!,
-        uploadUrl: this.apiBase,
-        debugClient: this.debugClient,
-      });
+      const downloadBtn = handleDownload(this.getParams('download'));
+      const uploadBtn = handleUpload(this.getParams('upload'));
 
       content.insertAdjacentElement('beforeend', downloadBtn);
       content.insertAdjacentElement('beforeend', uploadBtn);
     }
   }
 
+  getParams(type: 'download'): DownloadArgs;
+  getParams(type: 'upload'): UploadArgs;
+  getParams(type: any) {
+    if (type === 'download') {
+      return {
+        harbor: this.harbor,
+        filename: this.filename!,
+        customDownload: this.onDownload,
+      };
+    }
+    return {
+      harbor: this.harbor,
+      uploadUrl: this.apiBase,
+      filename: this.filename!,
+      debugClient: this.$pageSpyConfig?.clientOrigin!,
+      tags: {
+        project: this.$pageSpyConfig?.project,
+        title: this.$pageSpyConfig?.title,
+        deviceId: getDeviceId(),
+        userAgent: navigator.userAgent,
+      },
+    } as UploadArgs;
+  }
+
   onOfflineLog(type: 'download' | 'upload') {
     switch (type) {
       case 'download':
-        startDownload({
-          harbor: this.harbor,
-          filename: this.filename!,
-          customDownload: this.onDownload,
-        });
+        startDownload(this.getParams('download'));
         break;
       case 'upload':
-        startUpload({
-          harbor: this.harbor,
-          uploadUrl: this.apiBase,
-          filename: this.filename!,
-          debugClient: this.debugClient,
-        });
+        startUpload(this.getParams('upload'));
         break;
       default:
         break;

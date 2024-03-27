@@ -5,11 +5,17 @@ import { UPLOAD_TIPS } from './TIP_CONTENT';
 const lang = isCN() ? 'zh' : 'en';
 const TIPS = UPLOAD_TIPS[lang];
 
-type UploadArgs = {
+export type UploadArgs = {
   harbor: Harbor;
   filename: () => string;
   uploadUrl: string;
   debugClient: string;
+  tags?: Partial<{
+    project: string;
+    title: string;
+    deviceId: string;
+    userAgent: string;
+  }>;
 };
 
 export const startUpload = async ({
@@ -17,6 +23,7 @@ export const startUpload = async ({
   filename,
   uploadUrl,
   debugClient,
+  tags = {},
 }: UploadArgs) => {
   const uploadBtn: HTMLDivElement | null = document.querySelector(
     '#data-harbor-plugin-upload',
@@ -36,11 +43,13 @@ export const startUpload = async ({
     uploadBtn.textContent = TIPS.uploading;
   }
 
-  const uploadUrlWithoutSlash = removeEndSlash(uploadUrl);
-  const response = await fetch(`${uploadUrl}/api/v1/log/upload`, {
-    method: 'POST',
-    body: form,
-  });
+  const response = await fetch(
+    `${uploadUrl}/api/v1/log/upload?${new URLSearchParams(tags).toString()}`,
+    {
+      method: 'POST',
+      body: form,
+    },
+  );
   if (!response.ok) {
     throw new Error('Upload failed');
   }
@@ -49,6 +58,7 @@ export const startUpload = async ({
   if (!result.success) {
     throw new Error(result.message);
   }
+  const uploadUrlWithoutSlash = removeEndSlash(uploadUrl);
   const onlineLogUrl = `${uploadUrlWithoutSlash}/api/v1/log/download?fileId=${result.data.fileId}`;
 
   const debugClientWithoutSlash = removeEndSlash(debugClient);
@@ -64,6 +74,7 @@ export const handleUpload = ({
   filename,
   uploadUrl,
   debugClient,
+  tags,
 }: UploadArgs) => {
   const uploadBtn = document.createElement('div');
   uploadBtn.id = 'data-harbor-plugin-upload';
@@ -87,6 +98,7 @@ export const handleUpload = ({
         filename,
         uploadUrl,
         debugClient,
+        tags,
       });
       // Ready to copy
       const root = document.body || document.documentElement;
@@ -97,6 +109,7 @@ export const handleUpload = ({
       const isOk = document.execCommand('copy');
       root.removeChild(input);
       if (isOk) {
+        document.querySelector('#uploaded-log-url')?.remove();
         uploadBtn.textContent = TIPS.copied;
       } else {
         //  If copy failed
@@ -121,7 +134,7 @@ export const handleUpload = ({
       setTimeout(() => {
         uploadBtn.textContent = TIPS.normal;
         idleWithUpload = true;
-      }, 3000);
+      }, 1500);
     }
   });
 

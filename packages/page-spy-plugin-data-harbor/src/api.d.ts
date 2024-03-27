@@ -10,3 +10,8 @@ declare namespace H {
     message: string;
   };
 }
+
+interface Window {
+  $pageSpy: any;
+  PageSpy: any;
+}
