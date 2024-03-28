@@ -31,6 +31,9 @@ interface DataHarborConfig {
   // Specify which types of data should be collected
   caredData?: Record<DataType, boolean>;
 
+  // Customize the log's filename
+  filename?: () => string;
+
   // Customize the "Download Log Data"
   // (Version required: @huolala-tech/page-spy-plugin-data-harbor^1.0.6)
   onDownload?: (data: CacheMessageItem[]) => void;

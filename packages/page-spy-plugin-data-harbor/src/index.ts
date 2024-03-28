@@ -1,18 +1,22 @@
-import {
+import type {
   SpyMessage,
   OnInitParams,
   OnMountedParams,
   PageSpyPlugin,
   PluginOrder,
 } from '@huolala-tech/page-spy-types';
-import { isCN, isPlainObject, psLog } from 'base/src';
+import { isBrowser, isPlainObject, psLog } from 'base/src';
 import { strFromU8, zlibSync, strToU8 } from 'fflate';
 import type RequestItem from 'base/src/request-item';
+import type { InitConfig } from 'page-spy-browser/types';
 import { Harbor } from './harbor';
+import { DownloadArgs, handleDownload, startDownload } from './utils/download';
+import { UploadArgs, handleUpload, startUpload } from './utils/upload';
+import { getDeviceId } from './utils';
 
 type DataType = 'console' | 'network' | 'system' | 'storage' | 'rrweb-event';
 
-type CacheMessageItem = Pick<
+export type CacheMessageItem = Pick<
   SpyMessage.MessageItem<SpyMessage.DataType, any>,
   'type' | 'data'
 > & {
@@ -22,6 +26,7 @@ type CacheMessageItem = Pick<
 interface DataHarborConfig {
   maximum?: number;
   caredData?: Record<DataType, boolean>;
+  filename?: () => string;
   onDownload?: (data: CacheMessageItem[]) => void;
 }
 
@@ -54,6 +59,14 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     'rrweb-event': true,
   };
 
+  private apiBase: string = '';
+
+  private $pageSpyConfig: InitConfig | null = null;
+
+  private filename: DataHarborConfig['filename'] = () => {
+    return new Date().toLocaleString();
+  };
+
   private onDownload: DataHarborConfig['onDownload'];
 
   public static hasInited = false;
@@ -70,12 +83,27 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     if (typeof config.onDownload === 'function') {
       this.onDownload = config.onDownload;
     }
+    if (typeof config.filename === 'function') {
+      this.filename = config.filename;
+    }
     this.harbor = new Harbor({ maximum: config.maximum });
   }
 
-  public async onInit({ socketStore }: OnInitParams) {
+  public async onInit({ socketStore, config }: OnInitParams) {
     if (DataHarborPlugin.hasInited) return;
     DataHarborPlugin.hasInited = true;
+
+    this.$pageSpyConfig = config;
+    const { api, enableSSL } = config;
+    if (!api) {
+      psLog.warn(
+        "Cannot upload log to PageSpy for miss 'api' configuration. See: ",
+        config,
+      );
+    } else {
+      const apiScheme = enableSSL ? 'https://' : 'http://';
+      this.apiBase = `${apiScheme}${api}`;
+    }
 
     socketStore.addListener('public-data', async (message) => {
       if (!this.isCaredPublicData(message)) return;
@@ -93,61 +121,50 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     if (DataHarborPlugin.hasMounted) return;
     DataHarborPlugin.hasMounted = true;
 
-    const cn = isCN();
-    const div = document.createElement('div');
-    div.id = 'data-harbor-plugin-download';
-    div.className = 'page-spy-content__btn';
-    div.textContent = cn ? '下载日志数据' : 'Download the data';
+    if (isBrowser()) {
+      const downloadBtn = handleDownload(this.getParams('download'));
+      const uploadBtn = handleUpload(this.getParams('upload'));
 
-    let idle = true;
+      content.insertAdjacentElement('beforeend', downloadBtn);
+      content.insertAdjacentElement('beforeend', uploadBtn);
+    }
+  }
 
-    div.addEventListener('click', async () => {
-      if (!idle) return;
-      idle = false;
+  getParams(type: 'download'): DownloadArgs;
+  getParams(type: 'upload'): UploadArgs;
+  getParams(type: any) {
+    if (type === 'download') {
+      return {
+        harbor: this.harbor,
+        filename: this.filename!,
+        customDownload: this.onDownload,
+      };
+    }
+    return {
+      harbor: this.harbor,
+      uploadUrl: this.apiBase,
+      filename: this.filename!,
+      debugClient: this.$pageSpyConfig?.clientOrigin!,
+      tags: {
+        project: this.$pageSpyConfig?.project,
+        title: this.$pageSpyConfig?.title,
+        deviceId: getDeviceId(),
+        userAgent: navigator.userAgent,
+      },
+    } as UploadArgs;
+  }
 
-      try {
-        div.textContent = cn ? '准备数据...' : 'Handling data...';
-        const data = await this.harbor.getHarborData();
-        if (this.onDownload) {
-          div.textContent = cn ? '数据已处理完成' : 'Data is ready';
-          await this.onDownload(data);
-          return;
-        }
-
-        const blob = new Blob([JSON.stringify(data)], {
-          type: 'application/json',
-        });
-        const root: HTMLElement =
-          document.getElementsByTagName('body')[0] || document.documentElement;
-        if (!root) {
-          psLog.error(
-            'Download file failed because cannot find the document.body & document.documentElement',
-          );
-          return;
-        }
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.download = `${new Date().toLocaleString()}.json`;
-        a.href = url;
-        a.style.display = 'none';
-        root.insertAdjacentElement('beforeend', a);
-        a.click();
-
-        root.removeChild(a);
-        URL.revokeObjectURL(url);
-        div.textContent = cn ? '下载成功' : 'Download successful';
-      } catch (e) {
-        div.textContent = cn ? '下载失败' : 'Download failed';
-        psLog.error('Download failed.', e);
-      } finally {
-        setTimeout(() => {
-          div.textContent = cn ? '下载日志数据' : 'Download the data';
-          idle = true;
-        }, 3000);
-      }
-    });
-
-    content.insertAdjacentElement('beforeend', div);
+  onOfflineLog(type: 'download' | 'upload') {
+    switch (type) {
+      case 'download':
+        startDownload(this.getParams('download'));
+        break;
+      case 'upload':
+        startUpload(this.getParams('upload'));
+        break;
+      default:
+        break;
+    }
   }
 
   onReset() {

@@ -79,6 +79,12 @@ interface InitConfig {
   // Default value is false, when users set it to other values will enters "offline mode", where PageSpy
   // will not create rooms or establish WebSocket connections.
   offline?: boolean;
+
+  // Customize logo source url.
+  logo?: string;
+
+  // Customize logo style.
+  logoStyle?: Object;
 }
 
 type InternalPlugins =

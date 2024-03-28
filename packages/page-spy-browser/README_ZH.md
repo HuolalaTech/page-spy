@@ -74,6 +74,12 @@ interface InitConfig {
   // 只需通过 DataHarborPlugin 收集数据、导出离线日志即可。
   // 默认值 false。用户设置为其他值时，会进入 "离线模式"，具体表现为 PageSpy 不会创建房间、建立 WebSocket 连接。
   offline?: boolean;
+
+  // 自定义 logo
+  logo?: string;
+
+  // 自定义 logo 样式
+  logoStyle?: Object;
 }
 
 type InternalPlugins =

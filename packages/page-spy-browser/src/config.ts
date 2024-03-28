@@ -28,11 +28,12 @@ export class Config extends ConfigBase<InitConfig> {
     }
 
     try {
-      const { host, origin } = new URL(Config.scriptLink);
+      const { host, origin, protocol } = new URL(Config.scriptLink);
       const result = {
         ...defaultConfig,
         api: host,
         clientOrigin: origin,
+        enableSSL: protocol.startsWith('https'),
       };
       return result;
     } catch (e) {
