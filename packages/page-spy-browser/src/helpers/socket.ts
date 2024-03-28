@@ -28,6 +28,7 @@ export class WebSocketWrapper extends SocketWrapper {
 
   close() {
     this.socketInstance?.close();
+    this.clearListeners();
   }
 
   getState(): SocketState {

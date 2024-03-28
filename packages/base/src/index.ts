@@ -231,7 +231,7 @@ export const psLog = (['log', 'info', 'error', 'warn'] as const).reduce(
     // eslint-disable-next-line no-param-reassign
     result[method] = (...message: any[]) => {
       originConsole[method](
-        `[PageSpy] [${method.toLocaleUpperCase()}]: `,
+        `[PageSpy] [${method.toLocaleUpperCase()}] `,
         ...message,
       );
     };
@@ -239,3 +239,7 @@ export const psLog = (['log', 'info', 'error', 'warn'] as const).reduce(
   },
   {} as PSLog,
 );
+
+export const removeEndSlash = (s: string) => {
+  return s.replace(/\/$/, '');
+};

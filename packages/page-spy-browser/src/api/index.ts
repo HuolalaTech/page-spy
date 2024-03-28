@@ -1,5 +1,3 @@
-import { psLog } from 'base/src';
-import { Config } from 'page-spy-browser/src/config';
 import { InitConfig } from 'page-spy-browser/types';
 
 interface TResponse<T> {
@@ -37,26 +35,10 @@ export default class Request {
     return this.config.api;
   }
 
-  parseSchemeWithScript() {
-    try {
-      const { protocol } = new URL(Config.scriptLink);
-      if (protocol.startsWith('https')) {
-        return ['https://', 'wss://'];
-      }
-    } catch (e) {
-      psLog.error(
-        'Failed to resolve the protocol and fallback to [http://, ws://]',
-      );
-    }
-    return ['http://', 'ws://'];
-  }
-
   getScheme() {
-    const { enableSSL } = this.config;
-    if (typeof enableSSL !== 'boolean') {
-      return this.parseSchemeWithScript();
-    }
-    return enableSSL ? ['https://', 'wss://'] : ['http://', 'ws://'];
+    return this.config.enableSSL
+      ? ['https://', 'wss://']
+      : ['http://', 'ws://'];
   }
 
   createRoom(): Promise<TResponse<TCreateRoom>> {

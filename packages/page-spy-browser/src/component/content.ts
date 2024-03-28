@@ -1,3 +1,5 @@
+import { isCN } from 'base/src';
+
 interface ContentParams {
   className?: string;
   tagName?: string;
@@ -36,8 +38,7 @@ export class Content {
     const button = document.createElement('div');
     button.dataset.testid = 'copy-button';
     button.className = 'page-spy-content__btn';
-    const lang = navigator.language;
-    button.textContent = lang === 'zh-CN' ? '拷贝' : 'Copy';
+    button.textContent = isCN() ? '复制在线调试链接' : 'Copy debug link';
     button.onclick = (e) => {
       e.stopPropagation();
       if (onOk) onOk();
