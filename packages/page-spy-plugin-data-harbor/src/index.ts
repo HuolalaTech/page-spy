@@ -14,7 +14,7 @@ import type { InitConfig } from 'page-spy-browser/types';
 import { Harbor } from './harbor';
 import { DownloadArgs, handleDownload, startDownload } from './utils/download';
 import { UploadArgs, handleUpload, startUpload } from './utils/upload';
-import { getDeviceId } from './utils/device-id';
+import { getDeviceId } from './utils';
 
 type DataType = 'console' | 'network' | 'system' | 'storage' | 'rrweb-event';
 
@@ -66,7 +66,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
   private $pageSpyConfig: InitConfig | null = null;
 
   private filename: DataHarborConfig['filename'] = () => {
-    return new Date().toLocaleString().replace(/\s/g, '_');
+    return new Date().toLocaleString();
   };
 
   private onDownload: DataHarborConfig['onDownload'];

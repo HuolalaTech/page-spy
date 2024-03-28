@@ -10,3 +10,7 @@ export const getDeviceId = () => {
   }
   return '--';
 };
+
+export const formatFilename = (name: string) => {
+  return name.toString().replace(/[\s|\\/]/g, '_');
+};

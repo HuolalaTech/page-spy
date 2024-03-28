@@ -1,6 +1,7 @@
 import { isCN, psLog, removeEndSlash } from 'base/src';
 import type { Harbor } from '../harbor';
 import { UPLOAD_TIPS } from './TIP_CONTENT';
+import { formatFilename } from '.';
 
 const lang = isCN() ? 'zh' : 'en';
 const TIPS = UPLOAD_TIPS[lang];
@@ -33,7 +34,7 @@ export const startUpload = async ({
   const blob = new Blob([JSON.stringify(data)], {
     type: 'application/json',
   });
-  const file = new File([blob], `${filename()}.json`, {
+  const file = new File([blob], `${formatFilename(filename())}.json`, {
     type: 'application/json',
   });
   const form = new FormData();

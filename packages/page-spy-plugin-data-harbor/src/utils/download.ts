@@ -2,6 +2,7 @@ import { isCN, psLog } from 'base/src';
 import type { Harbor } from '../harbor';
 import type { CacheMessageItem } from '../index';
 import { DOWNLOAD_TIPS } from './TIP_CONTENT';
+import { formatFilename } from '.';
 
 const lang = isCN() ? 'zh' : 'en';
 const TIPS = DOWNLOAD_TIPS[lang];
@@ -41,7 +42,7 @@ export const startDownload = async ({
   }
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.download = `${filename()}.json`;
+  a.download = `${formatFilename(filename())}.json`;
   a.href = url;
   a.style.display = 'none';
   root.insertAdjacentElement('beforeend', a);
