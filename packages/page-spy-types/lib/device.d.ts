@@ -47,4 +47,5 @@ export interface DeviceInfo {
   browserType: Browser;
   browserVersion: string;
   framework?: Framework; // Currently only for miniprogram
+  isDevTools?: boolean;
 }

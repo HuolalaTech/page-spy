@@ -23,6 +23,7 @@ export interface MPInitConfig extends InitConfigBase {
   disabledOnProd?: boolean | null;
 
   /**
+   * !! This option should not be used unless you read and understand below document: !!
    * For some mp types like mPaaS, DingTalk and some old version of Alipay, only one socket connection is allowed. But for some reason we cannot detect this feature by code, so we provide this option for you.
    * If you are developing mPaaS, DingTalk or some other ali-family mp which encounter a connection problem, you can set this option to true.
    */

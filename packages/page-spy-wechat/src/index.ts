@@ -2,7 +2,6 @@ import { setMPSDK } from 'mp-base/src/utils';
 import PageSpy from 'mp-base/src';
 import Device from 'mp-base/src/device';
 import { SpyDevice } from 'packages/page-spy-types';
-// reassign the global.mp to uni
 
 declare const wx: MPSDK;
 
@@ -18,5 +17,6 @@ Device.info.osType = (
 Device.info.browserType = 'mp-wechat';
 Device.info.osVersion = osVersion;
 Device.info.browserVersion = info.version;
+Device.info.isDevTools = info.platform === 'devtools';
 
 export default PageSpy;

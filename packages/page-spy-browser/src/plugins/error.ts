@@ -1,9 +1,8 @@
 /* eslint-disable class-methods-use-this */
 import atom from 'base/src/atom';
-import { makeMessage, DEBUG_MESSAGE_TYPE } from 'base/src/message';
+import { makeMessage } from 'base/src/message';
 import socketStore from 'page-spy-browser/src/helpers/socket';
 import type { SpyConsole, PageSpyPlugin } from '@huolala-tech/page-spy-types';
-import { PUBLIC_DATA } from 'base/src/message/debug-type';
 
 const formatErrorObj = (err: Error) => {
   if (typeof err !== 'object') return null;
@@ -96,8 +95,8 @@ export default class ErrorPlugin implements PageSpyPlugin {
       url: window.location.href,
       errorDetail,
     };
-    const message = makeMessage(DEBUG_MESSAGE_TYPE.CONSOLE, error);
-    socketStore.dispatchEvent(PUBLIC_DATA, message);
+    const message = makeMessage('console', error);
+    socketStore.dispatchEvent('public-data', message);
     socketStore.broadcastMessage(message);
   }
 }

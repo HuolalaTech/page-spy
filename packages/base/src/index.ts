@@ -204,7 +204,9 @@ export function getValueType(value: any) {
   if (isBigInt(value)) return 'bigint';
   if (value instanceof Object) {
     if (value instanceof Error) return 'error';
-    if (value instanceof Function) return 'function';
+    // Here we do not use 'instanceof Function' because in some context
+    // like mini program the Function constructor is overwritten.
+    if (typeof value === 'function') return 'function';
     return 'object';
   }
   return typeof value;

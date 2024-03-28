@@ -23,6 +23,7 @@ const config: Config = {
     'packages/**/*.ts',
     '!packages/**/*.d.ts',
     '!**/*.test.ts',
+    '!packages/**/eval.js',
   ],
   coverageProvider: 'v8',
   projects: [

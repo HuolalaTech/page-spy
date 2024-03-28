@@ -1,5 +1,4 @@
 import { IDBFactory } from 'fake-indexeddb';
-import { DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import {
   DatabasePlugin,
   promisify,
@@ -98,16 +97,16 @@ describe('Database plugin', () => {
     new DatabasePlugin().onInit();
 
     // @ts-ignore
-    socket.dispatchEvent(DEBUG_MESSAGE_TYPE.REFRESH, {
+    socket.dispatchEvent('refresh', {
       source: {
-        type: DEBUG_MESSAGE_TYPE.REFRESH,
+        type: 'refresh',
         data: 'indexedDB',
       },
     });
     // @ts-ignore
-    socket.dispatchEvent(DEBUG_MESSAGE_TYPE.DATABASE_PAGINATION, {
+    socket.dispatchEvent('database-pagination', {
       source: {
-        type: DEBUG_MESSAGE_TYPE.DATABASE_PAGINATION,
+        type: 'database-pagination',
         data: {
           db: 'blog',
           store: 'posts',

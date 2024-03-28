@@ -1,5 +1,4 @@
 import PagePlugin from 'page-spy-browser/src/plugins/page';
-import { DEBUG_MESSAGE_TYPE } from 'base/src/message';
 import socket from 'page-spy-browser/src/helpers/socket';
 // @ts-ignore
 const trigger = jest.spyOn(PagePlugin, 'collectHtml');
@@ -13,9 +12,9 @@ describe('Page plugin', () => {
     expect(trigger).toHaveBeenCalledTimes(0);
 
     // @ts-ignore
-    socket.dispatchEvent(DEBUG_MESSAGE_TYPE.REFRESH, {
+    socket.dispatchEvent('refresh', {
       source: {
-        type: DEBUG_MESSAGE_TYPE.REFRESH,
+        type: 'refresh',
         data: 'page',
       },
       from: '',

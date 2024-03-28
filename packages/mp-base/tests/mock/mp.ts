@@ -220,4 +220,21 @@ export class MockMP implements MPSystemAPI, MPNetworkAPI, MPStorageAPI {
       },
     };
   }
+
+  // router
+  switchTab(params: { url: string } & AsyncCallback<any, any>) {
+    params.success && params.success();
+  }
+  redirectTo(params: { url: string } & AsyncCallback<any, any>) {
+    params.success && params.success();
+  }
+  navigateTo(params: { url: string } & AsyncCallback<any, any>) {
+    params.success && params.success();
+  }
+  navigateBack(params: { delta?: number } & AsyncCallback<any, any>) {
+    params.success && params.success();
+  }
+  reLaunch(params: { url: string } & AsyncCallback<any, any>) {
+    params.success && params.success();
+  }
 }
