@@ -12,6 +12,9 @@ English | [中文](./README_ZH.md)
 
 > The SDK used in wechat miniprogram environment.
 
+> [!CAUTION]
+> When submitting the mini program for review, be sure to delete the SDK in the code, otherwise the review will fail.
+
 ## Usage
 
 ```ts

@@ -121,6 +121,12 @@ class PageSpy {
     this.request = new Request(this.config);
 
     PageSpy.instance = this;
+    const mpWarningText =
+      '!!!WARNING!!!: When submitting the mini program for review, be sure to delete the SDK in the code, otherwise the review will fail.';
+
+    psLog.log(mpWarningText);
+    psLog.info(mpWarningText);
+    psLog.warn(mpWarningText);
 
     this.triggerPlugins('onInit', { socketStore, config });
 
