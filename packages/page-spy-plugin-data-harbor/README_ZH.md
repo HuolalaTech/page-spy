@@ -83,14 +83,24 @@ export default DataHarborPlugin;
   window.$pageSpy = new PageSpy();
   ```
 
-### 导出数据
+### 上传 / 导出数据
 
-引入成功后，点击客户端渲染的控件后出现的弹窗中应该包含「下载日志数据」按钮，点击后会导出 json 数据。
+引入成功后，点击客户端渲染的控件后出现的弹窗中应该包含了上传和下载的按钮。
 
-<img src="./screenshots/download-zh.jpg" alt="Download" height="400" />
+<img src="./screenshots/modal.jpg" alt="Download" height="400" />
 
-### 离线数据回放
+如果在实例化 PageSpy 的时候设置 `autoRender: false` 隐藏了控件，又希望被调试的客户端无需操作也可以上传 / 下载，你可以在调试端面板上通过发送以下代码来操作：
 
-点击「日志回放」，选择上一步中导出的 json 数据即可开始使用回放功能！
+```js
+// 上传
+window.$pageSpy.triggerPlugins('onOfflineLog', 'upload');
 
-<img src="./screenshots/entry-zh.jpg" alt="Entry" height="400" />
+// 下载
+window.$pageSpy.triggerPlugins('onOfflineLog', 'download');
+```
+
+### 日志数据回放
+
+进入调试端，点击「开始调试 - 日志回放」，选择上一步上传 / 下载的 json 数据即可开始使用回放功能！
+
+<img src="./screenshots/guide.jpg" alt="Entry" height="400" />

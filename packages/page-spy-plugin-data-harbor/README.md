@@ -83,14 +83,24 @@ export default DataHarborPlugin;
   window.$pageSpy = new PageSpy();
   ```
 
-### Export data
+### Upload / download data
 
-Upon successful integration, the popup that appears after clicking on the client-side rendering control should include a "Download Log Data" button. Clicking on this button will initiate the export of JSON data file.
+Upon successful integration, the popup that appears after clicking on the client-side rendering control should include `download / upload` buttons.
 
-<img src="./screenshots/download.jpg" alt="Download" height="400" />
+<img src="./screenshots/modal-en.jpg" alt="Download" height="400" />
+
+If setting `autoRender: false` when instantiating PageSpy hides the controls, but you still want the client to be able to upload/download without any action required, you can manipulate it by sending the following code on the debugging panel:
+
+```js
+// upload
+window.$pageSpy.triggerPlugins('onOfflineLog', 'upload');
+
+// download
+window.$pageSpy.triggerPlugins('onOfflineLog', 'download');
+```
 
 ### Replay log
 
-Goto the debugger's room list page and click the "Replay log" button, select the file exported in prev step, now you can use the replay to debug.
+Goto the debugger's log list page and click the "Replay log" button, select the file uploaded / downloaded in prev step, now you can use the replay to debug.
 
-<img src="./screenshots/entry.jpg" alt="Entry" height="400" />
+<img src="./screenshots/guide-en.jpg" alt="Entry" height="400" />
