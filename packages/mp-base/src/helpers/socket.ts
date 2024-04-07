@@ -1,39 +1,44 @@
 import { ROOM_SESSION_KEY } from 'base/src/constants';
-import {
-  SocketStoreBase,
-  SocketState,
-  SocketWrapper,
-} from 'base/src/socket-base';
+import { SocketStoreBase, SocketState, ISocket } from 'base/src/socket-base';
 import { getMPSDK, utilAPI } from '../utils';
+import { EventEmitter } from 'base/src/event-emitter';
 
-export class MPSocketWrapper extends SocketWrapper {
+// Mini program implementation of ISocket
+export class MPSocketImpl
+  extends EventEmitter<'open' | 'close' | 'error' | 'message', Function>
+  implements ISocket
+{
   private socketInstance: MPSocket | null = null;
 
-  private state: SocketState = 0;
+  private _state: SocketState = SocketState.CONNECTING;
+
+  get readyState() {
+    return this._state;
+  }
 
   // some ali-family app only support single socket connection...
   public static isSingleSocket = false;
 
-  init(url: string) {
-    this.state = SocketState.CONNECTING;
+  constructor(url: string) {
+    super();
+    this._state = SocketState.CONNECTING;
     const mp = getMPSDK();
     const closeHandler: SocketOnCloseHandler = (data) => {
-      this.state = SocketState.CLOSED;
+      this._state = SocketState.CLOSED;
       this.emit('close', data);
     };
     const openHandler: SocketOnOpenHandler = (data) => {
-      this.state = SocketState.OPEN;
+      this._state = SocketState.OPEN;
       this.emit('open', data);
     };
     const errorHandler: SocketOnErrorHandler = (data) => {
-      this.state = SocketState.CLOSED;
+      this._state = SocketState.CLOSED;
       this.emit('error', data);
     };
     const messageHandler: SocketOnMessageHandler = (data) => {
       this.emit('message', data);
     };
-
-    if (!MPSocketWrapper.isSingleSocket) {
+    if (!MPSocketImpl.isSingleSocket) {
       this.socketInstance = mp.connectSocket({
         url,
         multiple: true, // for alipay mp to return a task
@@ -53,7 +58,7 @@ export class MPSocketWrapper extends SocketWrapper {
   }
 
   send(data: string) {
-    if (MPSocketWrapper.isSingleSocket) {
+    if (MPSocketImpl.isSingleSocket) {
       getMPSDK().sendSocketMessage({ data });
     } else {
       this.socketInstance?.send({
@@ -63,27 +68,36 @@ export class MPSocketWrapper extends SocketWrapper {
   }
 
   close() {
-    if (MPSocketWrapper.isSingleSocket) {
+    if (MPSocketImpl.isSingleSocket) {
       getMPSDK().closeSocket({});
     } else {
       this.socketInstance?.close({});
     }
-    this.state = SocketState.CLOSED;
-    this.clearListeners();
+    this._state = SocketState.CLOSED;
+    this.clearAllListeners();
   }
 
   getState(): SocketState {
-    return this.state;
+    return this._state;
+  }
+
+  addEventListener(
+    event: keyof WebSocketEventMap,
+    callback: (data?: any) => void,
+  ): void {
+    this.on(event, callback);
+  }
+
+  removeEventListener(
+    event: keyof WebSocketEventMap,
+    callback: (data?: any) => void,
+  ): void {
+    this.off(event, callback);
   }
 }
 
 export class MPSocketStore extends SocketStoreBase {
   // websocket socketInstance
-  protected socketWrapper = new MPSocketWrapper();
-
-  public getSocket() {
-    return this.socketWrapper;
-  }
 
   constructor() {
     super();
@@ -93,6 +107,10 @@ export class MPSocketStore extends SocketStoreBase {
   /* eslint-disable-next-line */
   onOffline() {
     utilAPI.setStorage(ROOM_SESSION_KEY, JSON.stringify({ usable: false }));
+  }
+
+  createSocket(url: string): ISocket {
+    return new MPSocketImpl(url);
   }
 }
 

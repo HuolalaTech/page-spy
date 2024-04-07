@@ -26,7 +26,7 @@ interface GetterMember {
 export type WebSocketEvents = keyof WebSocketEventMap;
 type CallbackType = (data?: any) => void;
 
-// fork WebSocket state
+// WebSocket state. Enum defs for WebSocket readyState
 export enum SocketState {
   CONNECTING = 0,
   OPEN = 1,
@@ -36,55 +36,17 @@ export enum SocketState {
 
 const HEARTBEAT_INTERVAL = 5000;
 
-// 封装不同平台的 socket
-export abstract class SocketWrapper {
-  abstract init(url: string): void;
-  abstract send(data: string): void;
-  abstract close(data?: {}): void;
-  abstract getState(): SocketState;
-  protected events: Record<WebSocketEvents, CallbackType[]> = {
-    open: [],
-    close: [],
-    error: [],
-    message: [],
-  };
-
-  protected emit(event: WebSocketEvents, data: any) {
-    this.events[event].forEach((fun) => {
-      fun(data);
-    });
-    // for close and error, clear all listeners or they will be called on next socket instance.
-    if (event === 'close' || event === 'error') {
-      this.clearListeners();
-    }
-  }
-
-  onOpen(fun: (res: { header?: Record<string, string> }) => void) {
-    this.events.open.push(fun);
-  }
-
-  onClose(fun: (res: { code: number; reason: string }) => void) {
-    this.events.close.push(fun);
-  }
-
-  onError(fun: (msg: string) => void) {
-    this.events.error.push(fun);
-  }
-
-  onMessage(fun: (data: string | ArrayBuffer) => void) {
-    this.events.message.push(fun);
-  }
-
-  protected clearListeners() {
-    // clear listeners
-    Object.entries(this.events).forEach(([, funs]) => {
-      funs.splice(0);
-    });
-  }
+// socket interface, be consistent with websocket.
+export interface ISocket {
+  send(data: string): void;
+  close(): void;
+  addEventListener(event: WebSocketEvents, callback: CallbackType): void;
+  removeEventListener(event: WebSocketEvents, callback: CallbackType): void;
+  readonly readyState: SocketState;
 }
 
 export abstract class SocketStoreBase {
-  protected abstract socketWrapper: SocketWrapper;
+  protected socket: ISocket | null = null;
 
   private socketUrl: string = '';
 
@@ -133,8 +95,15 @@ export abstract class SocketStoreBase {
     this.addListener('debugger-online', this.handleFlushBuffer);
   }
 
+  public getSocket() {
+    return this.socket;
+  }
+
   // Simple offline listener
   abstract onOffline(): void;
+
+  // Create socket instance of different platform implementations
+  abstract createSocket(url: string): ISocket;
 
   public init(url: string) {
     try {
@@ -142,26 +111,26 @@ export abstract class SocketStoreBase {
         throw Error('WebSocket url cannot be empty');
       }
       // close existing connection
-      if (this.socketWrapper.getState() === SocketState.OPEN) {
-        this.socketWrapper.close();
+      if (this.socket?.readyState === SocketState.OPEN) {
+        this.socket.close();
       }
-      this.socketWrapper?.onOpen(() => {
+      this.socket = this.createSocket(url);
+      this.socket.addEventListener('open', () => {
         this.connectOnline();
       });
       // Strictly, the onMessage should be called after onOpen. But for some platform(alipay,)
       // this may cause some message losing.
-      this.socketWrapper?.onMessage((evt) => {
+      this.socket.addEventListener('message', (evt) => {
         this.handleMessage(evt);
       });
-      this.socketWrapper?.onClose(() => {
+      this.socket.addEventListener('close', () => {
         this.connectOffline();
       });
-      this.socketWrapper?.onError(() => {
+      this.socket.addEventListener('error', () => {
         // we treat on error the same with on close.
         this.connectOffline();
       });
       this.socketUrl = url;
-      this.socketWrapper?.init(url);
     } catch (e: any) {
       psLog.error(e.message);
     }
@@ -195,7 +164,7 @@ export abstract class SocketStoreBase {
     this.clearPing();
     this.reconnectTimes = 0;
     this.reconnectable = false;
-    this.socketWrapper?.close();
+    this.socket?.close();
     this.messages = [];
     Object.entries(this.events).forEach(([, fns]) => {
       fns.splice(0);
@@ -433,7 +402,7 @@ export abstract class SocketStoreBase {
         pkMsg.createdAt = Date.now();
         pkMsg.requestId = getRandomId();
         const dataString = stringifyData(pkMsg);
-        this.socketWrapper?.send(dataString);
+        this.socket?.send(dataString);
       } catch (e) {
         throw Error(`Incompatible: ${(e as Error).message}`);
       }

@@ -1,12 +1,12 @@
-import {
-  SocketState,
-  SocketStoreBase,
-  SocketWrapper,
-} from 'base/src/socket-base';
+import { SocketState, SocketStoreBase, ISocket } from 'base/src/socket-base';
 import NetworkProxyBase from 'base/src/network/base';
 import RequestItem from 'base/src/request-item';
 
-class PlatformSocketWrapper extends SocketWrapper {
+class PlatformSocketImpl implements ISocket {
+  readyState: SocketState = 0;
+  constructor(url: string) {
+    this.init(url);
+  }
   init(url: string): void {
     throw new Error('Method not implemented.');
   }
@@ -22,10 +22,19 @@ class PlatformSocketWrapper extends SocketWrapper {
   getState(): SocketState {
     throw new Error('Method not implemented.');
   }
+  addEventListener(
+    event: keyof WebSocketEventMap,
+    callback: (data?: any) => void,
+  ): void {}
+  removeEventListener(
+    event: keyof WebSocketEventMap,
+    callback: (data?: any) => void,
+  ): void {}
 }
-
 class PlatformSocket extends SocketStoreBase {
-  protected socketWrapper: SocketWrapper = new PlatformSocketWrapper();
+  createSocket(url: string): ISocket {
+    return new PlatformSocketImpl(url);
+  }
   onOffline(): void {
     throw new Error('Method not implemented.');
   }

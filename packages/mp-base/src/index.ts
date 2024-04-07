@@ -15,7 +15,7 @@ import NetworkPlugin from './plugins/network';
 import SystemPlugin from './plugins/system';
 import StoragePlugin from './plugins/storage';
 
-import socketStore, { MPSocketWrapper } from './helpers/socket';
+import socketStore, { MPSocketImpl } from './helpers/socket';
 import Request from './api';
 
 // import './index.less';
@@ -100,7 +100,7 @@ class PageSpy {
     const config = this.config.mergeConfig(init);
 
     if (config.singletonSocket) {
-      MPSocketWrapper.isSingleSocket = true;
+      MPSocketImpl.isSingleSocket = true;
     }
 
     const mp = getMPSDK();
@@ -174,7 +174,7 @@ class PageSpy {
       mp.onAppShow(() => {
         // Mini programe can not detect ws disconnect (before we add heart beat ping pong).
         // So we need to refresh the connection.
-        const state = socketStore.getSocket().getState();
+        const state = socketStore.getSocket()?.readyState;
         if (state === SocketState.CLOSED || state === SocketState.CLOSING) {
           this.useOldConnection();
         }

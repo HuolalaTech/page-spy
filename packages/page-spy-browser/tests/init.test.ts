@@ -192,7 +192,7 @@ describe('new PageSpy([config])', () => {
       JSON.stringify({
         name: '',
         address: '',
-        roomUrl: '',
+        roomUrl: 'demo-url', // need a non-empty value to avoid exception
         usable: true,
         project: 'default',
       }),
@@ -212,7 +212,7 @@ describe('new PageSpy([config])', () => {
       JSON.stringify({
         name: '',
         address: '',
-        roomUrl: '',
+        roomUrl: 'demo-url', // need a non-empty value to avoid exception
         usable: false,
         project: 'default',
       }),
