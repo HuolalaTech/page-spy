@@ -2,6 +2,8 @@ import {
   InitConfigBase,
   PageSpyBase,
   PageSpyPlugin,
+  PageSpyPluginLifecycle,
+  PageSpyPluginLifecycleArgs,
 } from '@huolala-tech/page-spy-types';
 
 type InternalPlugins =
@@ -49,6 +51,10 @@ interface PageSpyBrowser extends PageSpyBase {
   root: HTMLElement | null;
   config: Required<InitConfig> | null;
   render(): void;
+  triggerPlugins<T extends PageSpyPluginLifecycle>(
+    lifecycle: T,
+    ...args: PageSpyPluginLifecycleArgs<T>
+  ): void;
 }
 
 interface PageSpyConstructor {
