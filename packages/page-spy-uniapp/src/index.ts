@@ -4,7 +4,7 @@ import Device from 'mp-base/src/device';
 import { SpyDevice } from 'packages/page-spy-types';
 import { SocketStoreBase } from 'base/src/socket-base';
 import { psLog } from 'base/src';
-import { MPSocketWrapper } from 'mp-base/src/helpers/socket';
+import { MPSocketImpl } from 'mp-base/src/helpers/socket';
 
 declare const uni: any;
 
@@ -60,7 +60,7 @@ if (
   info.uniPlatform === 'mp-alipay' &&
   (info.hostName === 'DingTalk' || info.hostName === 'mPaaS')
 ) {
-  MPSocketWrapper.isSingleSocket = true;
+  MPSocketImpl.isSingleSocket = true;
 }
 
 // Really disgusting... alipay mp has different message format even in uniapp...
