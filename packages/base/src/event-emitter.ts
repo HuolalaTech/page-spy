@@ -3,7 +3,7 @@
 export class EventEmitter<E extends string, C extends Function> {
   private events: Map<E, C[]> = new Map();
 
-  on(eventName: E, callback: C) {
+  addEventListener(eventName: E, callback: C) {
     let list = this.events.get(eventName);
     if (!list) {
       list = [];
@@ -14,7 +14,7 @@ export class EventEmitter<E extends string, C extends Function> {
     }
   }
 
-  off(eventName: E, callback: C) {
+  removeEventListener(eventName: E, callback: C) {
     if (this.events.has(eventName)) {
       const list = this.events.get(eventName);
       const i = list!.indexOf(callback);

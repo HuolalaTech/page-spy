@@ -80,20 +80,6 @@ export class MPSocketImpl
   getState(): SocketState {
     return this._state;
   }
-
-  addEventListener(
-    event: keyof WebSocketEventMap,
-    callback: (data?: any) => void,
-  ): void {
-    this.on(event, callback);
-  }
-
-  removeEventListener(
-    event: keyof WebSocketEventMap,
-    callback: (data?: any) => void,
-  ): void {
-    this.off(event, callback);
-  }
 }
 
 export class MPSocketStore extends SocketStoreBase {

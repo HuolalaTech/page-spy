@@ -1,6 +1,6 @@
 import { SocketState } from 'base/src/socket-base';
 import { mockRequest } from './request';
-import EventEmitter from 'events';
+import { EventEmitter } from 'base/src/event-emitter';
 type CBType = (event?: any) => any;
 
 export class MockSocket {
@@ -9,16 +9,16 @@ export class MockSocket {
   send(params: { data: string | Buffer }) {}
   onOpen(handler: (res: any) => void) {
     this.status = SocketState.OPEN;
-    this.ee.addListener('open', handler);
+    this.ee.addEventListener('open', handler);
   }
   onClose(handler: (res: any) => void) {
-    this.ee.addListener('close', handler);
+    this.ee.addEventListener('close', handler);
   }
   onError(handler: (msg: string) => void) {
-    this.ee.addListener('error', handler);
+    this.ee.addEventListener('error', handler);
   }
   onMessage(handler: (data: string | Buffer) => void) {
-    this.ee.addListener('message', handler);
+    this.ee.addEventListener('message', handler);
   }
   close() {
     if (this.status !== SocketState.CLOSED) {
