@@ -1078,10 +1078,12 @@
   resolved "https://registry.npmjs.org/@humanwhocodes/object-schema/-/object-schema-2.0.1.tgz#e5211452df060fa8522b55c7b3c0c4d1981cb044"
   integrity sha512-dvuCeX5fC9dXgJn9t+X5atfmgQAzUOWqS1254Gh0m6i8wKd10ebXkfNKiRK+1GWi/yTvvLDHpoxLr0xxxeslWw==
 
-"@huolala-tech/page-spy-types@^1.7.6":
-  version "1.7.6"
-  resolved "https://registry.npmmirror.com/@huolala-tech/page-spy-types/-/page-spy-types-1.7.6.tgz#cfee6b2241838fba6b21a198ebb85a7349ada513"
-  integrity sha512-9tgxKu8DbcHobS8poM7QxrhoKH6L6/77SfymnSvKRJsd9CctDn11IrNXKHdve78HVnCz65PkXVdhXDwNnWnhOg==
+"@huolala-tech/eval5@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.npmjs.org/@huolala-tech/eval5/-/eval5-0.0.1.tgz#0ac20da88ce6345617ec01c0972f9fee6bbd6357"
+  integrity sha512-iYqXB5KM5OVowPBVUEgPyJXSEveXkuBMOafAMtXvSUuQG7r/iJ6qB4n6Ws/MzTtD6hZ4HJk5mnEWE9ymZraFoQ==
+  dependencies:
+    "@babel/runtime" "^7.8.4"
 
 "@hutson/parse-repository-url@^3.0.0":
   version "3.0.2"
