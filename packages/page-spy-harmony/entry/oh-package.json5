@@ -1,0 +1,13 @@
+{
+  "name": "entry",
+  "version": "1.0.0",
+  "description": "Please describe the basic information.",
+  "main": "",
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "@blucas/pagespy": "file:../pagespy",
+    "@ohos/axios": "^2.2.0"
+  },
+  "devDependencies": {}
+}

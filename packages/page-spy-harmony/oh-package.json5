@@ -1,0 +1,13 @@
+{
+  "name": "page-spy-harmony",
+  "version": "0.0.1",
+  "description": "PageSpy SDK for OpenHarmony",
+  "main": "",
+  "author": "",
+  "license": "",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "@ohos/hypium": "1.0.6"
+  }
+}
