@@ -5,6 +5,7 @@ import {
   SocketWrapper,
 } from 'base/src/socket-base';
 import { getMPSDK, utilAPI } from '../utils';
+import { psLog } from 'base/src';
 
 export class MPSocketWrapper extends SocketWrapper {
   private socketInstance: MPSocket | null = null;
@@ -14,7 +15,7 @@ export class MPSocketWrapper extends SocketWrapper {
   // some ali-family app only support single socket connection...
   public static isSingleSocket = false;
 
-  init(url: string) {
+  async init(url: string) {
     this.state = SocketState.CONNECTING;
     const mp = getMPSDK();
     const closeHandler: SocketOnCloseHandler = (data) => {
@@ -34,15 +35,21 @@ export class MPSocketWrapper extends SocketWrapper {
     };
 
     if (!MPSocketWrapper.isSingleSocket) {
-      this.socketInstance = mp.connectSocket({
+      let task = mp.connectSocket({
         url,
         multiple: true, // for alipay mp to return a task
         complete() {}, // make sure the uniapp return a task
       });
-      this.socketInstance.onClose(closeHandler);
-      this.socketInstance.onError(errorHandler);
-      this.socketInstance.onOpen(openHandler);
-      this.socketInstance.onMessage(messageHandler);
+      if (task instanceof Promise) {
+        psLog.log('the task is promise');
+        task = await task;
+      }
+      psLog.log('task then', task);
+      task.onClose(closeHandler);
+      task.onError(errorHandler);
+      task.onOpen(openHandler);
+      task.onMessage(messageHandler);
+      this.socketInstance = task;
     } else {
       mp.connectSocket({ url });
       mp.onSocketClose(closeHandler);

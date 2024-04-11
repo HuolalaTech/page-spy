@@ -36,17 +36,27 @@ export const setMPSDK = (SDK: MPSDK) => {
   mpSDK = SDK;
 };
 
+// Some platform has no global object, we provide this function to manually create your own global object.
+let customGlobal: Record<string, any> = {};
+export const setCustomGlobal = (global: Record<string, any>) => {
+  customGlobal = global;
+};
+
 // get the global context, and we assume the window is better than global, even in
 // mini program environment, mostly because of alipay...
 export const getGlobal = () => {
+  let foundGlobal: Record<string, any> = {};
   if (typeof globalThis !== 'undefined') {
-    return globalThis;
+    foundGlobal = globalThis;
   } else if (typeof window !== 'undefined') {
-    return window;
-  } else if (typeof global !== 'undefined') {
-    return global;
+    foundGlobal = window;
+  } else if (typeof global === 'object' && Object.keys(global).length > 1) {
+    foundGlobal = global;
   }
-  return undefined;
+  if (customGlobal) {
+    Object.assign(foundGlobal, customGlobal);
+  }
+  return foundGlobal;
 };
 
 // wrap the mp api to smooth the platform differences, for internal usage only.

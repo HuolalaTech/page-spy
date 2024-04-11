@@ -127,7 +127,7 @@ type MPNetworkAPI = {
       multiple?: boolean;
       header?: Record<string, string>;
     } & AsyncCallback,
-  ): MPSocket;
+  ): MPSocket | Promise<MPSocket>; // Taro will return a promise... wired
 
   onSocketOpen(handler: SocketOnOpenHandler): void;
   onSocketClose(handler: SocketOnCloseHandler): void;
@@ -144,6 +144,7 @@ type MPSystemAPI = {
   trigger(name: string, data?: any): void;
   canIUse(schema: string): boolean;
   getSystemInfoSync(): {
+    app?: string;
     brand?: string;
     // model: string;
     // pixelRatio: number;
@@ -157,6 +158,7 @@ type MPSystemAPI = {
     system: string;
     platform: 'ios' | 'android' | 'windows' | 'mac' | 'devtools';
     SDKVersion?: string;
+    [others: string]: any;
   };
   onError(listener: (res: { message: string; stack: string }) => void);
   offError(listener: (res: { message: string; stack: string }) => void);
