@@ -2,6 +2,7 @@ import url from '@ohos.url';
 import http from '@ohos.net.http';
 import { InitConfig } from '../types';
 import { psLog } from '../utils';
+import { DEVICE_INFO } from '../utils/constants';
 
 interface TResponse<T> {
   code: string;
@@ -50,7 +51,7 @@ export default class Request {
     const scheme = this.getScheme();
     const query = joinQuery({
       // TODO
-      name: 'Huawei OpenHarmony',
+      name: DEVICE_INFO,
       group: project,
       title,
     });

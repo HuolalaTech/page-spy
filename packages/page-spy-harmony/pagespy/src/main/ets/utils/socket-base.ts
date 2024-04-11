@@ -135,7 +135,7 @@ export abstract class SocketStoreBase {
   public connectionStatus: boolean = false;
 
   constructor() {
-    this.addListener('debug', SocketStoreBase.handleDebugger);
+    // this.addListener('debug', SocketStoreBase.handleDebugger);
     this.addListener('atom-detail', SocketStoreBase.handleResolveAtom);
     this.addListener('atom-getter', SocketStoreBase.handleAtomPropertyGetter);
     this.addListener('debugger-online', this.handleFlushBuffer);
@@ -243,28 +243,27 @@ export abstract class SocketStoreBase {
     this.init(this.socketUrl);
   }
 
-  // TODO
   private ping() {
-    // if (this.pingTimer) {
-    //   clearTimeout(this.pingTimer);
-    // }
-    // if (this.pongTimer) {
-    //   clearTimeout(this.pongTimer);
-    // }
-    // /* c8 ignore start */
-    // this.pingTimer = setTimeout(() => {
-    //   this.send({
-    //     type: 'ping',
-    //     content: null,
-    //   });
-    //   this.pingTimer = null;
-    //   this.pongTimer = setTimeout(() => {
-    //     // lost connection
-    //     this.connectOffline();
-    //     this.pongTimer = null;
-    //   }, HEARTBEAT_INTERVAL);
-    // }, HEARTBEAT_INTERVAL);
-    // /* c8 ignore stop */
+    if (this.pingTimer) {
+      clearTimeout(this.pingTimer);
+    }
+    if (this.pongTimer) {
+      clearTimeout(this.pongTimer);
+    }
+    /* c8 ignore start */
+    this.pingTimer = setTimeout(() => {
+      this.send({
+        type: 'ping',
+        content: null,
+      });
+      this.pingTimer = null;
+      this.pongTimer = setTimeout(() => {
+        // lost connection
+        this.connectOffline();
+        this.pongTimer = null;
+      }, HEARTBEAT_INTERVAL);
+    }, HEARTBEAT_INTERVAL);
+    /* c8 ignore stop */
   }
 
   private clearPing() {
@@ -399,7 +398,6 @@ export abstract class SocketStoreBase {
     reply: (data: any) => void,
   ) {
     const { type, data } = source;
-    // TODO: 不支持动态执行
     if (type === DEBUG_MESSAGE_TYPE.DEBUG) {
       const originMsg = makeMessage(DEBUG_MESSAGE_TYPE.CONSOLE, {
         logType: 'debug-origin',

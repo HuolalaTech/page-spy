@@ -2,6 +2,7 @@ import { makeMessage } from '../utils/message';
 import socketStore from '../helpers/socket';
 import type { SpyConsole, PageSpyPlugin } from '../types';
 import atom from '../utils/atom';
+import router from '@ohos.router';
 
 export default class ConsolePlugin implements PageSpyPlugin {
   public name: string = 'ConsolePlugin';
@@ -25,12 +26,11 @@ export default class ConsolePlugin implements PageSpyPlugin {
     this.proxyTypes.forEach((item) => {
       this.console[item] = console[item] || console.log || (() => {});
       console[item] = (...args: any[]) => {
+        const { name, path } = router.getState();
         this.printLog({
           logType: item,
           logs: args,
-          url: '',
-          // TODO: 获取当前页面路径
-          // url: window.location.href,
+          url: path + name,
         });
       };
     });

@@ -1,4 +1,5 @@
 import { InitConfigBase } from './index';
+import { AxiosInstance, AxiosStatic } from '@ohos/axios';
 
 type InternalPlugins =
   | 'ConsolePlugin'
@@ -40,6 +41,10 @@ export interface InitConfig extends InitConfigBase {
    * Customize logo style.
    */
   logoStyle?: Object;
+  /**
+   * Reference of @ohos/axios
+   */
+  axios?: AxiosStatic | AxiosInstance;
 }
 
 export interface StorageRoomInfo {

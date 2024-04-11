@@ -13,6 +13,7 @@ import { ROOM_SESSION_KEY } from './utils/constants';
 import ConsolePlugin from './plugins/console';
 import ErrorPlugin from './plugins/error';
 import NetworkPlugin from './plugins/network';
+import SystemPlugin from './plugins/system';
 
 class PageSpy {
   static instance: PageSpy | null = null;
@@ -140,7 +141,7 @@ class PageSpy {
       //   }
       // });
     }
-    psLog.log('Plugins inited');
+    psLog.log(`Device ID: ${this.address.substring(0, 4)}`);
     if (config.autoRender) {
       this.render();
     }
@@ -150,11 +151,6 @@ class PageSpy {
     this.triggerPlugins('onReset');
     socketStore.close();
     PageSpy.instance = null;
-    // TODO
-    // const root = document.querySelector(`#${Identifier}`);
-    // if (root) {
-    //   document.documentElement.removeChild(root);
-    // }
   }
 
   async createNewConnection() {
@@ -216,11 +212,11 @@ class PageSpy {
 const INTERNAL_PLUGINS = [
   new ConsolePlugin(),
   new ErrorPlugin(),
-  // new NetworkPlugin(),
+  new NetworkPlugin(),
   // new StoragePlugin(),
   // new DatabasePlugin(),
   // new PagePlugin(),
-  // new SystemPlugin(),
+  new SystemPlugin(),
 ];
 
 INTERNAL_PLUGINS.forEach((p) => {

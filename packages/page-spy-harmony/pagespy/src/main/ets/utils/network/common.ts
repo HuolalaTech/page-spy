@@ -1,6 +1,7 @@
-import { isString, toStringTag } from '../index';
+import { isString, psLog, toStringTag } from '../index';
 import http from '@ohos.net.http';
-
+import type { AxiosRequestConfig } from '@ohos/axios';
+import url from '@ohos.url';
 // File size is not recommended to exceed the MAX_SIZE,
 // big size files would result negative performance impact distinctly in local-test.
 export const MAX_SIZE = 1024 * 1024 * 2;
@@ -55,4 +56,25 @@ export function toLowerKeys(obj: any) {
     lowerKeys[key.toLowerCase()] = obj[key];
   }
   return lowerKeys;
+}
+
+export function resolveUrlInfo(config: AxiosRequestConfig) {
+  const urlObj = url.URL.parseURL(config.url, config.baseURL);
+  Object.entries(config.params || {}).forEach(([key, value]) => {
+    try {
+      urlObj.params.append(key, JSON.stringify(value));
+    } catch (e) {
+      psLog.warn(
+        `params[${key}] with invalid value in request: ${urlObj.href}`,
+      );
+    }
+  });
+
+  const getData = [...urlObj.params.entries()];
+
+  return {
+    url: urlObj.toString(),
+    name: urlObj.pathname,
+    getData,
+  };
 }

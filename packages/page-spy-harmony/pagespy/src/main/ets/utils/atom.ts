@@ -131,7 +131,8 @@ class Atom {
     ) {
       result['[[PrimitiveValue]]'] = this.transformToAtom(data.valueOf());
     }
-    if (data instanceof Set) {
+    // The behavior is weird: <class>.prototype instanceof <class> === true
+    if (data !== Set.prototype && data instanceof Set) {
       const entries: Record<string, any> = {};
       let index = 0;
       for (const v of data) {
@@ -140,7 +141,7 @@ class Atom {
       entries.size = data.size;
       result['[[Entries]]'] = this.transformToAtom(entries);
     }
-    if (data instanceof Map) {
+    if (data !== Map.prototype && data instanceof Map) {
       const entries: Record<string, any> = {};
       let index = 0;
       for (const [k, v] of data.entries()) {

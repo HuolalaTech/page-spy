@@ -14,6 +14,7 @@ export class Config extends ConfigBase<InitConfig> {
       offline: false,
       logo: '',
       logoStyle: {},
+      axios: null,
     };
   };
 }

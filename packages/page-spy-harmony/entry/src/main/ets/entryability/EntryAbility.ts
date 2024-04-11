@@ -2,6 +2,7 @@ import UIAbility from '@ohos.app.ability.UIAbility';
 import hilog from '@ohos.hilog';
 import window from '@ohos.window';
 import { PageSpy } from '@blucas/pagespy';
+import request from '../api/axios';
 
 export default class EntryAbility extends UIAbility {
   onCreate(want, launchParam) {
@@ -17,8 +18,9 @@ export default class EntryAbility extends UIAbility {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
 
     new PageSpy({
-      api: 'page-spy-web-v.huolala.work',
+      api: 'page-spy-web-v-stg.huolala.work',
       enableSSL: true,
+      axios: request,
     });
 
     windowStage.loadContent('pages/Index', (err, data) => {

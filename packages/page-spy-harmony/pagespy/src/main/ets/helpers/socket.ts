@@ -1,11 +1,11 @@
 import webSocket from '@ohos.net.webSocket';
+import { StorageRoomInfo } from '../types';
 import { psLog, stringifyData } from '../utils';
 import { ROOM_SESSION_KEY } from '../utils/constants';
 import {
   SocketStoreBase,
   SocketState,
   SocketWrapper,
-  WebSocketEvents,
 } from '../utils/socket-base';
 
 export class OHSocketWrapper extends SocketWrapper {
@@ -33,7 +33,7 @@ export class OHSocketWrapper extends SocketWrapper {
     });
     this.socketInstance.connect(url, (err, value) => {
       if (!err) {
-        psLog.log('Connect successful');
+        psLog.log(`Connect successful.`);
       } else {
         psLog.error('Connect failed, the error: ' + JSON.stringify(err));
       }
@@ -63,9 +63,9 @@ export class OHSocketStore extends SocketStoreBase {
   }
 
   onOffline(): void {
-    // TODO
-    // window.dispatchEvent(new CustomEvent('sdk-inactive'));
-    // sessionStorage.setItem(ROOM_SESSION_KEY, JSON.stringify({ usable: false }));
+    AppStorage.SetOrCreate<StorageRoomInfo>(ROOM_SESSION_KEY, {
+      usable: false,
+    });
   }
 
   constructor() {

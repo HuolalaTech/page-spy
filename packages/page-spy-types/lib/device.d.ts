@@ -6,6 +6,7 @@ export type OS =
   | 'mac'
   | 'android'
   | 'linux'
+  | 'harmony'
   | 'unknown';
 
 export type MPType =
