@@ -5,7 +5,6 @@ import {
   SocketWrapper,
 } from 'base/src/socket-base';
 import { getMPSDK, utilAPI } from '../utils';
-import { psLog } from 'base/src';
 
 export class MPSocketWrapper extends SocketWrapper {
   private socketInstance: MPSocket | null = null;
@@ -41,10 +40,8 @@ export class MPSocketWrapper extends SocketWrapper {
         complete() {}, // make sure the uniapp return a task
       });
       if (task instanceof Promise) {
-        psLog.log('the task is promise');
         task = await task;
       }
-      psLog.log('task then', task);
       task.onClose(closeHandler);
       task.onError(errorHandler);
       task.onOpen(openHandler);

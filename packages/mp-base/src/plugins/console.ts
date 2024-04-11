@@ -100,7 +100,7 @@ export default class ConsolePlugin implements PageSpyPlugin {
       reply(originMsg);
       try {
         // eslint-disable-next-line no-new-func, @typescript-eslint/no-implied-eval
-        const result = ConsolePlugin.interpreter!.evaluateNode(nodes);
+        const result = ConsolePlugin.interpreter?.evaluateNode(nodes);
         // const result = new Function(`return ${data}`)();
         const evalMsg = makeMessage('console', {
           logType: 'debug-eval',
