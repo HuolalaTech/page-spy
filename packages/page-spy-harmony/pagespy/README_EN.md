@@ -56,6 +56,9 @@ export default class EntryAbility extends UIAbility {
 
       // Whether the PageSpy deployed service uses HTTPS
       enableSSL: true,
+
+      // The class or instance of `@ohos/axios`, used for inspect network info
+      axios: axiosInstance,
     });
   }
 }

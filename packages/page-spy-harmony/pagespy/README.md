@@ -64,4 +64,4 @@ export default class EntryAbility extends UIAbility {
 }
 ```
 
-以上就是引入 PageSpy 的全部内容！之后请刷新 APP，接着打开浏览器前往 PageSpy 服务就可以正式开启调试。
+以上就是引入 PageSpy 的全部内容！之后请刷新模拟器或设备，接着打开浏览器前往 PageSpy 服务就可以正式开启调试。
