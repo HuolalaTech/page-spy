@@ -24,8 +24,7 @@
 
 ## 版本兼容性
 
-- `1.x`：用于 OpenHarmony API 9 版本；
-- `2.x`：用于 OpenHarmony API 11 版本；
+- `1.x`：基于 API 9 版本开发；
 
 ## 开始使用
 
@@ -46,6 +45,7 @@ ohpm install @huolala/page-spy-harmony
 // 本示例演示在 src/main/ets/Entry/EntryAbility.ts 文件中操作
 
 import { PageSpy } from '@huolala/page-spy-harmony';
+import axiosInstance from 'path/to/your/axios';
 
 export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage) {
@@ -56,6 +56,9 @@ export default class EntryAbility extends UIAbility {
 
       // PageSpy 部署的服务是否 https 访问
       enableSSL: true,
+
+      // @ohos/axios 的实例或者类，用于查看网络请求信息
+      axios: axiosInstance,
     });
   }
 }
