@@ -1,10 +1,10 @@
 {
-  "name": "page-spy-harmony",
-  "version": "0.0.1",
-  "description": "PageSpy SDK for OpenHarmony",
-  "main": "",
-  "author": "",
-  "license": "",
+  "name": "@huolala/page-spy-harmony",
+  "version": "1.0.0",
+  "description": "PageSpy 是一款可以用于本地调试或者远程调试 WEB / 小程序 / 鸿蒙等环境的开发者工具",
+  "main": "index.ets",
+  "author": "Blucas",
+  "license": "MIT",
   "dependencies": {
   },
   "devDependencies": {
