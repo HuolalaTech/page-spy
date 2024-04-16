@@ -13,7 +13,7 @@
     "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,md,json}'",
     "typecheck": "tsc --noEmit",
     "preversion": "yarn run test",
-    "prepublishOnly": "lerna run build",
+    "prepublishOnly": "lerna run --scope '@huolala-tech/page-spy-*' build",
     "release:major": "lerna publish major --yes",
     "release:minor": "lerna publish minor --yes",
     "release:patch": "lerna publish patch --yes",
