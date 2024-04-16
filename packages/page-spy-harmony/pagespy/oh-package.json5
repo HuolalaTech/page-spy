@@ -1,6 +1,6 @@
 {
   "name": "@huolala/page-spy-harmony",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "PageSpy 可以用于远程调试 WEB / 小程序 / 鸿蒙等环境应用的开发者工具，由货拉拉技术团队开源",
   "main": "index.ets",
   "author": "Blucas",

@@ -64,7 +64,7 @@ class PageSpy {
   }
 
   // TODO - 自动获取
-  version = '0.0.1';
+  version = '1.0.1';
 
   request: Request | null = null;
 
