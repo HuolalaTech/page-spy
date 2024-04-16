@@ -6,7 +6,6 @@ export type OS =
   | 'mac'
   | 'android'
   | 'linux'
-  | 'harmony'
   | 'unknown';
 
 export type MPType =
@@ -48,5 +47,4 @@ export interface DeviceInfo {
   browserType: Browser;
   browserVersion: string;
   framework?: Framework; // Currently only for miniprogram
-  isDevTools?: boolean;
 }

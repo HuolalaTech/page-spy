@@ -24,6 +24,7 @@ const config: Config = {
     '!packages/**/*.d.ts',
     '!**/*.test.ts',
     '!packages/**/eval.js',
+    '!packages/page-spy-harmony',
   ],
   coverageProvider: 'v8',
   projects: [

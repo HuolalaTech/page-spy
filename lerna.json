@@ -8,5 +8,5 @@
       "preid": "beta"
     }
   },
-  "ignoreChanges": ["**/tests/**", "**/*.md"]
+  "ignoreChanges": ["**/tests/**", "**/*.md", "packages/page-spy-harmony"]
 }
