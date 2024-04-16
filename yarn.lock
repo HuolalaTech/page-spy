@@ -981,6 +981,13 @@
   dependencies:
     regenerator-runtime "^0.14.0"
 
+"@babel/runtime@^7.14.5":
+  version "7.24.4"
+  resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.24.4.tgz#de795accd698007a66ba44add6cc86542aff1edd"
+  integrity sha512-dkxf7+hn8mFBwKjs9bvBlArzLVxVbS8usaPUDd5p2a9JCL9tB8OaOVN1isD4+Xyk4ns89/xeOmbQvgdK7IIVdA==
+  dependencies:
+    regenerator-runtime "^0.14.0"
+
 "@babel/template@^7.22.15", "@babel/template@^7.3.3":
   version "7.22.15"
   resolved "https://registry.npmjs.org/@babel/template/-/template-7.22.15.tgz#09576efc3830f0430f4548ef971dde1350ef2f38"
@@ -1909,6 +1916,35 @@
   integrity sha512-V4BG07kuYSUkTCSBHG8G8TNhM+F19jXFWnQtzj+we8DrkpSBCee9Z3Ms8yiGer/dlmhe35/Xdgyo3/0rQKg7YA==
   dependencies:
     "@sinonjs/commons" "^3.0.0"
+
+"@tarojs/api@3.6.25":
+  version "3.6.25"
+  resolved "https://registry.npmjs.org/@tarojs/api/-/api-3.6.25.tgz#bb6c1de525bc43279906eb5dfca24844d14c69b2"
+  integrity sha512-ZVSQauFgsCDGNWNJmoLeUMLjuUSeipwrbI7XQOFFco7u+RxGF8Wbf49OziKOtTYKTpZ+SQ9CH5U7Oqo1NG42gQ==
+  dependencies:
+    "@babel/runtime" "^7.14.5"
+    "@tarojs/runtime" "3.6.25"
+    "@tarojs/shared" "3.6.25"
+
+"@tarojs/runtime@3.6.25":
+  version "3.6.25"
+  resolved "https://registry.npmjs.org/@tarojs/runtime/-/runtime-3.6.25.tgz#3e58d8ab191cbf3b334aa12060a07e2fe9367660"
+  integrity sha512-zfcEnEHQ5s5GIOIgTtk5glHMCG22rtCvAH01tx9LyIoFOLKKp9bF/2Gr4l75PAKf+4hfbXM6R4Qk6i+Jpj3zrg==
+  dependencies:
+    lodash-es "4.17.21"
+    tslib "^2.6.2"
+
+"@tarojs/shared@3.6.25":
+  version "3.6.25"
+  resolved "https://registry.npmjs.org/@tarojs/shared/-/shared-3.6.25.tgz#f79a6e256018ca14457bf5e87f2727dad9441564"
+  integrity sha512-hu2iyN+iqK+LObeDglZjmM+WKuIT5Jc8RBrw+aQwG9h4cJwjjr0Ci0UbbIQiBqiFlsfUWhtrlnmz5m6ym49HMA==
+
+"@tarojs/taro@^3.6.25":
+  version "3.6.25"
+  resolved "https://registry.npmjs.org/@tarojs/taro/-/taro-3.6.25.tgz#665b961e6f1e5e6fde22e57ebbedb2640fdc5e3f"
+  integrity sha512-hEnKOHdNy32J95BTB+in3sLxxnp88aQj0a75d66F/gUzhieM5Q9ldtPvcMxJFwwxaprkBGzr81x7kBcPoU2DjA==
+  dependencies:
+    "@tarojs/api" "3.6.25"
 
 "@testing-library/dom@^9.3.4":
   version "9.3.4"
@@ -6429,6 +6465,11 @@ locate-path@^6.0.0:
   dependencies:
     p-locate "^5.0.0"
 
+lodash-es@4.17.21:
+  version "4.17.21"
+  resolved "https://registry.npmjs.org/lodash-es/-/lodash-es-4.17.21.tgz#43e626c46e6591b7750beb2b50117390c609e3ee"
+  integrity sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==
+
 lodash.camelcase@^4.3.0:
   version "4.3.0"
   resolved "https://registry.npmjs.org/lodash.camelcase/-/lodash.camelcase-4.3.0.tgz#b28aa6288a2b9fc651035c7711f65ab6190331a6"
@@ -9298,7 +9339,7 @@ tsconfig-paths@^4.1.2:
     minimist "^1.2.6"
     strip-bom "^3.0.0"
 
-tslib@^2.1.0, tslib@^2.3.0, tslib@^2.4.0:
+tslib@^2.1.0, tslib@^2.3.0, tslib@^2.4.0, tslib@^2.6.2:
   version "2.6.2"
   resolved "https://registry.npmjs.org/tslib/-/tslib-2.6.2.tgz#703ac29425e7b37cd6fd456e92404d46d1f3e4ae"
   integrity sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==

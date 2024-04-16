@@ -55,7 +55,8 @@ Device.info = {
 };
 
 // Some ali apps have to use single socket instance
-// This detection only works on simulator, on real device, it depends on config option "singletonSocket"
+// For below 2 platforms, this option is always true for others, user can also set it manually on config option "singletonSocket".
+
 if (
   info.uniPlatform === 'mp-alipay' &&
   (info.hostName === 'DingTalk' || info.hostName === 'mPaaS')

@@ -17,7 +17,7 @@ export default class ConsolePlugin implements PageSpyPlugin {
 
   public static hasInitd = false;
 
-  protected static interpreter = new Interpreter(getGlobal() || {});
+  protected static interpreter: Interpreter | null = null;
 
   private proxyTypes: SpyConsole.ProxyType[] = [
     'log',
@@ -60,6 +60,10 @@ export default class ConsolePlugin implements PageSpyPlugin {
         writable: true,
       });
     });
+
+    if (!ConsolePlugin.interpreter) {
+      ConsolePlugin.interpreter = new Interpreter(getGlobal());
+    }
   }
 
   public onReset() {
@@ -67,6 +71,7 @@ export default class ConsolePlugin implements PageSpyPlugin {
       console[item] = this.console[item];
     });
     ConsolePlugin.hasInitd = false;
+    ConsolePlugin.interpreter = null;
   }
 
   // run executable code which received from remote and send back the result
@@ -95,7 +100,7 @@ export default class ConsolePlugin implements PageSpyPlugin {
       reply(originMsg);
       try {
         // eslint-disable-next-line no-new-func, @typescript-eslint/no-implied-eval
-        const result = ConsolePlugin.interpreter.evaluateNode(nodes);
+        const result = ConsolePlugin.interpreter?.evaluateNode(nodes);
         // const result = new Function(`return ${data}`)();
         const evalMsg = makeMessage('console', {
           logType: 'debug-eval',
