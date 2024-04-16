@@ -67,7 +67,7 @@ export default class Request {
       );
       return res.result as TResponse<TCreateRoom>;
     } catch (e) {
-      throw new Error(`Request create room failed: ${e.message}}`);
+      psLog.error(`Request create room failed: ${e.message}`);
     } finally {
       httpClient.destroy();
     }

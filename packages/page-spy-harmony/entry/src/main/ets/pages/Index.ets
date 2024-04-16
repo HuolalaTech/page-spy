@@ -26,11 +26,9 @@ struct Index {
               page
             })
 
-            Array.from({ length: 99 }).forEach(() => {
+            setInterval(() => {
               console.log('随机数', Math.random());
-            })
-
-            seeErrorResponse()
+            }, 1000)
 
             await Promise.all([seeRequestInfo(), handle404(), handle500()])
 

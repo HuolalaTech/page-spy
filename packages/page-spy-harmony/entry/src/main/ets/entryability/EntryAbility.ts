@@ -17,11 +17,15 @@ export default class EntryAbility extends UIAbility {
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
 
-    new PageSpy({
-      api: 'page-spy-web-v-stg.huolala.work',
-      enableSSL: true,
-      axios: request,
-    });
+    try {
+      new PageSpy({
+        api: 'test.jikejishu.com',
+        enableSSL: false,
+        axios: request,
+      });
+    } catch (e) {
+      console.error(e.message);
+    }
 
     windowStage.loadContent('pages/Index', (err, data) => {
       if (err.code) {

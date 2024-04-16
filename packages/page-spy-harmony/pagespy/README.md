@@ -29,8 +29,6 @@
 ## 开始使用
 
 > 在引入 SDK 前请先部署 PageSpy 服务，部署方式请参考 [PageSpy 部署教程](https://github.com/HuolalaTech/page-spy-web/blob/main/README_ZH.md#如何使用)。
->
-> https://test.jikejishu.com 是我们公开的临时体验、学习 PageSpy 的站点，请熟悉调试流程后一定切换到自己的服务。
 
 - 第一步在你的 HAP 目录下安装；
 

@@ -6,8 +6,8 @@
   "author": "",
   "license": "",
   "dependencies": {
-    "@blucas/pagespy": "file:../pagespy",
-    "@ohos/axios": "^2.2.0"
+    "@ohos/axios": "^2.2.0",
+    "@huolala/page-spy-harmony": "file:../pagespy"
   },
   "devDependencies": {}
 }

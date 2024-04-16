@@ -2,7 +2,7 @@ import axios from '@ohos/axios';
 import request from './axios';
 
 export const seeRequestInfo = () => {
-  return request.get('/get?name=blucas', {
+  return request.get('/', {
     data: {
       bar: 'bar',
     },
@@ -22,11 +22,11 @@ export const seeRequestInfo = () => {
 };
 
 export const handle404 = () => {
-  return request.post('/404');
+  return request.post('/status/404');
 };
 
 export const handle500 = () => {
-  return request.delete('/500');
+  return request.delete('/status/500');
 };
 
 export const seeErrorResponse = () => {

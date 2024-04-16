@@ -30,8 +30,6 @@
 ## Getting Started
 
 > Before importing the SDK, please deploy the PageSpy service. For deployment methods, please refer to the [PageSpy Deployment Guide](https://github.com/HuolalaTech/page-spy-web/?tab=readme-ov-file#how-to-use).
->
-> https://test.jikejishu.com is our public temporary experience and learning site for PageSpy. After familiarizing yourself with the debugging process, please make sure to switch to your own service.
 
 - Step 1: Install in your HAP directory;
 
