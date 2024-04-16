@@ -7,7 +7,7 @@ import type {
 } from '@huolala-tech/page-spy-types/index';
 import atom from 'base/src/atom';
 import { getGlobal, joinQuery } from '../utils';
-import { Interpreter } from '../helpers/eval';
+import { Interpreter } from '@huolala-tech/eval5';
 import { getRandomId } from 'base/src';
 
 export default class ConsolePlugin implements PageSpyPlugin {

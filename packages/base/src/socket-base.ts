@@ -435,7 +435,7 @@ export abstract class SocketStoreBase {
         const dataString = stringifyData(pkMsg);
         this.socketWrapper?.send(dataString);
       } catch (e) {
-        throw Error(`Incompatible: ${(e as Error).message}`);
+        psLog.error(`Incompatible: ${(e as Error).message}`);
       }
       /* c8 ignore stop */
     }

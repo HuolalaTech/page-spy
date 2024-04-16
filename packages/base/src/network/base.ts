@@ -41,25 +41,29 @@ export default class NetworkProxyBase {
   }
 
   protected sendRequestItem(id: string, req: RequestItem) {
-    if (!this.reqMap[id]) {
-      this.reqMap[id] = req;
-    }
+    try {
+      if (!this.reqMap[id]) {
+        this.reqMap[id] = req;
+      }
 
-    const message = makeMessage(
-      'network',
-      {
-        ...req,
-      },
-      false,
-    );
-    if (Number(req.readyState) === ReqReadyState.DONE) {
-      this.socketStore.dispatchEvent('public-data', message);
+      const message = makeMessage(
+        'network',
+        {
+          ...req,
+        },
+        false,
+      );
+      if (Number(req.readyState) === ReqReadyState.DONE) {
+        this.socketStore.dispatchEvent('public-data', message);
+      }
+      this.socketStore.broadcastMessage(
+        message,
+        req.readyState !== ReqReadyState.DONE,
+      );
+      this.deferDeleteRequest(id);
+    } catch (e) {
+      psLog.error((e as Error).message);
     }
-    this.socketStore.broadcastMessage(
-      message,
-      req.readyState !== ReqReadyState.DONE,
-    );
-    this.deferDeleteRequest(id);
   }
 
   private deferDeleteRequest(id: string) {
