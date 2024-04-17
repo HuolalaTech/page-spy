@@ -33,6 +33,10 @@ interface InitConfig {
   // Example："example.com"
   api: string;
 
+  // Taro SDK，need to be injected manually。
+  // `import Taro from '@tarojs/taro'`
+  taro: Taro;
+
   // "project" is an aggregation of information that can be searched in the room list on the debug side.
   // default: 'default'
   project?: string;

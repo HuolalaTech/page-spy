@@ -35,6 +35,10 @@ interface InitConfig {
   // 例子："example.com"
   api: string;
 
+  // Taro 的 SDK，需要手动传入。
+  // `import Taro from '@tarojs/taro'`
+  taro: Taro
+
   // project 作为信息的一种聚合，可以在调试端房间列表进行搜索
   // 默认值 'default'
   project?: string;
