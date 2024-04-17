@@ -4,8 +4,15 @@ import {
   PageSpyPlugin,
 } from '@huolala-tech/page-spy-types';
 
-interface PageSpyConstructor {
-  new (config: SpyMP.MPInitConfig): PageSpyBase;
+declare interface MPTaroInitConfig extends SpyMP.MPInitConfig {
+  /**
+   * The Taro global object.
+   */
+  taro: any;
+}
+
+declare interface PageSpyConstructor {
+  new (config: MPTaroInitConfig): PageSpyBase;
   instance: PageSpyBase | null;
   registerPlugin(plugin: PageSpyPlugin): void;
 }
