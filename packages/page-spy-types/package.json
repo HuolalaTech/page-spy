@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-types",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "description": "Types for PageSpy SDK",
   "license": "MIT",
   "types": "index.d.ts",
