@@ -1,4 +1,3 @@
-import { getRandomId } from 'base/src';
 import socketStore from 'page-spy-browser/src/helpers/socket';
 import { makeMessage } from 'base/src/message';
 import '../../deps/modernizr';
@@ -35,24 +34,33 @@ export default class SystemPlugin implements PageSpyPlugin {
   public static hasInitd = false;
 
   // eslint-disable-next-line class-methods-use-this
-  public async onInit() {
+  public onInit() {
     if (SystemPlugin.hasInitd) return;
     SystemPlugin.hasInitd = true;
 
-    const id = getRandomId();
+    socketStore.addListener('refresh', async ({ source }, reply) => {
+      const { data } = source;
+      if (data === 'system') {
+        const msg = await SystemPlugin.getSystemInfo();
+        socketStore.dispatchEvent('public-data', msg);
+        reply(msg);
+      }
+    });
+  }
+
+  public onReset() {
+    SystemPlugin.hasInitd = false;
+  }
+
+  private static async getSystemInfo() {
     const features = await computeResult();
-    const data = makeMessage('system', {
-      id,
+    const msg = makeMessage('system', {
       system: {
         ua: navigator.userAgent,
       },
       features,
     } as SpySystem.DataItem);
-    socketStore.dispatchEvent('public-data', data);
-    socketStore.broadcastMessage(data);
-  }
 
-  public onReset() {
-    SystemPlugin.hasInitd = false;
+    return msg;
   }
 }
