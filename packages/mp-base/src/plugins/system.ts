@@ -16,7 +16,7 @@ export default class SystemPlugin implements PageSpyPlugin {
 
     socketStore.addListener('refresh', ({ source }, reply) => {
       const { data } = source;
-      if (data === 'page') {
+      if (data === 'system') {
         const msg = SystemPlugin.getSystemInfo();
         socketStore.dispatchEvent('public-data', msg);
         reply(msg);
