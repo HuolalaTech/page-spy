@@ -117,9 +117,6 @@ class PageSpy {
       }
     }
 
-    // Here will check the config api
-    this.request = new Request(this.config);
-
     PageSpy.instance = this;
     const mpWarningText =
       '!!!WARNING!!!: When submitting the mini program for review, be sure to delete the SDK in the code, otherwise the review will fail.';
@@ -128,6 +125,9 @@ class PageSpy {
     psLog.info(mpWarningText);
     psLog.warn(mpWarningText);
 
+    // Here will check the config api
+    this.request = new Request(this.config);
+    this.updateConfiguration();
     this.triggerPlugins('onInit', { socketStore, config });
 
     this.init();
@@ -181,6 +181,11 @@ class PageSpy {
       });
     }
     psLog.log('Plugins inited');
+  }
+
+  updateConfiguration() {
+    const { messageCapacity } = this.config.get();
+    socketStore.messageCapacity = messageCapacity;
   }
 
   abort() {

@@ -89,7 +89,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     this.harbor = new Harbor({ maximum: config.maximum });
   }
 
-  public async onInit({ socketStore, config }: OnInitParams) {
+  public async onInit({ socketStore, config }: OnInitParams<InitConfig>) {
     if (DataHarborPlugin.hasInited) return;
     DataHarborPlugin.hasInited = true;
 
