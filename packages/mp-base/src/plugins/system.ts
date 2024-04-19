@@ -1,5 +1,4 @@
 import Device from 'mp-base/src/device';
-import { getRandomId } from 'base/src';
 import socketStore from 'mp-base/src/helpers/socket';
 import { makeMessage } from 'base/src/message';
 import type { SpySystem, PageSpyPlugin } from '@huolala-tech/page-spy-types';
@@ -15,21 +14,29 @@ export default class SystemPlugin implements PageSpyPlugin {
     if (SystemPlugin.hasInitd) return;
     SystemPlugin.hasInitd = true;
 
-    const id = getRandomId();
-    const deviceInfo = Device.info;
-    socketStore.broadcastMessage(
-      makeMessage('system', {
-        id,
-        system: {
-          ua: combineName(deviceInfo),
-        },
-        features: {},
-      } as SpySystem.DataItem),
-      false,
-    );
+    socketStore.addListener('refresh', ({ source }, reply) => {
+      const { data } = source;
+      if (data === 'system') {
+        const msg = SystemPlugin.getSystemInfo();
+        socketStore.dispatchEvent('public-data', msg);
+        reply(msg);
+      }
+    });
   }
 
   public onReset() {
     SystemPlugin.hasInitd = false;
+  }
+
+  private static getSystemInfo() {
+    const deviceInfo = Device.info;
+    const msg = makeMessage('system', {
+      system: {
+        ua: combineName(deviceInfo),
+      },
+      features: {},
+    } as SpySystem.DataItem);
+
+    return msg;
   }
 }

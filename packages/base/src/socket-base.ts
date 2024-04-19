@@ -99,6 +99,13 @@ export abstract class SocketStoreBase {
 
   private retryTimer: ReturnType<typeof setTimeout> | null = null;
 
+  // Cache messages only in online mode
+  public isOffline = false;
+
+  // Maximum message length,
+  // the 0 meant no limitation.
+  public messageCapacity: number = 0;
+
   // messages store
   private messages: SpySocket.BroadcastEvent[] = [];
 
@@ -439,13 +446,19 @@ export abstract class SocketStoreBase {
       }
       /* c8 ignore stop */
     }
-    if (!noCache) {
+    if (!this.isOffline && !noCache) {
       if (
         [SERVER_MESSAGE_TYPE.MESSAGE, SERVER_MESSAGE_TYPE.PING].indexOf(
           msg.type,
         ) > -1
       ) {
         return;
+      }
+      if (
+        this.messageCapacity !== 0 &&
+        this.messages.length >= this.messageCapacity
+      ) {
+        this.messages.shift();
       }
       this.messages.push(msg as SpySocket.BroadcastEvent);
     }

@@ -4,6 +4,7 @@ import type { recordOptions } from 'rrweb/typings/types';
 import type { eventWithTime, listenerHandler } from '@rrweb/types';
 import { makeMessage } from 'base/src/message';
 import { isBrowser, psLog } from 'base/src';
+import type { InitConfig } from 'page-spy-browser/types';
 
 interface Options extends recordOptions<eventWithTime> {
   // The data from 'rrweb-event' is typically larger (more interactions and complex
@@ -24,7 +25,7 @@ export default class RRWebPlugin implements PageSpyPlugin {
 
   constructor(public options: Options = {}) {}
 
-  public onInit({ socketStore }: OnInitParams) {
+  public onInit({ socketStore }: OnInitParams<InitConfig>) {
     if (!isBrowser()) {
       psLog.warn(`${this.name} can only used in browser environment`);
       return;

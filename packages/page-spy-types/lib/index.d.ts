@@ -29,6 +29,14 @@ export interface InitConfigBase {
    *        'src' property value
    */
   enableSSL?: boolean | null;
+
+  /**
+   * Specify how many messages to cache.
+   * The data is primarily used for define "socketStore.messageCapacity" to
+   * configure the maximum number of historical data the SDK can send
+   * after the debugging terminal goes online.
+   */
+  messageCapacity?: number;
 }
 
 export interface PageSpyBase {
@@ -41,7 +49,7 @@ export interface PageSpyBase {
   abort(): void;
 }
 
-interface OnInitParams<T extends InitConfigBase = InitConfigBase> {
+interface OnInitParams<T extends InitConfigBase> {
   /**
    * Config info which has merged the user passed value.
    */

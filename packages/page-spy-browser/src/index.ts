@@ -108,6 +108,7 @@ class PageSpy {
 
     const config = this.config.mergeConfig(init);
 
+    this.updateConfiguration();
     this.triggerPlugins('onInit', { config, socketStore });
     this.init();
   }
@@ -169,6 +170,12 @@ class PageSpy {
     if (config.autoRender) {
       this.render();
     }
+  }
+
+  updateConfiguration() {
+    const { messageCapacity, offline } = this.config.get();
+    socketStore.isOffline = offline;
+    socketStore.messageCapacity = messageCapacity;
   }
 
   abort() {
