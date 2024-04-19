@@ -1,12 +1,11 @@
 import type {
-  MPInitConfig as InitConfig,
   PageSpyBase,
   PageSpyPlugin,
-} from '@huolala-tech/page-spy-types/lib';
+  SpyMP,
+} from '@huolala-tech/page-spy-types';
 
-export { InitConfig };
 interface PageSpyConstructor {
-  new (config: InitConfig): PageSpyBase;
+  new (config: SpyMP.MPInitConfig): PageSpyBase;
   instance: PageSpyBase | null;
   registerPlugin(plugin: PageSpyPlugin): void;
 }
