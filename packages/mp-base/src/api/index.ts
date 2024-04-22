@@ -59,7 +59,7 @@ export default class Request {
     ) as Promise<TResponse<TCreateRoom>>;
   }
 
-  getRoomUrl(args: Record<string, string | number> = {}) {
+  getRoomUrl(args: Record<string, string | number | boolean> = {}) {
     const config = this.config.get();
     const scheme = getScheme(config.enableSSL);
     return `${scheme[1]}${this.base}/api/v1/ws/room/join?${joinQuery(args)}`;

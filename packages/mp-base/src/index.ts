@@ -157,9 +157,8 @@ class PageSpy {
     if (!roomCache || typeof roomCache !== 'object') {
       await this.createNewConnection();
     } else {
-      const { name, address, roomUrl, usable, project: prev, time } = roomCache;
-      // The server will close the connection after 60s. for the sdk, we use 30s.
-      if (!usable || config.project !== prev || time < Date.now() - 1000 * 30) {
+      const { name, address, roomUrl, usable, project: prev } = roomCache;
+      if (!usable || config.project !== prev) {
         await this.createNewConnection();
       } else {
         this.name = name;
@@ -204,6 +203,7 @@ class PageSpy {
       address: data.address,
       name: `client:${getRandomId()}`,
       userId: 'Client',
+      forceCreate: true,
     });
     this.name = data.name;
     this.address = data.address;
@@ -226,7 +226,6 @@ class PageSpy {
       const roomCache = utilAPI.getStorage(ROOM_SESSION_KEY);
       if (roomCache && typeof roomCache === 'object') {
         const { usable } = roomCache;
-        // unusable or time is expired, the room is not usable
         if (usable === false) {
           clearInterval(timerId);
           return;
@@ -247,7 +246,6 @@ class PageSpy {
       roomUrl,
       usable: true,
       project: this.config.get().project,
-      time: Date.now(),
     };
     utilAPI.setStorage(ROOM_SESSION_KEY, roomCache);
   }
