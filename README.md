@@ -39,7 +39,7 @@ to get more detail.
 | [`@huolala-tech/page-spy-wechat`](./packages/page-spy-wechat/)   | Wechat sdk       | Done   |
 | [`@huolala-tech/page-spy-alipay`](./packages/page-spy-alipay/)   | Alipay sdk       | Done   |
 | [`@huolala-tech/page-spy-uniapp`](./packages/page-spy-uniapp/)   | UniApp sdk       | Done   |
-| `@huolala-tech/page-spy-taro`(./packages/page-spy-taro/)         | Taro sdk         | Done   |
+| [`@huolala-tech/page-spy-taro`](./packages/page-spy-taro/)       | Taro sdk         | Done   |
 | `@huolala-tech/page-spy-rn`                                      | React Native sdk | WIP    |
 
 ## Official plugins
