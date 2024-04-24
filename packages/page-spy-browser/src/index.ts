@@ -28,6 +28,7 @@ import './index.less';
 import { Config } from './config';
 import { DatabasePlugin } from './plugins/database';
 import { Toast } from './component/toast';
+import { SocketState } from 'base/src/socket-base';
 
 const Identifier = '__pageSpy';
 
@@ -142,14 +143,8 @@ class PageSpy {
       if (roomCache === null) {
         await this.createNewConnection();
       } else {
-        const {
-          name,
-          address,
-          roomUrl,
-          usable,
-          project: prev,
-        } = JSON.parse(roomCache);
-        if (!usable || config.project !== prev) {
+        const { name, address, roomUrl, project: prev } = JSON.parse(roomCache);
+        if (config.project !== prev) {
           await this.createNewConnection();
         } else {
           this.name = name;
@@ -198,6 +193,7 @@ class PageSpy {
       address: data.address,
       name: `client:${getRandomId()}`,
       userId: 'Client',
+      forceCreate: true,
     });
     this.name = data.name;
     this.address = data.address;
@@ -250,6 +246,9 @@ class PageSpy {
   refreshRoomInfo() {
     this.saveSession();
     const timerId = setInterval(() => {
+      if (socketStore.getSocket().getState() === SocketState.OPEN) {
+        this.saveSession();
+      }
       const latestRoomInfo = sessionStorage.getItem(ROOM_SESSION_KEY);
       if (latestRoomInfo !== null) {
         const { usable } = JSON.parse(latestRoomInfo);
@@ -269,7 +268,6 @@ class PageSpy {
       name,
       address,
       roomUrl,
-      usable: true,
       project: config.get().project,
     });
     sessionStorage.setItem(ROOM_SESSION_KEY, roomInfo);

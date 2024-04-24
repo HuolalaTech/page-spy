@@ -59,7 +59,7 @@ export default class Request {
       });
   }
 
-  getRoomUrl(args: Record<string, string | number> = {}) {
+  getRoomUrl(args: Record<string, string | number | boolean> = {}) {
     const scheme = this.getScheme();
     return `${scheme[1]}${this.base}/api/v1/ws/room/join?${joinQuery(args)}`;
   }

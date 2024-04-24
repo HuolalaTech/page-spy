@@ -96,7 +96,7 @@ export class MPSocketStore extends SocketStoreBase {
   // this is an abstract method of parent class, cannot be static
   /* eslint-disable-next-line */
   onOffline() {
-    utilAPI.setStorage(ROOM_SESSION_KEY, JSON.stringify({ usable: false }));
+    utilAPI.removeStorage(ROOM_SESSION_KEY);
   }
 }
 

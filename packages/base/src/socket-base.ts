@@ -36,6 +36,16 @@ export enum SocketState {
 
 const HEARTBEAT_INTERVAL = 5000;
 
+// The reconnect interval has an initial time of 2000 ms,
+// for each failed reconnection attempt, the time will be increased by 1.5x,
+// until the attempt number reaches 4, the time will be fixed, which is Math.pow(1.5, 4) * 2000.
+// retry interval
+const INIT_RETRY_INTERVAL = 2000;
+// retry interval time will increase by 1.5x each time.
+const RETRY_TIME_INCR = 1.5;
+// the time increase pow limit.
+const MAX_RETRY_INTERVAL = Math.pow(RETRY_TIME_INCR, 4) * INIT_RETRY_INTERVAL;
+
 // 封装不同平台的 socket
 export abstract class SocketWrapper {
   abstract init(url: string): void;
@@ -123,10 +133,8 @@ export abstract class SocketStoreBase {
     'public-data': [],
   };
 
-  // Don't try to reconnect if error occupied
-  private reconnectable: boolean = true;
-
-  private reconnectTimes = 3;
+  // initial retry interval.
+  private retryInterval = INIT_RETRY_INTERVAL;
 
   // indicated connected  whether or not
   public connectionStatus: boolean = false;
@@ -200,8 +208,6 @@ export abstract class SocketStoreBase {
 
   public close() {
     this.clearPing();
-    this.reconnectTimes = 0;
-    this.reconnectable = false;
     this.socketWrapper?.close();
     this.messages = [];
     Object.entries(this.events).forEach(([, fns]) => {
@@ -211,7 +217,7 @@ export abstract class SocketStoreBase {
 
   private connectOnline() {
     this.connectionStatus = true;
-    this.reconnectTimes = 3;
+    this.retryInterval = INIT_RETRY_INTERVAL;
     this.ping();
   }
 
@@ -219,26 +225,20 @@ export abstract class SocketStoreBase {
     this.connectionStatus = false;
     this.socketConnection = null;
     this.clearPing();
-    if (!this.reconnectable || this.reconnectTimes <= 0) {
-      this.onOffline();
-      return;
-    }
-
     if (this.retryTimer) {
       clearTimeout(this.retryTimer);
     }
 
     this.retryTimer = setTimeout(() => {
+      if (this.retryInterval < MAX_RETRY_INTERVAL) {
+        this.retryInterval *= RETRY_TIME_INCR;
+      }
       this.retryTimer = null;
       this.tryReconnect();
-    }, 2000);
+    }, this.retryInterval);
   }
 
   tryReconnect() {
-    this.reconnectTimes -= 1;
-    if (this.reconnectTimes <= 0) {
-      this.reconnectable = false;
-    }
     this.init(this.socketUrl);
   }
 
@@ -322,7 +322,6 @@ export abstract class SocketStoreBase {
         // if (result.content.code === 'RoomNotFoundError') {
         //   // Room not exist, might because used an old connection.
         // }
-        this.reconnectable = false;
         this.connectOffline();
         break;
       /* c8 ignore start */

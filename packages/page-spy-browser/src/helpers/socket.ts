@@ -50,7 +50,7 @@ export class WebSocketStore extends SocketStoreBase {
   // eslint-disable-next-line class-methods-use-this
   onOffline(): void {
     window.dispatchEvent(new CustomEvent('sdk-inactive'));
-    sessionStorage.setItem(ROOM_SESSION_KEY, JSON.stringify({ usable: false }));
+    sessionStorage.removeItem(ROOM_SESSION_KEY);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor

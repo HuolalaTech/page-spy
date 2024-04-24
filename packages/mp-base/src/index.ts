@@ -157,8 +157,8 @@ class PageSpy {
     if (!roomCache || typeof roomCache !== 'object') {
       await this.createNewConnection();
     } else {
-      const { name, address, roomUrl, usable, project: prev } = roomCache;
-      if (!usable || config.project !== prev) {
+      const { name, address, roomUrl, project: prev } = roomCache;
+      if (config.project !== prev) {
         await this.createNewConnection();
       } else {
         this.name = name;
@@ -223,16 +223,9 @@ class PageSpy {
     /* c8 ignore start */
     this.saveSession();
     const timerId = setInterval(() => {
-      const roomCache = utilAPI.getStorage(ROOM_SESSION_KEY);
-      if (roomCache && typeof roomCache === 'object') {
-        const { usable } = roomCache;
-        if (usable === false) {
-          clearInterval(timerId);
-          return;
-        }
+      if (socketStore.getSocket().getState() === SocketState.OPEN) {
+        this.saveSession();
       }
-
-      this.saveSession();
     }, 15 * 1000);
     /* c8 ignore stop */
     psLog.log(`Room ID: ${this.address.slice(0, 4)}`);
@@ -244,7 +237,6 @@ class PageSpy {
       name,
       address,
       roomUrl,
-      usable: true,
       project: this.config.get().project,
     };
     utilAPI.setStorage(ROOM_SESSION_KEY, roomCache);

@@ -180,7 +180,6 @@ describe('new PageSpy([config])', () => {
       name: sdk.name,
       address: sdk.address,
       roomUrl: sdk.roomUrl,
-      usable: true,
       project: 'default',
     });
   });
@@ -193,32 +192,11 @@ describe('new PageSpy([config])', () => {
         name: '',
         address: '',
         roomUrl: '',
-        usable: true,
         project: 'default',
       }),
     );
 
     const spy = jest.spyOn(SDK.prototype, 'useOldConnection');
-
-    new SDK();
-    window.dispatchEvent(new Event('DOMContentLoaded'));
-    expect(spy).toBeCalled();
-  });
-
-  it('Create new connection if cache is invalid', () => {
-    expect(sessionStorage.getItem(ROOM_SESSION_KEY)).toBe(null);
-    sessionStorage.setItem(
-      ROOM_SESSION_KEY,
-      JSON.stringify({
-        name: '',
-        address: '',
-        roomUrl: '',
-        usable: false,
-        project: 'default',
-      }),
-    );
-
-    const spy = jest.spyOn(SDK.prototype, 'createNewConnection');
 
     new SDK();
     window.dispatchEvent(new Event('DOMContentLoaded'));
