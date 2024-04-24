@@ -223,24 +223,19 @@ interface PSLog {
   debug(...message: any[]): void;
 }
 
-const originConsole = { ...console };
-
 // Usage 1: to print system level debug info to developer
 // Usage 2: to print debug info for self debugging. It use origin console,
 // thus can avoid loop call of console.
-export const psLog = (['log', 'info', 'error', 'warn'] as const).reduce(
-  (result, method) => {
-    // eslint-disable-next-line no-param-reassign
-    result[method] = (...message: any[]) => {
-      originConsole[method](
-        `[PageSpy] [${method.toLocaleUpperCase()}] `,
-        ...message,
-      );
-    };
-    return result;
-  },
-  {} as PSLog,
-);
+export const psLog = (
+  ['log', 'info', 'error', 'warn', 'debug'] as const
+).reduce((result, method) => {
+  // eslint-disable-next-line no-param-reassign
+  result[method] = (...message: any[]) => {
+    // eslint-disable-next-line no-console
+    console[method](`[PageSpy] [${method.toLocaleUpperCase()}] `, ...message);
+  };
+  return result;
+}, {} as PSLog);
 
 export const removeEndSlash = (s: string) => {
   return s.replace(/\/$/, '');
