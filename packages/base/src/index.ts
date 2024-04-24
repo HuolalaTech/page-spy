@@ -224,8 +224,7 @@ interface PSLog {
 }
 
 // Usage 1: to print system level debug info to developer
-// Usage 2: to print debug info for self debugging. It use origin console,
-// thus can avoid loop call of console.
+// Usage 2: to print debug info for self debugging.
 export const psLog = (
   ['log', 'info', 'error', 'warn', 'debug'] as const
 ).reduce((result, method) => {
