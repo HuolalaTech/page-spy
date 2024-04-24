@@ -1,5 +1,7 @@
 export type UElement = HTMLElement & {
   isMoveEvent: boolean;
+  isHidden: boolean;
+  disableHidden: boolean;
 };
 
 function getPosition(evt: TouchEvent | MouseEvent): Touch | MouseEvent {
@@ -11,13 +13,36 @@ function getPosition(evt: TouchEvent | MouseEvent): Touch | MouseEvent {
 }
 
 /* eslint-disable no-param-reassign */
-export function moveable(el: HTMLElement) {
+export function moveable(el: UElement) {
+  let hiddenTimer: ReturnType<typeof setTimeout> | null;
   let rect: DOMRect;
   const critical = {
     xAxis: 0,
     yAxis: 0,
   };
   const touch = { x: 0, y: 0 };
+  function handleHidden() {
+    const { left, width } = el.getBoundingClientRect();
+    const criticalX = window.innerWidth - width;
+    if (left >= 0 && left <= criticalX) {
+      el.isHidden = false;
+    }
+
+    if (hiddenTimer) {
+      clearTimeout(hiddenTimer);
+    }
+    hiddenTimer = setTimeout(() => {
+      hiddenTimer = null;
+      if (el.disableHidden) return;
+
+      if (left <= 0) {
+        el.classList.add('hidden-in-left');
+      } else if (left >= criticalX) {
+        el.classList.add('hidden-in-right');
+      }
+      el.isHidden = true;
+    }, 1000);
+  }
   function move(evt: TouchEvent | MouseEvent) {
     evt.preventDefault();
     (el as UElement).isMoveEvent = true;
@@ -45,6 +70,7 @@ export function moveable(el: HTMLElement) {
   function end() {
     touch.x = 0;
     touch.y = 0;
+    handleHidden();
     document.removeEventListener('mousemove', move);
     document.removeEventListener('mouseup', end);
 
@@ -53,7 +79,13 @@ export function moveable(el: HTMLElement) {
   }
   function start(evt: TouchEvent | MouseEvent) {
     evt.preventDefault();
-    (el as UElement).isMoveEvent = false;
+    if (hiddenTimer) {
+      clearTimeout(hiddenTimer);
+    }
+    if (el.isHidden) {
+      el.classList.remove('hidden-in-left', 'hidden-in-right');
+    }
+    el.isMoveEvent = false;
     rect = el.getBoundingClientRect();
     critical.xAxis = window.innerWidth - rect.width;
     critical.yAxis = window.innerHeight - rect.height;
@@ -73,4 +105,22 @@ export function moveable(el: HTMLElement) {
 
   el.addEventListener('mousedown', start, false);
   el.addEventListener('touchstart', start, { capture: false, passive: false });
+  el.addEventListener(
+    'mouseover',
+    () => {
+      el.disableHidden = true;
+      if (el.isHidden) {
+        el.classList.remove('hidden-in-left', 'hidden-in-right');
+      }
+    },
+    false,
+  );
+  el.addEventListener(
+    'mouseleave',
+    () => {
+      el.disableHidden = false;
+      handleHidden();
+    },
+    false,
+  );
 }

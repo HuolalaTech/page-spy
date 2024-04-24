@@ -1,6 +1,7 @@
 @primary-color: #9a62e4;
 @gradient: linear-gradient(45deg, #efdfff, #4e00b1 52%, #3d0c7c);
 @size: 80em;
+@hidden-size: 40em;
 @fontSize: 14px;
 
 #__pageSpy {
@@ -20,10 +21,28 @@
     box-shadow: 0px 4px 8px 2px rgba(0, 0, 0, 0.2);
     cursor: pointer;
     z-index: 13000;
-    transition: background-color filter ease-in-out 0.3s;
+    transition:
+      transform ease-in-out 0.3s,
+      width ease-in-out 0.3s 0.3s,
+      border-radius ease-in-out 0.3s 0.3s,
+      background-color ease-in-out 0.3s,
+      filter ease-in-out 0.3s;
     &.inactive {
       background-color: #a2a2a2;
       filter: grayscale(1);
+    }
+
+    .hidden-mixin {
+      width: (@hidden-size / @fontSize);
+      border-radius: 6px;
+    }
+    &.hidden-in-left {
+      .hidden-mixin;
+      transform: translateX(-50%);
+    }
+    &.hidden-in-right {
+      .hidden-mixin;
+      transform: translateX((60em / @fontSize));
     }
   }
   .page-spy-modal {
