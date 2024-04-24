@@ -64,13 +64,13 @@ class PageSpy {
       return;
     }
     if (isClass(plugin)) {
-      psLog.error(
+      psLog.warn(
         'PageSpy.registerPlugin() expect to pass an instance, not a class',
       );
       return;
     }
     if (!plugin.name) {
-      psLog.error(
+      psLog.warn(
         `The ${plugin.constructor.name} plugin should provide a "name" property`,
       );
       return;
@@ -79,7 +79,7 @@ class PageSpy {
       (i) => i.name === plugin.name,
     );
     if (isExist) {
-      psLog.error(
+      psLog.warn(
         `The ${plugin.name} has registered. Consider the following reasons:
       - Duplicate register one same plugin;
       - Plugin's "name" conflict with others, you can print all registered plugins by "PageSpy.plugins";`,

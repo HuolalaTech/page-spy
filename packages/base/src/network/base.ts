@@ -21,7 +21,7 @@ export default class NetworkProxyBase {
 
   public createRequest(id: string) {
     if (!id) {
-      psLog.error('The "id" is required when init request object');
+      psLog.warn('The "id" is required when init request object');
       return false;
     }
     if (this.reqMap[id]) {

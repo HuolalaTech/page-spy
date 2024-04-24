@@ -52,13 +52,13 @@ export const startUpload = async ({
     },
   );
   if (!response.ok) {
-    psLog.error('Upload failed');
+    psLog.warn('Upload failed');
     return null;
   }
 
   const result: H.UploadResult = await response.json();
   if (!result.success) {
-    psLog.error(result.message);
+    psLog.warn(result.message);
     return null;
   }
   const uploadUrlWithoutSlash = removeEndSlash(uploadUrl);
