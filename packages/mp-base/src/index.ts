@@ -59,6 +59,8 @@ class PageSpy {
 
   static instance: PageSpy | null = null;
 
+  cacheTimer: ReturnType<typeof setInterval> | null = null;
+
   static registerPlugin(plugin: PageSpyPlugin) {
     if (!plugin) {
       return;
@@ -216,7 +218,7 @@ class PageSpy {
   refreshRoomInfo() {
     /* c8 ignore start */
     this.saveSession();
-    const timerId = setInterval(() => {
+    this.cacheTimer = setInterval(() => {
       if (socketStore.getSocket().getState() === SocketState.OPEN) {
         this.saveSession();
       }
