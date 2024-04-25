@@ -26,10 +26,6 @@ export const startUpload = async ({
   debugClient,
   tags = {},
 }: UploadArgs) => {
-  const uploadBtn: HTMLDivElement | null = document.querySelector(
-    '#data-harbor-plugin-upload',
-  );
-
   const data = await harbor.getHarborData();
   const blob = new Blob([JSON.stringify(data)], {
     type: 'application/json',
@@ -39,10 +35,6 @@ export const startUpload = async ({
   });
   const form = new FormData();
   form.append('log', file);
-
-  if (uploadBtn) {
-    uploadBtn.textContent = TIPS.uploading;
-  }
 
   const response = await fetch(
     `${uploadUrl}/api/v1/log/upload?${new URLSearchParams(tags).toString()}`,
@@ -93,7 +85,7 @@ export const handleUpload = ({
     idleWithUpload = false;
 
     try {
-      uploadBtn.textContent = TIPS.readying;
+      uploadBtn.textContent = TIPS.uploading;
       const debugUrl = await startUpload({
         harbor,
         filename,

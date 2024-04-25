@@ -155,15 +155,19 @@ export default class DataHarborPlugin implements PageSpyPlugin {
   }
 
   onOfflineLog(type: 'download' | 'upload') {
-    switch (type) {
-      case 'download':
-        startDownload(this.getParams('download'));
-        break;
-      case 'upload':
-        startUpload(this.getParams('upload'));
-        break;
-      default:
-        break;
+    try {
+      switch (type) {
+        case 'download':
+          startDownload(this.getParams('download'));
+          break;
+        case 'upload':
+          startUpload(this.getParams('upload'));
+          break;
+        default:
+          break;
+      }
+    } catch (e: any) {
+      psLog.error(e.message);
     }
   }
 
