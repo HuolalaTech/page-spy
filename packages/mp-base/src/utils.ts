@@ -1,7 +1,7 @@
 // PENDING: 这里补泛型
-export const promisifyMPApi = (api: (params: any) => any) => {
+export const promisifyMPApi = <R = any>(api: (params: any) => any) => {
   return (params: Record<string, any>) => {
-    return new Promise((resolve, reject) => {
+    return new Promise<R>((resolve, reject) => {
       api({
         ...params,
         success(res: any) {

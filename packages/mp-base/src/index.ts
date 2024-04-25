@@ -198,18 +198,12 @@ class PageSpy {
       psLog.error('Cannot get the Request');
       return;
     }
-    const { data } = await this.request.createRoom();
-    const roomUrl = this.request.getRoomUrl({
-      address: data.address,
-      name: `client:${getRandomId()}`,
-      userId: 'Client',
-      forceCreate: true,
-    });
-    this.name = data.name;
-    this.address = data.address;
-    this.roomUrl = roomUrl;
+    const room = await this.request.createRoom();
+    this.name = room.name;
+    this.address = room.address;
+    this.roomUrl = room.roomUrl;
     this.refreshRoomInfo();
-    socketStore.init(roomUrl);
+    socketStore.init(room.roomUrl);
   }
 
   useOldConnection() {

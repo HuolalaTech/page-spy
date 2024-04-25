@@ -1,3 +1,4 @@
+import { getRandomId } from 'base/src';
 import { InitConfig } from 'page-spy-browser/types';
 
 interface TResponse<T> {
@@ -41,7 +42,7 @@ export default class Request {
       : ['http://', 'ws://'];
   }
 
-  createRoom(): Promise<TResponse<TCreateRoom>> {
+  createRoom() {
     const { project, title } = this.config;
     const scheme = this.getScheme();
     const query = joinQuery({
@@ -53,14 +54,32 @@ export default class Request {
       method: 'POST',
     })
       .then((res) => res.json())
+      .then((res: TResponse<TCreateRoom>) => {
+        const { name, address } = res.data || {};
+        const roomUrl = this.getRoomUrl(address);
+        return {
+          roomUrl,
+          address,
+          name,
+        };
+      })
       .catch((err) => {
         /* c8 ignore next */
         throw Error(`Request create room failed: ${err.message}`);
       });
   }
 
-  getRoomUrl(args: Record<string, string | number | boolean> = {}) {
+  getRoomUrl(address: string) {
+    const config = this.config;
     const scheme = this.getScheme();
-    return `${scheme[1]}${this.base}/api/v1/ws/room/join?${joinQuery(args)}`;
+    return `${scheme[1]}${this.base}/api/v1/ws/room/join?${joinQuery({
+      address,
+      'room.name': navigator.userAgent,
+      'room.group': config.project,
+      'room.title': config.title,
+      name: `client:${getRandomId()}`,
+      userId: 'Client',
+      forceCreate: true,
+    })}`;
   }
 }

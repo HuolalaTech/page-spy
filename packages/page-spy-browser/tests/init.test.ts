@@ -154,16 +154,9 @@ describe('new PageSpy([config])', () => {
 
   it('Init connection', async () => {
     const response = {
-      code: 'ok',
-      message: 'mock response',
-      success: true,
-      data: {
-        name: 'xxxx-name',
-        address: 'xxxx-address',
-        group: 'xxxx-group',
-        password: 'xxxx-password',
-        tags: {},
-      },
+      name: 'xxxx-name',
+      address: 'xxxx-address',
+      roomUrl: 'wss://xxxx-url',
     };
     jest
       .spyOn(Request.prototype, 'createRoom')

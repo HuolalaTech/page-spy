@@ -3,6 +3,7 @@ import { combineName } from 'base/src/device';
 import { getMPSDK, joinQuery, promisifyMPApi } from 'mp-base/src/utils';
 import { Config } from '../config';
 import Device from '../device';
+import { getRandomId } from 'base/src';
 
 interface TResponse<T> {
   code: string;
@@ -33,35 +34,55 @@ export default class Request {
   get base() {
     return this.config.get().api;
   }
-
-  createRoom(): Promise<TResponse<TCreateRoom>> {
+  createRoom() {
     const config = this.config.get();
     const scheme = getScheme(config.enableSSL);
-    const device = Device.info;
-    const name = combineName(device);
+    const device = combineName(Device.info);
+
     const query = joinQuery({
-      name: encodeURIComponent(name),
       group: config.project,
       title: config.title,
+      // TODO putting all device info (or ua) in "name" is not a good practice.
+      // this should be changed in next main version.
+      // the backend support custom field in queries.
+      name: encodeURIComponent(device),
     });
 
-    return promisifyMPApi(getMPSDK().request)({
-      url: `${scheme[0]}${this.base}/api/v1/room/create?${query}`,
-      method: 'POST',
-    }).then(
-      (res: any) => {
-        return res.data;
+    return promisifyMPApi<{ data: TResponse<TCreateRoom> }>(getMPSDK().request)(
+      {
+        url: `${scheme[0]}${this.base}/api/v1/room/create?${query}`,
+        method: 'POST',
+      },
+    ).then(
+      (res) => {
+        const { name, address } = res.data?.data || {};
+        const roomUrl = this.getRoomUrl(address, device);
+        return {
+          roomUrl,
+          address,
+          name,
+        };
       },
       (err) => {
         /* c8 ignore next */
         throw Error(`Request create room failed: ${err.message}`);
       },
-    ) as Promise<TResponse<TCreateRoom>>;
+    );
   }
 
-  getRoomUrl(args: Record<string, string | number | boolean> = {}) {
+  getRoomUrl(address: string, device: string) {
     const config = this.config.get();
     const scheme = getScheme(config.enableSSL);
-    return `${scheme[1]}${this.base}/api/v1/ws/room/join?${joinQuery(args)}`;
+    return `${scheme[1]}${this.base}/api/v1/ws/room/join?${joinQuery({
+      address,
+      // TODO: temp solution to separate room info and client info.
+      // Must be removed in next big version.
+      'room.name': device,
+      'room.group': config.project,
+      'room.title': config.title,
+      name: `client:${getRandomId()}`,
+      userId: 'Client',
+      forceCreate: true,
+    })}`;
   }
 }
