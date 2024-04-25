@@ -22,6 +22,7 @@ export function moveable(el: UElement) {
   };
   const touch = { x: 0, y: 0 };
   function handleHidden() {
+    // 第一时间计算 el.isHidden，保证点击显示弹窗行为正常
     const { left, width } = el.getBoundingClientRect();
     const criticalX = window.innerWidth - width;
     if (left >= 0 && left <= criticalX) {
@@ -35,9 +36,14 @@ export function moveable(el: UElement) {
       hiddenTimer = null;
       if (el.disableHidden) return;
 
-      if (left <= 0) {
+      // 重新计算 el.getBoundingClientRect（如果 logo 本就隐藏在右侧，宽度会变化）
+      const currentRect = el.getBoundingClientRect();
+      const currentCriticalX = window.innerWidth - currentRect.width;
+
+      if (currentRect.left <= 0) {
         el.classList.add('hidden-in-left');
-      } else if (left >= criticalX) {
+      } else if (currentRect.left >= currentCriticalX) {
+        el.style.left = `${currentCriticalX}px`;
         el.classList.add('hidden-in-right');
       }
       el.isHidden = true;
