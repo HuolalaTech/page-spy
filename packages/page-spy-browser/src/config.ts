@@ -22,6 +22,8 @@ export class Config extends ConfigBase<InitConfig> {
       logo: logoUrl,
       logoStyle: {},
       messageCapacity: 1000,
+      useSecret: false,
+      secret: '',
     };
 
     if (!Config.scriptLink) {

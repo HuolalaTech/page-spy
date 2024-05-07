@@ -23,4 +23,8 @@ export abstract class ConfigBase<C extends Record<string, any>> {
   get() {
     return this.value;
   }
+
+  set<T extends keyof C>(key: T, val: C[T]) {
+    this.value[key] = val;
+  }
 }

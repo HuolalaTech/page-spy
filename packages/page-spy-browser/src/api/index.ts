@@ -43,7 +43,7 @@ export default class Request {
   }
 
   createRoom() {
-    const { project, title } = this.config;
+    const { project, title, useSecret, secret } = this.config;
     const scheme = this.getScheme();
     const query = joinQuery({
       name: navigator.userAgent,
@@ -52,6 +52,10 @@ export default class Request {
     });
     return fetch(`${scheme[0]}${this.base}/api/v1/room/create?${query}`, {
       method: 'POST',
+      body: JSON.stringify({
+        useSecret,
+        secret,
+      }),
     })
       .then((res) => res.json())
       .then((res: TResponse<TCreateRoom>) => {
@@ -70,13 +74,9 @@ export default class Request {
   }
 
   getRoomUrl(address: string) {
-    const config = this.config;
     const scheme = this.getScheme();
     return `${scheme[1]}${this.base}/api/v1/ws/room/join?${joinQuery({
       address,
-      'room.name': navigator.userAgent,
-      'room.group': config.project,
-      'room.title': config.title,
       name: `client:${getRandomId()}`,
       userId: 'Client',
       forceCreate: true,

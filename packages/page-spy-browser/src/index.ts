@@ -1,6 +1,6 @@
 import type { InitConfig } from 'page-spy-browser/types/index';
 import copy from 'copy-to-clipboard';
-import { getRandomId, isArray, isClass, psLog } from 'base/src';
+import { getAuthSecret, isArray, isClass, psLog } from 'base/src';
 import { ROOM_SESSION_KEY } from 'base/src/constants';
 import type {
   PageSpyPlugin,
@@ -8,6 +8,7 @@ import type {
   PageSpyPluginLifecycleArgs,
   PluginOrder,
 } from '@huolala-tech/page-spy-types';
+import { SocketState } from 'base/src/socket-base';
 import { Modal } from './component/modal';
 import { Content } from './component/content';
 
@@ -28,7 +29,6 @@ import './index.less';
 import { Config } from './config';
 import { DatabasePlugin } from './plugins/database';
 import { Toast } from './component/toast';
-import { SocketState } from 'base/src/socket-base';
 
 const Identifier = '__pageSpy';
 
@@ -170,7 +170,13 @@ class PageSpy {
   }
 
   updateConfiguration() {
-    const { messageCapacity, offline } = this.config.get();
+    const { messageCapacity, offline, useSecret } = this.config.get();
+    if (useSecret === true) {
+      const cache = JSON.parse(
+        sessionStorage.getItem(ROOM_SESSION_KEY) as string,
+      );
+      this.config.set('secret', cache?.secret || getAuthSecret());
+    }
     socketStore.isOffline = offline;
     socketStore.messageCapacity = messageCapacity;
   }
@@ -251,18 +257,28 @@ class PageSpy {
 
   saveSession() {
     const { name, address, roomUrl, config } = this;
+    const { useSecret, secret, project } = config.get();
     const roomInfo = JSON.stringify({
       name,
       address,
       roomUrl,
-      project: config.get().project,
+      project,
+      useSecret,
+      secret,
     });
     sessionStorage.setItem(ROOM_SESSION_KEY, roomInfo);
   }
 
   startRender() {
-    const config = this.config.get();
-    const { project, clientOrigin, title, logo: logoUrl, logoStyle } = config;
+    const {
+      project,
+      clientOrigin,
+      title,
+      logo: logoUrl,
+      logoStyle,
+      useSecret,
+      secret,
+    } = this.config.get();
 
     const root = document.createElement('div');
     root.id = Identifier;
@@ -287,9 +303,13 @@ class PageSpy {
     const modal = new Modal();
     const content = new Content({
       content: `
-      <p><b>Device ID:</b> <span style="font-family: 'Monaco'">${
-        this.address.slice(0, 4) || '--'
-      }</span></p>
+      ${useSecret ? `<p><b>Secret:</b> ${secret}</p>` : ''}
+      <p>
+        <b>Device ID:</b>
+        <span style="font-family: 'Monaco'">
+          ${this.address.slice(0, 4) || '--'}
+        </span>
+      </p>
       <p><b>Project:</b> ${project}</p>
       <p><b>Title:</b> ${title}</p>
       `,
