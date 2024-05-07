@@ -1,9 +1,9 @@
 import type { SpyMP } from '@huolala-tech/page-spy-types';
 import { combineName } from 'base/src/device';
 import { getMPSDK, joinQuery, promisifyMPApi } from 'mp-base/src/utils';
+import { getRandomId } from 'base/src';
 import { Config } from '../config';
 import Device from '../device';
-import { getRandomId } from 'base/src';
 
 interface TResponse<T> {
   code: string;
@@ -34,14 +34,15 @@ export default class Request {
   get base() {
     return this.config.get().api;
   }
+
   createRoom() {
-    const config = this.config.get();
-    const scheme = getScheme(config.enableSSL);
+    const { enableSSL, project, title, useSecret, secret } = this.config.get();
+    const scheme = getScheme(enableSSL);
     const device = combineName(Device.info);
 
     const query = joinQuery({
-      group: config.project,
-      title: config.title,
+      group: project,
+      title,
       // TODO putting all device info (or ua) in "name" is not a good practice.
       // this should be changed in next main version.
       // the backend support custom field in queries.
@@ -52,11 +53,15 @@ export default class Request {
       {
         url: `${scheme[0]}${this.base}/api/v1/room/create?${query}`,
         method: 'POST',
+        data: JSON.stringify({
+          useSecret,
+          secret,
+        }),
       },
     ).then(
       (res) => {
         const { name, address } = res.data?.data || {};
-        const roomUrl = this.getRoomUrl(address, device);
+        const roomUrl = this.getRoomUrl(address);
         return {
           roomUrl,
           address,
@@ -70,16 +75,11 @@ export default class Request {
     );
   }
 
-  getRoomUrl(address: string, device: string) {
+  getRoomUrl(address: string) {
     const config = this.config.get();
     const scheme = getScheme(config.enableSSL);
     return `${scheme[1]}${this.base}/api/v1/ws/room/join?${joinQuery({
       address,
-      // TODO: temp solution to separate room info and client info.
-      // Must be removed in next big version.
-      'room.name': device,
-      'room.group': config.project,
-      'room.title': config.title,
       name: `client:${getRandomId()}`,
       userId: 'Client',
       forceCreate: true,

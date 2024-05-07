@@ -1,4 +1,4 @@
-import { getRandomId, isArray, isClass, psLog } from 'base/src';
+import { getAuthSecret, isArray, isClass, psLog } from 'base/src';
 import type {
   SpyMP,
   PageSpyPlugin,
@@ -185,7 +185,11 @@ class PageSpy {
   }
 
   updateConfiguration() {
-    const { messageCapacity } = this.config.get();
+    const { messageCapacity, useSecret } = this.config.get();
+    if (useSecret === true) {
+      const cache = utilAPI.getStorage(ROOM_SESSION_KEY);
+      this.config.set('secret', cache?.secret || getAuthSecret());
+    }
     socketStore.messageCapacity = messageCapacity;
   }
 
@@ -228,12 +232,15 @@ class PageSpy {
   }
 
   saveSession() {
-    const { name, address, roomUrl } = this;
+    const { name, address, roomUrl, config } = this;
+    const { useSecret, secret, project } = config.get();
     const roomCache = {
       name,
       address,
       roomUrl,
-      project: this.config.get().project,
+      project,
+      useSecret,
+      secret,
     };
     utilAPI.setStorage(ROOM_SESSION_KEY, roomCache);
   }

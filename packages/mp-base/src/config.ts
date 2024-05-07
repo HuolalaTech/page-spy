@@ -14,6 +14,8 @@ export class Config extends ConfigBase<SpyMP.MPInitConfig> {
       disabledPlugins: [],
       singletonSocket: false,
       messageCapacity: 1000,
+      useSecret: false,
+      secret: '',
     };
   }
 

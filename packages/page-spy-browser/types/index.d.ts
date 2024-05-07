@@ -45,17 +45,6 @@ export interface InitConfig extends InitConfigBase {
    * Customize logo style.
    */
   logoStyle?: Object;
-  /**
-   * Indicate whether authorization is required. If enabled, PageSpy generates
-   * a 6-digit random number (below "secret") as a password for the debug room,
-   * which is required for developers to access the debug room
-   * @default false
-   */
-  useSecret?: boolean;
-  /**
-   * @private
-   */
-  secret?: string;
 }
 
 interface PageSpyBrowser extends PageSpyBase {
