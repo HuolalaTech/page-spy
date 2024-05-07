@@ -1,4 +1,10 @@
-import { getRandomId, isObjectLike, psLog, toStringTag } from 'base/src/index';
+import {
+  getRandomId,
+  isObjectLike,
+  isPlainObject,
+  psLog,
+  toStringTag,
+} from 'base/src/index';
 import {
   ReqReadyState,
   resolveUrlInfo,
@@ -42,7 +48,7 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
         if (req) {
           const method = params.method || 'GET';
           const { url } = params;
-          const requestHeader: HeadersInit | null = params.header || null;
+          req.requestHeader = [];
 
           const urlInfo = resolveUrlInfo(url);
           req.url = urlInfo.url;
@@ -57,16 +63,14 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
           req.startTime = Date.now();
           req.readyState = ReqReadyState.UNSENT;
 
-          if (isObjectLike(requestHeader)) {
-            req.requestHeader = Object.entries(requestHeader);
-          } else {
-            req.requestHeader = requestHeader;
+          // 小程序不会有其他格式，不用兼容
+          if (isPlainObject(params.header)) {
+            req.requestHeader = Object.entries(params.header);
           }
 
           if (req.method !== 'GET') {
             // NOTE：小程序的奇葩操作： request content-type 全部为 application/json
-            req.requestHeader = [['Content-Type', 'application/json']];
-
+            req.requestHeader.push(['Content-Type', 'application/json']);
             const { data } = params;
             if (data) {
               if (typeof data === 'string') {
