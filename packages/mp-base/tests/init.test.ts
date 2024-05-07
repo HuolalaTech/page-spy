@@ -162,6 +162,8 @@ describe('new PageSpy([config])', () => {
       address: sdk.address,
       roomUrl: sdk.roomUrl,
       project: 'default',
+      secret: '',
+      useSecret: false,
     });
   });
 

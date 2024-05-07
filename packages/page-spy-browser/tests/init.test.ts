@@ -157,6 +157,8 @@ describe('new PageSpy([config])', () => {
       name: 'xxxx-name',
       address: 'xxxx-address',
       roomUrl: 'wss://xxxx-url',
+      secret: '',
+      useSecret: false,
     };
     jest
       .spyOn(Request.prototype, 'createRoom')
@@ -174,6 +176,8 @@ describe('new PageSpy([config])', () => {
       address: sdk.address,
       roomUrl: sdk.roomUrl,
       project: 'default',
+      secret: '',
+      useSecret: false,
     });
   });
 
@@ -186,6 +190,8 @@ describe('new PageSpy([config])', () => {
         address: '',
         roomUrl: '',
         project: 'default',
+        secret: '',
+        useSecret: false,
       }),
     );
 
