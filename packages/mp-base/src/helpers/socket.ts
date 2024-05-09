@@ -94,18 +94,21 @@ export class MPSocketStore extends SocketStoreBase {
     if (this.getPageSpyConfig) {
       const { project, title } = this.getPageSpyConfig();
       const device = combineName(Device.info);
-      this.send({
-        type: UPDATE_ROOM_INFO,
-        content: {
-          info: {
-            name: encodeURIComponent(device),
-            group: project,
-            tags: {
-              title,
+      this.send(
+        {
+          type: UPDATE_ROOM_INFO,
+          content: {
+            info: {
+              name: encodeURIComponent(device),
+              group: project,
+              tags: {
+                title,
+              },
             },
           },
         },
-      });
+        true,
+      );
     }
   }
 

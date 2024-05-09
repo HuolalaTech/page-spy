@@ -209,9 +209,12 @@ class PageSpy {
       <p><b>Title:</b> ${title}</p>
       `,
       onOk: () => {
-        const text = `${clientOrigin}/#/devtools?address=${encodeURIComponent(
+        let text = `${clientOrigin}/#/devtools?address=${encodeURIComponent(
           this.address,
         )}`;
+        if (useSecret) {
+          text += `&secret=${secret}`;
+        }
         const copyRes = copy(text);
         let message = '';
         const langs = navigator.languages;

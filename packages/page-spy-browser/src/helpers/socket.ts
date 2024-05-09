@@ -49,18 +49,21 @@ export class WebSocketStore extends SocketStoreBase {
   updateRoomInfo() {
     if (this.getPageSpyConfig) {
       const { project, title } = this.getPageSpyConfig();
-      this.send({
-        type: UPDATE_ROOM_INFO,
-        content: {
-          info: {
-            name: navigator.userAgent,
-            group: project,
-            tags: {
-              title,
+      this.send(
+        {
+          type: UPDATE_ROOM_INFO,
+          content: {
+            info: {
+              name: navigator.userAgent,
+              group: project,
+              tags: {
+                title,
+              },
             },
           },
         },
-      });
+        true,
+      );
     }
   }
 
