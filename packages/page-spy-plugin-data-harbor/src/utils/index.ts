@@ -1,12 +1,13 @@
 import { isBrowser } from 'base/src';
+import { ROOM_SESSION_KEY } from 'base/src/constants';
 
 export const getDeviceId = () => {
   if (isBrowser()) {
-    return (
-      window.$pageSpy?.address ||
-      window.PageSpy.instance.address ||
-      JSON.parse(sessionStorage.getItem('page-spy-room') || '')?.address
-    );
+    const cache = sessionStorage.getItem(ROOM_SESSION_KEY);
+    if (cache) {
+      return JSON.parse(cache)?.address || '--';
+    }
+    return window.$pageSpy?.address || window.PageSpy.instance.address || '--';
   }
   return '--';
 };
