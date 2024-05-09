@@ -18,6 +18,7 @@ import NetworkPlugin from './plugins/network';
 import SystemPlugin from './plugins/system';
 import PagePlugin from './plugins/page';
 import { StoragePlugin } from './plugins/storage';
+import { DatabasePlugin } from './plugins/database';
 
 import socketStore from './helpers/socket';
 import Request from './api';
@@ -27,7 +28,6 @@ import { moveable } from './helpers/moveable';
 import './index.less';
 // eslint-disable-next-line import/order
 import { Config } from './config';
-import { DatabasePlugin } from './plugins/database';
 import { Toast } from './component/toast';
 
 const Identifier = '__pageSpy';
@@ -36,20 +36,6 @@ class PageSpy {
   root: HTMLElement | null = null;
 
   version = PKG_VERSION;
-
-  static plugins: Record<PluginOrder | 'normal', PageSpyPlugin[]> = {
-    pre: [],
-    normal: [],
-    post: [],
-  };
-
-  static get pluginsWithOrder() {
-    return [
-      ...PageSpy.plugins.pre,
-      ...PageSpy.plugins.normal,
-      ...PageSpy.plugins.post,
-    ];
-  }
 
   request: Request | null = null;
 
@@ -66,40 +52,7 @@ class PageSpy {
 
   config = new Config();
 
-  static instance: PageSpy | null = null;
-
   cacheTimer: ReturnType<typeof setInterval> | null = null;
-
-  static registerPlugin(plugin: PageSpyPlugin) {
-    if (!plugin) {
-      return;
-    }
-    if (isClass(plugin)) {
-      psLog.warn(
-        'PageSpy.registerPlugin() expect to pass an instance, not a class',
-      );
-      return;
-    }
-    if (!plugin.name) {
-      psLog.warn(
-        `The ${plugin.constructor.name} plugin should provide a "name" property`,
-      );
-      return;
-    }
-    const isExist = PageSpy.pluginsWithOrder.some(
-      (i) => i.name === plugin.name,
-    );
-    if (isExist) {
-      psLog.warn(
-        `The ${plugin.name} has registered. Consider the following reasons:
-      - Duplicate register one same plugin;
-      - Plugin's "name" conflict with others, you can print all registered plugins by "PageSpy.plugins";`,
-      );
-      return;
-    }
-    const currentPluginSet = PageSpy.plugins[plugin.enforce || 'normal'];
-    currentPluginSet.push(plugin);
-  }
 
   constructor(init: InitConfig = {}) {
     if (PageSpy.instance) {
@@ -116,22 +69,17 @@ class PageSpy {
     this.init();
   }
 
-  triggerPlugins<T extends PageSpyPluginLifecycle>(
-    lifecycle: T,
-    ...args: PageSpyPluginLifecycleArgs<T>
-  ) {
-    const { disabledPlugins } = this.config.get();
-    PageSpy.pluginsWithOrder.forEach((plugin) => {
-      if (
-        isArray(disabledPlugins) &&
-        disabledPlugins.length &&
-        disabledPlugins.includes(plugin.name)
-      ) {
-        return;
-      }
-      // eslint-disable-next-line prefer-spread
-      (plugin[lifecycle] as any)?.apply(plugin, args);
-    });
+  updateConfiguration() {
+    const { messageCapacity, offline, useSecret } = this.config.get();
+    if (useSecret === true) {
+      const cache = JSON.parse(
+        sessionStorage.getItem(ROOM_SESSION_KEY) as string,
+      );
+      this.config.set('secret', cache?.secret || getAuthSecret());
+    }
+    socketStore.getPageSpyConfig = () => this.config.get();
+    socketStore.isOffline = offline;
+    socketStore.messageCapacity = messageCapacity;
   }
 
   async init() {
@@ -169,29 +117,6 @@ class PageSpy {
     }
   }
 
-  updateConfiguration() {
-    const { messageCapacity, offline, useSecret } = this.config.get();
-    if (useSecret === true) {
-      const cache = JSON.parse(
-        sessionStorage.getItem(ROOM_SESSION_KEY) as string,
-      );
-      this.config.set('secret', cache?.secret || getAuthSecret());
-    }
-    socketStore.getPageSpyConfig = () => this.config.get();
-    socketStore.isOffline = offline;
-    socketStore.messageCapacity = messageCapacity;
-  }
-
-  abort() {
-    this.triggerPlugins('onReset');
-    socketStore.close();
-    PageSpy.instance = null;
-    const root = document.querySelector(`#${Identifier}`);
-    if (root) {
-      document.documentElement.removeChild(root);
-    }
-  }
-
   async createNewConnection() {
     if (!this.request) {
       psLog.error('Cannot get the Request');
@@ -208,42 +133,6 @@ class PageSpy {
   useOldConnection() {
     this.refreshRoomInfo();
     socketStore.init(this.roomUrl);
-  }
-
-  // In FeiShu browser (Android, Chrome/75), due to the premature execution of synchronous render,
-  // when execute `document.documentElement.append(root)` in the `render` function,
-  // the browser will directly create a `body` element, and the final result is that
-  // there will be multiple `body` elements on the page,
-  // which leads to strange phenomena such as css style mismatches
-  render() {
-    const root = document.querySelector(`#${Identifier}`);
-    /* c8 ignore start */
-    if (root) {
-      psLog.warn('Cannot render the widget because it has been in the DOM');
-      return;
-    }
-    if (document !== undefined) {
-      if (document.readyState === 'loading') {
-        window.addEventListener('DOMContentLoaded', this.render.bind(this));
-      } else {
-        this.startRender();
-      }
-    } else {
-      // if document does not exist, wait for it
-      let timer: ReturnType<typeof setTimeout>;
-      const pollingDocument = () => {
-        if (!!document && document.readyState === 'complete') {
-          if (timer) {
-            clearTimeout(timer);
-          }
-          this.startRender();
-        } else {
-          timer = setTimeout(pollingDocument, 1);
-        }
-      };
-      timer = setTimeout(pollingDocument, 1);
-    }
-    /* c8 ignore stop */
   }
 
   refreshRoomInfo() {
@@ -373,6 +262,117 @@ class PageSpy {
         this.root!.style.fontSize = `${14 * dpr}px`;
       }
     }
+  }
+
+  triggerPlugins<T extends PageSpyPluginLifecycle>(
+    lifecycle: T,
+    ...args: PageSpyPluginLifecycleArgs<T>
+  ) {
+    const { disabledPlugins } = this.config.get();
+    PageSpy.pluginsWithOrder.forEach((plugin) => {
+      if (
+        isArray(disabledPlugins) &&
+        disabledPlugins.length &&
+        disabledPlugins.includes(plugin.name)
+      ) {
+        return;
+      }
+      // eslint-disable-next-line prefer-spread
+      (plugin[lifecycle] as any)?.apply(plugin, args);
+    });
+  }
+
+  abort() {
+    this.triggerPlugins('onReset');
+    socketStore.close();
+    PageSpy.instance = null;
+    const root = document.querySelector(`#${Identifier}`);
+    if (root) {
+      document.documentElement.removeChild(root);
+    }
+  }
+
+  // In FeiShu browser (Android, Chrome/75), due to the premature execution of synchronous render,
+  // when execute `document.documentElement.append(root)` in the `render` function,
+  // the browser will directly create a `body` element, and the final result is that
+  // there will be multiple `body` elements on the page,
+  // which leads to strange phenomena such as css style mismatches
+  render() {
+    const root = document.querySelector(`#${Identifier}`);
+    /* c8 ignore start */
+    if (root) {
+      psLog.warn('Cannot render the widget because it has been in the DOM');
+      return;
+    }
+    if (document !== undefined) {
+      if (document.readyState === 'loading') {
+        window.addEventListener('DOMContentLoaded', this.render.bind(this));
+      } else {
+        this.startRender();
+      }
+    } else {
+      // if document does not exist, wait for it
+      let timer: ReturnType<typeof setTimeout>;
+      const pollingDocument = () => {
+        if (!!document && document.readyState === 'complete') {
+          if (timer) {
+            clearTimeout(timer);
+          }
+          this.startRender();
+        } else {
+          timer = setTimeout(pollingDocument, 1);
+        }
+      };
+      timer = setTimeout(pollingDocument, 1);
+    }
+    /* c8 ignore stop */
+  }
+
+  static instance: PageSpy | null = null;
+
+  static plugins: Record<PluginOrder | 'normal', PageSpyPlugin[]> = {
+    pre: [],
+    normal: [],
+    post: [],
+  };
+
+  static get pluginsWithOrder() {
+    return [
+      ...PageSpy.plugins.pre,
+      ...PageSpy.plugins.normal,
+      ...PageSpy.plugins.post,
+    ];
+  }
+
+  static registerPlugin(plugin: PageSpyPlugin) {
+    if (!plugin) {
+      return;
+    }
+    if (isClass(plugin)) {
+      psLog.error(
+        'PageSpy.registerPlugin() expect to pass an instance, not a class',
+      );
+      return;
+    }
+    if (!plugin.name) {
+      psLog.error(
+        `The ${plugin.constructor.name} plugin should provide a "name" property`,
+      );
+      return;
+    }
+    const isExist = PageSpy.pluginsWithOrder.some(
+      (i) => i.name === plugin.name,
+    );
+    if (isExist) {
+      psLog.error(
+        `The ${plugin.name} has registered. Consider the following reasons:
+      - Duplicate register one same plugin;
+      - Plugin's "name" conflict with others, you can print all registered plugins by "PageSpy.plugins";`,
+      );
+      return;
+    }
+    const currentPluginSet = PageSpy.plugins[plugin.enforce || 'normal'];
+    currentPluginSet.push(plugin);
   }
 }
 

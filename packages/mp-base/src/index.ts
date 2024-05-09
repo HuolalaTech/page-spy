@@ -28,20 +28,6 @@ class PageSpy {
 
   version = PKG_VERSION;
 
-  static plugins: Record<PluginOrder | 'normal', PageSpyPlugin[]> = {
-    pre: [],
-    normal: [],
-    post: [],
-  };
-
-  static get pluginsWithOrder() {
-    return [
-      ...PageSpy.plugins.pre,
-      ...PageSpy.plugins.normal,
-      ...PageSpy.plugins.post,
-    ];
-  }
-
   request: Request | null = null;
 
   // System info: <os>-<browser>:<browserVersion>
@@ -57,40 +43,7 @@ class PageSpy {
 
   config = new Config();
 
-  static instance: PageSpy | null = null;
-
   cacheTimer: ReturnType<typeof setInterval> | null = null;
-
-  static registerPlugin(plugin: PageSpyPlugin) {
-    if (!plugin) {
-      return;
-    }
-    if (isClass(plugin)) {
-      psLog.warn(
-        'PageSpy.registerPlugin() expect to pass an instance, not a class',
-      );
-      return;
-    }
-    if (!plugin.name) {
-      psLog.warn(
-        `The ${plugin.constructor.name} plugin should provide a "name" property`,
-      );
-      return;
-    }
-    const isExist = PageSpy.pluginsWithOrder.some(
-      (i) => i.name === plugin.name,
-    );
-    if (isExist) {
-      psLog.warn(
-        `The ${plugin.name} has registered. Consider the following reasons:
-      - Duplicate register one same plugin;
-      - Plugin's "name" conflict with others, you can print all registered plugins by "PageSpy.plugins";`,
-      );
-      return;
-    }
-    const currentPluginSet = PageSpy.plugins[plugin.enforce || 'normal'];
-    currentPluginSet.push(plugin);
-  }
 
   constructor(init: SpyMP.MPInitConfig) {
     if (PageSpy.instance) {
@@ -135,21 +88,15 @@ class PageSpy {
     this.init();
   }
 
-  triggerPlugins<T extends PageSpyPluginLifecycle>(
-    lifecycle: T,
-    ...args: PageSpyPluginLifecycleArgs<T>
-  ) {
-    const { disabledPlugins } = this.config.get();
-    PageSpy.pluginsWithOrder.forEach((plugin) => {
-      if (
-        isArray(disabledPlugins) &&
-        disabledPlugins.length &&
-        disabledPlugins.includes(plugin.name)
-      ) {
-        return;
-      }
-      (plugin[lifecycle] as any)?.apply(plugin, args);
-    });
+  updateConfiguration() {
+    const { messageCapacity, useSecret } = this.config.get();
+    if (useSecret === true) {
+      const cache = utilAPI.getStorage(ROOM_SESSION_KEY);
+      this.config.set('secret', cache?.secret || getAuthSecret());
+    }
+
+    socketStore.getPageSpyConfig = () => this.config.get();
+    socketStore.messageCapacity = messageCapacity;
   }
 
   async init() {
@@ -182,23 +129,6 @@ class PageSpy {
       });
     }
     psLog.log('Plugins inited');
-  }
-
-  updateConfiguration() {
-    const { messageCapacity, useSecret } = this.config.get();
-    if (useSecret === true) {
-      const cache = utilAPI.getStorage(ROOM_SESSION_KEY);
-      this.config.set('secret', cache?.secret || getAuthSecret());
-    }
-
-    socketStore.getPageSpyConfig = () => this.config.get();
-    socketStore.messageCapacity = messageCapacity;
-  }
-
-  abort() {
-    this.triggerPlugins('onReset');
-    socketStore.close();
-    PageSpy.instance = null;
   }
 
   async createNewConnection() {
@@ -245,6 +175,76 @@ class PageSpy {
       secret,
     };
     utilAPI.setStorage(ROOM_SESSION_KEY, roomCache);
+  }
+
+  triggerPlugins<T extends PageSpyPluginLifecycle>(
+    lifecycle: T,
+    ...args: PageSpyPluginLifecycleArgs<T>
+  ) {
+    const { disabledPlugins } = this.config.get();
+    PageSpy.pluginsWithOrder.forEach((plugin) => {
+      if (
+        isArray(disabledPlugins) &&
+        disabledPlugins.length &&
+        disabledPlugins.includes(plugin.name)
+      ) {
+        return;
+      }
+      (plugin[lifecycle] as any)?.apply(plugin, args);
+    });
+  }
+
+  abort() {
+    this.triggerPlugins('onReset');
+    socketStore.close();
+    PageSpy.instance = null;
+  }
+
+  static instance: PageSpy | null = null;
+
+  static plugins: Record<PluginOrder | 'normal', PageSpyPlugin[]> = {
+    pre: [],
+    normal: [],
+    post: [],
+  };
+
+  static get pluginsWithOrder() {
+    return [
+      ...PageSpy.plugins.pre,
+      ...PageSpy.plugins.normal,
+      ...PageSpy.plugins.post,
+    ];
+  }
+
+  static registerPlugin(plugin: PageSpyPlugin) {
+    if (!plugin) {
+      return;
+    }
+    if (isClass(plugin)) {
+      psLog.error(
+        'PageSpy.registerPlugin() expect to pass an instance, not a class',
+      );
+      return;
+    }
+    if (!plugin.name) {
+      psLog.error(
+        `The ${plugin.constructor.name} plugin should provide a "name" property`,
+      );
+      return;
+    }
+    const isExist = PageSpy.pluginsWithOrder.some(
+      (i) => i.name === plugin.name,
+    );
+    if (isExist) {
+      psLog.error(
+        `The ${plugin.name} has registered. Consider the following reasons:
+      - Duplicate register one same plugin;
+      - Plugin's "name" conflict with others, you can print all registered plugins by "PageSpy.plugins";`,
+      );
+      return;
+    }
+    const currentPluginSet = PageSpy.plugins[plugin.enforce || 'normal'];
+    currentPluginSet.push(plugin);
   }
 }
 
