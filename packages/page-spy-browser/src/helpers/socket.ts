@@ -46,7 +46,7 @@ export class WebSocketStore extends SocketStoreBase {
 
   public getPageSpyConfig: (() => Required<InitConfig>) | null = null;
 
-  protected updateRoomInfo() {
+  updateRoomInfo() {
     if (this.getPageSpyConfig) {
       const { project, title } = this.getPageSpyConfig();
       this.send({

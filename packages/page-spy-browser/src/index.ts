@@ -32,6 +32,11 @@ import { Toast } from './component/toast';
 
 const Identifier = '__pageSpy';
 
+type UpdateConfig = {
+  title?: string;
+  project?: string;
+};
+
 class PageSpy {
   root: HTMLElement | null = null;
 
@@ -326,6 +331,20 @@ class PageSpy {
       timer = setTimeout(pollingDocument, 1);
     }
     /* c8 ignore stop */
+  }
+
+  updateRoomInfo(obj: UpdateConfig) {
+    if (!obj) return;
+
+    const { project, title } = obj;
+    if (project) {
+      this.config.set('project', String(project));
+    }
+    if (title) {
+      this.config.set('title', String(title));
+    }
+
+    socketStore.updateRoomInfo();
   }
 
   static instance: PageSpy | null = null;

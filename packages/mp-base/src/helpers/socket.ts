@@ -90,7 +90,7 @@ export class MPSocketStore extends SocketStoreBase {
 
   public getPageSpyConfig: (() => Required<SpyMP.MPInitConfig>) | null = null;
 
-  protected updateRoomInfo() {
+  updateRoomInfo() {
     if (this.getPageSpyConfig) {
       const { project, title } = this.getPageSpyConfig();
       const device = combineName(Device.info);
