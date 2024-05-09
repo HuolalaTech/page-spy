@@ -75,11 +75,14 @@ export default class Request {
 
   getRoomUrl(address: string) {
     const scheme = this.getScheme();
+    const { useSecret, secret } = this.config;
     return `${scheme[1]}${this.base}/api/v1/ws/room/join?${joinQuery({
       address,
       name: `client:${getRandomId()}`,
       userId: 'Client',
       forceCreate: true,
+      useSecret,
+      secret,
     })}`;
   }
 }

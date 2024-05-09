@@ -31,5 +31,7 @@ module.exports = {
     'max-len': 'warn',
     '@typescript-eslint/naming-convention': 'off',
     'no-underscore-dangle': 'off',
+    'no-restricted-properties': 'off',
+    'prefer-exponentiation-operator': 'off',
   },
 };

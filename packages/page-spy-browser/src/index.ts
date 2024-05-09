@@ -177,6 +177,7 @@ class PageSpy {
       );
       this.config.set('secret', cache?.secret || getAuthSecret());
     }
+    socketStore.getPageSpyConfig = () => this.config.get();
     socketStore.isOffline = offline;
     socketStore.messageCapacity = messageCapacity;
   }

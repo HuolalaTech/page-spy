@@ -190,6 +190,8 @@ class PageSpy {
       const cache = utilAPI.getStorage(ROOM_SESSION_KEY);
       this.config.set('secret', cache?.secret || getAuthSecret());
     }
+
+    socketStore.getPageSpyConfig = () => this.config.get();
     socketStore.messageCapacity = messageCapacity;
   }
 

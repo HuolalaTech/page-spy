@@ -85,7 +85,7 @@ export abstract class SocketWrapper {
     this.events.message.push(fun);
   }
 
-  protected clearListeners() {
+  clearListeners() {
     // clear listeners
     Object.entries(this.events).forEach(([, funs]) => {
       funs.splice(0);
@@ -95,6 +95,8 @@ export abstract class SocketWrapper {
 
 export abstract class SocketStoreBase {
   protected abstract socketWrapper: SocketWrapper;
+
+  protected abstract updateRoomInfo(): void;
 
   private socketUrl: string = '';
 
@@ -156,6 +158,7 @@ export abstract class SocketStoreBase {
       if (!url) {
         throw Error('WebSocket url cannot be empty');
       }
+      this.socketWrapper.clearListeners();
       // close existing connection
       if (this.socketWrapper.getState() === SocketState.OPEN) {
         this.socketWrapper.close();
@@ -218,6 +221,7 @@ export abstract class SocketStoreBase {
   private connectOnline() {
     this.connectionStatus = true;
     this.retryInterval = INIT_RETRY_INTERVAL;
+    this.updateRoomInfo();
     this.ping();
   }
 
@@ -431,7 +435,7 @@ export abstract class SocketStoreBase {
     }
   }
 
-  private send(msg: SpySocket.ClientEvent, noCache: boolean = false) {
+  protected send(msg: SpySocket.ClientEvent, noCache: boolean = false) {
     if (this.connectionStatus) {
       /* c8 ignore start */
       try {
