@@ -3,6 +3,8 @@ import type { InitConfig } from 'page-spy-browser/types/index';
 import logoUrl from './assets/logo.svg';
 
 export class Config extends ConfigBase<InitConfig> {
+  protected privateKeys: (keyof InitConfig)[] = ['secret'];
+
   /**
    * NOTE: the 'scriptLink' must be mark static, for
    * "document.currentScript.src" only valid after <script> load done.

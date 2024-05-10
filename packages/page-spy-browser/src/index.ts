@@ -75,12 +75,12 @@ class PageSpy {
   }
 
   updateConfiguration() {
-    const { messageCapacity, offline, useSecret, secret } = this.config.get();
+    const { messageCapacity, offline, useSecret } = this.config.get();
     if (useSecret === true) {
       const cache = JSON.parse(
         sessionStorage.getItem(ROOM_SESSION_KEY) as string,
       );
-      this.config.set('secret', secret || cache?.secret || getAuthSecret());
+      this.config.set('secret', cache?.secret || getAuthSecret());
     }
     socketStore.getPageSpyConfig = () => this.config.get();
     socketStore.isOffline = offline;

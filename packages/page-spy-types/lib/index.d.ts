@@ -48,6 +48,7 @@ export interface InitConfigBase {
 
   /**
    * The 6-digit random number for authorization.
+   * @private
    */
   secret?: string;
 }
