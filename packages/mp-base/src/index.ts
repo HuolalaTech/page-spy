@@ -94,11 +94,10 @@ class PageSpy {
   }
 
   updateConfiguration() {
-    const { messageCapacity, useSecret } = this.config.get();
+    const { messageCapacity, useSecret, secret } = this.config.get();
     if (useSecret === true) {
       const cache = utilAPI.getStorage(ROOM_SESSION_KEY);
-      const secret = cache?.secret || getAuthSecret();
-      this.config.set('secret', secret);
+      this.config.set('secret', secret || cache?.secret || getAuthSecret());
       psLog.log(`Room Secret: ${secret}`);
     }
 
