@@ -4,6 +4,9 @@ export type UElement = HTMLElement & {
   disableHidden: boolean;
 };
 
+const STICKY_RADIUS = '50%';
+const FULLY_RADIUS = '100%';
+
 function getPosition(evt: TouchEvent | MouseEvent): Touch | MouseEvent {
   /* c8 ignore next 3 */
   if (window.TouchEvent && evt instanceof TouchEvent) {
@@ -23,9 +26,8 @@ export function moveable(el: UElement) {
   const touch = { x: 0, y: 0 };
   function handleHidden() {
     // 第一时间计算 el.isHidden，保证点击显示弹窗行为正常
-    const { left, width } = el.getBoundingClientRect();
-    const criticalX = window.innerWidth - width;
-    if (left >= 0 && left <= criticalX) {
+    const { left, top } = el.getBoundingClientRect();
+    if (left >= 0 && left <= critical.xAxis) {
       el.isHidden = false;
     }
 
@@ -36,15 +38,16 @@ export function moveable(el: UElement) {
       hiddenTimer = null;
       if (el.disableHidden) return;
 
-      // 重新计算 el.getBoundingClientRect（如果 logo 本就隐藏在右侧，宽度会变化）
-      const currentRect = el.getBoundingClientRect();
-      const currentCriticalX = window.innerWidth - currentRect.width;
-
-      if (currentRect.left <= 0) {
+      if (left <= 0) {
         el.classList.add('hidden-in-left');
-      } else if (currentRect.left >= currentCriticalX) {
-        el.style.left = `${currentCriticalX}px`;
+      } else if (left >= critical.xAxis) {
         el.classList.add('hidden-in-right');
+      }
+
+      if (top <= 0) {
+        el.classList.add('hidden-in-top');
+      } else if (top >= critical.yAxis) {
+        el.classList.add('hidden-in-bottom');
       }
       el.isHidden = true;
     }, 1000);
@@ -57,16 +60,26 @@ export function moveable(el: UElement) {
     const diffY = clientY - touch.y;
     let resultX = rect.x + diffX;
     /* c8 ignore start */
-    if (resultX < 0) {
+    if (resultX <= 0) {
       resultX = 0;
-    } else if (resultX > critical.xAxis) {
+      el.style.setProperty('--left-radius', STICKY_RADIUS);
+    } else if (resultX >= critical.xAxis) {
       resultX = critical.xAxis;
+      el.style.setProperty('--right-radius', STICKY_RADIUS);
+    } else {
+      el.style.setProperty('--left-radius', FULLY_RADIUS);
+      el.style.setProperty('--right-radius', FULLY_RADIUS);
     }
     let resultY = rect.y + diffY;
-    if (resultY < 0) {
+    if (resultY <= 0) {
       resultY = 0;
+      el.style.setProperty('--top-radius', STICKY_RADIUS);
     } else if (resultY > critical.yAxis) {
       resultY = critical.yAxis;
+      el.style.setProperty('--bottom-radius', STICKY_RADIUS);
+    } else {
+      el.style.setProperty('--top-radius', FULLY_RADIUS);
+      el.style.setProperty('--bottom-radius', FULLY_RADIUS);
     }
     /* c8 ignore stop */
 
@@ -89,7 +102,12 @@ export function moveable(el: UElement) {
       clearTimeout(hiddenTimer);
     }
     if (el.isHidden) {
-      el.classList.remove('hidden-in-left', 'hidden-in-right');
+      el.classList.remove(
+        'hidden-in-top',
+        'hidden-in-right',
+        'hidden-in-bottom',
+        'hidden-in-left',
+      );
     }
     el.isMoveEvent = false;
     rect = el.getBoundingClientRect();
@@ -116,7 +134,12 @@ export function moveable(el: UElement) {
     () => {
       el.disableHidden = true;
       if (el.isHidden) {
-        el.classList.remove('hidden-in-left', 'hidden-in-right');
+        el.classList.remove(
+          'hidden-in-top',
+          'hidden-in-right',
+          'hidden-in-bottom',
+          'hidden-in-left',
+        );
       }
     },
     false,
