@@ -18,14 +18,8 @@ export const startDownload = async ({
   filename,
   customDownload,
 }: DownloadArgs) => {
-  const downloadBtn: HTMLDivElement | null = document.querySelector(
-    '#data-harbor-plugin-download',
-  );
   const data = await harbor.getHarborData();
   if (customDownload) {
-    if (downloadBtn) {
-      downloadBtn.textContent = TIPS.ready;
-    }
     await customDownload(data);
     return;
   }
@@ -35,10 +29,9 @@ export const startDownload = async ({
   const root: HTMLElement =
     document.getElementsByTagName('body')[0] || document.documentElement;
   if (!root) {
-    psLog.error(
+    throw new Error(
       'Download file failed because cannot find the document.body & document.documentElement',
     );
-    return;
   }
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -73,9 +66,9 @@ export const handleDownload = ({
       downloadBtn.textContent = TIPS.readying;
       await startDownload({ harbor, filename, customDownload });
       downloadBtn.textContent = TIPS.success;
-    } catch (e) {
+    } catch (e: any) {
       downloadBtn.textContent = TIPS.fail;
-      psLog.error('Download failed.', e);
+      psLog.error('Download failed.', e.message);
     } finally {
       setTimeout(() => {
         downloadBtn.textContent = TIPS.normal;
