@@ -331,9 +331,9 @@ class PageSpy {
     root.insertAdjacentElement('beforeend', modal.el);
 
     function showModal(e: any) {
-      const { isMoveEvent } = logo as unknown as UElement;
+      const { isMoveEvent, isHidden } = logo as unknown as UElement;
       /* c8 ignore next 3 */
-      if (isMoveEvent) {
+      if (isMoveEvent || isHidden) {
         return;
       }
       e.stopPropagation();
@@ -342,7 +342,7 @@ class PageSpy {
     logo.addEventListener('click', showModal, false);
     logo.addEventListener('touchend', showModal, false);
     document.documentElement.insertAdjacentElement('beforeend', root);
-    moveable(logo);
+    moveable(logo as unknown as UElement);
     this.triggerPlugins('onMounted', {
       root,
       content: content.el,
