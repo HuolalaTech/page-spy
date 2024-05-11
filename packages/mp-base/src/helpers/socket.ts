@@ -99,7 +99,7 @@ export class MPSocketStore extends SocketStoreBase {
           type: UPDATE_ROOM_INFO,
           content: {
             info: {
-              name: encodeURIComponent(device),
+              name: device,
               group: project,
               tags: {
                 title,

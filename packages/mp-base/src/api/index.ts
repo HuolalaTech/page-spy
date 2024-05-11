@@ -83,6 +83,8 @@ export default class Request {
       name: `client:${getRandomId()}`,
       userId: 'Client',
       forceCreate: true,
+      useSecret: config.useSecret,
+      secret: config.secret,
     })}`;
   }
 }
