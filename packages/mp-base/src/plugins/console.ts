@@ -68,7 +68,10 @@ export default class ConsolePlugin implements PageSpyPlugin {
 
   public onReset() {
     this.proxyTypes.forEach((item) => {
-      console[item] = this.console[item];
+      const originFn = this.console[item];
+      if (originFn) {
+        console[item] = originFn;
+      }
     });
     ConsolePlugin.hasInitd = false;
     ConsolePlugin.interpreter = null;
