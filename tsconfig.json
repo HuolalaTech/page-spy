@@ -25,6 +25,7 @@
       "mp-base/*": ["./packages/mp-base/*"],
       "page-spy-browser/*": ["./packages/page-spy-browser/*"],
       "page-spy-wechat/*": ["./packages/page-spy-wechat/*"],
+      "page-spy-react-native/*": ["./packages/page-spy-react-native/*"],
       "page-spy-plugins/*": ["./packages/page-spy-plugins/*"]
     }
   },

@@ -37,10 +37,11 @@ export type Browser =
   | 'chrome'
   | 'firefox'
   | 'safari'
+  | 'react-native'
   | 'unknown'
   | MPType;
 
-export type Framework = 'uniapp' | 'taro' | 'unknown';
+export type Framework = 'uniapp' | 'taro' | 'react-native' | 'unknown';
 
 export interface DeviceInfo {
   osType: OS;

@@ -2,7 +2,8 @@ export type DataType =
   | 'localStorage'
   | 'sessionStorage'
   | 'cookie'
-  | 'mpStorage';
+  | 'mpStorage' // mini program storage
+  | 'asyncStorage'; // react native storage
 export type ActionType = 'clear' | 'remove' | 'get' | 'set';
 
 export type CookieStoreValue = {
