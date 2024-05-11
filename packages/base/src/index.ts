@@ -245,3 +245,18 @@ export const psLog = (['log', 'info', 'error', 'warn'] as const).reduce(
 export const removeEndSlash = (s: string) => {
   return s.replace(/\/$/, '');
 };
+
+export const formatErrorObj = (
+  err: Error | { stack: string; message: string },
+) => {
+  if (typeof err !== 'object') return null;
+  const { name, message, stack } = Object(err);
+  if ([name, message, stack].every(Boolean) === false) {
+    return null;
+  }
+  return {
+    name,
+    message,
+    stack,
+  };
+};

@@ -62,6 +62,28 @@ const config: Config = {
       moduleNameMapper,
       setupFilesAfterEnv: ['<rootDir>/packages/mp-base/tests/setup.ts'],
     },
+    {
+      displayName: {
+        name: 'RN',
+        color: 'blue',
+      },
+      preset: 'react-native',
+      testEnvironment: 'jsdom',
+      transform: {
+        '^.+\\.(js|jsx|ts|tsx)$': [
+          'babel-jest',
+          { configFile: './packages/page-spy-react-native/babel.config.js' },
+        ],
+      },
+      transformIgnorePatterns: [
+        'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base)',
+      ],
+      testMatch: ['**/packages/page-spy-react-native/tests/**/*.test.ts'],
+      moduleNameMapper,
+      setupFilesAfterEnv: [
+        '<rootDir>/packages/page-spy-react-native/tests/setup.ts',
+      ],
+    },
   ],
 };
 
