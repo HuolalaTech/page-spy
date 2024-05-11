@@ -198,15 +198,19 @@ class PageSpy {
     const modal = new Modal();
     const content = new Content({
       content: `
-      ${useSecret ? `<p><b>Secret:</b> ${secret}</p>` : ''}
+      ${
+        useSecret
+          ? `<p><b>Secret:</b> <span class="page-spy-secret">${secret}</span></p>`
+          : ''
+      }
       <p>
         <b>Device ID:</b>
-        <span style="font-family: 'Monaco'">
+        <span style="font-family: 'Monaco'" class="page-spy-device-id">
           ${this.address.slice(0, 4) || '--'}
         </span>
       </p>
-      <p><b>Project:</b> ${project}</p>
-      <p><b>Title:</b> ${title}</p>
+      <p><b>Project:</b> <span class="page-spy-project">${project}</span></p>
+      <p><b>Title:</b> <span class="page-spy-title">${title}</span></p>
       `,
       onOk: () => {
         let text = `${clientOrigin}/#/devtools?address=${encodeURIComponent(
@@ -342,9 +346,17 @@ class PageSpy {
     const { project, title } = obj;
     if (project) {
       this.config.set('project', String(project));
+      const node = document.querySelector('.page-spy-project');
+      if (node) {
+        node.textContent = String(project);
+      }
     }
     if (title) {
       this.config.set('title', String(title));
+      const node = document.querySelector('.page-spy-title');
+      if (node) {
+        node.textContent = String(title);
+      }
     }
 
     socketStore.updateRoomInfo();
