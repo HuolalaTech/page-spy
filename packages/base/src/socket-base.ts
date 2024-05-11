@@ -436,7 +436,9 @@ export abstract class SocketStoreBase {
   }
 
   protected send(msg: SpySocket.ClientEvent, noCache: boolean = false) {
-    if (this.connectionStatus) {
+    // TEMP SOLUTION:
+    // this.connectionStatus may not be accurate. we need to check socket itself.
+    if (this.socketWrapper.getState() === SocketState.OPEN) {
       /* c8 ignore start */
       try {
         const pkMsg = msg as PackedEvent;
@@ -446,6 +448,9 @@ export abstract class SocketStoreBase {
         this.socketWrapper?.send(dataString);
       } catch (e) {
         psLog.error(`Incompatible: ${(e as Error).message}`);
+        if (this.connectionStatus) {
+          this.connectOffline();
+        }
       }
       /* c8 ignore stop */
     }
