@@ -1,14 +1,14 @@
 import { makeMessage } from 'base/src/message';
-import socketStore, { MPSocketStore } from 'mp-base/src/helpers/socket';
+import socketStore from 'mp-base/src/helpers/socket';
 import type {
   SpyConsole,
   PageSpyPlugin,
   SpyBase,
 } from '@huolala-tech/page-spy-types/index';
 import atom from 'base/src/atom';
-import { getGlobal, joinQuery } from '../utils';
 import { Interpreter } from '@huolala-tech/eval5';
 import { getRandomId } from 'base/src';
+import { getGlobal, joinQuery } from '../utils';
 
 export default class ConsolePlugin implements PageSpyPlugin {
   public name: string = 'ConsolePlugin';
