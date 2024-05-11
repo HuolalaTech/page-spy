@@ -9,6 +9,7 @@ export function isBrowser() {
 export function getRandomId() {
   return Math.random().toString(36).slice(2);
 }
+
 export function getObjectKeys<T extends Record<string, any>>(obj: T) {
   return Object.keys(obj) as (keyof T)[];
 }
@@ -239,3 +240,8 @@ export const psLog = (
 export const removeEndSlash = (s: string) => {
   return s.replace(/\/$/, '');
 };
+
+export function getAuthSecret() {
+  const secret = Math.floor(Math.random() * 1000000);
+  return String(secret).padStart(6, '0');
+}

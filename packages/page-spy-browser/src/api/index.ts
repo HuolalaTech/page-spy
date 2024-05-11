@@ -1,3 +1,4 @@
+import { getRandomId } from 'base/src';
 import { InitConfig } from 'page-spy-browser/types';
 
 interface TResponse<T> {
@@ -41,8 +42,8 @@ export default class Request {
       : ['http://', 'ws://'];
   }
 
-  createRoom(): Promise<TResponse<TCreateRoom>> {
-    const { project, title } = this.config;
+  createRoom() {
+    const { project, title, useSecret, secret } = this.config;
     const scheme = this.getScheme();
     const query = joinQuery({
       name: navigator.userAgent,
@@ -51,16 +52,37 @@ export default class Request {
     });
     return fetch(`${scheme[0]}${this.base}/api/v1/room/create?${query}`, {
       method: 'POST',
+      body: JSON.stringify({
+        useSecret,
+        secret,
+      }),
     })
       .then((res) => res.json())
+      .then((res: TResponse<TCreateRoom>) => {
+        const { name, address } = res.data || {};
+        const roomUrl = this.getRoomUrl(address);
+        return {
+          roomUrl,
+          address,
+          name,
+        };
+      })
       .catch((err) => {
         /* c8 ignore next */
         throw Error(`Request create room failed: ${err.message}`);
       });
   }
 
-  getRoomUrl(args: Record<string, string | number> = {}) {
+  getRoomUrl(address: string) {
     const scheme = this.getScheme();
-    return `${scheme[1]}${this.base}/api/v1/ws/room/join?${joinQuery(args)}`;
+    const { useSecret, secret } = this.config;
+    return `${scheme[1]}${this.base}/api/v1/ws/room/join?${joinQuery({
+      address,
+      name: `client:${getRandomId()}`,
+      userId: 'Client',
+      forceCreate: true,
+      useSecret,
+      secret,
+    })}`;
   }
 }

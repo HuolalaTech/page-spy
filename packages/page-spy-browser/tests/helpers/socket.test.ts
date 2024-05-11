@@ -39,15 +39,25 @@ describe('Socket store', () => {
     expect(client.connectionStatus).toBe(true);
   });
 
-  it('Connect failed if reconnect over 3 times', async () => {
+  it('Reconnect time will increase exponentially, and will be fixed to 4 times increased.', async () => {
     jest.useFakeTimers();
+    const reconnect = jest.spyOn(client, 'tryReconnect');
     // @ts-ignore
-    expect(client.reconnectTimes).toBe(3);
     server.close();
+    jest.advanceTimersByTime(2000 + 100);
+    expect(reconnect).toHaveBeenCalledTimes(1);
 
-    jest.advanceTimersByTime((2000 + 500) * 3);
-    // @ts-ignore
-    expect(client.reconnectTimes).toBe(0);
+    jest.advanceTimersByTime(2000 * 1.5);
+    expect(reconnect).toHaveBeenCalledTimes(2);
+
+    jest.advanceTimersByTime(2000 * 2.25);
+    expect(reconnect).toHaveBeenCalledTimes(3);
+
+    jest.advanceTimersByTime(2000 * 3.375);
+    expect(reconnect).toHaveBeenCalledTimes(4);
+
+    jest.advanceTimersByTime(2000 * 5.0625 * 2);
+    expect(reconnect).toHaveBeenCalledTimes(6);
   });
 
   it('Stop', async () => {

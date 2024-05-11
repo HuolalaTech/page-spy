@@ -29,5 +29,9 @@ module.exports = {
     'no-multiple-empty-lines': 'warn',
     '@typescript-eslint/quotes': 'warn',
     'max-len': 'warn',
+    '@typescript-eslint/naming-convention': 'off',
+    'no-underscore-dangle': 'off',
+    'no-restricted-properties': 'off',
+    'prefer-exponentiation-operator': 'off',
   },
 };

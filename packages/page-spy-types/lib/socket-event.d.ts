@@ -70,7 +70,21 @@ export type ErrorEvent = EventConstructor<
 >;
 export type PingEvent = EventConstructor<'ping', any>;
 export type PongEvent = EventConstructor<'pong', any>;
-export type ClientEvent = UnicastEvent | BroadcastEvent | PingEvent;
+export type UpdateRoomInfoEvent = EventConstructor<
+  'updateRoomInfo',
+  {
+    info: {
+      name?: string;
+      group?: string;
+      tags?: Record<string, any>;
+    };
+  }
+>;
+export type ClientEvent =
+  | UnicastEvent
+  | BroadcastEvent
+  | PingEvent
+  | UpdateRoomInfoEvent;
 export type Event =
   | JoinEvent
   | ConnectEvent

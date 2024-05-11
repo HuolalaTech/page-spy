@@ -161,9 +161,9 @@ describe('new PageSpy([config])', () => {
       name: sdk.name,
       address: sdk.address,
       roomUrl: sdk.roomUrl,
-      usable: true,
       project: 'default',
-      time: expect.any(Number),
+      secret: '',
+      useSecret: false,
     });
   });
 
@@ -175,7 +175,6 @@ describe('new PageSpy([config])', () => {
       name: '',
       address: 'xxxx-address',
       roomUrl: 'test-room-url',
-      usable: true,
       project: 'default',
     });
 

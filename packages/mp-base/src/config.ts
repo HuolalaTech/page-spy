@@ -2,6 +2,8 @@ import { ConfigBase } from 'base/src/config';
 import type { SpyMP } from '@huolala-tech/page-spy-types';
 
 export class Config extends ConfigBase<SpyMP.MPInitConfig> {
+  protected privateKeys: (keyof SpyMP.MPInitConfig)[] = ['secret'];
+
   // I need to use generic type on this method, so it can't be static
   /* eslint-disable-next-line class-methods-use-this */
   protected defaultConfig() {
@@ -14,19 +16,8 @@ export class Config extends ConfigBase<SpyMP.MPInitConfig> {
       disabledPlugins: [],
       singletonSocket: false,
       messageCapacity: 1000,
+      useSecret: false,
+      secret: '',
     };
-  }
-
-  mergeConfig = (userCfg: SpyMP.MPInitConfig): Required<SpyMP.MPInitConfig> => {
-    this.value = {
-      /* c8 ignore next */
-      ...this.defaultConfig(),
-      ...userCfg,
-    };
-    return this.value;
-  };
-
-  get() {
-    return this.value;
   }
 }

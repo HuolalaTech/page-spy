@@ -2,6 +2,7 @@ import { getRandomId, stringifyData } from 'base/src';
 import atom from 'base/src/atom';
 import { ROOM_SESSION_KEY } from 'base/src/constants';
 import { makeMessage } from 'base/src/message';
+import { UPDATE_ROOM_INFO } from 'base/src/message/server-type';
 import {
   SocketStoreBase,
   SocketState,
@@ -9,6 +10,7 @@ import {
   WebSocketEvents,
 } from 'base/src/socket-base';
 import { SpyBase } from 'packages/page-spy-types';
+import { InitConfig } from 'page-spy-browser/types';
 
 export class WebSocketWrapper extends SocketWrapper {
   private socketInstance: WebSocket | null = null;
@@ -42,6 +44,29 @@ export class WebSocketStore extends SocketStoreBase {
   // websocket instance
   protected socketWrapper: WebSocketWrapper = new WebSocketWrapper();
 
+  public getPageSpyConfig: (() => Required<InitConfig>) | null = null;
+
+  updateRoomInfo() {
+    if (this.getPageSpyConfig) {
+      const { project, title } = this.getPageSpyConfig();
+      this.send(
+        {
+          type: UPDATE_ROOM_INFO,
+          content: {
+            info: {
+              name: navigator.userAgent,
+              group: project,
+              tags: {
+                title,
+              },
+            },
+          },
+        },
+        true,
+      );
+    }
+  }
+
   public getSocket() {
     return this.socketWrapper;
   }
@@ -50,7 +75,7 @@ export class WebSocketStore extends SocketStoreBase {
   // eslint-disable-next-line class-methods-use-this
   onOffline(): void {
     window.dispatchEvent(new CustomEvent('sdk-inactive'));
-    sessionStorage.setItem(ROOM_SESSION_KEY, JSON.stringify({ usable: false }));
+    sessionStorage.removeItem(ROOM_SESSION_KEY);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor

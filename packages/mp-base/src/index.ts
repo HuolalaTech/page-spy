@@ -1,4 +1,4 @@
-import { getRandomId, isArray, isClass, psLog } from 'base/src';
+import { getAuthSecret, isArray, isClass, psLog } from 'base/src';
 import type {
   SpyMP,
   PageSpyPlugin,
@@ -23,24 +23,15 @@ import Request from './api';
 import { Config } from './config';
 import { getMPSDK, utilAPI } from './utils';
 
+type UpdateConfig = {
+  title?: string;
+  project?: string;
+};
+
 class PageSpy {
   root: HTMLElement | null = null;
 
   version = PKG_VERSION;
-
-  static plugins: Record<PluginOrder | 'normal', PageSpyPlugin[]> = {
-    pre: [],
-    normal: [],
-    post: [],
-  };
-
-  static get pluginsWithOrder() {
-    return [
-      ...PageSpy.plugins.pre,
-      ...PageSpy.plugins.normal,
-      ...PageSpy.plugins.post,
-    ];
-  }
 
   request: Request | null = null;
 
@@ -57,38 +48,7 @@ class PageSpy {
 
   config = new Config();
 
-  static instance: PageSpy | null = null;
-
-  static registerPlugin(plugin: PageSpyPlugin) {
-    if (!plugin) {
-      return;
-    }
-    if (isClass(plugin)) {
-      psLog.warn(
-        'PageSpy.registerPlugin() expect to pass an instance, not a class',
-      );
-      return;
-    }
-    if (!plugin.name) {
-      psLog.warn(
-        `The ${plugin.constructor.name} plugin should provide a "name" property`,
-      );
-      return;
-    }
-    const isExist = PageSpy.pluginsWithOrder.some(
-      (i) => i.name === plugin.name,
-    );
-    if (isExist) {
-      psLog.warn(
-        `The ${plugin.name} has registered. Consider the following reasons:
-      - Duplicate register one same plugin;
-      - Plugin's "name" conflict with others, you can print all registered plugins by "PageSpy.plugins";`,
-      );
-      return;
-    }
-    const currentPluginSet = PageSpy.plugins[plugin.enforce || 'normal'];
-    currentPluginSet.push(plugin);
-  }
+  cacheTimer: ReturnType<typeof setInterval> | null = null;
 
   constructor(init: SpyMP.MPInitConfig) {
     if (PageSpy.instance) {
@@ -133,21 +93,17 @@ class PageSpy {
     this.init();
   }
 
-  triggerPlugins<T extends PageSpyPluginLifecycle>(
-    lifecycle: T,
-    ...args: PageSpyPluginLifecycleArgs<T>
-  ) {
-    const { disabledPlugins } = this.config.get();
-    PageSpy.pluginsWithOrder.forEach((plugin) => {
-      if (
-        isArray(disabledPlugins) &&
-        disabledPlugins.length &&
-        disabledPlugins.includes(plugin.name)
-      ) {
-        return;
-      }
-      (plugin[lifecycle] as any)?.apply(plugin, args);
-    });
+  updateConfiguration() {
+    const { messageCapacity, useSecret } = this.config.get();
+    if (useSecret === true) {
+      const cache = utilAPI.getStorage(ROOM_SESSION_KEY);
+      const secret = cache?.secret || getAuthSecret();
+      this.config.set('secret', secret);
+      psLog.log(`Room Secret: ${secret}`);
+    }
+
+    socketStore.getPageSpyConfig = () => this.config.get();
+    socketStore.messageCapacity = messageCapacity;
   }
 
   async init() {
@@ -157,9 +113,8 @@ class PageSpy {
     if (!roomCache || typeof roomCache !== 'object') {
       await this.createNewConnection();
     } else {
-      const { name, address, roomUrl, usable, project: prev, time } = roomCache;
-      // The server will close the connection after 60s. for the sdk, we use 30s.
-      if (!usable || config.project !== prev || time < Date.now() - 1000 * 30) {
+      const { name, address, roomUrl, project: prev } = roomCache;
+      if (config.project !== prev) {
         await this.createNewConnection();
       } else {
         this.name = name;
@@ -183,33 +138,17 @@ class PageSpy {
     psLog.log('Plugins inited');
   }
 
-  updateConfiguration() {
-    const { messageCapacity } = this.config.get();
-    socketStore.messageCapacity = messageCapacity;
-  }
-
-  abort() {
-    this.triggerPlugins('onReset');
-    socketStore.close();
-    PageSpy.instance = null;
-  }
-
   async createNewConnection() {
     if (!this.request) {
       psLog.error('Cannot get the Request');
       return;
     }
-    const { data } = await this.request.createRoom();
-    const roomUrl = this.request.getRoomUrl({
-      address: data.address,
-      name: `client:${getRandomId()}`,
-      userId: 'Client',
-    });
-    this.name = data.name;
-    this.address = data.address;
-    this.roomUrl = roomUrl;
+    const room = await this.request.createRoom();
+    this.name = room.name;
+    this.address = room.address;
+    this.roomUrl = room.roomUrl;
     this.refreshRoomInfo();
-    socketStore.init(roomUrl);
+    socketStore.init(room.roomUrl);
   }
 
   useOldConnection() {
@@ -222,34 +161,111 @@ class PageSpy {
   refreshRoomInfo() {
     /* c8 ignore start */
     this.saveSession();
-    const timerId = setInterval(() => {
-      const roomCache = utilAPI.getStorage(ROOM_SESSION_KEY);
-      if (roomCache && typeof roomCache === 'object') {
-        const { usable } = roomCache;
-        // unusable or time is expired, the room is not usable
-        if (usable === false) {
-          clearInterval(timerId);
-          return;
-        }
+    this.cacheTimer = setInterval(() => {
+      if (socketStore.getSocket().getState() === SocketState.OPEN) {
+        this.saveSession();
       }
-
-      this.saveSession();
     }, 15 * 1000);
     /* c8 ignore stop */
     psLog.log(`Room ID: ${this.address.slice(0, 4)}`);
   }
 
   saveSession() {
-    const { name, address, roomUrl } = this;
+    const { name, address, roomUrl, config } = this;
+    const { useSecret, secret, project } = config.get();
     const roomCache = {
       name,
       address,
       roomUrl,
-      usable: true,
-      project: this.config.get().project,
-      time: Date.now(),
+      project,
+      useSecret,
+      secret,
     };
     utilAPI.setStorage(ROOM_SESSION_KEY, roomCache);
+  }
+
+  triggerPlugins<T extends PageSpyPluginLifecycle>(
+    lifecycle: T,
+    ...args: PageSpyPluginLifecycleArgs<T>
+  ) {
+    const { disabledPlugins } = this.config.get();
+    PageSpy.pluginsWithOrder.forEach((plugin) => {
+      if (
+        isArray(disabledPlugins) &&
+        disabledPlugins.length &&
+        disabledPlugins.includes(plugin.name)
+      ) {
+        return;
+      }
+      (plugin[lifecycle] as any)?.apply(plugin, args);
+    });
+  }
+
+  abort() {
+    this.triggerPlugins('onReset');
+    socketStore.close();
+    PageSpy.instance = null;
+  }
+
+  updateRoomInfo(obj: UpdateConfig) {
+    if (!obj) return;
+
+    const { project, title } = obj;
+    if (project) {
+      this.config.set('project', String(project));
+    }
+    if (title) {
+      this.config.set('title', String(title));
+    }
+
+    socketStore.updateRoomInfo();
+  }
+
+  static instance: PageSpy | null = null;
+
+  static plugins: Record<PluginOrder | 'normal', PageSpyPlugin[]> = {
+    pre: [],
+    normal: [],
+    post: [],
+  };
+
+  static get pluginsWithOrder() {
+    return [
+      ...PageSpy.plugins.pre,
+      ...PageSpy.plugins.normal,
+      ...PageSpy.plugins.post,
+    ];
+  }
+
+  static registerPlugin(plugin: PageSpyPlugin) {
+    if (!plugin) {
+      return;
+    }
+    if (isClass(plugin)) {
+      psLog.error(
+        'PageSpy.registerPlugin() expect to pass an instance, not a class',
+      );
+      return;
+    }
+    if (!plugin.name) {
+      psLog.error(
+        `The ${plugin.constructor.name} plugin should provide a "name" property`,
+      );
+      return;
+    }
+    const isExist = PageSpy.pluginsWithOrder.some(
+      (i) => i.name === plugin.name,
+    );
+    if (isExist) {
+      psLog.error(
+        `The ${plugin.name} has registered. Consider the following reasons:
+      - Duplicate register one same plugin;
+      - Plugin's "name" conflict with others, you can print all registered plugins by "PageSpy.plugins";`,
+      );
+      return;
+    }
+    const currentPluginSet = PageSpy.plugins[plugin.enforce || 'normal'];
+    currentPluginSet.push(plugin);
   }
 }
 
