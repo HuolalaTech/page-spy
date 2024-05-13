@@ -113,7 +113,8 @@ class PageSpy {
         // For browser, if the connection exist, no need to recreate.
         if (
           !document.hidden &&
-          socketStore.getSocket().getState() !== SocketState.OPEN
+          socketStore.getSocket().getState() !== SocketState.OPEN &&
+          socketStore.connectable
         ) {
           this.useOldConnection();
         }

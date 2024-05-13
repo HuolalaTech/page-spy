@@ -102,6 +102,7 @@ class PageSpy {
       psLog.log(`Room Secret: ${secret}`);
     }
 
+    socketStore.connectable = true;
     socketStore.getPageSpyConfig = () => this.config.get();
     socketStore.messageCapacity = messageCapacity;
   }

@@ -52,7 +52,7 @@ export abstract class SocketWrapper {
   abstract send(data: string): void;
   abstract close(data?: {}): void;
   abstract getState(): SocketState;
-  protected events: Record<WebSocketEvents, CallbackType[]> = {
+  events: Record<WebSocketEvents, CallbackType[]> = {
     open: [],
     close: [],
     error: [],
@@ -140,6 +140,8 @@ export abstract class SocketStoreBase {
   // initial retry interval.
   private retryInterval = INIT_RETRY_INTERVAL;
 
+  connectable = true;
+
   // response message filters, to handle some wired messages
   public static messageFilters: ((data: any) => any)[] = [];
 
@@ -158,10 +160,6 @@ export abstract class SocketStoreBase {
         throw Error('WebSocket url cannot be empty');
       }
       this.socketWrapper.clearListeners();
-      // close existing connection
-      if (this.socketWrapper.getState() === SocketState.OPEN) {
-        this.socketWrapper.close();
-      }
       this.socketWrapper?.onOpen(() => {
         this.connectOnline();
       });
@@ -171,11 +169,9 @@ export abstract class SocketStoreBase {
         this.handleMessage(evt);
       });
       this.socketWrapper?.onClose(() => {
-        psLog.unproxy.log('onClose');
         this.connectOffline();
       });
       this.socketWrapper?.onError(() => {
-        psLog.unproxy.log('onError');
         // we treat on error the same with on close.
         this.connectOffline();
       });
@@ -211,6 +207,7 @@ export abstract class SocketStoreBase {
   }
 
   public close() {
+    this.connectable = false;
     this.clearPing();
     this.socketWrapper?.close();
     this.messages = [];
@@ -226,15 +223,18 @@ export abstract class SocketStoreBase {
   }
 
   private connectOffline() {
-    psLog.unproxy.log('connectOffline');
     this.socketConnection = null;
     this.debuggerConnection = null;
-
     this.clearPing();
+    // close existing connection
+    if (this.socketWrapper.getState() === SocketState.OPEN) {
+      this.socketWrapper.close();
+    }
+
     if (this.retryTimer) {
       clearTimeout(this.retryTimer);
     }
-
+    if (!this.connectable) return;
     this.retryTimer = setTimeout(() => {
       if (this.retryInterval < MAX_RETRY_INTERVAL) {
         this.retryInterval *= RETRY_TIME_INCR;
@@ -338,13 +338,7 @@ export abstract class SocketStoreBase {
         break;
       case CLOSE:
       case ERROR:
-        // TODO: we should handle this error
-        // if (result.content.code === 'RoomNotFoundError') {
-        //   // Room not exist, might because used an old connection.
-        // }
-        psLog.unproxy.log('触发错误事件', type);
-        this.socketWrapper.close();
-        // this.connectOffline();
+        this.connectOffline();
         break;
       /* c8 ignore start */
       case PONG:
