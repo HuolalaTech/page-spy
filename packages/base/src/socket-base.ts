@@ -337,6 +337,7 @@ export abstract class SocketStoreBase {
           });
         }
         break;
+      case CLOSE:
       case ERROR:
         // TODO: we should handle this error
         // if (result.content.code === 'RoomNotFoundError') {
@@ -347,7 +348,6 @@ export abstract class SocketStoreBase {
       /* c8 ignore start */
       case PONG:
       case PING:
-      case CLOSE:
       case BROADCAST:
       default:
         // noting
