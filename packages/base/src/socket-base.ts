@@ -52,7 +52,7 @@ export abstract class SocketWrapper {
   abstract send(data: string): void;
   abstract close(data?: {}): void;
   abstract getState(): SocketState;
-  protected events: Record<WebSocketEvents, CallbackType[]> = {
+  events: Record<WebSocketEvents, CallbackType[]> = {
     open: [],
     close: [],
     error: [],
@@ -102,6 +102,8 @@ export abstract class SocketStoreBase {
 
   private socketConnection: SpySocket.Connection | null = null;
 
+  private debuggerConnection: SpySocket.Connection | null = null;
+
   // ping timer used for send next ping.
   // a ping is sent after last msg (normal msg or pong) received.
   private pingTimer: ReturnType<typeof setTimeout> | null = null;
@@ -138,8 +140,7 @@ export abstract class SocketStoreBase {
   // initial retry interval.
   private retryInterval = INIT_RETRY_INTERVAL;
 
-  // indicated connected  whether or not
-  public connectionStatus: boolean = false;
+  connectable = true;
 
   // response message filters, to handle some wired messages
   public static messageFilters: ((data: any) => any)[] = [];
@@ -153,7 +154,7 @@ export abstract class SocketStoreBase {
   // Simple offline listener
   abstract onOffline(): void;
 
-  public init(url: string) {
+  public async init(url: string) {
     try {
       if (!url) {
         throw Error('WebSocket url cannot be empty');
@@ -161,7 +162,15 @@ export abstract class SocketStoreBase {
       this.socketWrapper.clearListeners();
       // close existing connection
       if (this.socketWrapper.getState() === SocketState.OPEN) {
-        this.socketWrapper.close();
+        // make sure the existing connection closed.
+        // we need to register new handlers immediately.
+        await new Promise<void>((resolve) => {
+          this.socketWrapper.onClose(() => {
+            this.socketWrapper.clearListeners();
+            resolve();
+          });
+          this.socketWrapper.close();
+        });
       }
       this.socketWrapper?.onOpen(() => {
         this.connectOnline();
@@ -210,6 +219,7 @@ export abstract class SocketStoreBase {
   }
 
   public close() {
+    this.connectable = false;
     this.clearPing();
     this.socketWrapper?.close();
     this.messages = [];
@@ -219,20 +229,20 @@ export abstract class SocketStoreBase {
   }
 
   private connectOnline() {
-    this.connectionStatus = true;
     this.retryInterval = INIT_RETRY_INTERVAL;
     this.updateRoomInfo();
     this.ping();
   }
 
   private connectOffline() {
-    this.connectionStatus = false;
     this.socketConnection = null;
+    this.debuggerConnection = null;
     this.clearPing();
+
     if (this.retryTimer) {
       clearTimeout(this.retryTimer);
     }
-
+    if (!this.connectable) return;
     this.retryTimer = setTimeout(() => {
       if (this.retryInterval < MAX_RETRY_INTERVAL) {
         this.retryInterval *= RETRY_TIME_INCR;
@@ -308,8 +318,21 @@ export abstract class SocketStoreBase {
     const { type } = result;
     switch (type) {
       case CONNECT:
-        const { selfConnection } = result.content;
+        const { selfConnection, roomConnections } = result.content;
         this.socketConnection = selfConnection;
+        this.debuggerConnection =
+          roomConnections.find((i) => i.userId === 'Debugger') || null;
+        break;
+      case JOIN:
+      case LEAVE:
+        const { connection } = result.content;
+        if (connection.userId === 'Debugger') {
+          if (type === JOIN) {
+            this.debuggerConnection = connection;
+          } else {
+            this.debuggerConnection = null;
+          }
+        }
         break;
       case MESSAGE:
         const { data, from, to } = result.content;
@@ -321,19 +344,13 @@ export abstract class SocketStoreBase {
           });
         }
         break;
+      case CLOSE:
       case ERROR:
-        // TODO: we should handle this error
-        // if (result.content.code === 'RoomNotFoundError') {
-        //   // Room not exist, might because used an old connection.
-        // }
         this.connectOffline();
         break;
       /* c8 ignore start */
       case PONG:
-      case JOIN:
       case PING:
-      case LEAVE:
-      case CLOSE:
       case BROADCAST:
       default:
         // noting
@@ -436,9 +453,8 @@ export abstract class SocketStoreBase {
   }
 
   protected send(msg: SpySocket.ClientEvent, noCache: boolean = false) {
-    // TEMP SOLUTION:
-    // this.connectionStatus may not be accurate. we need to check socket itself.
-    if (this.socketWrapper.getState() === SocketState.OPEN) {
+    const sendable = this.checkIfSend(msg);
+    if (sendable) {
       /* c8 ignore start */
       try {
         const pkMsg = msg as PackedEvent;
@@ -448,20 +464,12 @@ export abstract class SocketStoreBase {
         this.socketWrapper?.send(dataString);
       } catch (e) {
         psLog.error(`Incompatible: ${(e as Error).message}`);
-        if (this.connectionStatus) {
-          this.connectOffline();
-        }
+        this.connectOffline();
       }
       /* c8 ignore stop */
     }
-    if (!this.isOffline && !noCache) {
-      if (
-        [SERVER_MESSAGE_TYPE.MESSAGE, SERVER_MESSAGE_TYPE.PING].indexOf(
-          msg.type,
-        ) > -1
-      ) {
-        return;
-      }
+    const cacheable = this.checkIfCache(msg, noCache);
+    if (cacheable) {
       if (
         this.messageCapacity !== 0 &&
         this.messages.length >= this.messageCapacity
@@ -470,5 +478,29 @@ export abstract class SocketStoreBase {
       }
       this.messages.push(msg as SpySocket.BroadcastEvent);
     }
+  }
+
+  private checkIfSend(msg: SpySocket.ClientEvent) {
+    if (this.socketWrapper.getState() !== SocketState.OPEN) return false;
+    if (
+      [SERVER_MESSAGE_TYPE.UPDATE_ROOM_INFO, SERVER_MESSAGE_TYPE.PING].includes(
+        msg.type,
+      )
+    ) {
+      return true;
+    }
+
+    if (!this.debuggerConnection) return false;
+    return true;
+  }
+
+  private checkIfCache(msg: SpySocket.ClientEvent, noCache: boolean = false) {
+    if (this.isOffline || noCache) return false;
+    if (
+      [SERVER_MESSAGE_TYPE.MESSAGE, SERVER_MESSAGE_TYPE.PING].includes(msg.type)
+    ) {
+      return false;
+    }
+    return true;
   }
 }

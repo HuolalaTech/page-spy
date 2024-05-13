@@ -82,6 +82,7 @@ class PageSpy {
       );
       this.config.set('secret', cache?.secret || getAuthSecret());
     }
+    socketStore.connectable = true;
     socketStore.getPageSpyConfig = () => this.config.get();
     socketStore.isOffline = offline;
     socketStore.messageCapacity = messageCapacity;
@@ -111,7 +112,11 @@ class PageSpy {
       // reconnect when page switch to front-ground.
       document.addEventListener('visibilitychange', () => {
         // For browser, if the connection exist, no need to recreate.
-        if (!document.hidden && !socketStore.connectionStatus) {
+        if (
+          !document.hidden &&
+          socketStore.getSocket().getState() !== SocketState.OPEN &&
+          socketStore.connectable
+        ) {
           this.useOldConnection();
         }
       });

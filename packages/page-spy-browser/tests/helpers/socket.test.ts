@@ -6,6 +6,7 @@ import type {
 } from '@huolala-tech/page-spy-types/lib/socket-event';
 import * as SERVER_MESSAGE_TYPE from 'base/src/message/server-type';
 import { SpyMessage } from '@huolala-tech/page-spy-types';
+import { SocketState } from 'base/src/socket-base';
 // Mock micro task delay
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 
@@ -30,13 +31,13 @@ describe('Socket store', () => {
     jest.useFakeTimers();
     // @ts-ignore
     const reconnect = jest.spyOn(client, 'tryReconnect');
-    expect(client.connectionStatus).toBe(true);
+    expect(client.getSocket().getState()).toBe(SocketState.OPEN);
     client.getSocket()?.close();
 
     jest.advanceTimersByTime(2000 + 500);
 
     expect(reconnect).toHaveBeenCalledTimes(1);
-    expect(client.connectionStatus).toBe(true);
+    expect(client.getSocket().getState()).toBe(SocketState.OPEN);
   });
 
   it('Reconnect time will increase exponentially, and will be fixed to 4 times increased.', async () => {
@@ -61,11 +62,11 @@ describe('Socket store', () => {
   });
 
   it('Stop', async () => {
-    expect(client.connectionStatus).toBe(true);
+    expect(client.getSocket().getState()).toBe(SocketState.OPEN);
     client.close();
 
     await sleep();
-    expect(client.connectionStatus).toBe(false);
+    expect(client.getSocket().getState()).not.toBe(SocketState.OPEN);
   });
 
   it('Message type', async () => {
@@ -123,7 +124,8 @@ describe('Socket store', () => {
       },
     };
     server.send(errMsg);
-    await sleep();
-    expect(client.connectionStatus).toBe(false);
+    // sleep time here be 2000 is for SDK will auto reconnect after 2000ms
+    await sleep(2000);
+    expect(client.getSocket().getState()).not.toBe(SocketState.OPEN);
   });
 });
