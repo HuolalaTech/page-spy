@@ -102,6 +102,8 @@ export abstract class SocketStoreBase {
 
   private socketConnection: SpySocket.Connection | null = null;
 
+  private debuggerConnection: SpySocket.Connection | null = null;
+
   // ping timer used for send next ping.
   // a ping is sent after last msg (normal msg or pong) received.
   private pingTimer: ReturnType<typeof setTimeout> | null = null;
@@ -308,8 +310,21 @@ export abstract class SocketStoreBase {
     const { type } = result;
     switch (type) {
       case CONNECT:
-        const { selfConnection } = result.content;
+        const { selfConnection, roomConnections } = result.content;
         this.socketConnection = selfConnection;
+        this.debuggerConnection =
+          roomConnections.find((i) => i.userId === 'Debugger') || null;
+        break;
+      case JOIN:
+      case LEAVE:
+        const { connection } = result.content;
+        if (connection.userId === 'Debugger') {
+          if (type === JOIN) {
+            this.debuggerConnection = connection;
+          } else {
+            this.debuggerConnection = null;
+          }
+        }
         break;
       case MESSAGE:
         const { data, from, to } = result.content;
@@ -330,9 +345,7 @@ export abstract class SocketStoreBase {
         break;
       /* c8 ignore start */
       case PONG:
-      case JOIN:
       case PING:
-      case LEAVE:
       case CLOSE:
       case BROADCAST:
       default:
@@ -436,9 +449,8 @@ export abstract class SocketStoreBase {
   }
 
   protected send(msg: SpySocket.ClientEvent, noCache: boolean = false) {
-    // TEMP SOLUTION:
-    // this.connectionStatus may not be accurate. we need to check socket itself.
-    if (this.socketWrapper.getState() === SocketState.OPEN) {
+    const sendable = this.checkIfSend(msg);
+    if (sendable) {
       /* c8 ignore start */
       try {
         const pkMsg = msg as PackedEvent;
@@ -454,14 +466,8 @@ export abstract class SocketStoreBase {
       }
       /* c8 ignore stop */
     }
-    if (!this.isOffline && !noCache) {
-      if (
-        [SERVER_MESSAGE_TYPE.MESSAGE, SERVER_MESSAGE_TYPE.PING].indexOf(
-          msg.type,
-        ) > -1
-      ) {
-        return;
-      }
+    const cacheable = this.checkIfCache(msg, noCache);
+    if (cacheable) {
       if (
         this.messageCapacity !== 0 &&
         this.messages.length >= this.messageCapacity
@@ -470,5 +476,23 @@ export abstract class SocketStoreBase {
       }
       this.messages.push(msg as SpySocket.BroadcastEvent);
     }
+  }
+
+  private checkIfSend(msg: SpySocket.ClientEvent) {
+    if (this.socketWrapper.getState() !== SocketState.OPEN) return false;
+    if (msg.type === SERVER_MESSAGE_TYPE.PING) return true;
+
+    if (!this.debuggerConnection) return false;
+    return true;
+  }
+
+  private checkIfCache(msg: SpySocket.ClientEvent, noCache: boolean = false) {
+    if (this.isOffline || noCache) return false;
+    if (
+      [SERVER_MESSAGE_TYPE.MESSAGE, SERVER_MESSAGE_TYPE.PING].includes(msg.type)
+    ) {
+      return false;
+    }
+    return true;
   }
 }

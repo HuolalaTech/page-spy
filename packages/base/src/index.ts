@@ -213,10 +213,8 @@ export function getValueType(value: any) {
   return typeof value;
 }
 
-/**
- * The methods are used for internal calls.
- */
-interface PSLog {
+// Usage 1: `psLog.<fn>` to print system level debug info to developer
+interface LogMethods {
   log(...message: any[]): void;
   info(...message: any[]): void;
   warn(...message: any[]): void;
@@ -224,18 +222,30 @@ interface PSLog {
   debug(...message: any[]): void;
 }
 
-// Usage 1: to print system level debug info to developer
-// Usage 2: to print debug info for self debugging.
+interface PSLog extends LogMethods {
+  // Usage 2: `psLog.unproxy.<fn>` to print debug info for self debugging.
+  unproxy: LogMethods;
+}
+
+const unproxyConsole = { ...console };
+
 export const psLog = (
   ['log', 'info', 'error', 'warn', 'debug'] as const
-).reduce((result, method) => {
-  // eslint-disable-next-line no-param-reassign
-  result[method] = (...message: any[]) => {
-    // eslint-disable-next-line no-console
-    console[method](`[PageSpy] [${method.toLocaleUpperCase()}] `, ...message);
-  };
-  return result;
-}, {} as PSLog);
+).reduce(
+  (result, method) => {
+    result[method] = (...message: any[]) => {
+      console[method](`[PageSpy] [${method.toLocaleUpperCase()}] `, ...message);
+    };
+    result.unproxy[method] = (...message: any[]) => {
+      unproxyConsole[method](
+        `[PageSpy] [${method.toLocaleUpperCase()}] `,
+        ...message,
+      );
+    };
+    return result;
+  },
+  { unproxy: {} } as PSLog,
+);
 
 export const removeEndSlash = (s: string) => {
   return s.replace(/\/$/, '');
