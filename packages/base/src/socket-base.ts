@@ -230,6 +230,7 @@ export abstract class SocketStoreBase {
   private connectOffline() {
     this.connectionStatus = false;
     this.socketConnection = null;
+    this.debuggerConnection = null;
     this.clearPing();
     if (this.retryTimer) {
       clearTimeout(this.retryTimer);
