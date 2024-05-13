@@ -124,7 +124,8 @@ describe('Socket store', () => {
       },
     };
     server.send(errMsg);
-    await sleep();
+    // sleep time here be 2000 is for SDK will auto reconnect after 2000ms
+    await sleep(2000);
     expect(client.getSocket().getState()).not.toBe(SocketState.OPEN);
   });
 });
