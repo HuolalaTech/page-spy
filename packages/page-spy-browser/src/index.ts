@@ -111,7 +111,10 @@ class PageSpy {
       // reconnect when page switch to front-ground.
       document.addEventListener('visibilitychange', () => {
         // For browser, if the connection exist, no need to recreate.
-        if (!document.hidden && !socketStore.connectionStatus) {
+        if (
+          !document.hidden &&
+          socketStore.getSocket().getState() !== SocketState.OPEN
+        ) {
           this.useOldConnection();
         }
       });

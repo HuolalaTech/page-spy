@@ -140,9 +140,6 @@ export abstract class SocketStoreBase {
   // initial retry interval.
   private retryInterval = INIT_RETRY_INTERVAL;
 
-  // indicated connected  whether or not
-  public connectionStatus: boolean = false;
-
   // response message filters, to handle some wired messages
   public static messageFilters: ((data: any) => any)[] = [];
 
@@ -174,9 +171,11 @@ export abstract class SocketStoreBase {
         this.handleMessage(evt);
       });
       this.socketWrapper?.onClose(() => {
+        psLog.unproxy.log('onClose');
         this.connectOffline();
       });
       this.socketWrapper?.onError(() => {
+        psLog.unproxy.log('onError');
         // we treat on error the same with on close.
         this.connectOffline();
       });
@@ -221,16 +220,16 @@ export abstract class SocketStoreBase {
   }
 
   private connectOnline() {
-    this.connectionStatus = true;
     this.retryInterval = INIT_RETRY_INTERVAL;
     this.updateRoomInfo();
     this.ping();
   }
 
   private connectOffline() {
-    this.connectionStatus = false;
+    psLog.unproxy.log('connectOffline');
     this.socketConnection = null;
     this.debuggerConnection = null;
+
     this.clearPing();
     if (this.retryTimer) {
       clearTimeout(this.retryTimer);
@@ -343,7 +342,9 @@ export abstract class SocketStoreBase {
         // if (result.content.code === 'RoomNotFoundError') {
         //   // Room not exist, might because used an old connection.
         // }
-        this.connectOffline();
+        psLog.unproxy.log('触发错误事件', type);
+        this.socketWrapper.close();
+        // this.connectOffline();
         break;
       /* c8 ignore start */
       case PONG:
@@ -461,9 +462,7 @@ export abstract class SocketStoreBase {
         this.socketWrapper?.send(dataString);
       } catch (e) {
         psLog.error(`Incompatible: ${(e as Error).message}`);
-        if (this.connectionStatus) {
-          this.connectOffline();
-        }
+        this.connectOffline();
       }
       /* c8 ignore stop */
     }
