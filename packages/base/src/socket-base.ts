@@ -154,12 +154,24 @@ export abstract class SocketStoreBase {
   // Simple offline listener
   abstract onOffline(): void;
 
-  public init(url: string) {
+  public async init(url: string) {
     try {
       if (!url) {
         throw Error('WebSocket url cannot be empty');
       }
       this.socketWrapper.clearListeners();
+      // close existing connection
+      if (this.socketWrapper.getState() === SocketState.OPEN) {
+        // make sure the existing connection closed.
+        // we need to register new handlers immediately.
+        await new Promise<void>((resolve) => {
+          this.socketWrapper.onClose(() => {
+            this.socketWrapper.clearListeners();
+            resolve();
+          });
+          this.socketWrapper.close();
+        });
+      }
       this.socketWrapper?.onOpen(() => {
         this.connectOnline();
       });
@@ -226,10 +238,6 @@ export abstract class SocketStoreBase {
     this.socketConnection = null;
     this.debuggerConnection = null;
     this.clearPing();
-    // close existing connection
-    if (this.socketWrapper.getState() === SocketState.OPEN) {
-      this.socketWrapper.close();
-    }
 
     if (this.retryTimer) {
       clearTimeout(this.retryTimer);
