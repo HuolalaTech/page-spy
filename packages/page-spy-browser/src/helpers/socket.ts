@@ -58,6 +58,8 @@ export class WebSocketStore extends SocketStoreBase {
               group: project,
               tags: {
                 title,
+                name: navigator.userAgent,
+                group: project,
               },
             },
           },

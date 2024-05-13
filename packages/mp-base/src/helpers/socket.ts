@@ -103,6 +103,8 @@ export class MPSocketStore extends SocketStoreBase {
               group: project,
               tags: {
                 title,
+                name: device,
+                group: project,
               },
             },
           },
