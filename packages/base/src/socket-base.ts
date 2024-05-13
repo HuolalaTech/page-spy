@@ -480,7 +480,13 @@ export abstract class SocketStoreBase {
 
   private checkIfSend(msg: SpySocket.ClientEvent) {
     if (this.socketWrapper.getState() !== SocketState.OPEN) return false;
-    if (msg.type === SERVER_MESSAGE_TYPE.PING) return true;
+    if (
+      [SERVER_MESSAGE_TYPE.UPDATE_ROOM_INFO, SERVER_MESSAGE_TYPE.PING].includes(
+        msg.type,
+      )
+    ) {
+      return true;
+    }
 
     if (!this.debuggerConnection) return false;
     return true;

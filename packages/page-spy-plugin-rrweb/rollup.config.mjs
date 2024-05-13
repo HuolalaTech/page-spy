@@ -65,6 +65,7 @@ export default [
       file: pkg.main,
       format: 'iife',
       name: 'RRWebPlugin',
+      sourcemap: true,
     },
     plugins: [
       ...plugins,
@@ -77,6 +78,7 @@ export default [
     output: {
       file: pkg.module,
       format: 'esm',
+      sourcemap: true,
     },
     plugins: [
       ...plugins,
