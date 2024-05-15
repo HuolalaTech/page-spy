@@ -8,7 +8,9 @@ export type EventType =
   | 'broadcast'
   | 'message'
   | 'error'
-  | 'ping';
+  | 'ping'
+  | 'pong'
+  | 'updateRoomInfo';
 
 export interface Connection {
   address: string;
@@ -94,7 +96,8 @@ export type Event =
   | UnicastEvent
   | ErrorEvent
   | PingEvent
-  | PongEvent;
+  | PongEvent
+  | UpdateRoomInfoEvent;
 
 export type PackedEvent = Event & {
   createdAt: number;

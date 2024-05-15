@@ -1,7 +1,12 @@
 import { makeMessage } from 'base/src/message';
 import socketStore from 'page-spy-browser/src/helpers/socket';
-import type { SpyConsole, PageSpyPlugin } from '@huolala-tech/page-spy-types';
+import type {
+  SpyConsole,
+  PageSpyPlugin,
+  SpyBase,
+} from '@huolala-tech/page-spy-types';
 import atom from 'base/src/atom';
+import { getRandomId } from 'base/src';
 
 export default class ConsolePlugin implements PageSpyPlugin {
   public name: string = 'ConsolePlugin';
@@ -23,6 +28,8 @@ export default class ConsolePlugin implements PageSpyPlugin {
     if (ConsolePlugin.hasInitd) return;
     ConsolePlugin.hasInitd = true;
 
+    socketStore.addListener('debug', ConsolePlugin.handleDebugger);
+
     this.proxyTypes.forEach((item) => {
       this.console[item] =
         window.console[item] || window.console.log || (() => {});
@@ -41,6 +48,47 @@ export default class ConsolePlugin implements PageSpyPlugin {
       window.console[item] = this.console[item];
     });
     ConsolePlugin.hasInitd = false;
+  }
+
+  // run executable code which received from remote and send back the result
+  private static handleDebugger(
+    { source }: SpyBase.InteractiveEvent<string>,
+    reply: (data: any) => void,
+  ) {
+    const { type, data } = source;
+    if (type === 'debug') {
+      const originMsg = makeMessage('console', {
+        logType: 'debug-origin',
+        logs: [
+          {
+            id: getRandomId(),
+            type: 'debug-origin',
+            value: data,
+          },
+        ],
+      });
+      reply(originMsg);
+      try {
+        // eslint-disable-next-line no-new-func, @typescript-eslint/no-implied-eval
+        const result = new Function(`return ${data}`)();
+        const evalMsg = makeMessage('console', {
+          logType: 'debug-eval',
+          logs: [atom.transformToAtom(result)],
+        });
+        reply(evalMsg);
+      } catch (err) {
+        const errMsg = makeMessage('console', {
+          logType: 'error',
+          logs: [
+            {
+              type: 'error',
+              value: (err as Error).stack,
+            },
+          ],
+        });
+        reply(errMsg);
+      }
+    }
   }
 
   private printLog(data: SpyConsole.DataItem) {
