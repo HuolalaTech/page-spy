@@ -22,6 +22,8 @@ import Request from './api';
 // eslint-disable-next-line import/order
 import { Config } from './config';
 import { getMPSDK, utilAPI } from './utils';
+import { combineName } from 'base/src/device';
+import Device from './device';
 
 type UpdateConfig = {
   title?: string;
@@ -103,7 +105,6 @@ class PageSpy {
     }
 
     socketStore.connectable = true;
-    socketStore.getPageSpyConfig = () => this.config.get();
     socketStore.messageCapacity = messageCapacity;
   }
 
@@ -155,7 +156,17 @@ class PageSpy {
   useOldConnection() {
     // TODO when use old connection, must make sure it's connectable, then refresh the cache
     this.refreshRoomInfo();
-    socketStore.init(this.roomUrl);
+    socketStore.init(this.roomUrl).then((success) => {
+      // when using the old connection, the room me be recreated without any room info.
+      if (success) {
+        const config = this.config.get();
+        socketStore.updateRoomInfo({
+          name: combineName(Device.info),
+          project: config.project,
+          title: config.title,
+        });
+      }
+    });
   }
 
   // avoid deleted by user code
@@ -218,8 +229,12 @@ class PageSpy {
     if (title) {
       this.config.set('title', String(title));
     }
-
-    socketStore.updateRoomInfo();
+    const config = this.config.get();
+    socketStore.updateRoomInfo({
+      name: combineName(Device.info),
+      project: config.project,
+      title: config.title,
+    });
   }
 
   static instance: PageSpy | null = null;

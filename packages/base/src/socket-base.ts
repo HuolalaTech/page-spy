@@ -46,6 +46,12 @@ const RETRY_TIME_INCR = 1.5;
 // the time increase pow limit.
 const MAX_RETRY_INTERVAL = Math.pow(RETRY_TIME_INCR, 4) * INIT_RETRY_INTERVAL;
 
+export type UpdateConfig = {
+  title?: string;
+  project?: string;
+  name?: string;
+};
+
 // 封装不同平台的 socket
 export abstract class SocketWrapper {
   abstract init(url: string): void;
@@ -95,8 +101,6 @@ export abstract class SocketWrapper {
 
 export abstract class SocketStoreBase {
   protected abstract socketWrapper: SocketWrapper;
-
-  protected abstract updateRoomInfo(): void;
 
   private socketUrl: string = '';
 
@@ -172,26 +176,54 @@ export abstract class SocketStoreBase {
           this.socketWrapper.close();
         });
       }
-      this.socketWrapper?.onOpen(() => {
-        this.connectOnline();
+
+      // once the connection opened, the promise resolved.
+      await new Promise<void>((resolve) => {
+        this.socketWrapper?.onOpen(() => {
+          this.connectOnline();
+          resolve();
+        });
+        // Strictly, the onMessage should be called after onOpen. But for some platform(alipay,)
+        // this may cause some message losing.
+        this.socketWrapper?.onMessage((evt) => {
+          this.handleMessage(evt);
+        });
+        this.socketWrapper?.onClose(() => {
+          this.connectOffline();
+        });
+        this.socketWrapper?.onError(() => {
+          // we treat on error the same with on close.
+          this.connectOffline();
+        });
+        this.socketUrl = url;
+        this.socketWrapper?.init(url);
       });
-      // Strictly, the onMessage should be called after onOpen. But for some platform(alipay,)
-      // this may cause some message losing.
-      this.socketWrapper?.onMessage((evt) => {
-        this.handleMessage(evt);
-      });
-      this.socketWrapper?.onClose(() => {
-        this.connectOffline();
-      });
-      this.socketWrapper?.onError(() => {
-        // we treat on error the same with on close.
-        this.connectOffline();
-      });
-      this.socketUrl = url;
-      this.socketWrapper?.init(url);
+      // true means the connection is established.
+      return true;
     } catch (e: any) {
       psLog.error(e.message);
     }
+  }
+
+  updateRoomInfo(updateConfig: UpdateConfig) {
+    const { project, title, name } = updateConfig;
+    this.send(
+      {
+        type: SERVER_MESSAGE_TYPE.UPDATE_ROOM_INFO,
+        content: {
+          info: {
+            name,
+            group: project,
+            tags: {
+              title,
+              name,
+              group: project,
+            },
+          },
+        },
+      },
+      true,
+    );
   }
 
   public addListener(
@@ -230,7 +262,6 @@ export abstract class SocketStoreBase {
 
   private connectOnline() {
     this.retryInterval = INIT_RETRY_INTERVAL;
-    this.updateRoomInfo();
     this.ping();
   }
 

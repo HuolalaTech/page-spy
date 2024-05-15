@@ -2,6 +2,7 @@ import {
   SocketState,
   SocketStoreBase,
   SocketWrapper,
+  UpdateConfig,
 } from 'base/src/socket-base';
 import NetworkProxyBase from 'base/src/network/base';
 import RequestItem from 'base/src/request-item';
@@ -26,7 +27,7 @@ class PlatformSocketWrapper extends SocketWrapper {
 
 class PlatformSocket extends SocketStoreBase {
   protected socketWrapper: SocketWrapper = new PlatformSocketWrapper();
-  protected updateRoomInfo(): void {}
+  updateRoomInfo(info: UpdateConfig): void {}
   onOffline(): void {
     throw new Error('Method not implemented.');
   }

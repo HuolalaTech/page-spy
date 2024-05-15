@@ -10,7 +10,6 @@ import {
   WebSocketEvents,
 } from 'base/src/socket-base';
 import { SpyBase } from 'packages/page-spy-types';
-import { InitConfig } from 'page-spy-browser/types';
 
 export class WebSocketWrapper extends SocketWrapper {
   private socketInstance: WebSocket | null = null;
@@ -43,31 +42,6 @@ export class WebSocketWrapper extends SocketWrapper {
 export class WebSocketStore extends SocketStoreBase {
   // websocket instance
   protected socketWrapper: WebSocketWrapper = new WebSocketWrapper();
-
-  public getPageSpyConfig: (() => Required<InitConfig>) | null = null;
-
-  updateRoomInfo() {
-    if (this.getPageSpyConfig) {
-      const { project, title } = this.getPageSpyConfig();
-      this.send(
-        {
-          type: UPDATE_ROOM_INFO,
-          content: {
-            info: {
-              name: navigator.userAgent,
-              group: project,
-              tags: {
-                title,
-                name: navigator.userAgent,
-                group: project,
-              },
-            },
-          },
-        },
-        true,
-      );
-    }
-  }
 
   public getSocket() {
     return this.socketWrapper;

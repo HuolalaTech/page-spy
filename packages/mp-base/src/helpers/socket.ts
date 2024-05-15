@@ -4,11 +4,7 @@ import {
   SocketState,
   SocketWrapper,
 } from 'base/src/socket-base';
-import { UPDATE_ROOM_INFO } from 'base/src/message/server-type';
-import type { SpyMP } from '@huolala-tech/page-spy-types';
-import { combineName } from 'base/src/device';
 import { getMPSDK, utilAPI } from '../utils';
-import Device from '../device';
 
 export class MPSocketWrapper extends SocketWrapper {
   private socketInstance: MPSocket | null = null;
@@ -87,32 +83,6 @@ export class MPSocketWrapper extends SocketWrapper {
 export class MPSocketStore extends SocketStoreBase {
   // websocket socketInstance
   protected socketWrapper = new MPSocketWrapper();
-
-  public getPageSpyConfig: (() => Required<SpyMP.MPInitConfig>) | null = null;
-
-  updateRoomInfo() {
-    if (this.getPageSpyConfig) {
-      const { project, title } = this.getPageSpyConfig();
-      const device = combineName(Device.info);
-      this.send(
-        {
-          type: UPDATE_ROOM_INFO,
-          content: {
-            info: {
-              name: device,
-              group: project,
-              tags: {
-                title,
-                name: device,
-                group: project,
-              },
-            },
-          },
-        },
-        true,
-      );
-    }
-  }
 
   public getSocket() {
     return this.socketWrapper;

@@ -8,7 +8,7 @@ import type {
   PageSpyPluginLifecycleArgs,
   PluginOrder,
 } from '@huolala-tech/page-spy-types';
-import { SocketState } from 'base/src/socket-base';
+import { SocketState, UpdateConfig } from 'base/src/socket-base';
 import { Modal } from './component/modal';
 import { Content } from './component/content';
 
@@ -31,11 +31,6 @@ import { Config } from './config';
 import { Toast } from './component/toast';
 
 const Identifier = '__pageSpy';
-
-type UpdateConfig = {
-  title?: string;
-  project?: string;
-};
 
 class PageSpy {
   root: HTMLElement | null = null;
@@ -83,7 +78,6 @@ class PageSpy {
       this.config.set('secret', cache?.secret || getAuthSecret());
     }
     socketStore.connectable = true;
-    socketStore.getPageSpyConfig = () => this.config.get();
     socketStore.isOffline = offline;
     socketStore.messageCapacity = messageCapacity;
   }
@@ -142,7 +136,17 @@ class PageSpy {
 
   useOldConnection() {
     this.refreshRoomInfo();
-    socketStore.init(this.roomUrl);
+    socketStore.init(this.roomUrl).then((success) => {
+      // old connection may create a new room, need to update room info.
+      if (success) {
+        const config = this.config.get();
+        socketStore.updateRoomInfo({
+          name: navigator.userAgent,
+          project: config.project,
+          title: config.title,
+        });
+      }
+    });
   }
 
   refreshRoomInfo() {
@@ -345,7 +349,7 @@ class PageSpy {
     /* c8 ignore stop */
   }
 
-  updateRoomInfo(obj: UpdateConfig) {
+  updateRoomInfo(obj: Pick<UpdateConfig, 'project' | 'title'>) {
     if (!obj) return;
 
     const { project, title } = obj;
@@ -363,8 +367,12 @@ class PageSpy {
         node.textContent = String(title);
       }
     }
-
-    socketStore.updateRoomInfo();
+    const config = this.config.get();
+    socketStore.updateRoomInfo({
+      project: config.project,
+      title: config.title,
+      name: navigator.userAgent,
+    });
   }
 
   static instance: PageSpy | null = null;
