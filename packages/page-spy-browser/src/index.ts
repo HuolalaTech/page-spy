@@ -151,7 +151,6 @@ class PageSpy {
       if (socketStore.getSocket().getState() === SocketState.OPEN) {
         this.saveSession();
       }
-      this.saveSession();
     }, 15 * 1000);
   }
 
