@@ -1,7 +1,8 @@
 import { ConfigBase } from 'base/src/config';
-import type { SpyMP } from '@huolala-tech/page-spy-types';
+import { InitConfig } from 'page-spy-react-native/types';
 
-export class Config extends ConfigBase<SpyMP.MPInitConfig> {
+export class Config extends ConfigBase<InitConfig> {
+  protected privateKeys: (keyof InitConfig)[] = ['secret'];
   // I need to use generic type on this method, so it can't be static
   /* eslint-disable-next-line class-methods-use-this */
   protected defaultConfig() {
@@ -9,23 +10,11 @@ export class Config extends ConfigBase<SpyMP.MPInitConfig> {
       api: '',
       project: 'default',
       title: '',
-      enableSSL: null,
-      disabledOnProd: true,
+      enableSSL: true,
       disabledPlugins: [],
-      singletonSocket: false,
+      useSecret: false,
+      secret: '',
+      messageCapacity: 0,
     };
-  }
-
-  mergeConfig = (userCfg: SpyMP.MPInitConfig): Required<SpyMP.MPInitConfig> => {
-    this.value = {
-      /* c8 ignore next */
-      ...this.defaultConfig(),
-      ...userCfg,
-    };
-    return this.value;
-  };
-
-  get() {
-    return this.value;
   }
 }

@@ -1,6 +1,5 @@
-import { getRandomId, isArray, isClass, psLog } from 'base/src';
+import { getAuthSecret, getRandomId, isArray, isClass, psLog } from 'base/src';
 import type {
-  SpyMP,
   PageSpyPlugin,
   PageSpyPluginLifecycle,
   PluginOrder,
@@ -17,6 +16,7 @@ import Request from './api';
 
 // eslint-disable-next-line import/order
 import { Config } from './config';
+import { InitConfig } from 'page-spy-react-native/types';
 
 class PageSpy {
   root: HTMLElement | null = null;
@@ -85,7 +85,7 @@ class PageSpy {
     currentPluginSet.push(plugin);
   }
 
-  constructor(init: SpyMP.MPInitConfig) {
+  constructor(init: InitConfig) {
     if (PageSpy.instance) {
       psLog.warn('Cannot initialize PageSpy multiple times');
       // eslint-disable-next-line no-constructor-return
@@ -96,12 +96,24 @@ class PageSpy {
 
     // Here will check the config api
     this.request = new Request(this.config);
-
+    this.updateConfiguration();
     PageSpy.instance = this;
 
     this.triggerPlugins('onInit', { socketStore, config });
 
     this.init();
+  }
+
+  updateConfiguration() {
+    const { messageCapacity, useSecret } = this.config.get();
+    if (useSecret === true) {
+      const secret = getAuthSecret();
+      this.config.set('secret', secret);
+      psLog.log(`Room Secret: ${secret}`);
+    }
+
+    socketStore.connectable = true;
+    socketStore.messageCapacity = messageCapacity;
   }
 
   triggerPlugins<T extends PageSpyPluginLifecycle>(
@@ -122,8 +134,6 @@ class PageSpy {
   }
 
   async init() {
-    // const mp = getMPSDK();
-    const config = this.config.get();
     await this.createNewConnection();
     psLog.log('Plugins inited');
   }
@@ -139,16 +149,11 @@ class PageSpy {
       psLog.error('Cannot get the Request');
       return;
     }
-    const { data } = await this.request.createRoom();
-    const roomUrl = this.request.getRoomUrl({
-      address: data.address,
-      name: `client:${getRandomId()}`,
-      userId: 'Client',
-    });
-    this.name = data.name;
-    this.address = data.address;
-    this.roomUrl = roomUrl;
-    socketStore.init(roomUrl);
+    const roomInfo = await this.request.createRoom();
+    this.name = roomInfo.name;
+    this.address = roomInfo.address;
+    this.roomUrl = roomInfo.roomUrl;
+    socketStore.init(roomInfo.roomUrl);
   }
 }
 

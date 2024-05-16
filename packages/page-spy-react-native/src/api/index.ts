@@ -1,8 +1,9 @@
-import type { SpyMP } from '@huolala-tech/page-spy-types';
 import { combineName } from 'base/src/device';
 import { Config } from '../config';
 import Device from '../device';
 import { joinQuery } from '../utils';
+import { InitConfig } from 'page-spy-react-native/types';
+import { getRandomId } from 'base/src';
 
 interface TResponse<T> {
   code: string;
@@ -19,7 +20,7 @@ interface TCreateRoom {
   tags: Record<string, any>;
 }
 
-const getScheme = (enableSSL: SpyMP.MPInitConfig['enableSSL']) => {
+const getScheme = (enableSSL: InitConfig['enableSSL']) => {
   return enableSSL === false ? ['http://', 'ws://'] : ['https://', 'wss://'];
 };
 
@@ -34,7 +35,13 @@ export default class Request {
     return this.config.get().api;
   }
 
-  createRoom(): Promise<TResponse<TCreateRoom>> {
+  getScheme() {
+    return this.config.get().enableSSL
+      ? ['https://', 'wss://']
+      : ['http://', 'ws://'];
+  }
+
+  createRoom() {
     const config = this.config.get();
     const scheme = getScheme(config.enableSSL);
     const device = Device.info;
@@ -49,15 +56,31 @@ export default class Request {
       method: 'POST',
     })
       .then((res) => res.json())
+      .then((res: TResponse<TCreateRoom>) => {
+        const { name, address } = res.data || {};
+        const roomUrl = this.getRoomUrl(address);
+        return {
+          roomUrl,
+          address,
+          name,
+        };
+      })
       .catch((err) => {
         /* c8 ignore next */
         throw Error(`Request create room failed: ${err.message}`);
       });
   }
 
-  getRoomUrl(args: Record<string, string | number> = {}) {
-    const config = this.config.get();
-    const scheme = getScheme(config.enableSSL);
-    return `${scheme[1]}${this.base}/api/v1/ws/room/join?${joinQuery(args)}`;
+  getRoomUrl(address: string) {
+    const scheme = this.getScheme();
+    const { useSecret, secret } = this.config.get();
+    return `${scheme[1]}${this.base}/api/v1/ws/room/join?${joinQuery({
+      address,
+      name: `client:${getRandomId()}`,
+      userId: 'Client',
+      forceCreate: true,
+      useSecret,
+      secret,
+    })}`;
   }
 }
