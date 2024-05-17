@@ -2,19 +2,15 @@
   "string": [
     {
       "name": "module_desc",
-      "value": "PageSpy for OpenHarmony 测试专用"
+      "value": "module description"
     },
     {
       "name": "EntryAbility_desc",
-      "value": "Entry ability within PageSpy for OpenHarmony"
+      "value": "description"
     },
     {
       "name": "EntryAbility_label",
-      "value": "PageSpy"
-    },
-    {
-      "name": "internet_permission_reason",
-      "value": "访问网络"
+      "value": "label"
     }
   ]
 }
