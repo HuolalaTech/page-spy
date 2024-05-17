@@ -12,9 +12,6 @@ import { resolve, dirname } from 'path';
 
 const root = process.cwd();
 const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
-const getBabel = (mode) => {
-  return ;
-};
 
 /**
  * @type {import('rollup').RollupOptions[]}

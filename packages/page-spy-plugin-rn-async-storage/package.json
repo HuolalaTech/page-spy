@@ -4,7 +4,7 @@
   "description": "Used for React Native app with async-storage.",
   "homepage": "https://github.com/HuolalaTech/page-spy/tree/main/packages/page-spy-plugin-rn-async-storage",
   "license": "MIT",
-  "main": "dist/cls/index.min.js",
+  "main": "dist/cjs/index.min.js",
   "module": "dist/esm/index.min.js",
   "types": "types/index.d.ts",
   "files": [

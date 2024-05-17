@@ -19,8 +19,6 @@ import { Config } from './config';
 import { InitConfig } from 'page-spy-react-native/types';
 
 class PageSpy {
-  root: HTMLElement | null = null;
-
   version = PKG_VERSION;
 
   static plugins: Record<PluginOrder | 'normal', PageSpyPlugin[]> = {

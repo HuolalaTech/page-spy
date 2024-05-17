@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-react-native",
-  "version": "1.8.2",
+  "version": "1.8.0",
   "description": "A developer tool for debugging react native app",
   "license": "MIT",
   "main": "dist/cjs/index.min.js",
@@ -41,8 +41,6 @@
     "@rollup/plugin-alias": "^4.0.3",
     "@rollup/plugin-babel": "^6.0.3",
     "@rollup/plugin-commonjs": "^24.0.1",
-    "@rollup/plugin-image": "^2.1.1",
-    "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-terser": "^0.4.4",
@@ -51,7 +49,6 @@
     "react-native": "^0.74.1",
     "rollup": "^3.10.0",
     "rollup-plugin-delete": "^2.0.0",
-    "rollup-plugin-postcss": "^4.0.1",
     "rollup-plugin-typescript2": "^0.34.1"
   },
   "prettier": {

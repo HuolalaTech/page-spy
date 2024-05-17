@@ -9,7 +9,7 @@ import {
 } from 'base/src/socket-base';
 import { SpyBase } from 'packages/page-spy-types';
 
-export class WebSocketWrapper extends SocketWrapper {
+export class RNWebSocketWrapper extends SocketWrapper {
   private socketInstance: WebSocket | null = null;
 
   init(url: string) {
@@ -37,9 +37,9 @@ export class WebSocketWrapper extends SocketWrapper {
   }
 }
 
-export class WebSocketStore extends SocketStoreBase {
+export class RNWebSocketStore extends SocketStoreBase {
   // websocket instance
-  protected socketWrapper: WebSocketWrapper = new WebSocketWrapper();
+  protected socketWrapper: RNWebSocketWrapper = new RNWebSocketWrapper();
 
   public getSocket() {
     return this.socketWrapper;
@@ -52,7 +52,7 @@ export class WebSocketStore extends SocketStoreBase {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor() {
     super();
-    this.addListener('debug', WebSocketStore.handleDebugger);
+    this.addListener('debug', RNWebSocketStore.handleDebugger);
   }
 
   // run executable code which received from remote and send back the result
@@ -97,6 +97,6 @@ export class WebSocketStore extends SocketStoreBase {
   }
 }
 
-const socketStore = new WebSocketStore();
+const socketStore = new RNWebSocketStore();
 
 export default socketStore;
