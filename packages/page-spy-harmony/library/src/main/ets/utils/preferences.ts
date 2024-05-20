@@ -3,16 +3,7 @@ import { psLog } from '.';
 import dataPreferences from '@ohos.data.preferences';
 import { ROOM_SESSION_KEY } from './constants';
 import util from '@ohos.util';
-
-export interface RoomInfo {
-  name: string;
-  address: string;
-  roomUrl: string;
-  project: string;
-  title: string;
-  useSecret: boolean;
-  secret: string;
-}
+import { RoomInfo } from '../types';
 
 export class Preferences {
   _readCache: RoomInfo | null = null;
@@ -32,33 +23,53 @@ export class Preferences {
   async get() {
     if (this._readCache) return this._readCache;
     if (!this.preferences) return null;
-    if (!(await this.preferences.has(ROOM_SESSION_KEY))) return null;
 
-    const cache = (await this.preferences.get(
+    const exist = await this.preferences.has(ROOM_SESSION_KEY);
+    if (!exist) return null;
+
+    const cache = await this.preferences.get(
       ROOM_SESSION_KEY,
       new Uint8Array(0),
-    )) as Uint8Array;
-    const jsonString = util.TextDecoder.create('utf-8').decodeWithStream(cache);
-    this._readCache = JSON.parse(jsonString);
+    );
+    let jsonString = cache;
+    if (new util.types().isUint8Array(cache)) {
+      jsonString = util.TextDecoder.create('utf-8').decodeWithStream(
+        cache as Uint8Array,
+      );
+    }
+    this._readCache = JSON.parse(jsonString as string);
     return this._readCache;
   }
 
-  async set<T extends keyof RoomInfo>(key: T, value: RoomInfo[T]) {
+  async set(data: Partial<RoomInfo>) {
+    if (!data) return false;
+
     const info = await this.get();
-    if (info === null) return false;
+    const necessary = this.isNotEqual(info, data);
+    if (necessary === false) {
+      return true;
+    }
 
-    const newInfo: RoomInfo = Object.assign(info, {
-      [key]: value,
-    });
-
+    const newInfo: RoomInfo = {
+      ...info,
+      ...data,
+    };
     try {
-      await this.preferences.put(ROOM_SESSION_KEY, JSON.stringify(info));
-      await util.promisify(this.preferences.flush)();
+      const u8 = new util.TextEncoder().encodeInto(JSON.stringify(newInfo));
+      await this.preferences.put(ROOM_SESSION_KEY, u8);
+      await this.preferences.flush();
       this._readCache = newInfo;
       return true;
     } catch (e) {
       psLog.warn(e.message);
       return false;
     }
+  }
+
+  isNotEqual(saved: RoomInfo, updated: Partial<RoomInfo>) {
+    return Object.entries(updated).some(([key, val]) => {
+      if (saved?.[key] !== val) return true;
+      return false;
+    });
   }
 }

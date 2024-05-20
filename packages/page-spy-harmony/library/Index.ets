@@ -1,1 +1,1 @@
-export { PageSpy, TestPersistStorage } from './src/main/ets'
+export { PageSpy } from './src/main/ets'

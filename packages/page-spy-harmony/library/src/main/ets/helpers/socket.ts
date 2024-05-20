@@ -62,7 +62,7 @@ export class OHSocketStore extends SocketStoreBase {
   }
 
   onOffline(): void {
-    AppStorage.delete(ROOM_SESSION_KEY);
+    // AppStorage.delete(ROOM_SESSION_KEY);
   }
 }
 

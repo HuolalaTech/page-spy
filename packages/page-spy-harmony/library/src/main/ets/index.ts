@@ -8,7 +8,7 @@ import { getAuthSecret, getRandomId, isArray, isClass, psLog } from './utils';
 import Request from './api';
 import socketStore from './helpers/socket';
 import { Config } from './config';
-import { InitConfig, StorageRoomInfo } from './types';
+import { InitConfig, RoomInfo } from './types';
 import { DEVICE_INFO, ROOM_SESSION_KEY } from './utils/constants';
 import ConsolePlugin from './plugins/console';
 import ErrorPlugin from './plugins/error';
@@ -41,17 +41,17 @@ class PageSpy {
 
   cacheTimer: ReturnType<typeof setInterval> | null = null;
 
-  constructor(init: InitConfig = { api: '', context: null }) {
+  constructor(userCfg: InitConfig = { api: '', context: null }) {
     if (PageSpy.instance) {
       psLog.warn('Cannot initialize PageSpy multiple times');
       return PageSpy.instance;
     }
     PageSpy.instance = this;
 
-    const config = this.config.mergeConfig(init);
+    const config = this.config.mergeConfig(userCfg);
 
     this.request = new Request(config);
-    this.preferences = new Preferences(init.context);
+    this.preferences = new Preferences(userCfg.context);
     this.updateConfiguration();
     this.triggerPlugins('onInit', { config, socketStore });
     this.init();
@@ -60,8 +60,7 @@ class PageSpy {
   updateConfiguration() {
     const { messageCapacity, useSecret } = this.config.get();
     if (useSecret === true) {
-      const cache = AppStorage.get<StorageRoomInfo>(ROOM_SESSION_KEY);
-      this.config.set('secret', cache?.secret || getAuthSecret());
+      this.config.set('secret', getAuthSecret());
     }
     socketStore.connectable = true;
     socketStore.messageCapacity = messageCapacity;
@@ -69,14 +68,13 @@ class PageSpy {
 
   async init() {
     const config = this.config.get();
+    const roomCache = await this.preferences.get();
 
-    const roomCache = AppStorage.get<StorageRoomInfo>(ROOM_SESSION_KEY);
-    psLog.log(roomCache);
     if (!roomCache) {
       await this.createNewConnection();
     } else {
       const { name, address, roomUrl, project: prev } = roomCache;
-      if (config.project !== prev) {
+      if (config.project !== prev || roomUrl.includes(config.api) === false) {
         await this.createNewConnection();
       } else {
         this.name = name;
@@ -117,7 +115,6 @@ class PageSpy {
   }
 
   refreshRoomInfo() {
-    this.persistRoomInfo();
     this.saveSession();
     this.cacheTimer = setInterval(() => {
       if (socketStore.getSocket().getState() === SocketState.OPEN) {
@@ -126,25 +123,10 @@ class PageSpy {
     }, 15 * 1000);
   }
 
-  persistRoomInfo() {
-    PersistentStorage.persistProp<StorageRoomInfo>(ROOM_SESSION_KEY, {
-      name: '',
-      address: '',
-      roomUrl: '',
-      project: '',
-      title: '',
-      useSecret: false,
-      secret: '',
-    });
-  }
-
-  saveSession() {
-    const cache = AppStorage.get<StorageRoomInfo>(ROOM_SESSION_KEY);
-    if (cache.roomUrl) return;
-
+  async saveSession() {
     const { name, address, roomUrl, config } = this;
     const { useSecret, secret, project, title } = config.get();
-    const roomInfo: StorageRoomInfo = {
+    const roomInfo: RoomInfo = {
       name,
       address,
       roomUrl,
@@ -153,7 +135,8 @@ class PageSpy {
       useSecret,
       secret,
     };
-    AppStorage.set<StorageRoomInfo>(ROOM_SESSION_KEY, roomInfo);
+    const flag = await this.preferences.set(roomInfo);
+    return flag;
   }
 
   triggerPlugins<T extends PageSpyPluginLifecycle>(
@@ -251,8 +234,6 @@ const INTERNAL_PLUGINS = [
   new ErrorPlugin(),
   new NetworkPlugin(),
   new StoragePlugin(),
-  // new DatabasePlugin(),
-  // new PagePlugin(),
   new SystemPlugin(),
 ];
 
@@ -260,15 +241,4 @@ INTERNAL_PLUGINS.forEach((p) => {
   PageSpy.registerPlugin(p);
 });
 
-const key = 'test-persist-storage';
-class TestPersistStorage {
-  constructor() {
-    const cache = AppStorage.get(key);
-    console.log('HAR 内：', cache);
-    if (!cache) {
-      PersistentStorage.persistProp(key, 'Hello Harmony');
-    }
-  }
-}
-
-export { PageSpy, TestPersistStorage };
+export { PageSpy };

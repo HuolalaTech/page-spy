@@ -1,10 +1,9 @@
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
-import { PageSpy, TestPersistStorage } from '@huolala/page-spy-harmony';
+import { PageSpy } from '@huolala/page-spy-harmony';
 import axios from '../api/axios'
 import dataPreferences from '@ohos.data.preferences'
-import { util } from '@kit.ArkTS';
 
 
 export default class EntryAbility extends UIAbility {
@@ -18,43 +17,24 @@ export default class EntryAbility extends UIAbility {
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
     windowStage.loadContent('pages/Index', (err) => {
-      // PersistentStorage.persistProp('test-persist-storage', '123');
-      //
-      // setTimeout(() => {
-      //   console.log('业务代码获取', AppStorage.get('test-persist-storage'))
-      // }, 3000)
-      //
-      // new TestPersistStorage()
+      // const name = 'page-spy-room'
+      // const preferences = dataPreferences.getPreferencesSync(this.context, {
+      //   name,
+      // });
+      // preferences.deleteSync(name);
+      // preferences.flush((err) => {
+      //   if (err) {
+      //     console.log(err.message);
+      //   }
+      // });
 
-      const cacheKey = 'page-spy-room'
-      let preferences: dataPreferences.Preferences | null = null;
-      const options: dataPreferences.Options = {
-        name: cacheKey
-      }
-      preferences = dataPreferences.getPreferencesSync(this.context, options)
-      if (preferences.hasSync(cacheKey)) {
-        const cache = preferences.getSync(cacheKey, new Uint8Array(0)) as Uint8Array;
-        const result = util.TextDecoder.create('utf-8').decodeWithStream(cache);
-        console.log('✅找到缓存信息: ', result)
-      } else {
-        console.log('❌未找到缓存信息')
-        const cache = new util.TextEncoder().encodeInto(JSON.stringify({
-          roomUrl: '',
-          project: '',
-          title: '',
-          address: '',
-          useSecret: false,
-          secret: ''
-        }));
-        preferences.putSync(cacheKey, cache);
-        preferences.flush((err) => {
-          if (err) {
-            console.log('❌写入失败')
-            return
-          }
-          console.log('✅写入成功')
-        })
-      }
+      new PageSpy({
+        context: this.context,
+        api: 'page-spy-web-v.huolala.work',
+        axios,
+        project: 'hello-harmony',
+        title: '测试 API-11'
+      })
 
       if (err.code) {
         hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');

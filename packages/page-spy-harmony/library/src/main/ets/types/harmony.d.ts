@@ -31,7 +31,7 @@ export interface InitConfig extends InitConfigBase {
   axios?: AxiosStatic | AxiosInstance;
 }
 
-export interface StorageRoomInfo {
+export interface RoomInfo {
   name: string;
   address: string;
   roomUrl: string;

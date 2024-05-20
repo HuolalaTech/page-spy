@@ -1,8 +1,5 @@
 import { handle404, handle500, seeErrorResponse, seeRequestInfo } from '../api';
 import deviceInfo from '@ohos.deviceInfo';
-import LocalStorageDemo from '../components/LocalStorageDemo';
-import TrackDemo from '../components/TrackDemo';
-import PersistStorageDemo from '../components/PersistStorageDemo';
 
 
 @Entry
