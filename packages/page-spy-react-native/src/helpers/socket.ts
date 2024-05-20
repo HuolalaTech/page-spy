@@ -1,6 +1,8 @@
 import { getRandomId, stringifyData } from 'base/src';
 import atom from 'base/src/atom';
+import { combineName } from 'base/src/device';
 import { makeMessage } from 'base/src/message';
+import { UPDATE_ROOM_INFO } from 'base/src/message/server-type';
 import {
   SocketStoreBase,
   SocketState,
@@ -8,6 +10,8 @@ import {
   WebSocketEvents,
 } from 'base/src/socket-base';
 import { SpyBase } from 'packages/page-spy-types';
+import { InitConfig } from 'page-spy-react-native/types';
+import Device from '../device';
 
 export class RNWebSocketWrapper extends SocketWrapper {
   private socketInstance: WebSocket | null = null;
@@ -41,6 +45,8 @@ export class RNWebSocketStore extends SocketStoreBase {
   // websocket instance
   protected socketWrapper: RNWebSocketWrapper = new RNWebSocketWrapper();
 
+  public getPageSpyConfig: (() => Required<InitConfig>) | null = null;
+
   public getSocket() {
     return this.socketWrapper;
   }
@@ -53,6 +59,31 @@ export class RNWebSocketStore extends SocketStoreBase {
   constructor() {
     super();
     this.addListener('debug', RNWebSocketStore.handleDebugger);
+  }
+
+  updateRoomInfo() {
+    if (this.getPageSpyConfig) {
+      const { project, title } = this.getPageSpyConfig();
+      const device = combineName(Device.info);
+
+      this.send(
+        {
+          type: UPDATE_ROOM_INFO,
+          content: {
+            info: {
+              name: device,
+              group: project,
+              tags: {
+                title,
+                name: device,
+                group: project,
+              },
+            },
+          },
+        },
+        true,
+      );
+    }
   }
 
   // run executable code which received from remote and send back the result

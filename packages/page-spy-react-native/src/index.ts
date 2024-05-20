@@ -18,6 +18,11 @@ import Request from './api';
 import { Config } from './config';
 import { InitConfig } from 'page-spy-react-native/types';
 
+type UpdateConfig = {
+  title?: string;
+  project?: string;
+};
+
 class PageSpy {
   version = PKG_VERSION;
 
@@ -111,6 +116,7 @@ class PageSpy {
     }
 
     socketStore.connectable = true;
+    socketStore.getPageSpyConfig = () => this.config.get();
     socketStore.messageCapacity = messageCapacity;
   }
 
@@ -152,6 +158,20 @@ class PageSpy {
     this.address = roomInfo.address;
     this.roomUrl = roomInfo.roomUrl;
     socketStore.init(roomInfo.roomUrl);
+  }
+
+  updateRoomInfo(obj: UpdateConfig) {
+    if (!obj) return;
+
+    const { project, title } = obj;
+    if (project) {
+      this.config.set('project', String(project));
+    }
+    if (title) {
+      this.config.set('title', String(title));
+    }
+
+    socketStore.updateRoomInfo();
   }
 }
 
