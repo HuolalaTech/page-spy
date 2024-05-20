@@ -16,6 +16,7 @@ import NetworkPlugin from './plugins/network';
 import SystemPlugin from './plugins/system';
 import { SocketState, UpdateConfig } from './utils/socket-base';
 import StoragePlugin from './plugins/storage';
+import { Preferences } from './utils/preferences';
 
 class PageSpy {
   // TODO - 自动获取
@@ -36,9 +37,11 @@ class PageSpy {
 
   config = new Config();
 
+  preferences: Preferences | null = null;
+
   cacheTimer: ReturnType<typeof setInterval> | null = null;
 
-  constructor(init: InitConfig = { api: '' }) {
+  constructor(init: InitConfig = { api: '', context: null }) {
     if (PageSpy.instance) {
       psLog.warn('Cannot initialize PageSpy multiple times');
       return PageSpy.instance;
@@ -48,6 +51,7 @@ class PageSpy {
     const config = this.config.mergeConfig(init);
 
     this.request = new Request(config);
+    this.preferences = new Preferences(init.context);
     this.updateConfiguration();
     this.triggerPlugins('onInit', { config, socketStore });
     this.init();

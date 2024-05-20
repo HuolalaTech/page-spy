@@ -6,6 +6,7 @@ export class Config extends ConfigBase<InitConfig> {
 
   protected defaultConfig = () => {
     return {
+      context: null,
       api: '',
       project: 'default',
       title: '--',

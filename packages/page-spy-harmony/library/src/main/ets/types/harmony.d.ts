@@ -1,5 +1,6 @@
 import { InitConfigBase } from './index';
 import { AxiosInstance, AxiosStatic } from '@ohos/axios';
+import UIAbility from '@ohos.app.ability.UIAbility';
 
 type InternalPlugins =
   | 'ConsolePlugin'
@@ -11,6 +12,7 @@ type InternalPlugins =
   | 'SystemPlugin';
 
 export interface InitConfig extends InitConfigBase {
+  context: UIAbility['context'];
   /**
    * The server base url. For example, "example.com".
    * - Create room: `https://${api}/room/create`
