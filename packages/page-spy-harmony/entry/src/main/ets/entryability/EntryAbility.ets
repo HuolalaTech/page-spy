@@ -16,6 +16,13 @@ export default class EntryAbility extends UIAbility {
   }
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
+    const $pageSpy = new PageSpy({
+      context: this.context,
+      api: 'page-spy-web-v-stg.huolala.work',
+      axios,
+      project: 'hello-harmony',
+      title: '测试 API-11'
+    })
     windowStage.loadContent('pages/Index', (err) => {
       // const name = 'page-spy-room'
       // const preferences = dataPreferences.getPreferencesSync(this.context, {
@@ -27,13 +34,6 @@ export default class EntryAbility extends UIAbility {
       //     console.log(err.message);
       //   }
       // });
-      const $pageSpy = new PageSpy({
-        context: this.context,
-        api: 'page-spy-web-v-stg.huolala.work',
-        axios,
-        project: 'hello-harmony',
-        title: '测试 API-11'
-      })
 
       if (err.code) {
         hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
