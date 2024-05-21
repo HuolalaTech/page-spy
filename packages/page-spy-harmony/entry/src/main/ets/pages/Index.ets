@@ -1,5 +1,6 @@
 import { handle404, handle500, seeErrorResponse, seeRequestInfo } from '../api';
 import deviceInfo from '@ohos.deviceInfo';
+import { getOwnPropertyDescriptor, getOwnPropertyDescriptors } from './utils';
 
 
 @Entry
@@ -10,6 +11,12 @@ struct Index {
     Row() {
       Column() {
         Flex({ justifyContent: FlexAlign.Center, alignItems: ItemAlign.Start, direction: FlexDirection.Column }) {
+          Button('辅助打印工具按钮')
+            .onClick(() => {
+              // console.log('', getOwnPropertyDescriptor(AppStorage, 'setOrCreate'))
+              console.log('', AppStorage.setOrCreate, console.log)
+            })
+
           Button('Console')
             .margin({ bottom: 20 })
             .onClick(() => {
@@ -52,7 +59,7 @@ struct Index {
 
           Button("Error")
             .onClick(() => {
-              console.log('触发 Error')
+              throw new Error('手动 throw Error')
             })
 
           Button("Network (axios)")
@@ -65,7 +72,9 @@ struct Index {
 
           Button("Storage")
             .onClick(() => {
-              console.log("触发 Storage")
+              AppStorage.setOrCreate('basic-type', 'The string content')
+              AppStorage.setOrCreate('list-type', [1, 2, 3])
+              AppStorage.setOrCreate('object-type', { what: 'Hello harmony' })
             })
 
           // LocalStorageDemo()

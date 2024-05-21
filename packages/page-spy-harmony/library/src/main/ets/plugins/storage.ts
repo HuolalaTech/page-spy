@@ -1,7 +1,7 @@
 import socketStore from '../helpers/socket';
 import { SpyStorage } from '../types';
 import { PageSpyPlugin } from '../types/lib/index';
-import { isNotEmpty } from '../utils';
+import { isNotEmpty, psLog } from '../utils';
 import { makeMessage } from '../utils/message';
 
 export function dataStringify(data: any) {
@@ -56,7 +56,7 @@ export default class StoragePlugin implements PageSpyPlugin {
               propName,
               defaultValue,
             );
-            if (!isNotEmpty(defaultValue)) {
+            if (isNotEmpty(defaultValue)) {
               const value = AppStorage.get(propName);
               sendSetItem(propName, value);
             }
@@ -74,7 +74,7 @@ export default class StoragePlugin implements PageSpyPlugin {
               propName,
               newValue,
             );
-            if (!isNotEmpty(newValue)) {
+            if (isNotEmpty(newValue)) {
               const value = AppStorage.get(propName);
               sendSetItem(propName, value);
             }

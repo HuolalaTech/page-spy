@@ -16,6 +16,7 @@ import { PackedEvent } from '../types/lib/socket-event';
 
 type InteractiveType = SpyMessage.InteractiveType;
 type InternalMsgType = SpyMessage.InternalMsgType;
+
 interface GetterMember {
   key: string; // 属性名
   id: string; // 当前键的 id
@@ -24,6 +25,7 @@ interface GetterMember {
 }
 
 export type WebSocketEvents = 'open' | 'close' | 'message' | 'error';
+
 type CallbackType = (data?: any) => void;
 
 // fork WebSocket state
@@ -51,12 +53,17 @@ export type UpdateConfig = {
   project?: string;
   name?: string;
 };
+
 // 封装不同平台的 socket
 export abstract class SocketWrapper {
   abstract init(url: string): void;
+
   abstract send(data: string): void;
+
   abstract close(data?: {}): void;
+
   abstract getState(): SocketState;
+
   events: Record<WebSocketEvents, CallbackType[]> = {
     open: [],
     close: [],
@@ -100,6 +107,8 @@ export abstract class SocketWrapper {
 
 export abstract class SocketStoreBase {
   protected abstract socketWrapper: SocketWrapper;
+
+  protected abstract updateRoomInfo(): void;
 
   private socketUrl: string = '';
 
@@ -203,35 +212,16 @@ export abstract class SocketStoreBase {
     }
   }
 
-  updateRoomInfo(updateConfig: UpdateConfig) {
-    const { project, title, name } = updateConfig;
-    this.send(
-      {
-        type: SERVER_MESSAGE_TYPE.UPDATE_ROOM_INFO,
-        content: {
-          info: {
-            name,
-            group: project,
-            tags: {
-              title,
-              name,
-              group: project,
-            },
-          },
-        },
-      },
-      true,
-    );
-  }
-
   public addListener(
     type: SpyMessage.InteractiveType,
     fn: SpyBase.InteractiveEventCallback,
   ): void;
+
   public addListener(
     type: InternalMsgType,
     fn: SpyBase.InternalEventCallback,
   ): void;
+
   public addListener(type: any, fn: any) {
     if (!this.events[type]) {
       this.events[type] = [];
@@ -259,6 +249,7 @@ export abstract class SocketStoreBase {
 
   private connectOnline() {
     this.retryInterval = INIT_RETRY_INTERVAL;
+    this.updateRoomInfo();
     this.ping();
   }
 
@@ -389,7 +380,9 @@ export abstract class SocketStoreBase {
     type: SpyMessage.InteractiveType,
     data: SpyBase.InteractiveEvent,
   ): void;
+
   public dispatchEvent(type: InternalMsgType, data: any): void;
+
   public dispatchEvent(type: any, data: any) {
     if (['public-data'].includes(type)) {
       this.events['public-data'].forEach((fn) => {
@@ -501,7 +494,9 @@ export abstract class SocketStoreBase {
   private checkIfSend(msg: SpySocket.ClientEvent) {
     if (this.socketWrapper.getState() !== SocketState.OPEN) return false;
     if (
-      [SERVER_MESSAGE_TYPE.MESSAGE, SERVER_MESSAGE_TYPE.PING].includes(msg.type)
+      [SERVER_MESSAGE_TYPE.UPDATE_ROOM_INFO, SERVER_MESSAGE_TYPE.PING].includes(
+        msg.type,
+      )
     ) {
       return true;
     }

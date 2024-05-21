@@ -6,12 +6,11 @@ export const ROOM_SESSION_KEY = 'page-spy-room';
  * The combined device info.
  * See the screenshot: /library/src/main/resources/base/media/mate60_device_info.png
  *
- * e.g. "HarmonyOS/3.0.0.19(Canary2) SDK/12 Brand/HUAWEI_Mate_60_Pro"
+ * Format: HarmonyOS/<deviceInfo.osFullName> Device/<deviceInfo.marketName.replace(/\s/g, '_')>/<deviceInfo.sdkApiVersion>
+ *    e.g. "HarmonyOS/3.0.0.19(Canary2) Device/HUAWEI_Mate_60_Pro/API_12"
  */
-export const DEVICE_INFO = `HarmonyOS/${deviceInfo.osFullName.replace(
-  /\s/g,
-  '_',
-)} SDK/${deviceInfo.sdkApiVersion} Brand/${deviceInfo.marketName.replace(
-  /\s/g,
-  '_',
-)}`;
+export const DEVICE_INFO = `HarmonyOS/${
+  deviceInfo.osFullName
+} Device/${deviceInfo.marketName.replace(/\s/g, '_')}/API_${
+  deviceInfo.sdkApiVersion
+}`;

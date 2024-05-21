@@ -1,6 +1,8 @@
 import webSocket from '@ohos.net.webSocket';
+import { InitConfig } from '../types';
 import { psLog, stringifyData } from '../utils';
-import { ROOM_SESSION_KEY } from '../utils/constants';
+import { DEVICE_INFO, ROOM_SESSION_KEY } from '../utils/constants';
+import { UPDATE_ROOM_INFO } from '../utils/message/server-type';
 import {
   SocketStoreBase,
   SocketState,
@@ -56,6 +58,33 @@ export class OHSocketWrapper extends SocketWrapper {
 
 export class OHSocketStore extends SocketStoreBase {
   protected socketWrapper: OHSocketWrapper = new OHSocketWrapper();
+
+  public getPageSpyConfig: (() => Required<InitConfig>) | null = null;
+
+  updateRoomInfo() {
+    if (this.getPageSpyConfig) {
+      const { project, title } = this.getPageSpyConfig();
+      const name = DEVICE_INFO;
+
+      this.send(
+        {
+          type: UPDATE_ROOM_INFO,
+          content: {
+            info: {
+              name,
+              group: project,
+              tags: {
+                title,
+                name,
+                group: project,
+              },
+            },
+          },
+        },
+        true,
+      );
+    }
+  }
 
   public getSocket() {
     return this.socketWrapper;

@@ -65,7 +65,7 @@ export default class ConsolePlugin implements PageSpyPlugin {
       reply(originMsg);
       try {
         // TODO
-        const result = '💡动态执行函数暂未开放，敬请期待';
+        const result = '🚧 动态执行函数暂未开放，敬请期待 ...';
         const evalMsg = makeMessage('console', {
           logType: 'debug-eval',
           logs: [atom.transformToAtom(result)],

@@ -4,12 +4,11 @@ import {
   PageSpyPluginLifecycleArgs,
   PluginOrder,
 } from './types/lib';
-import { getAuthSecret, getRandomId, isArray, isClass, psLog } from './utils';
+import { getAuthSecret, isArray, isClass, psLog } from './utils';
 import Request from './api';
 import socketStore from './helpers/socket';
 import { Config } from './config';
 import { InitConfig, RoomInfo } from './types';
-import { DEVICE_INFO, ROOM_SESSION_KEY } from './utils/constants';
 import ConsolePlugin from './plugins/console';
 import ErrorPlugin from './plugins/error';
 import NetworkPlugin from './plugins/network';
@@ -63,6 +62,7 @@ class PageSpy {
       this.config.set('secret', getAuthSecret());
     }
     socketStore.connectable = true;
+    socketStore.getPageSpyConfig = () => this.config.get();
     socketStore.messageCapacity = messageCapacity;
   }
 
@@ -101,17 +101,7 @@ class PageSpy {
 
   useOldConnection() {
     this.refreshRoomInfo();
-    socketStore.init(this.roomUrl).then((success) => {
-      // old connection may create a new room, need to update room info.
-      if (success) {
-        const config = this.config.get();
-        socketStore.updateRoomInfo({
-          name: DEVICE_INFO,
-          project: config.project,
-          title: config.title,
-        });
-      }
-    });
+    socketStore.init(this.roomUrl);
   }
 
   refreshRoomInfo() {
@@ -173,12 +163,7 @@ class PageSpy {
     if (title) {
       this.config.set('title', String(title));
     }
-    const config = this.config.get();
-    socketStore.updateRoomInfo({
-      name: DEVICE_INFO,
-      project: config.project,
-      title: config.title,
-    });
+    socketStore.updateRoomInfo();
   }
 
   static instance: PageSpy | null = null;
