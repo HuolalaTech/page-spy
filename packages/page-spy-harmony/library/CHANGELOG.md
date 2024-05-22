@@ -1,9 +1,15 @@
 # CHANGELOG
 
+## [v2.0.0-beta.0] 2024-05-22
+
+- 🐛 修复 `ConsolePlugin` 依赖 context 导致 crash 的问题；
+- 🐛 修复依赖 `@ohos/axios` 导致 crash 的问题；
+- 🆕 更新说明；
+
 ## [v2.0.0-beta.0] 2024-05-21
 
 - 🆕 适配 API 11；
-- 🆕 添加 `Storage` 插件用于查看 `AppStorage` 信息；
+- 🆕 添加 `StoragePlugin` 用于查看 `AppStorage` 信息；
 - 🆕 优化 socket 逻辑；
 
 ## [v1.0.1] 2024-04-16
