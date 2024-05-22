@@ -1,14 +1,11 @@
-import { getRandomId, isString, psLog } from '../../utils';
+import { getRandomId, isString } from '../../utils';
 import {
-  getFormattedBody,
   ReqReadyState,
   resolveUrlInfo,
   ResponseType,
 } from '../../utils/network/common';
 import NetworkProxyBase from '../../utils/network/base';
 import socketStore from '../../helpers/socket';
-import http from '@ohos.net.http';
-import { RequestItem } from '../../utils/request-item';
 import {
   AxiosError,
   AxiosInstance,

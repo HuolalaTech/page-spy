@@ -15,8 +15,8 @@
     "devtool"
   ],
   "dependencies": {
+    "@ohos/axios": "^2.1.0"
   },
   "devDependencies": {
-    "@ohos/axios": "^2.1.0"
   },
 }
