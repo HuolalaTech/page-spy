@@ -1,4 +1,5 @@
 import {
+  blob2base64Async,
   getRandomId,
   isHeaders,
   isObjectLike,
@@ -6,7 +7,6 @@ import {
   isURL,
   psLog,
 } from 'base/src';
-import { blob2base64Async } from 'page-spy-browser/src/helpers/blob';
 import {
   addContentTypeHeader,
   getFormattedBody,
@@ -15,6 +15,7 @@ import {
   resolveUrlInfo,
 } from 'base/src/network/common';
 import RNNetworkProxyBase from './base';
+import { IS_FETCH_HEADER } from './xhr-proxy';
 
 export default class FetchProxy extends RNNetworkProxyBase {
   private fetch: WindowOrWorkerGlobalScope['fetch'] | null = null;
@@ -26,20 +27,30 @@ export default class FetchProxy extends RNNetworkProxyBase {
 
   public reset() {
     if (this.fetch) {
-      global.fetch = this.fetch;
+      globalThis.fetch = this.fetch;
     }
   }
 
   private initProxyHandler() {
     const that = this;
-    const originFetch = global.fetch;
+    const originFetch = globalThis.fetch;
 
     if (!originFetch) {
       return;
     }
     this.fetch = originFetch;
-    global.fetch = function (input: RequestInfo | URL, init: RequestInit = {}) {
-      const fetchInstance = originFetch(input, init);
+    globalThis.fetch = function (
+      input: RequestInfo | URL,
+      init: RequestInit = {},
+    ) {
+      const fetchInstance = originFetch(input, {
+        ...init,
+        headers: {
+          // set this header to let lower xhr not to proxy.
+          [IS_FETCH_HEADER]: 'true',
+          ...init.headers,
+        },
+      });
 
       const id = getRandomId();
       that.createRequest(id);
@@ -156,8 +167,6 @@ export default class FetchProxy extends RNNetworkProxyBase {
               default:
                 break;
             }
-          })
-          .finally(() => {
             req.readyState = XMLHttpRequest.DONE;
             that.sendRequestItem(id, req);
           });

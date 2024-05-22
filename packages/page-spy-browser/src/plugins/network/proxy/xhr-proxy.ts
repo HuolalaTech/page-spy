@@ -6,8 +6,8 @@ import {
   isBlob,
   getObjectKeys,
   psLog,
+  blob2base64Async,
 } from 'base/src';
-import { blob2base64Async } from 'page-spy-browser/src/helpers/blob';
 import RequestItem from 'base/src/request-item';
 import {
   MAX_SIZE,

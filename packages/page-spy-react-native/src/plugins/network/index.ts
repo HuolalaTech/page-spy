@@ -1,13 +1,13 @@
 // eslint-disable no-case-declarations
 import type { PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import XhrProxy from './proxy/xhr-proxy';
-
-// In react native, fetch() is built with whatwg-fetch, which is a polyfill of fetch using XMLHttpRequest. So we only need to proxy XMLHttpRequest.
+import FetchProxy from './proxy/fetch-proxy';
 
 export default class NetworkPlugin implements PageSpyPlugin {
   public name = 'NetworkPlugin';
 
   public xhrProxy: XhrProxy | null = null;
+  public fetchProxy: FetchProxy | null = null;
 
   public static hasInitd = false;
 
@@ -15,10 +15,12 @@ export default class NetworkPlugin implements PageSpyPlugin {
     if (NetworkPlugin.hasInitd) return;
     NetworkPlugin.hasInitd = true;
 
+    this.fetchProxy = new FetchProxy();
     this.xhrProxy = new XhrProxy();
   }
 
   public onReset() {
+    this.fetchProxy?.reset();
     this.xhrProxy?.reset();
     NetworkPlugin.hasInitd = false;
   }

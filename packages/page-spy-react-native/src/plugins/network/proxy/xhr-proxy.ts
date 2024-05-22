@@ -6,6 +6,7 @@ import {
   isBlob,
   getObjectKeys,
   psLog,
+  blob2base64Async,
 } from 'base/src';
 import RequestItem from 'base/src/request-item';
 import {
@@ -16,13 +17,26 @@ import {
   resolveUrlInfo,
 } from 'base/src/network/common';
 import RNNetworkProxyBase from './base';
-import { blob2base64Async } from 'page-spy-react-native/src/helpers/blob';
+
+/**
+ * React native use whatwg-fetch to polyfill fetch API based on xhr, so it's
+ * no need to proxy fetch since we already proxy xhr.
+ * But there is one problem: whatwg-fetch will set responseType of xhr to 'blob',
+ * which will make our response logic confused.
+ *
+ * The solution is: we proxy the fetch function but only add 'page-spy-is-fetch' request header,
+ * and still handle all proxy logic in xhr, so the xhr knows the responseType === 'blob' is not
+ * set by user.
+ */
+export const IS_FETCH_HEADER = 'page-spy-is-fetch';
 
 declare global {
   interface XMLHttpRequest {
     pageSpyRequestId: string;
     pageSpyRequestMethod: string;
     pageSpyRequestUrl: string;
+    // is from upper fetch, then the xhr will not handle proxy.
+    isFetch?: boolean;
   }
 }
 class XhrProxy extends RNNetworkProxyBase {
@@ -55,8 +69,46 @@ class XhrProxy extends RNNetworkProxyBase {
       this.pageSpyRequestMethod = method;
       this.pageSpyRequestUrl = url;
 
+      return open.apply(XMLReq, args as any);
+    };
+
+    XMLHttpRequest.prototype.setRequestHeader = function (key, value) {
+      // this header indicate that the request is from upper fetch.
+      // no need to handle.
+      if (key === IS_FETCH_HEADER) {
+        this.isFetch = true;
+        that.removeRequest(this.pageSpyRequestId);
+        return;
+      }
+      const req = that.getRequest(this.pageSpyRequestId);
+      if (req) {
+        if (!req.requestHeader) {
+          req.requestHeader = [];
+        }
+        req.requestHeader.push([key, value]);
+      } /* c8 ignore start */ else if (!this.isFetch) {
+        psLog.warn(
+          "The request object is not found on XMLHttpRequest's setRequestHeader event",
+        );
+      } /* c8 ignore stop */
+      return setRequestHeader.apply(this, [key, value]);
+    };
+
+    XMLHttpRequest.prototype.send = function (body) {
+      const XMLReq = this;
+      const {
+        pageSpyRequestId,
+        pageSpyRequestMethod = 'GET',
+        pageSpyRequestUrl = '',
+      } = XMLReq;
+      const req = that.getRequest(pageSpyRequestId);
+
+      /** This listener is moved to 'send' instead of 'open', because an xhr initiated by fetch
+       * could be ignored by proxy after 'open' is called, but 'readystatechange' may be
+       * triggered before 'send', and 'sendRequestItem' may be called that send an empty request
+       * item waiting for response which will never be handled, and result in an empty line in debugger.
+       */
       XMLReq.addEventListener('readystatechange', async () => {
-        const req = that.getRequest(id);
         if (req) {
           req.readyState = XMLReq.readyState;
 
@@ -96,10 +148,34 @@ class XhrProxy extends RNNetworkProxyBase {
               req.statusText = 'Done';
               req.endTime = Date.now();
               req.costTime = req.endTime - (req.startTime || req.endTime);
-              // the responseType has a default value of 'blob' before sending in react native.
-              // so we read this in responding.
-              req.responseType = XMLReq.responseType;
-              const formatResult = await that.formatResponse(XMLReq);
+
+              let responseType = XMLReq.responseType;
+              if (
+                !responseType ||
+                (XMLReq.isFetch && responseType === 'blob')
+              ) {
+                const contentType = XMLReq.getResponseHeader('content-type');
+                if (contentType) {
+                  if (contentType.includes('application/json')) {
+                    responseType = 'json';
+                  }
+
+                  if (
+                    contentType.includes('text/html') ||
+                    contentType.includes('text/plain')
+                  ) {
+                    responseType = 'text';
+                  }
+                }
+              }
+              if (!responseType) {
+                responseType = 'blob';
+              }
+              req.responseType = responseType;
+              const formatResult = await that.formatResponse(
+                XMLReq,
+                responseType,
+              );
               getObjectKeys(formatResult).forEach((key) => {
                 req[key] = formatResult[key];
               });
@@ -111,7 +187,7 @@ class XhrProxy extends RNNetworkProxyBase {
               break;
           }
           that.sendRequestItem(XMLReq.pageSpyRequestId, req);
-        } /* c8 ignore start */ else {
+        } /* c8 ignore start */ else if (!this.isFetch) {
           psLog.warn(
             "The request object is not found on XMLHttpRequest's readystatechange event",
           );
@@ -119,32 +195,6 @@ class XhrProxy extends RNNetworkProxyBase {
         /* c8 ignore stop */
       });
 
-      return open.apply(XMLReq, args as any);
-    };
-
-    XMLHttpRequest.prototype.setRequestHeader = function (key, value) {
-      const req = that.getRequest(this.pageSpyRequestId);
-      if (req) {
-        if (!req.requestHeader) {
-          req.requestHeader = [];
-        }
-        req.requestHeader.push([key, value]);
-      } /* c8 ignore start */ else {
-        psLog.warn(
-          "The request object is not found on XMLHttpRequest's setRequestHeader event",
-        );
-      } /* c8 ignore stop */
-      return setRequestHeader.apply(this, [key, value]);
-    };
-
-    XMLHttpRequest.prototype.send = function (body) {
-      const XMLReq = this;
-      const {
-        pageSpyRequestId,
-        pageSpyRequestMethod = 'GET',
-        pageSpyRequestUrl = '',
-      } = XMLReq;
-      const req = that.getRequest(pageSpyRequestId);
       if (req) {
         const urlInfo = resolveUrlInfo(pageSpyRequestUrl);
         req.url = urlInfo.url;
@@ -152,7 +202,6 @@ class XhrProxy extends RNNetworkProxyBase {
         req.getData = urlInfo.query;
         req.method = pageSpyRequestMethod.toUpperCase();
         req.requestType = 'xhr';
-        console.log('before send resp type', XMLReq.responseType);
         req.withCredentials = XMLReq.withCredentials;
         if (req.method !== 'GET') {
           req.requestHeader = addContentTypeHeader(req.requestHeader, body);
@@ -161,7 +210,7 @@ class XhrProxy extends RNNetworkProxyBase {
             that.sendRequestItem(XMLReq.pageSpyRequestId, req);
           });
         }
-      } /* c8 ignore start */ else {
+      } /* c8 ignore start */ else if (!this.isFetch) {
         psLog.warn(
           "The request object is not found on XMLHttpRequest's send event",
         );
@@ -183,7 +232,10 @@ class XhrProxy extends RNNetworkProxyBase {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  private async formatResponse(XMLReq: XMLHttpRequest) {
+  private async formatResponse(
+    XMLReq: XMLHttpRequest,
+    type: XMLHttpRequestResponseType,
+  ) {
     const result: {
       response: RequestItem['response'];
       responseReason: RequestItem['responseReason'];
@@ -191,12 +243,11 @@ class XhrProxy extends RNNetworkProxyBase {
       response: '',
       responseReason: null,
     } as const;
-    console.log('xhr response', XMLReq.responseType);
 
     // How to format the response is depend on XMLReq.responseType.
     // The behavior is different with format fetch's response, which
     // is depend on response.headers.get('content-type')
-    switch (XMLReq.responseType) {
+    switch (type) {
       case '':
       case 'text':
         if (isString(XMLReq.response)) {

@@ -1,4 +1,5 @@
 import {
+  blob2base64Async,
   getRandomId,
   isHeaders,
   isObjectLike,
@@ -6,7 +7,6 @@ import {
   isURL,
   psLog,
 } from 'base/src';
-import { blob2base64Async } from 'page-spy-browser/src/helpers/blob';
 import {
   addContentTypeHeader,
   getFormattedBody,
