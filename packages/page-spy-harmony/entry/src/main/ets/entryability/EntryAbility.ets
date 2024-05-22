@@ -3,7 +3,6 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { PageSpy } from '@huolala/page-spy-harmony';
 import axios from '../api/axios'
-import dataPreferences from '@ohos.data.preferences'
 
 
 export default class EntryAbility extends UIAbility {

@@ -1,12 +1,11 @@
 import type { InitConfig, OnInitParams, PageSpyPlugin } from '../../types';
 import { psLog } from '../../utils';
 import AxiosProxy from './axios';
-import HttpProxy from './axios';
 
 export default class NetworkPlugin implements PageSpyPlugin {
   public name = 'NetworkPlugin';
 
-  public axiosProxy: HttpProxy | null = null;
+  public axiosProxy: AxiosProxy | null = null;
 
   public static hasInitd = false;
 
