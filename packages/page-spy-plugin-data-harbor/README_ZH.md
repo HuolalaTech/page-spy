@@ -95,10 +95,10 @@ export default DataHarborPlugin;
 
 ```js
 // 上传
-const url = window.$harbor.onOfflineLog('upload');
+const url = await window.$harbor.onOfflineLog('upload');
 
 // 下载
-const url = window.$harbor.onOfflineLog('donwload');
+window.$harbor.onOfflineLog('donwload');
 ```
 
 ### 日志数据回放
