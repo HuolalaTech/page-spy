@@ -20,8 +20,26 @@
 
 ## 版本兼容性
 
-- `1.x`：基于 API 9 版本开发；
-- `2.x`：基于 API 11 版本开发；
+- `@huolala/page-spy-harmony@1.x`：基于 API 9 版本开发；
+- `@huolala/page-spy-harmony@2.x`：基于 API 11 版本开发；
+
+## 能力概览
+
+### console 打印日志
+
+![console 打印日志](https://pagespy.blucas.me/public/img/console.svg)
+
+### 项目报错
+
+![项目报错](https://pagespy.blucas.me/public/img/error.svg)
+
+### 网络请求
+
+![网络请求](https://pagespy.blucas.me/public/img/network.svg)
+
+### 应用数据
+
+![应用数据](https://pagespy.blucas.me/public/img/storage.svg)
 
 ## 开始使用
 

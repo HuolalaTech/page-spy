@@ -1,22 +1,12 @@
 import axios from '@ohos/axios';
 import request from './axios';
 
-export const seeRequestInfo = () => {
+export const normalRequest = () => {
   return request.get('/?name=blucas', {
-    data: {
-      bar: 'bar',
-    },
     params: {
       string: 'string',
       boolean: true,
       number: 1,
-      list: [1, 2, 3],
-      obj: {
-        name: 'blucas',
-        age: 28,
-        country: 'China',
-        likes: [1, true, 2, 'work'],
-      },
     },
   });
 };

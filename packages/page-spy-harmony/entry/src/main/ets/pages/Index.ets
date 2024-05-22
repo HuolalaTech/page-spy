@@ -1,4 +1,4 @@
-import { handle404, handle500, seeErrorResponse, seeRequestInfo } from '../api';
+import { handle404, handle500, seeErrorResponse, normalRequest } from '../api';
 import deviceInfo from '@ohos.deviceInfo';
 import { getOwnPropertyDescriptor, getOwnPropertyDescriptors } from './utils';
 
@@ -6,69 +6,44 @@ import { getOwnPropertyDescriptor, getOwnPropertyDescriptors } from './utils';
 @Entry
 @Component
 struct Index {
-
   build() {
     Row() {
       Column() {
         Flex({ justifyContent: FlexAlign.Center, alignItems: ItemAlign.Start, direction: FlexDirection.Column }) {
-          Button('辅助打印工具按钮')
-            .onClick(() => {
-              // console.log('', getOwnPropertyDescriptor(AppStorage, 'setOrCreate'))
-              console.log('', AppStorage.setOrCreate, console.log)
-            })
 
           Button('Console')
             .margin({ bottom: 20 })
             .onClick(() => {
-              console.log('设备信息', JSON.stringify({
-                "设备类型": deviceInfo.deviceType,
-                "设备厂家名称": deviceInfo.manufacture,
-                "设备品牌名称": deviceInfo.brand,
-                "外部产品系列": deviceInfo.marketName,
-                "产品系列": deviceInfo.productSeries,
-                "认证型号": deviceInfo.productModel,
-                "内部软件子型号": deviceInfo.softwareModel,
-                "硬件版本号": deviceInfo.hardwareModel,
-                "设备序列号": deviceInfo.serial,
-                "Bootloader版本号": deviceInfo.bootloaderVersion,
-                "应用二进制接口（Abi）列表": deviceInfo.abiList,
-                "安全补丁级别": deviceInfo.securityPatchTag,
-                "产品版本": deviceInfo.displayVersion,
-                "差异版本号": deviceInfo.incrementalVersion,
-                "系统的发布类型": deviceInfo.osReleaseType,
-                "系统版本": deviceInfo.osFullName,
-                "Major版本号，随主版本更新增加": deviceInfo.majorVersion,
-                "Senior版本号，随局部架构、重大特性增加": deviceInfo.seniorVersion,
-                "Feature版本号，标识规划的新特性版本": deviceInfo.featureVersion,
-                "Build版本号，标识编译构建的版本号": deviceInfo.buildVersion,
-                "系统软件API版本": deviceInfo.sdkApiVersion,
-                "首个版本系统软件API版本": deviceInfo.firstApiVersion,
-                "版本ID": deviceInfo.versionId,
-                "构建类型": deviceInfo.buildType,
-                "构建用户": deviceInfo.buildUser,
-                "构建主机": deviceInfo.buildHost,
-                "构建时间": deviceInfo.buildTime,
-                "构建版本Hash": deviceInfo.buildRootHash,
-                "设备Udid,仅限系统应用使用": deviceInfo.udid,
-                "发行版系统名称": deviceInfo.distributionOSName,
-                "发行版系统版本号": deviceInfo.distributionOSVersion,
-                "发行版系统api版本": deviceInfo.distributionOSApiVersion,
-                "发行版系统类型": deviceInfo.distributionOSReleaseType,
-              }))
+              console.log('基本类型的数据', 'OpenHarmony', 123, true)
+              console.log('复杂类型 - 对象字面量', {
+                name: "@huolala/page-spy-harmony",
+                description: "PageSpy 让排障更简单"
+              })
+              console.log('复杂类型 - 字符串对象', new String("OpenHarmony"))
+              console.log('复杂类型 - 数组', ['Hello', 'OpenHarmony'])
+              console.log('复杂类型 - 集合', new Set([1, 2, 3, 1]))
+
+              console.debug('这是一条 debug 日志')
+              console.info('这是一条 info 日志')
+              console.warn('这是一条 warn 日志')
+              console.error('这是一条 error 日志')
             })
+
 
           Button("Error")
             .onClick(() => {
               throw new Error('手动 throw Error')
             })
 
-          Button("Network (axios)")
+
+          Button("Network (基于 @ohos/axios)")
             .onClick(() => {
-              seeRequestInfo();
+              normalRequest();
               handle404();
               handle500();
               seeErrorResponse();
             })
+
 
           Button("Storage")
             .onClick(() => {
@@ -76,11 +51,8 @@ struct Index {
               AppStorage.setOrCreate('list-type', [1, 2, 3])
               AppStorage.setOrCreate('object-type', { what: 'Hello harmony' })
             })
-
-          // LocalStorageDemo()
-          // TrackDemo()
-          // PersistStorageDemo()
         }
+
       }
       .width('100%')
     }
