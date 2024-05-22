@@ -18,5 +18,5 @@
     "@ohos/axios": "^2.1.0"
   },
   "devDependencies": {
-  },
+  }
 }

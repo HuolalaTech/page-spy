@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## [v2.0.0-beta.0] 2024-05-22
+## [v2.0.0-beta.1] 2024-05-22
 
 - 🐛 修复 `ConsolePlugin` 中打印路由信息依赖 context 导致 crash 的问题；
 - 🐛 修复依赖 `@ohos/axios` 导致 crash 的问题；
