@@ -29,11 +29,17 @@ export default class ConsolePlugin implements PageSpyPlugin {
     this.proxyTypes.forEach((item) => {
       this.console[item] = console[item] || console.log || (() => {});
       console[item] = (...args: any[]) => {
-        const { name, path } = router.getState();
+        let url: string;
+        try {
+          const { name = '', path = '' } = router?.getState() || {};
+          url = path + name;
+        } catch (e) {
+          url = 'Context unready';
+        }
         this.printLog({
           logType: item,
           logs: args,
-          url: path + name,
+          url,
         });
       };
     });

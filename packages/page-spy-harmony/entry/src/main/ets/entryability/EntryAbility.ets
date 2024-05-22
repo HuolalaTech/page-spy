@@ -23,6 +23,8 @@ export default class EntryAbility extends UIAbility {
       project: 'hello-harmony',
       title: '测试 API-11'
     })
+
+    console.log('PageSpy 实例', $pageSpy)
     windowStage.loadContent('pages/Index', (err) => {
       // const name = 'page-spy-room'
       // const preferences = dataPreferences.getPreferencesSync(this.context, {
