@@ -1,7 +1,7 @@
 {
   "name": "@huolala-tech/page-spy-plugin-rn-async-storage",
-  "version": "1.0.0",
-  "description": "Used for React Native app with async-storage.",
+  "version": "1.0.0-alpha.1",
+  "description": "A PageSpy plugin, used for React Native app with async-storage.",
   "homepage": "https://github.com/HuolalaTech/page-spy/tree/main/packages/page-spy-plugin-rn-async-storage",
   "license": "MIT",
   "main": "dist/cjs/index.min.js",

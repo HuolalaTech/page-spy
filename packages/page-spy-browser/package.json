@@ -18,6 +18,14 @@
   "bugs": {
     "url": "https://github.com/HuolalaTech/page-spy/issues"
   },
+  "keywords": [
+    "pagespy",
+    "debug",
+    "remote",
+    "inspect",
+    "devtools",
+    "reactnative"
+  ],
   "scripts": {
     "build": "rollup -c",
     "build:watch": "rollup -c -w"
