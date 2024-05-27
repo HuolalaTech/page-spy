@@ -25,7 +25,8 @@ export type MPType =
   | 'mp-xigua'
   | 'mp-ppx' // 皮皮虾
   | 'mp-dingtalk'
-  | 'mp-xhs';
+  | 'mp-xhs'
+  | 'mp-uni'; // uni app 推出的小程序集成方案，类似 mpaas;
 
 // all use lower case for convenience in comparing.
 export type Browser =
@@ -38,7 +39,8 @@ export type Browser =
   | 'firefox'
   | 'safari'
   | 'unknown'
-  | MPType;
+  | MPType
+  | 'uni-native';
 
 export type Framework = 'uniapp' | 'taro' | 'unknown';
 
