@@ -22,6 +22,7 @@ let browserType: SpyDevice.DeviceInfo['browserType'] = 'unknown';
 
 const HOST_MAP: Record<string, SpyDevice.Browser> = {
   'mp-weixin': 'mp-wechat',
+  app: 'uni-native',
 };
 
 const TOUTIAO_MAP: Record<string, SpyDevice.Browser> = {
