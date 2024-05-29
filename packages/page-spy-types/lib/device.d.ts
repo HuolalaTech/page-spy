@@ -40,7 +40,8 @@ export type Browser =
   | 'safari'
   | 'unknown'
   | MPType
-  | 'uni-native';
+  | 'uni-native'
+  | 'harmony';
 
 export type Framework = 'uniapp' | 'taro' | 'unknown';
 
