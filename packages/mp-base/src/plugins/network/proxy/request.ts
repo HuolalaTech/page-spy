@@ -1,10 +1,4 @@
-import {
-  getRandomId,
-  isObjectLike,
-  isPlainObject,
-  psLog,
-  toStringTag,
-} from 'base/src/index';
+import { getRandomId, isPlainObject, psLog, toStringTag } from 'base/src/index';
 import {
   ReqReadyState,
   resolveUrlInfo,
@@ -65,7 +59,10 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
 
           // 小程序不会有其他格式，不用兼容
           if (isPlainObject(params.header)) {
-            req.requestHeader = Object.entries(params.header);
+            req.requestHeader = Object.entries(params.header).map(([k, v]) => [
+              String(k),
+              String(v),
+            ]);
           }
 
           if (req.method !== 'GET') {
