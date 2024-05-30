@@ -75,7 +75,7 @@ class PageSpyTaro extends PageSpy {
     }
 
     Client.info = {
-      sdk: taro,
+      sdk: 'taro',
       osType,
       osVersion,
       browserType,

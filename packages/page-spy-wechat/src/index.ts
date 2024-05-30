@@ -14,6 +14,7 @@ Client.info.osType = (
     ? info.platform.toLowerCase()
     : osName
 ) as SpyClient.OS;
+Client.info.sdk = 'mp-wechat';
 Client.info.browserType = 'mp-wechat';
 Client.info.osVersion = osVersion;
 Client.info.browserVersion = info.version;

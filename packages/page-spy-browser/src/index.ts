@@ -29,6 +29,7 @@ import './index.less';
 // eslint-disable-next-line import/order
 import { Config } from './config';
 import { Toast } from './component/toast';
+import Client from 'base/src/client';
 
 const Identifier = '__pageSpy';
 
@@ -36,6 +37,9 @@ type UpdateConfig = {
   title?: string;
   project?: string;
 };
+
+Client.info.sdk = 'browser';
+Client.info.ua = navigator.userAgent;
 
 class PageSpy {
   root: HTMLElement | null = null;

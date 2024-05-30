@@ -53,6 +53,7 @@ Client.info = {
   osVersion: info.osVersion,
   browserType,
   browserVersion: info.appVersion,
+  sdk: 'uniapp',
 };
 
 // Some ali apps have to use single socket instance

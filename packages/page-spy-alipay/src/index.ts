@@ -28,6 +28,7 @@ utilAPI.removeStorage = (key) => {
 };
 
 const info = my.getSystemInfoSync();
+Client.info.sdk = 'mp-alipay';
 Client.info.osType = info.platform.toLowerCase() as SpyClient.OS;
 Client.info.browserType = 'mp-alipay';
 Client.info.osVersion = info.system;
