@@ -2,21 +2,3 @@
 # yarn lockfile v1
 
 
-"@babel/runtime@^7.8.4":
-  version "7.24.4"
-  resolved "https://registry.npmmirror.com/@babel/runtime/-/runtime-7.24.4.tgz#de795accd698007a66ba44add6cc86542aff1edd"
-  integrity sha512-dkxf7+hn8mFBwKjs9bvBlArzLVxVbS8usaPUDd5p2a9JCL9tB8OaOVN1isD4+Xyk4ns89/xeOmbQvgdK7IIVdA==
-  dependencies:
-    regenerator-runtime "^0.14.0"
-
-"@huolala-tech/eval5@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.npmmirror.com/@huolala-tech/eval5/-/eval5-0.0.1.tgz#0ac20da88ce6345617ec01c0972f9fee6bbd6357"
-  integrity sha512-iYqXB5KM5OVowPBVUEgPyJXSEveXkuBMOafAMtXvSUuQG7r/iJ6qB4n6Ws/MzTtD6hZ4HJk5mnEWE9ymZraFoQ==
-  dependencies:
-    "@babel/runtime" "^7.8.4"
-
-regenerator-runtime@^0.14.0:
-  version "0.14.1"
-  resolved "https://registry.npmmirror.com/regenerator-runtime/-/regenerator-runtime-0.14.1.tgz#356ade10263f685dda125100cd862c1db895327f"
-  integrity sha512-dYnhHh0nJoMfnkZs6GmmhFknAGRrLznOu5nc9ML+EJxGvrx6H7teuevqVqCuPcPK//3eDrrjQhehXVx9cnkGdw==

@@ -216,6 +216,23 @@ export abstract class SocketStoreBase {
     this.events[type].push(fn);
   }
 
+  public removeListener(
+    type: SpyMessage.InteractiveType,
+    fn: SpyBase.InteractiveEventCallback,
+  ): void;
+  public removeListener(
+    type: InternalMsgType,
+    fn: SpyBase.InternalEventCallback,
+  ): void;
+  public removeListener(type: any, fn: any) {
+    /* c8 ignore next 3 */
+    const fns = this.events[type] || [];
+    const index = fns.indexOf(fn);
+    if (index > -1) {
+      fns.splice(index, 1);
+    }
+  }
+
   public broadcastMessage(
     msg: SpyMessage.MessageItem<SpyMessage.DataType>,
     noCache: boolean = false,
