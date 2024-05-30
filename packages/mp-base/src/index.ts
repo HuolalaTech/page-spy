@@ -22,6 +22,7 @@ import Request from './api';
 // eslint-disable-next-line import/order
 import { Config } from './config';
 import { getMPSDK, utilAPI } from './utils';
+import Client from 'base/src/client';
 
 type UpdateConfig = {
   title?: string;
@@ -89,6 +90,8 @@ class PageSpy {
     this.request = new Request(this.config);
     this.updateConfiguration();
     this.triggerPlugins('onInit', { socketStore, config });
+
+    Client.plugins = PageSpy.pluginsWithOrder.map((plugin) => plugin.name);
 
     this.init();
   }

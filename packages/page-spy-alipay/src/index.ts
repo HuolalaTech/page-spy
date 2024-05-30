@@ -1,8 +1,9 @@
 import { setMPSDK, utilAPI } from 'mp-base/src/utils';
 import PageSpy from 'mp-base/src';
-import Device from 'mp-base/src/device';
-import { SpyDevice } from 'packages/page-spy-types';
 import { SocketStoreBase } from 'base/src/socket-base';
+import Client from 'base/src/client';
+import { SpyClient } from 'packages/page-spy-types';
+
 // reassign the global.mp to uni
 
 declare const my: any;
@@ -27,11 +28,10 @@ utilAPI.removeStorage = (key) => {
 };
 
 const info = my.getSystemInfoSync();
-Device.info.osType = info.platform.toLowerCase() as SpyDevice.OS;
-Device.info.browserType = 'mp-alipay';
-Device.info.osVersion = info.system;
-Device.info.browserVersion = info.version;
-// Device.info.framework is unknown by default
+Client.info.osType = info.platform.toLowerCase() as SpyClient.OS;
+Client.info.browserType = 'mp-alipay';
+Client.info.osVersion = info.system;
+Client.info.browserVersion = info.version;
 
 SocketStoreBase.messageFilters.push((data) => {
   return data.data;

@@ -1,10 +1,10 @@
 import { setCustomGlobal, setMPSDK } from 'mp-base/src/utils';
 import PageSpy from 'mp-base/src';
-import Device from 'mp-base/src/device';
-import { SpyDevice, SpyMP } from 'packages/page-spy-types';
+import { SpyClient, SpyMP } from 'packages/page-spy-types';
 import { SocketStoreBase, SocketWrapper } from 'base/src/socket-base';
 import { psLog } from 'base/src';
 import { MPSocketWrapper } from 'mp-base/src/helpers/socket';
+import Client from 'base/src/client';
 
 declare var tt: MPSDK;
 
@@ -28,12 +28,12 @@ class PageSpyTaro extends PageSpy {
 
     const taroEnv = (taro as any).getEnv();
 
-    let browserType: SpyDevice.DeviceInfo['browserType'] = 'unknown';
+    let browserType: SpyClient.ClientInfo['browserType'] = 'unknown';
     let browserVersion = 'unknown';
-    let osType: SpyDevice.OS = 'unknown';
+    let osType: SpyClient.OS = 'unknown';
     let osVersion: string = 'unknown';
 
-    const HOST_MAP: Record<string, SpyDevice.Browser> = {
+    const HOST_MAP: Record<string, SpyClient.Browser> = {
       WEAPP: 'mp-wechat',
       SWAN: 'mp-baidu',
       ALIPAY: 'mp-alipay',
@@ -56,7 +56,7 @@ class PageSpyTaro extends PageSpy {
     // so we need to detect them separately.
     // alipay is special
     if (browserType === 'mp-alipay') {
-      osType = info.platform.toLowerCase() as SpyDevice.OS;
+      osType = info.platform.toLowerCase() as SpyClient.OS;
       osVersion = info.system!;
       browserVersion = info.version!;
       // Taro has a bug here for alipay that the 'multiple' option will override socket task.
@@ -69,13 +69,13 @@ class PageSpyTaro extends PageSpy {
       // });
     } else {
       const arr = info.system?.split(' ');
-      osType = (arr?.[0].toLowerCase() || 'unknown') as SpyDevice.OS;
+      osType = (arr?.[0].toLowerCase() || 'unknown') as SpyClient.OS;
       osVersion = arr?.[1].toLowerCase() || 'unknown';
       browserVersion = info.version!;
     }
 
-    Device.info = {
-      framework: 'taro',
+    Client.info = {
+      sdk: taro,
       osType,
       osVersion,
       browserType,
