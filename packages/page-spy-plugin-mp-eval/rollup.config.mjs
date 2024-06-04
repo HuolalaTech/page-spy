@@ -24,14 +24,9 @@ const getBabel = (mode) => {
     presets: [
       [
         '@babel/env',
-        mode === 'iife'
-          ? {
-              useBuiltIns: 'usage',
-              corejs: '3.30',
-            }
-          : {
-              useBuiltIns: false,
-            },
+        {
+          useBuiltIns: false,
+        },
       ],
       '@babel/preset-typescript',
     ],
@@ -41,9 +36,7 @@ const getBabel = (mode) => {
 const plugins = [
   nodeResolve(),
   commonjs(),
-  typescript({
-    tsconfigOverride: { include: ['packages/page-spy-plugin-mp-eval/src'] },
-  }),
+  typescript(),
   replace({
     PKG_VERSION: `"${pkg.version}"`,
     preventAssignment: true,
@@ -58,20 +51,6 @@ const plugins = [
  * @type {import('rollup').RollupOptions[]}
  */
 export default [
-  {
-    input: 'src/index.ts',
-    output: {
-      file: pkg.main,
-      format: 'iife',
-      name: 'DataHarborPlugin',
-      sourcemap: true
-    },
-    plugins: [
-      ...plugins,
-      getBabel('iife'),
-      del({ targets: [dirname(pkg.main)] }),
-    ],
-  },
   {
     input: 'src/index.ts',
     output: {

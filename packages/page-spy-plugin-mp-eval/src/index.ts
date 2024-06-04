@@ -2,9 +2,9 @@ import { OnInitParams, PageSpyPlugin, SpyBase } from 'packages/page-spy-types';
 import { Interpreter } from '@huolala-tech/eval5';
 import { makeMessage } from 'base/src/message';
 import { getRandomId } from 'base/src';
-import atom from 'base/src/atom';
 import { getGlobal } from 'mp-base/src/utils';
 import { SocketStoreType } from 'packages/page-spy-types/lib/base';
+import type { Atom } from 'base/src/atom';
 
 export default class MPEvalPlugin implements PageSpyPlugin {
   public name: string = 'MPEvalPlugin';
@@ -15,10 +15,13 @@ export default class MPEvalPlugin implements PageSpyPlugin {
 
   protected static socketStore: SocketStoreType | null = null;
 
-  public onInit({ socketStore }: OnInitParams<any>) {
+  protected static atom: Atom | null = null;
+
+  public onInit({ socketStore, atom }: OnInitParams<any>) {
     if (MPEvalPlugin.hasInitd) return;
     MPEvalPlugin.hasInitd = true;
     MPEvalPlugin.socketStore = socketStore;
+    MPEvalPlugin.atom = atom;
     if (!MPEvalPlugin.interpreter) {
       MPEvalPlugin.interpreter = new Interpreter(getGlobal());
     }
@@ -31,6 +34,8 @@ export default class MPEvalPlugin implements PageSpyPlugin {
       MPEvalPlugin.handleDebugger,
     );
     MPEvalPlugin.interpreter = null;
+    MPEvalPlugin.atom = null;
+    MPEvalPlugin.socketStore = null;
     MPEvalPlugin.hasInitd = false;
   }
 
@@ -64,7 +69,7 @@ export default class MPEvalPlugin implements PageSpyPlugin {
         // const result = new Function(`return ${data}`)();
         const evalMsg = makeMessage('console', {
           logType: 'debug-eval',
-          logs: [atom.transformToAtom(result)],
+          logs: [MPEvalPlugin.atom?.transformToAtom(result)],
         });
         reply(evalMsg);
       } catch (err) {
