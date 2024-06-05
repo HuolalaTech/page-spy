@@ -52,12 +52,26 @@ export default class SSEProxy extends WebNetworkProxyBase {
         req.responseHeader = [['Content-Type', 'text/event-stream']];
         req.responseType = 'text';
         req.startTime = Date.now();
-        _sseProxy.sendRequestItem(id, req);
 
         this.es = new OriginEventSource(url, eventSourceInitDict);
+        this.es.addEventListener('open', () => {
+          req.readyState = ReqReadyState.OPENED;
+          req.endTime = Date.now();
+          req.costTime = req.endTime - req.startTime;
+          _sseProxy.sendRequestItem(id, req);
+        });
         this.es.addEventListener('message', ({ data }) => {
+          req.status = 200;
+          req.statusText = 'Done';
           req.readyState = ReqReadyState.DONE;
           req.response = data;
+          req.endTime = Date.now();
+          req.costTime = req.endTime - req.startTime;
+          _sseProxy.sendRequestItem(id, req);
+        });
+        this.es.addEventListener('error', () => {
+          req.status = 400;
+          req.readyState = ReqReadyState.DONE;
           req.endTime = Date.now();
           req.costTime = req.endTime - req.startTime;
           _sseProxy.sendRequestItem(id, req);
