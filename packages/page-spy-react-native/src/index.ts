@@ -43,6 +43,7 @@ Client.info.browserVersion = `${rnv.major}.${rnv.minor}.${rnv.patch}${
   rnv.prerelease ? '-' + rnv.prerelease : ''
 }`;
 Client.info.framework = 'react-native';
+Client.info.sdk = 'rn';
 
 class PageSpy {
   version = PKG_VERSION;
