@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-browser",
-  "version": "1.8.10",
+  "version": "1.8.11",
   "description": "A developer tool for debugging remote web page.",
   "license": "MIT",
   "main": "dist/iife/index.min.js",
@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.0",
-    "@huolala-tech/page-spy-types": "^1.8.8",
+    "@huolala-tech/page-spy-types": "^1.8.9",
     "copy-to-clipboard": "^3.3.1"
   },
   "devDependencies": {
