@@ -109,7 +109,6 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
             callback,
           ).then(() => {
             sendSetItem(key, value);
-            return;
           });
         },
       },
@@ -141,7 +140,6 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
             kvPairs.forEach((kv) => {
               sendSetItem(kv[0], kv[1]);
             });
-            return;
           });
         },
       },
@@ -161,7 +159,6 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
                 }
               });
             });
-            return;
           });
         },
       },
@@ -173,7 +170,6 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
             callback,
           ).then(() => {
             sendRemoveItem(key);
-            return;
           });
         },
       },
@@ -187,7 +183,6 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
             keys.forEach((key) => {
               sendRemoveItem(key);
             });
-            return;
           });
         },
       },

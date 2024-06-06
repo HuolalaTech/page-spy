@@ -4,6 +4,7 @@ import type {
   PageSpyPluginLifecycle,
   PluginOrder,
   PageSpyPluginLifecycleArgs,
+  SpyClient,
 } from '@huolala-tech/page-spy-types';
 
 import ConsolePlugin from './plugins/console';
@@ -16,18 +17,17 @@ import Request from './api';
 
 // eslint-disable-next-line import/order
 import { Config } from './config';
-import { InitConfig } from 'page-spy-react-native/types';
+import { InitConfig } from '../types';
 import { Platform } from 'react-native';
+import Client from 'base/src/client';
 
-const osMap: Record<typeof Platform.OS, OS> = {
+const osMap: Record<typeof Platform.OS, SpyClient.OS> = {
   android: 'android',
   ios: 'ios',
   windows: 'windows',
   macos: 'mac',
   web: 'unknown', // this should not happen.
 };
-
-import Client from 'base/src/client';
 
 type UpdateConfig = {
   title?: string;
