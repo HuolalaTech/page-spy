@@ -3,7 +3,13 @@ export interface RequestInfo {
   name: string;
   method: string;
   url: string;
-  requestType: 'xhr' | 'fetch' | 'ping' | 'mp-request' | 'mp-upload';
+  requestType:
+    | 'xhr'
+    | 'fetch'
+    | 'ping'
+    | 'mp-request'
+    | 'mp-upload'
+    | 'eventsource';
   /**
    * `Content-Type` is a special value in requestHeader.
    * The property isn't required for `GET` request,
