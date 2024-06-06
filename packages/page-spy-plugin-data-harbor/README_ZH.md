@@ -62,7 +62,8 @@ export default DataHarborPlugin;
       <!-- 3. 注册插件 && 实例化 PageSpy -->
       <script>
         // 注册插件
-        PageSpy.registerPlugin(new DataHarborPlugin(config: DataHarborConfig));
+        window.$harbor = new DataHarborPlugin(config: DataHarborConfig);
+        PageSpy.registerPlugin(window.$harbor);
         // 实例化
         window.$pageSpy = new PageSpy();
       </script>
@@ -78,7 +79,8 @@ export default DataHarborPlugin;
   import DataHarborPlugin from '@huolala-tech/page-spy-plugin-data-harbor';
 
   // 注册插件
-  PageSpy.registerPlugin(new DataHarborPlugin(config));
+  window.$harbor = new DataHarborPlugin(config: DataHarborConfig);
+  PageSpy.registerPlugin(window.$harbor);
   // 实例化 PageSpy
   window.$pageSpy = new PageSpy();
   ```
@@ -93,10 +95,10 @@ export default DataHarborPlugin;
 
 ```js
 // 上传
-window.$pageSpy.triggerPlugins('onOfflineLog', 'upload');
+const url = await window.$harbor.onOfflineLog('upload');
 
 // 下载
-window.$pageSpy.triggerPlugins('onOfflineLog', 'download');
+window.$harbor.onOfflineLog('donwload');
 ```
 
 ### 日志数据回放

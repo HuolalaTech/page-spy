@@ -6,9 +6,9 @@ import {
 } from 'base/src/socket-base';
 import { UPDATE_ROOM_INFO } from 'base/src/message/server-type';
 import type { SpyMP } from '@huolala-tech/page-spy-types';
-import { combineName } from 'base/src/device';
+import Client, { combineName } from 'base/src/client';
 import { getMPSDK, utilAPI } from '../utils';
-import Device from '../device';
+import { DataItem } from 'packages/page-spy-types/lib/client';
 
 export class MPSocketWrapper extends SocketWrapper {
   private socketInstance: MPSocket | null = null;
@@ -93,7 +93,7 @@ export class MPSocketStore extends SocketStoreBase {
   updateRoomInfo() {
     if (this.getPageSpyConfig) {
       const { project, title } = this.getPageSpyConfig();
-      const device = combineName(Device.info);
+      const device = combineName(Client.info);
       this.send(
         {
           type: UPDATE_ROOM_INFO,

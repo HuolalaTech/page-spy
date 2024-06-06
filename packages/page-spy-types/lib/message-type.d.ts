@@ -1,5 +1,6 @@
 export type DataType =
   | 'connect'
+  | 'client-info'
   | 'console'
   | 'system'
   | 'network'

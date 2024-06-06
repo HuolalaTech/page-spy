@@ -128,7 +128,7 @@ class XhrProxy extends WebNetworkProxyBase {
         if (!req.requestHeader) {
           req.requestHeader = [];
         }
-        req.requestHeader.push([key, value]);
+        req.requestHeader.push([String(key), String(value)]);
       } /* c8 ignore start */ else {
         psLog.warn(
           "The request object is not found on XMLHttpRequest's setRequestHeader event",

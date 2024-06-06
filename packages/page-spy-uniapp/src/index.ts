@@ -1,10 +1,10 @@
 import { setMPSDK } from 'mp-base/src/utils';
 import PageSpy from 'mp-base/src';
-import Device from 'mp-base/src/device';
-import { SpyDevice } from 'packages/page-spy-types';
+import Client from 'base/src/client';
 import { SocketStoreBase } from 'base/src/socket-base';
 import { psLog } from 'base/src';
 import { MPSocketWrapper } from 'mp-base/src/helpers/socket';
+import { SpyClient } from 'packages/page-spy-types';
 
 declare const uni: any;
 
@@ -18,13 +18,14 @@ const info = uni.getSystemInfoSync() as {
   uniPlatform: string;
 };
 
-let browserType: SpyDevice.DeviceInfo['browserType'] = 'unknown';
+let browserType: SpyClient.ClientInfo['browserType'] = 'unknown';
 
-const HOST_MAP: Record<string, SpyDevice.Browser> = {
+const HOST_MAP: Record<string, SpyClient.Browser> = {
   'mp-weixin': 'mp-wechat',
+  app: 'uni-native',
 };
 
-const TOUTIAO_MAP: Record<string, SpyDevice.Browser> = {
+const TOUTIAO_MAP: Record<string, SpyClient.Browser> = {
   Toutiao: 'mp-toutiao',
   Douyin: 'mp-douyin',
   news_article_lite: 'mp-toutiao-lt',
@@ -46,12 +47,13 @@ if (info.uniPlatform === 'web') {
   browserType = HOST_MAP[info.uniPlatform] || info.uniPlatform;
 }
 
-Device.info = {
+Client.info = {
   framework: 'uniapp',
-  osType: info.osName.toLowerCase() as SpyDevice.OS,
+  osType: info.osName.toLowerCase() as SpyClient.OS,
   osVersion: info.osVersion,
   browserType,
   browserVersion: info.appVersion,
+  sdk: 'uniapp',
 };
 
 // Some ali apps have to use single socket instance

@@ -1,9 +1,8 @@
 import type { SpyMP } from '@huolala-tech/page-spy-types';
-import { combineName } from 'base/src/device';
+import Client, { combineName } from 'base/src/client';
 import { getMPSDK, joinQuery, promisifyMPApi } from 'mp-base/src/utils';
 import { getRandomId } from 'base/src';
 import { Config } from '../config';
-import Device from '../device';
 
 interface TResponse<T> {
   code: string;
@@ -38,7 +37,7 @@ export default class Request {
   createRoom() {
     const { enableSSL, project, title, useSecret, secret } = this.config.get();
     const scheme = getScheme(enableSSL);
-    const device = combineName(Device.info);
+    const device = combineName(Client.info);
 
     const query = joinQuery({
       group: project,

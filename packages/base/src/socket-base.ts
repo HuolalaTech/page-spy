@@ -3,7 +3,12 @@
  * 不同平台 socket 的 api 不同但功能相同，这里抽象一层
  */
 
-import { SpyMessage, SpySocket, SpyBase } from '@huolala-tech/page-spy-types';
+import {
+  SpyMessage,
+  SpySocket,
+  SpyBase,
+  SpyClient,
+} from '@huolala-tech/page-spy-types';
 import { PackedEvent } from '@huolala-tech/page-spy-types/lib/socket-event';
 import { getRandomId, psLog, stringifyData } from './index';
 import {
@@ -13,6 +18,7 @@ import {
 } from './message';
 import * as SERVER_MESSAGE_TYPE from './message/server-type';
 import atom from './atom';
+import Client from './client';
 
 type InteractiveType = SpyMessage.InteractiveType;
 type InternalMsgType = SpyMessage.InternalMsgType;
@@ -223,7 +229,11 @@ export abstract class SocketStoreBase {
     this.clearPing();
     this.socketWrapper?.close();
     this.messages = [];
-    Object.entries(this.events).forEach(([, fns]) => {
+    Object.entries(this.events).forEach(([evt, fns]) => {
+      // 这三个事件的生命周期跟随 socketStore
+      if (['atom-detail', 'atom-getter', 'debugger-online'].includes(evt)) {
+        return;
+      }
       fns.splice(0);
     });
   }
@@ -329,6 +339,8 @@ export abstract class SocketStoreBase {
         if (connection.userId === 'Debugger') {
           if (type === JOIN) {
             this.debuggerConnection = connection;
+            // once connected, send client info
+            this.sendClientInfo();
           } else {
             this.debuggerConnection = null;
           }
@@ -502,5 +514,13 @@ export abstract class SocketStoreBase {
       return false;
     }
     return true;
+  }
+  private sendClientInfo() {
+    const clientInfo = Client.makeClientInfoMsg();
+    this.broadcastMessage({
+      role: 'client',
+      type: 'client-info',
+      data: clientInfo,
+    });
   }
 }

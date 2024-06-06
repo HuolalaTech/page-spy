@@ -3,7 +3,7 @@ import type { SpyStorage, PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import socketStore from 'mp-base/src/helpers/socket';
 import { psLog } from 'base/src';
 import { getMPSDK, utilAPI } from '../utils';
-import Device from '../device';
+import Client from 'base/src/client';
 
 export function mpDataStringify(data: any) {
   const typeOfValue = typeof data;
@@ -122,8 +122,8 @@ export default class StoragePlugin implements PageSpyPlugin {
           try {
             let res: any;
             if (
-              Device.info.browserType === 'mp-alipay' &&
-              (!Device.info.framework || Device.info.framework === 'unknown')
+              Client.info.browserType === 'mp-alipay' &&
+              (!Client.info.framework || Client.info.framework === 'unknown')
             ) {
               // alipay is so disgusting, here the input is an object
               const obj = keyOrObj as { key: string; data: any };

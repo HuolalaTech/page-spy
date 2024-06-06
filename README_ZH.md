@@ -31,15 +31,16 @@
 
 ## SDKs
 
-| Repo                                                             | Type             | Status |
-| ---------------------------------------------------------------- | ---------------- | ------ |
-| [`@huolala-tech/page-spy-types`](./packages/page-spy-types/)     | Common types     | Done   |
-| [`@huolala-tech/page-spy-browser`](./packages/page-spy-browser/) | Web sdk          | Done   |
-| [`@huolala-tech/page-spy-wechat`](./packages/page-spy-wechat/)   | Wechat sdk       | Done   |
-| [`@huolala-tech/page-spy-alipay`](./packages/page-spy-alipay/)   | Alipay sdk       | Done   |
-| [`@huolala-tech/page-spy-uniapp`](./packages/page-spy-uniapp/)   | uniApp sdk       | Done   |
-| [`@huolala-tech/page-spy-taro`](./packages/page-spy-taro/)       | Taro sdk         | Done   |
-| `@huolala-tech/page-spy-rn`                                      | React Native sdk | WIP    |
+| Repo                                                                                               | Type               | Status |
+| -------------------------------------------------------------------------------------------------- | ------------------ | ------ |
+| [`@huolala-tech/page-spy-types`](./packages/page-spy-types/)                                       | Common types       | Done   |
+| [`@huolala-tech/page-spy-browser`](./packages/page-spy-browser/)                                   | Web sdk            | Done   |
+| [`@huolala-tech/page-spy-wechat`](./packages/page-spy-wechat/)                                     | Wechat sdk         | Done   |
+| [`@huolala-tech/page-spy-alipay`](./packages/page-spy-alipay/)                                     | Alipay sdk         | Done   |
+| [`@huolala-tech/page-spy-uniapp`](./packages/page-spy-uniapp/)                                     | uniApp sdk         | Done   |
+| [`@huolala-tech/page-spy-taro`](./packages/page-spy-taro/)                                         | Taro sdk           | Done   |
+| `@huolala-tech/page-spy-rn`                                                                        | React Native sdk   | WIP    |
+| [`@huolala/page-spy-harmony`](https://ohpm.openharmony.cn/#/cn/detail/@huolala%2Fpage-spy-harmony) | Huawei Harmony sdk | WIP    |
 
 ## 官方插件
 

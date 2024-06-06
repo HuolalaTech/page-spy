@@ -62,7 +62,8 @@ export default DataHarborPlugin;
       <!-- 3. Register plugin && Init PageSpy -->
       <script>
         // Register plugin
-        PageSpy.registerPlugin(new DataHarborPlugin(config: DataHarborConfig));
+        window.$harbor = new DataHarborPlugin(config: DataHarborConfig);
+        PageSpy.registerPlugin(window.$harbor);
         // Init PageSpy
         window.$pageSpy = new PageSpy();
       </script>
@@ -78,7 +79,8 @@ export default DataHarborPlugin;
   import DataHarborPlugin from '@huolala-tech/page-spy-plugin-data-harbor';
 
   // Register plugin
-  PageSpy.registerPlugin(new DataHarborPlugin(config));
+  window.$harbor = new DataHarborPlugin(config: DataHarborConfig);
+  PageSpy.registerPlugin(window.$harbor);
   // Init PageSpy
   window.$pageSpy = new PageSpy();
   ```
@@ -93,10 +95,10 @@ If setting `autoRender: false` when instantiating PageSpy hides the controls, bu
 
 ```js
 // upload
-window.$pageSpy.triggerPlugins('onOfflineLog', 'upload');
+const url = await window.$harbor.onOfflineLog('upload');
 
 // download
-window.$pageSpy.triggerPlugins('onOfflineLog', 'download');
+window.$harbor.onOfflineLog('download');
 ```
 
 ### Replay log
