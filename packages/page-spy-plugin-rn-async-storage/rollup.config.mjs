@@ -33,6 +33,9 @@ export default {
   plugins: [
     nodeResolve(),
     commonjs(),
+    typescript({
+      tsconfigOverride: { include: ['packages/page-spy-plugin-rn-async-storage/src'] },
+    }),
     replace({
       PKG_VERSION: `"${pkg.version}"`,
       preventAssignment: true,

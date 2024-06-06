@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## [v2.0.0] 2024-06-06
+
+- 🐛 修复 `$pageSpy.abort()` 误删除事件；
+- 🆕 从 `system` 消息类型拆分出 `client-info` 消息类型；
+
 ## [v2.0.0-beta.1] 2024-05-22
 
 - 🐛 修复 `ConsolePlugin` 中打印路由信息依赖 context 导致 crash 的问题；

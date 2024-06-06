@@ -3,12 +3,7 @@
  * 不同平台 socket 的 api 不同但功能相同，这里抽象一层
  */
 
-import {
-  SpyMessage,
-  SpySocket,
-  SpyBase,
-  SpyClient,
-} from '@huolala-tech/page-spy-types';
+import { SpyMessage, SpySocket, SpyBase } from '@huolala-tech/page-spy-types';
 import { PackedEvent } from '@huolala-tech/page-spy-types/lib/socket-event';
 import { getRandomId, psLog, stringifyData } from './index';
 import {
@@ -515,12 +510,16 @@ export abstract class SocketStoreBase {
     }
     return true;
   }
+
   private sendClientInfo() {
     const clientInfo = Client.makeClientInfoMsg();
-    this.broadcastMessage({
-      role: 'client',
-      type: 'client-info',
-      data: clientInfo,
-    });
+    this.broadcastMessage(
+      {
+        role: 'client',
+        type: 'client-info',
+        data: clientInfo,
+      },
+      true,
+    );
   }
 }

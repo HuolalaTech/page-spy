@@ -1,7 +1,7 @@
 import socketStore from '../helpers/socket';
 import { SpyStorage } from '../types';
 import { PageSpyPlugin } from '../types/lib/index';
-import { isNotEmpty, psLog } from '../utils';
+import { isNotEmpty } from '../utils';
 import { makeMessage } from '../utils/message';
 
 export function dataStringify(data: any) {

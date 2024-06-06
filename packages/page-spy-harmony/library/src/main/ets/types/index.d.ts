@@ -1,4 +1,4 @@
-export * as SpyDevice from './lib/device';
+export * as SpyClient from './lib/client';
 export * as SpySocket from './lib/socket-event';
 export * as SpyMessage from './lib/message-type';
 export * as SpyAtom from './lib/atom';

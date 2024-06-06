@@ -1,7 +1,7 @@
 import socketStore from '../helpers/socket';
 import { PageSpyPlugin, SpySystem } from '../types';
 import { getRandomId } from '../utils';
-import { DEVICE_INFO } from '../utils/constants';
+import Client, { combineName } from '../utils/client';
 import { makeMessage } from '../utils/message';
 
 export default class SystemPlugin implements PageSpyPlugin {
@@ -18,7 +18,7 @@ export default class SystemPlugin implements PageSpyPlugin {
       makeMessage('system', {
         id,
         system: {
-          ua: DEVICE_INFO,
+          ua: combineName(Client.info),
         },
         features: {},
       } as SpySystem.DataItem),
