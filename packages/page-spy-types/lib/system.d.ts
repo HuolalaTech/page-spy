@@ -1,5 +1,3 @@
-import { Browser, OS } from './device';
-
 export type Category =
   | 'Element'
   | 'Javascript'

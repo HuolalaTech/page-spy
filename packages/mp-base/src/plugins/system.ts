@@ -1,8 +1,7 @@
-import Device from 'mp-base/src/device';
 import socketStore from 'mp-base/src/helpers/socket';
 import { makeMessage } from 'base/src/message';
 import type { SpySystem, PageSpyPlugin } from '@huolala-tech/page-spy-types';
-import { combineName } from 'base/src/device';
+import Client, { combineName } from 'base/src/client';
 
 export default class SystemPlugin implements PageSpyPlugin {
   public name = 'SystemPlugin';
@@ -29,7 +28,7 @@ export default class SystemPlugin implements PageSpyPlugin {
   }
 
   private static getSystemInfo() {
-    const deviceInfo = Device.info;
+    const deviceInfo = Client.info;
     const msg = makeMessage('system', {
       system: {
         ua: combineName(deviceInfo),

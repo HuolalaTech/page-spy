@@ -45,11 +45,32 @@ export type Browser =
 
 export type Framework = 'uniapp' | 'taro' | 'unknown';
 
-export interface DeviceInfo {
-  osType: OS;
-  osVersion: string;
-  browserType: Browser;
-  browserVersion: string;
+export type SDKType =
+  | 'browser'
+  | 'mp-wechat'
+  | 'mp-alipay'
+  | 'uniapp'
+  | 'taro'
+  | 'rn'
+  | 'harmony'
+  | 'unknown';
+
+export interface ClientInfo {
+  ua?: string;
+  osType?: OS;
+  osVersion?: string;
+  browserType?: Browser;
+  browserVersion?: string;
   framework?: Framework; // Currently only for miniprogram
   isDevTools?: boolean;
+  sdk?: SDKType;
+}
+
+// The message type that will be sent over socket
+export interface DataItem {
+  ua?: string;
+  isDevTools?: boolean;
+  sdk?: SDKType;
+  // Plugins enabled in PageSpy SDK
+  plugins?: string[];
 }

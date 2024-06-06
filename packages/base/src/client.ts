@@ -1,7 +1,5 @@
 /* eslint-disable no-restricted-syntax */
-
-import { SpyDevice } from '@huolala-tech/page-spy-types';
-import { DeviceInfo } from '@huolala-tech/page-spy-types/lib/device';
+import { SpyClient } from '@huolala-tech/page-spy-types';
 
 const browsers = {
   WeChat: /MicroMessenger\/([\d.]+)/,
@@ -25,10 +23,10 @@ const platforms = {
 
 export function parseUserAgent(
   uaString: string = window.navigator.userAgent,
-): DeviceInfo {
-  let osType: SpyDevice.OS = 'unknown';
+): SpyClient.ClientInfo {
+  let osType: SpyClient.OS = 'unknown';
   let osVersion = 'unknown';
-  let browserType: SpyDevice.Browser = 'unknown';
+  let browserType: SpyClient.Browser = 'unknown';
   let browserVersion = 'unknown';
 
   // 判断操作系统
@@ -37,7 +35,7 @@ export function parseUserAgent(
       const reg = platforms[platform as keyof typeof platforms];
       const match = uaString.match(reg);
       if (match) {
-        osType = platform as SpyDevice.OS;
+        osType = platform as SpyClient.OS;
         osVersion = match[1]?.replaceAll('_', '.');
         break;
       }
@@ -49,7 +47,7 @@ export function parseUserAgent(
     if (Object.prototype.hasOwnProperty.call(browsers, browser)) {
       const match = uaString.match(browsers[browser as keyof typeof browsers]);
       if (match) {
-        browserType = browser as SpyDevice.Browser;
+        browserType = browser as SpyClient.Browser;
         // eslint-disable-next-line prefer-destructuring
         browserVersion = match[1];
         break;
@@ -70,4 +68,31 @@ export const combineName = ({
   osVersion,
   browserType,
   browserVersion,
-}: DeviceInfo) => `${osType}/${osVersion} ${browserType}/${browserVersion}`;
+}: SpyClient.ClientInfo) =>
+  `${osType}/${osVersion} ${browserType}/${browserVersion}`;
+
+export default class Client {
+  static info: SpyClient.ClientInfo = {
+    // browserName and framework should be overwritten by package implementation\
+    osType: 'unknown',
+    osVersion: 'unknown',
+    browserType: 'unknown',
+    browserVersion: 'unknown',
+    framework: 'unknown',
+    isDevTools: false,
+    sdk: 'browser',
+  };
+
+  static plugins: string[] = [];
+
+  static makeClientInfoMsg() {
+    const ua = Client.info.ua || combineName(Client.info);
+    const msg: SpyClient.DataItem = {
+      sdk: Client.info.sdk,
+      isDevTools: Client.info.isDevTools,
+      ua,
+      plugins: Client.plugins,
+    };
+    return msg;
+  }
+}
