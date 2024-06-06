@@ -6,18 +6,25 @@
     "mainElement": "EntryAbility",
     "deviceTypes": [
       "phone",
+      "tablet",
+      "2in1"
     ],
     "deliveryWithInstall": true,
     "installationFree": false,
     "pages": "$profile:main_pages",
+    "requestPermissions": [
+      {
+        "name": "ohos.permission.INTERNET"
+      }
+    ],
     "abilities": [
       {
         "name": "EntryAbility",
-        "srcEntry": "./ets/entryability/EntryAbility.ts",
+        "srcEntry": "./ets/entryability/EntryAbility.ets",
         "description": "$string:EntryAbility_desc",
-        "icon": "$media:logo",
+        "icon": "$media:layered_image",
         "label": "$string:EntryAbility_label",
-        "startWindowIcon": "$media:logo",
+        "startWindowIcon": "$media:startIcon",
         "startWindowBackground": "$color:start_window_background",
         "exported": true,
         "skills": [
@@ -30,15 +37,6 @@
             ]
           }
         ]
-      }
-    ],
-    "requestPermissions": [
-      {
-        "name": "ohos.permission.INTERNET",
-        "reason": "$string:internet_permission_reason",
-        "usedScene": {
-          "when": "always"
-        }
       }
     ]
   }

@@ -1,39 +1,58 @@
-import deviceInfo from '@ohos.deviceInfo'
-import router from '@ohos.router'
-import http from '@ohos.net.http'
-import { handle404, handle500, seeErrorResponse, seeRequestInfo } from '../api'
-import url from '@ohos.url'
-import ArrayList from '@ohos.util.ArrayList'
+import { handle404, handle500, seeErrorResponse, normalRequest } from '../api';
+import deviceInfo from '@ohos.deviceInfo';
+import { getOwnPropertyDescriptor, getOwnPropertyDescriptors } from './utils';
+
 
 @Entry
 @Component
 struct Index {
-  @State message: string = 'Hello World'
-
   build() {
     Row() {
       Column() {
-        Text(this.message)
-          .fontSize(50)
-          .fontWeight(FontWeight.Bold)
-          .onClick(async () => {
-            const page = router.getState()
-            console.log('对象字面量', {
-              name: 'blucas',
-              age: 28,
-              likes: [1, 2, 3],
-              sets: new Set([1, 2, 3, 1]),
-              page
+        Flex({ justifyContent: FlexAlign.Center, alignItems: ItemAlign.Start, direction: FlexDirection.Column }) {
+
+          Button('Console')
+            .margin({ bottom: 20 })
+            .onClick(() => {
+              console.log('基本类型的数据', 'OpenHarmony', 123, true)
+              console.log('复杂类型 - 对象字面量', {
+                name: "@huolala/page-spy-harmony",
+                description: "PageSpy 让排障更简单"
+              })
+              console.log('复杂类型 - 字符串对象', new String("OpenHarmony"))
+              console.log('复杂类型 - 数组', ['Hello', 'OpenHarmony'])
+              console.log('复杂类型 - 集合', new Set([1, 2, 3, 1]))
+
+              console.debug('这是一条 debug 日志')
+              console.info('这是一条 info 日志')
+              console.warn('这是一条 warn 日志')
+              console.error('这是一条 error 日志')
             })
 
-            setInterval(() => {
-              console.log('随机数', Math.random());
-            }, 1000)
 
-            await Promise.all([seeRequestInfo(), handle404(), handle500()])
+          Button("Error")
+            .onClick(() => {
+              throw new Error('手动 throw Error')
+            })
 
-            console.log('请求完成')
-          })
+
+          Button("Network (基于 @ohos/axios)")
+            .onClick(() => {
+              normalRequest();
+              handle404();
+              handle500();
+              seeErrorResponse();
+            })
+
+
+          Button("Storage")
+            .onClick(() => {
+              AppStorage.setOrCreate('basic-type', 'The string content')
+              AppStorage.setOrCreate('list-type', [1, 2, 3])
+              AppStorage.setOrCreate('object-type', { what: 'Hello harmony' })
+            })
+        }
+
       }
       .width('100%')
     }
