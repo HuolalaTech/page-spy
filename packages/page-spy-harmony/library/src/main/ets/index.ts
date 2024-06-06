@@ -16,6 +16,7 @@ import SystemPlugin from './plugins/system';
 import { SocketState, UpdateConfig } from './utils/socket-base';
 import StoragePlugin from './plugins/storage';
 import { Preferences } from './utils/preferences';
+import Client from './utils/client';
 
 class PageSpy {
   // TODO - 自动获取
@@ -53,6 +54,7 @@ class PageSpy {
     this.preferences = new Preferences(userCfg.context);
     this.updateConfiguration();
     this.triggerPlugins('onInit', { config, socketStore });
+    Client.plugins = PageSpy.pluginsWithOrder.map((plugin) => plugin.name);
     this.init();
   }
 

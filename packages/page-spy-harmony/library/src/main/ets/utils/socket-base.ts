@@ -13,6 +13,7 @@ import * as SERVER_MESSAGE_TYPE from './message/server-type';
 import atom from './atom';
 import { SpyBase, SpyMessage, SpySocket } from '../types';
 import { PackedEvent } from '../types/lib/socket-event';
+import Client from './client';
 
 type InteractiveType = SpyMessage.InteractiveType;
 type InternalMsgType = SpyMessage.InternalMsgType;
@@ -243,6 +244,7 @@ export abstract class SocketStoreBase {
     this.socketWrapper?.close();
     this.messages = [];
     Object.entries(this.events).forEach(([, fns]) => {
+      if (['atom-detail', 'atom-getter', 'debugger-online']) return;
       fns.splice(0);
     });
   }
@@ -346,6 +348,7 @@ export abstract class SocketStoreBase {
         if (connection.userId === 'Debugger') {
           if (type === JOIN) {
             this.debuggerConnection = connection;
+            this.sendClientInfo();
           } else {
             this.debuggerConnection = null;
           }
@@ -513,5 +516,17 @@ export abstract class SocketStoreBase {
       return false;
     }
     return true;
+  }
+
+  private sendClientInfo() {
+    const clientInfo = Client.makeClientInfoMsg();
+    this.broadcastMessage(
+      {
+        role: 'client',
+        type: 'client-info',
+        data: clientInfo,
+      },
+      true,
+    );
   }
 }

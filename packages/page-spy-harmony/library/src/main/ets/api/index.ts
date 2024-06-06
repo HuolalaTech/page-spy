@@ -2,7 +2,7 @@ import url from '@ohos.url';
 import http from '@ohos.net.http';
 import { InitConfig } from '../types';
 import { getRandomId } from '../utils';
-import { DEVICE_INFO } from '../utils/constants';
+import Client, { combineName } from '../utils/client';
 
 interface TResponse<T> {
   code: string;
@@ -50,7 +50,7 @@ export default class Request {
     const scheme = this.getScheme();
     const query = joinQuery({
       // TODO
-      name: DEVICE_INFO,
+      name: combineName(Client.info),
       group: project,
       title,
     });

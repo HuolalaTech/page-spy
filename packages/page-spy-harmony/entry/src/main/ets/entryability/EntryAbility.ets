@@ -17,7 +17,7 @@ export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
     const $pageSpy = new PageSpy({
       context: this.context,
-      api: 'page-spy-web-v-stg.huolala.work',
+      api: 'page-spy-web-v.huolala.work',
       axios,
       project: 'hello-harmony',
       title: '测试 API-11'

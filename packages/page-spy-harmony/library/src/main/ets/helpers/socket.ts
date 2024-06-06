@@ -1,7 +1,7 @@
 import webSocket from '@ohos.net.webSocket';
 import { InitConfig } from '../types';
 import { psLog, stringifyData } from '../utils';
-import { DEVICE_INFO, ROOM_SESSION_KEY } from '../utils/constants';
+import Client, { combineName } from '../utils/client';
 import { UPDATE_ROOM_INFO } from '../utils/message/server-type';
 import {
   SocketStoreBase,
@@ -64,7 +64,7 @@ export class OHSocketStore extends SocketStoreBase {
   updateRoomInfo() {
     if (this.getPageSpyConfig) {
       const { project, title } = this.getPageSpyConfig();
-      const name = DEVICE_INFO;
+      const name = combineName(Client.info);
 
       this.send(
         {
