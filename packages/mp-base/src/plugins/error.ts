@@ -7,6 +7,7 @@ import type {
   PageSpyPlugin,
 } from '@huolala-tech/page-spy-types/index';
 import { getMPSDK } from '../utils';
+import { formatErrorObj } from 'base/src';
 
 // TODO this plugin should test on multiple platforms
 export default class ErrorPlugin implements PageSpyPlugin {
@@ -40,10 +41,7 @@ export default class ErrorPlugin implements PageSpyPlugin {
     if (error.stack || error.message) {
       /* c8 ignore start */
       const { message, stack } = error;
-      ErrorPlugin.sendMessage(stack || message, {
-        name: 'uncaught error',
-        ...error,
-      });
+      ErrorPlugin.sendMessage(stack || message, formatErrorObj(error));
       /* c8 ignore stop */
     } else {
       // When the error does not exist, use default information

@@ -16,16 +16,30 @@ import {
   getFormattedBody,
   resolveUrlInfo,
 } from 'base/src/network/common';
-import WebNetworkProxyBase from './base';
+import RNNetworkProxyBase from './base';
+
+/**
+ * React native use whatwg-fetch to polyfill fetch API based on xhr, so it's
+ * no need to proxy fetch since we already proxy xhr.
+ * But there is one problem: whatwg-fetch will set responseType of xhr to 'blob',
+ * which will make our response logic confused.
+ *
+ * The solution is: we proxy the fetch function but only add 'page-spy-is-fetch' request header,
+ * and still handle all proxy logic in xhr, so the xhr knows the responseType === 'blob' is not
+ * set by user.
+ */
+export const IS_FETCH_HEADER = 'page-spy-is-fetch';
 
 declare global {
   interface XMLHttpRequest {
     pageSpyRequestId: string;
     pageSpyRequestMethod: string;
     pageSpyRequestUrl: string;
+    // is from upper fetch, then the xhr will not handle proxy.
+    isFetch?: boolean;
   }
 }
-class XhrProxy extends WebNetworkProxyBase {
+class XhrProxy extends RNNetworkProxyBase {
   private xhrOpen: XMLHttpRequest['open'] | null = null;
 
   private xhrSend: XMLHttpRequest['send'] | null = null;
@@ -39,15 +53,12 @@ class XhrProxy extends WebNetworkProxyBase {
 
   private initProxyHandler() {
     const that = this;
-    if (!window.XMLHttpRequest) {
-      return;
-    }
-    const { open, send, setRequestHeader } = window.XMLHttpRequest.prototype;
+    const { open, send, setRequestHeader } = XMLHttpRequest.prototype;
     this.xhrOpen = open;
     this.xhrSend = send;
     this.xhrSetRequestHeader = setRequestHeader;
 
-    window.XMLHttpRequest.prototype.open = function (...args: any[]) {
+    XMLHttpRequest.prototype.open = function (...args: any[]) {
       const XMLReq = this;
       const method = args[0];
       const url = args[1];
@@ -58,8 +69,46 @@ class XhrProxy extends WebNetworkProxyBase {
       this.pageSpyRequestMethod = method;
       this.pageSpyRequestUrl = url;
 
+      return open.apply(XMLReq, args as any);
+    };
+
+    XMLHttpRequest.prototype.setRequestHeader = function (key, value) {
+      // this header indicate that the request is from upper fetch.
+      // no need to handle.
+      if (key === IS_FETCH_HEADER) {
+        this.isFetch = true;
+        that.removeRequest(this.pageSpyRequestId);
+        return;
+      }
+      const req = that.getRequest(this.pageSpyRequestId);
+      if (req) {
+        if (!req.requestHeader) {
+          req.requestHeader = [];
+        }
+        req.requestHeader.push([key, value]);
+      } /* c8 ignore start */ else if (!this.isFetch) {
+        psLog.warn(
+          "The request object is not found on XMLHttpRequest's setRequestHeader event",
+        );
+      } /* c8 ignore stop */
+      return setRequestHeader.apply(this, [key, value]);
+    };
+
+    XMLHttpRequest.prototype.send = function (body) {
+      const XMLReq = this;
+      const {
+        pageSpyRequestId,
+        pageSpyRequestMethod = 'GET',
+        pageSpyRequestUrl = '',
+      } = XMLReq;
+      const req = that.getRequest(pageSpyRequestId);
+
+      /** This listener is moved to 'send' instead of 'open', because an xhr initiated by fetch
+       * could be ignored by proxy after 'open' is called, but 'readystatechange' may be
+       * triggered before 'send', and 'sendRequestItem' may be called that send an empty request
+       * item waiting for response which will never be handled, and result in an empty line in debugger.
+       */
       XMLReq.addEventListener('readystatechange', async () => {
-        const req = that.getRequest(id);
         if (req) {
           req.readyState = XMLReq.readyState;
 
@@ -99,7 +148,34 @@ class XhrProxy extends WebNetworkProxyBase {
               req.statusText = 'Done';
               req.endTime = Date.now();
               req.costTime = req.endTime - (req.startTime || req.endTime);
-              const formatResult = await that.formatResponse(XMLReq);
+
+              let responseType = XMLReq.responseType;
+              if (
+                !responseType ||
+                (XMLReq.isFetch && responseType === 'blob')
+              ) {
+                const contentType = XMLReq.getResponseHeader('content-type');
+                if (contentType) {
+                  if (contentType.includes('application/json')) {
+                    responseType = 'json';
+                  }
+
+                  if (
+                    contentType.includes('text/html') ||
+                    contentType.includes('text/plain')
+                  ) {
+                    responseType = 'text';
+                  }
+                }
+              }
+              if (!responseType) {
+                responseType = 'blob';
+              }
+              req.responseType = responseType;
+              const formatResult = await that.formatResponse(
+                XMLReq,
+                responseType,
+              );
               getObjectKeys(formatResult).forEach((key) => {
                 req[key] = formatResult[key];
               });
@@ -111,7 +187,7 @@ class XhrProxy extends WebNetworkProxyBase {
               break;
           }
           that.sendRequestItem(XMLReq.pageSpyRequestId, req);
-        } /* c8 ignore start */ else {
+        } /* c8 ignore start */ else if (!this.isFetch) {
           psLog.warn(
             "The request object is not found on XMLHttpRequest's readystatechange event",
           );
@@ -119,40 +195,13 @@ class XhrProxy extends WebNetworkProxyBase {
         /* c8 ignore stop */
       });
 
-      return open.apply(XMLReq, args as any);
-    };
-
-    window.XMLHttpRequest.prototype.setRequestHeader = function (key, value) {
-      const req = that.getRequest(this.pageSpyRequestId);
       if (req) {
-        if (!req.requestHeader) {
-          req.requestHeader = [];
-        }
-        req.requestHeader.push([String(key), String(value)]);
-      } /* c8 ignore start */ else {
-        psLog.warn(
-          "The request object is not found on XMLHttpRequest's setRequestHeader event",
-        );
-      } /* c8 ignore stop */
-      return setRequestHeader.apply(this, [key, value]);
-    };
-
-    window.XMLHttpRequest.prototype.send = function (body) {
-      const XMLReq = this;
-      const {
-        pageSpyRequestId,
-        pageSpyRequestMethod = 'GET',
-        pageSpyRequestUrl = '',
-      } = XMLReq;
-      const req = that.getRequest(pageSpyRequestId);
-      if (req) {
-        const urlInfo = resolveUrlInfo(pageSpyRequestUrl, window.location.href);
+        const urlInfo = resolveUrlInfo(pageSpyRequestUrl);
         req.url = urlInfo.url;
         req.name = urlInfo.name;
         req.getData = urlInfo.query;
         req.method = pageSpyRequestMethod.toUpperCase();
         req.requestType = 'xhr';
-        req.responseType = XMLReq.responseType;
         req.withCredentials = XMLReq.withCredentials;
         if (req.method !== 'GET') {
           req.requestHeader = addContentTypeHeader(req.requestHeader, body);
@@ -161,7 +210,7 @@ class XhrProxy extends WebNetworkProxyBase {
             that.sendRequestItem(XMLReq.pageSpyRequestId, req);
           });
         }
-      } /* c8 ignore start */ else {
+      } /* c8 ignore start */ else if (!this.isFetch) {
         psLog.warn(
           "The request object is not found on XMLHttpRequest's send event",
         );
@@ -172,19 +221,21 @@ class XhrProxy extends WebNetworkProxyBase {
 
   public reset() {
     if (this.xhrOpen) {
-      window.XMLHttpRequest.prototype.open = this.xhrOpen;
+      XMLHttpRequest.prototype.open = this.xhrOpen;
     }
     if (this.xhrSend) {
-      window.XMLHttpRequest.prototype.send = this.xhrSend;
+      XMLHttpRequest.prototype.send = this.xhrSend;
     }
     if (this.xhrSetRequestHeader) {
-      window.XMLHttpRequest.prototype.setRequestHeader =
-        this.xhrSetRequestHeader;
+      XMLHttpRequest.prototype.setRequestHeader = this.xhrSetRequestHeader;
     }
   }
 
   // eslint-disable-next-line class-methods-use-this
-  private async formatResponse(XMLReq: XMLHttpRequest) {
+  private async formatResponse(
+    XMLReq: XMLHttpRequest,
+    type: XMLHttpRequestResponseType,
+  ) {
     const result: {
       response: RequestItem['response'];
       responseReason: RequestItem['responseReason'];
@@ -196,7 +247,7 @@ class XhrProxy extends WebNetworkProxyBase {
     // How to format the response is depend on XMLReq.responseType.
     // The behavior is different with format fetch's response, which
     // is depend on response.headers.get('content-type')
-    switch (XMLReq.responseType) {
+    switch (type) {
       case '':
       case 'text':
         if (isString(XMLReq.response)) {

@@ -14,9 +14,10 @@ import {
   Reason,
   resolveUrlInfo,
 } from 'base/src/network/common';
-import WebNetworkProxyBase from './base';
+import RNNetworkProxyBase from './base';
+import { IS_FETCH_HEADER } from './xhr-proxy';
 
-export default class FetchProxy extends WebNetworkProxyBase {
+export default class FetchProxy extends RNNetworkProxyBase {
   private fetch: WindowOrWorkerGlobalScope['fetch'] | null = null;
 
   constructor() {
@@ -26,20 +27,30 @@ export default class FetchProxy extends WebNetworkProxyBase {
 
   public reset() {
     if (this.fetch) {
-      window.fetch = this.fetch;
+      globalThis.fetch = this.fetch;
     }
   }
 
   private initProxyHandler() {
     const that = this;
-    const originFetch = window.fetch;
+    const originFetch = globalThis.fetch;
 
     if (!originFetch) {
       return;
     }
     this.fetch = originFetch;
-    window.fetch = function (input: RequestInfo | URL, init: RequestInit = {}) {
-      const fetchInstance = originFetch(input, init);
+    globalThis.fetch = function (
+      input: RequestInfo | URL,
+      init: RequestInit = {},
+    ) {
+      const fetchInstance = originFetch(input, {
+        ...init,
+        headers: {
+          // set this header to let lower xhr not to proxy.
+          [IS_FETCH_HEADER]: 'true',
+          ...init.headers,
+        },
+      });
 
       const id = getRandomId();
       that.createRequest(id);
@@ -61,7 +72,7 @@ export default class FetchProxy extends WebNetworkProxyBase {
           requestHeader = input.headers;
         }
 
-        const urlInfo = resolveUrlInfo(url, window.location.href);
+        const urlInfo = resolveUrlInfo(url);
         req.url = urlInfo.url;
         req.name = urlInfo.name;
         req.getData = urlInfo.query;
@@ -77,20 +88,12 @@ export default class FetchProxy extends WebNetworkProxyBase {
           req.withCredentials = true;
         }
 
-        if (requestHeader) {
-          if (isHeaders(requestHeader)) {
-            req.requestHeader = [...requestHeader.entries()];
-          } else if (isObjectLike(requestHeader)) {
-            req.requestHeader = Object.entries(requestHeader).map(([k, v]) => [
-              String(k),
-              String(v),
-            ]);
-          } else {
-            req.requestHeader = requestHeader.map(([k, v]) => [
-              String(k),
-              String(v),
-            ]);
-          }
+        if (isHeaders(requestHeader)) {
+          req.requestHeader = [...requestHeader.entries()];
+        } else if (isObjectLike(requestHeader)) {
+          req.requestHeader = Object.entries(requestHeader);
+        } else {
+          req.requestHeader = requestHeader;
         }
 
         if (req.method !== 'GET') {
@@ -164,13 +167,11 @@ export default class FetchProxy extends WebNetworkProxyBase {
               default:
                 break;
             }
-          })
-          .finally(() => {
             req.readyState = XMLHttpRequest.DONE;
             that.sendRequestItem(id, req);
           });
       } /* c8 ignore start */ else {
-        psLog.warn('The request object is not found on window.fetch event');
+        psLog.warn('The request object is not found on global.fetch event');
       } /* c8 ignore stop */
       return fetchInstance;
     };

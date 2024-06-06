@@ -38,12 +38,13 @@ export type Browser =
   | 'chrome'
   | 'firefox'
   | 'safari'
+  | 'react-native'
   | 'unknown'
   | MPType
   | 'uni-native'
   | 'harmony';
 
-export type Framework = 'uniapp' | 'taro' | 'unknown';
+export type Framework = 'uniapp' | 'taro' | 'react-native' | 'unknown';
 
 export type SDKType =
   | 'browser'

@@ -255,3 +255,31 @@ export function getAuthSecret() {
   const secret = Math.floor(Math.random() * 1000000);
   return String(secret).padStart(6, '0');
 }
+export const formatErrorObj = (
+  err: Error | { stack: string; message: string },
+) => {
+  if (typeof err !== 'object') return null;
+  const { name, message, stack } = Object(err);
+  if ([name, message, stack].every(Boolean) === false) {
+    return null;
+  }
+  return {
+    name,
+    message,
+    stack,
+  };
+};
+
+export const blob2base64Async = (blob: Blob) => {
+  return new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onload = (e) => {
+      resolve(e.target?.result);
+    };
+    /* c8 ignore next 3 */
+    fr.onerror = () => {
+      reject(new Error('blob2base64Async: can not convert'));
+    };
+    fr.readAsDataURL(blob);
+  });
+};

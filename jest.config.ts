@@ -25,6 +25,7 @@ const config: Config = {
     '!**/*.test.ts',
     '!packages/**/eval.js',
     '!packages/page-spy-harmony',
+    '!packages/page-spy-react-native',
   ],
   coverageProvider: 'v8',
   projects: [

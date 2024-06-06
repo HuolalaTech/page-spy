@@ -3,19 +3,7 @@ import atom from 'base/src/atom';
 import { makeMessage } from 'base/src/message';
 import socketStore from 'page-spy-browser/src/helpers/socket';
 import type { SpyConsole, PageSpyPlugin } from '@huolala-tech/page-spy-types';
-
-const formatErrorObj = (err: Error) => {
-  if (typeof err !== 'object') return null;
-  const { name, message, stack } = Object(err);
-  if ([name, message, stack].every(Boolean) === false) {
-    return null;
-  }
-  return {
-    name,
-    message,
-    stack,
-  };
-};
+import { formatErrorObj } from 'base/src';
 
 export default class ErrorPlugin implements PageSpyPlugin {
   public name = 'ErrorPlugin';
