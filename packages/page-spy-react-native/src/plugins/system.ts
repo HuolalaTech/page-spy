@@ -1,9 +1,8 @@
 import { getRandomId } from 'base/src';
 import { makeMessage } from 'base/src/message';
 import type { SpySystem, PageSpyPlugin } from '@huolala-tech/page-spy-types';
-import { combineName } from 'base/src/device';
 import socketStore from '../helpers/socket';
-import Device from '../device';
+import Client, { combineName } from 'base/src/client';
 
 export default class SystemPlugin implements PageSpyPlugin {
   public name = 'SystemPlugin';
@@ -33,7 +32,7 @@ export default class SystemPlugin implements PageSpyPlugin {
   private static getSystemInfo() {
     const msg = makeMessage('system', {
       system: {
-        ua: combineName(Device.info),
+        ua: combineName(Client.info),
       },
       features: {},
     } as SpySystem.DataItem);

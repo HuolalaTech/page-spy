@@ -17,11 +17,32 @@ import Request from './api';
 // eslint-disable-next-line import/order
 import { Config } from './config';
 import { InitConfig } from 'page-spy-react-native/types';
+import { Platform } from 'react-native';
+
+const osMap: Record<typeof Platform.OS, OS> = {
+  android: 'android',
+  ios: 'ios',
+  windows: 'windows',
+  macos: 'mac',
+  web: 'unknown', // this should not happen.
+};
+
+import Client from 'base/src/client';
 
 type UpdateConfig = {
   title?: string;
   project?: string;
 };
+
+const rnv = Platform.constants.reactNativeVersion;
+
+Client.info.osType = osMap[Platform.OS] || 'unknown';
+Client.info.osVersion = String(Platform.Version);
+Client.info.browserType = 'react-native';
+Client.info.browserVersion = `${rnv.major}.${rnv.minor}.${rnv.patch}${
+  rnv.prerelease ? '-' + rnv.prerelease : ''
+}`;
+Client.info.framework = 'react-native';
 
 class PageSpy {
   version = PKG_VERSION;

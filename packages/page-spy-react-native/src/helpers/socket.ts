@@ -1,6 +1,6 @@
 import { getRandomId, stringifyData } from 'base/src';
 import atom from 'base/src/atom';
-import { combineName } from 'base/src/device';
+import Client, { combineName } from 'base/src/client';
 import { makeMessage } from 'base/src/message';
 import { UPDATE_ROOM_INFO } from 'base/src/message/server-type';
 import {
@@ -11,7 +11,6 @@ import {
 } from 'base/src/socket-base';
 import { SpyBase } from 'packages/page-spy-types';
 import { InitConfig } from 'page-spy-react-native/types';
-import Device from '../device';
 
 export class RNWebSocketWrapper extends SocketWrapper {
   private socketInstance: WebSocket | null = null;
@@ -64,7 +63,7 @@ export class RNWebSocketStore extends SocketStoreBase {
   updateRoomInfo() {
     if (this.getPageSpyConfig) {
       const { project, title } = this.getPageSpyConfig();
-      const device = combineName(Device.info);
+      const device = combineName(Client.info);
 
       this.send(
         {

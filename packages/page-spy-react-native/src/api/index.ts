@@ -1,9 +1,8 @@
-import { combineName } from 'base/src/device';
 import { Config } from '../config';
-import Device from '../device';
 import { joinQuery } from '../utils';
 import { InitConfig } from 'page-spy-react-native/types';
 import { getRandomId } from 'base/src';
+import Client, { combineName } from 'base/src/client';
 
 interface TResponse<T> {
   code: string;
@@ -44,8 +43,7 @@ export default class Request {
   createRoom() {
     const config = this.config.get();
     const scheme = getScheme(config.enableSSL);
-    const device = Device.info;
-    const name = combineName(device);
+    const name = combineName(Client.info);
     const query = joinQuery({
       name: encodeURIComponent(name),
       group: config.project,
