@@ -223,7 +223,11 @@ export abstract class SocketStoreBase {
     this.clearPing();
     this.socketWrapper?.close();
     this.messages = [];
-    Object.entries(this.events).forEach(([, fns]) => {
+    Object.entries(this.events).forEach(([evt, fns]) => {
+      // 这三个事件的生命周期跟随 socketStore
+      if (['atom-detail', 'atom-getter', 'debugger-online'].includes(evt)) {
+        return;
+      }
       fns.splice(0);
     });
   }
