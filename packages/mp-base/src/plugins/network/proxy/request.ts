@@ -1,9 +1,5 @@
 import { getRandomId, isPlainObject, psLog, toStringTag } from 'base/src/index';
-import {
-  ReqReadyState,
-  resolveUrlInfo,
-  toLowerKeys,
-} from 'base/src/network/common';
+import { ReqReadyState, toLowerKeys } from 'base/src/network/common';
 import { getMPSDK } from 'mp-base/src/utils';
 import MPNetworkProxyBase from './base';
 
@@ -44,11 +40,7 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
           const { url } = params;
           req.requestHeader = [];
 
-          const urlInfo = resolveUrlInfo(url);
-          req.url = urlInfo.url;
-          req.name = urlInfo.name;
-          req.getData = urlInfo.query;
-
+          req.url = url;
           req.method = method.toUpperCase();
           req.requestType = 'mp-request';
           req.status = 0;
@@ -65,24 +57,24 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
             ]);
           }
 
-          if (req.method !== 'GET') {
-            // NOTE：小程序的奇葩操作： request content-type 全部为 application/json
-            req.requestHeader.push(['Content-Type', 'application/json']);
-            const { data } = params;
-            if (data) {
-              if (typeof data === 'string') {
-                req.requestPayload = data;
-              } else if (data instanceof ArrayBuffer) {
-                req.requestPayload = '[object ArrayBuffer]';
-              } else {
-                try {
-                  req.requestPayload = JSON.stringify(data);
-                } catch (e) {
-                  req.requestPayload = toStringTag(data);
-                }
+          // 即使是 GET 请求，payload 也是有价值的，因为小程序会把他拼成 queryString
+          // NOTE：小程序的奇葩操作： request content-type 全部为 application/json
+          req.requestHeader.push(['Content-Type', 'application/json']);
+          const { data } = params;
+          if (data) {
+            if (typeof data === 'string') {
+              req.requestPayload = data;
+            } else if (data instanceof ArrayBuffer) {
+              req.requestPayload = '[object ArrayBuffer]';
+            } else {
+              try {
+                req.requestPayload = JSON.stringify(data);
+              } catch (e) {
+                req.requestPayload = toStringTag(data);
               }
             }
           }
+
           that.sendRequestItem(id, req);
 
           const originOnSuccess = params.success;
