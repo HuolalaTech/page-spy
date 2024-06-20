@@ -34,6 +34,9 @@ export interface SocketStoreType {
   addListener(type: InteractiveType, fn: InteractiveEventCallback): void;
   addListener(type: InternalType, fn: InternalEventCallback): void;
 
+  removeListener(type: InteractiveType, fn: InteractiveEventCallback): void;
+  removeListener(type: InternalType, fn: InternalEventCallback): void;
+
   dispatchEvent(
     type: InteractiveType | InternalType,
     data: InteractiveEvent,

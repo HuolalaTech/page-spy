@@ -3,12 +3,9 @@ import socketStore from 'mp-base/src/helpers/socket';
 import type {
   SpyConsole,
   PageSpyPlugin,
-  SpyBase,
 } from '@huolala-tech/page-spy-types/index';
 import atom from 'base/src/atom';
-import { Interpreter } from '@huolala-tech/eval5';
-import { getRandomId } from 'base/src';
-import { getGlobal, joinQuery } from '../utils';
+import { joinQuery } from '../utils';
 
 export default class ConsolePlugin implements PageSpyPlugin {
   public name: string = 'ConsolePlugin';
@@ -16,8 +13,6 @@ export default class ConsolePlugin implements PageSpyPlugin {
   private console: Record<string, any> = {};
 
   public static hasInitd = false;
-
-  protected static interpreter: Interpreter | null = null;
 
   private proxyTypes: SpyConsole.ProxyType[] = [
     'log',
@@ -31,8 +26,6 @@ export default class ConsolePlugin implements PageSpyPlugin {
   public async onInit() {
     if (ConsolePlugin.hasInitd) return;
     ConsolePlugin.hasInitd = true;
-
-    socketStore.addListener('debug', ConsolePlugin.handleDebugger);
 
     const that = this;
     this.proxyTypes.forEach((item) => {
@@ -60,10 +53,6 @@ export default class ConsolePlugin implements PageSpyPlugin {
         writable: true,
       });
     });
-
-    if (!ConsolePlugin.interpreter) {
-      ConsolePlugin.interpreter = new Interpreter(getGlobal());
-    }
   }
 
   public onReset() {
@@ -74,55 +63,6 @@ export default class ConsolePlugin implements PageSpyPlugin {
       }
     });
     ConsolePlugin.hasInitd = false;
-    ConsolePlugin.interpreter = null;
-  }
-
-  // run executable code which received from remote and send back the result
-  private static handleDebugger(
-    {
-      source,
-    }: SpyBase.InteractiveEvent<{
-      code: string;
-      nodes: any;
-    }>,
-    reply: (data: any) => void,
-  ) {
-    const { type, data } = source;
-    if (type === 'debug') {
-      const { code, nodes } = data;
-      const originMsg = makeMessage('console', {
-        logType: 'debug-origin',
-        logs: [
-          {
-            id: getRandomId(),
-            type: 'debug-origin',
-            value: code,
-          },
-        ],
-      });
-      reply(originMsg);
-      try {
-        // eslint-disable-next-line no-new-func, @typescript-eslint/no-implied-eval
-        const result = ConsolePlugin.interpreter?.evaluateNode(nodes);
-        // const result = new Function(`return ${data}`)();
-        const evalMsg = makeMessage('console', {
-          logType: 'debug-eval',
-          logs: [atom.transformToAtom(result)],
-        });
-        reply(evalMsg);
-      } catch (err) {
-        const errMsg = makeMessage('console', {
-          logType: 'error',
-          logs: [
-            {
-              type: 'error',
-              value: (err as Error).stack,
-            },
-          ],
-        });
-        reply(errMsg);
-      }
-    }
   }
 
   private printLog(data: SpyConsole.DataItem) {

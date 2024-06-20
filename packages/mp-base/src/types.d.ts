@@ -222,10 +222,7 @@ type MPRouterAPI = {
   navigateBack(params: { delta?: number } & AsyncCallback);
 };
 
-type MPSDK = MPStorageAPI & MPNetworkAPI & MPSystemAPI & MPRouterAPI;
-
-// declare const mp: MPSDK;
-// declare const uni: MPSDK;
+declare type MPSDK = MPStorageAPI & MPNetworkAPI & MPSystemAPI & MPRouterAPI;
 
 declare interface PageInfo {
   route: string;

@@ -12,7 +12,7 @@ import {
   makePrimitiveValue,
 } from './index';
 
-class Atom {
+export class Atom {
   private store: Record<string, any> = {};
 
   public getStore() {

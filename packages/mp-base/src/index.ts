@@ -23,6 +23,7 @@ import Request from './api';
 import { Config } from './config';
 import { getMPSDK, utilAPI } from './utils';
 import Client from 'base/src/client';
+import atom from 'base/src/atom';
 
 type UpdateConfig = {
   title?: string;
@@ -89,7 +90,7 @@ class PageSpy {
     // Here will check the config api
     this.request = new Request(this.config);
     this.updateConfiguration();
-    this.triggerPlugins('onInit', { socketStore, config });
+    this.triggerPlugins('onInit', { socketStore, config, atom });
 
     Client.plugins = PageSpy.pluginsWithOrder.map((plugin) => plugin.name);
 
