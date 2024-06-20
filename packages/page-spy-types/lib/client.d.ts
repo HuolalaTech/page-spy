@@ -44,7 +44,7 @@ export type Browser =
   | 'uni-native'
   | 'harmony';
 
-export type Framework = 'uniapp' | 'taro' | 'react-native' | 'unknown';
+export type Framework = 'uniapp' | 'taro' | 'mpx' | 'react-native' | 'unknown';
 
 export type SDKType =
   | 'browser'
@@ -52,6 +52,7 @@ export type SDKType =
   | 'mp-alipay'
   | 'uniapp'
   | 'taro'
+  | 'mpx'
   | 'rn'
   | 'harmony'
   | 'unknown';
