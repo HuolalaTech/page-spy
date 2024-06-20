@@ -45,6 +45,8 @@ class PageSpyMpx extends PageSpy {
       wx: 'mp-wechat',
       ali: 'mp-alipay',
       tt: 'mp-douyin',
+      qq: 'mp-qq',
+      swan: 'mp-baidu',
     };
 
     // get browser type
