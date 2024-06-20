@@ -10,6 +10,8 @@ declare const __mpx_mode__: string;
 declare let wx: any;
 declare let my: any;
 declare let tt: any;
+declare let qq: any;
+declare let swan: any;
 
 class PageSpyMpx extends PageSpy {
   constructor(init: SpyMP.MPInitConfig) {
@@ -19,6 +21,10 @@ class PageSpyMpx extends PageSpy {
       platformKey = my;
     } else if (__mpx_mode__ === 'tt') {
       platformKey = tt;
+    } else if (__mpx_mode__ === 'qq') {
+      platformKey = qq;
+    } else if (__mpx_mode__ === 'swan') {
+      platformKey = swan;
     }
 
     setMPSDK(platformKey);
