@@ -119,7 +119,7 @@ export function isClass(obj: unknown): obj is Function {
 
 export function isCN() {
   const langs = navigator.languages;
-  return ['zh-CN', 'zh-HK', 'zh-TW', 'zh'].some((l) => {
+  return ['zh-CN', 'zh-HK', 'zh-TW', 'zh', 'zh-Hans-CN'].some((l) => {
     return langs.includes(l);
   });
 }
