@@ -53,6 +53,11 @@ export interface InitConfigBase {
   secret?: string;
 }
 
+export interface UpdateConfig {
+  title?: string;
+  project?: string;
+}
+
 export interface PageSpyBase {
   version: string;
   plugins: Record<string, PageSpyPlugin>;
@@ -61,6 +66,7 @@ export interface PageSpyBase {
   address: string;
   roomUrl: string;
   abort(): void;
+  updateRoomInfo(obj: UpdateConfig): void;
 }
 
 interface OnInitParams<T extends InitConfigBase> {
