@@ -9,7 +9,7 @@ import {
   isTypedArray,
   isURLSearchParams,
   toStringTag,
-} from '../index';
+} from '../utils';
 
 // File size is not recommended to exceed the MAX_SIZE,
 // big size files would result negative performance impact distinctly in local-test.

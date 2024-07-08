@@ -10,7 +10,7 @@ import {
   isPlainObject,
   isPrototype,
   makePrimitiveValue,
-} from './index';
+} from './utils';
 
 export class Atom {
   private store: Record<string, any> = {};
@@ -172,4 +172,4 @@ export class Atom {
   }
 }
 
-export default new Atom();
+export const atom = new Atom();

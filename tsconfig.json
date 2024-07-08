@@ -1,8 +1,7 @@
 {
-  "compileOnSave": false,
   "compilerOptions": {
     "rootDir": ".",
-    "declaration": false,
+    "declaration": true,
     "noEmit": true,
     "strict": true,
     "resolveJsonModule": true,
@@ -16,18 +15,8 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
     "isolatedModules": true,
-    "allowJs": true,
-    "baseUrl": ".",
-    "paths": {
-      "base/*": ["./packages/base/*"],
-      "mp-base/*": ["./packages/mp-base/*"],
-      "page-spy-browser/*": ["./packages/page-spy-browser/*"],
-      "page-spy-wechat/*": ["./packages/page-spy-wechat/*"],
-      "page-spy-react-native/*": ["./packages/page-spy-react-native/*"],
-      "page-spy-plugins/*": ["./packages/page-spy-plugins/*"]
-    }
+    "allowJs": true
   },
-  "exclude": ["**/node_modules", "**/dist", "packages/page-spy-harmony"]
+  "exclude": ["**/dist", "packages/page-spy-harmony"]
 }

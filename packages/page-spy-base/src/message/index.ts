@@ -1,5 +1,5 @@
 import type { SpyMessage, SpySocket } from '@huolala-tech/page-spy-types';
-import { getRandomId } from '../index';
+import { getRandomId } from '../utils';
 import * as SERVER_MESSAGE_TYPE from './server-type';
 
 export function makeMessage<

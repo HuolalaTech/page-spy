@@ -1,0 +1,38 @@
+{
+  "name": "@huolala-tech/page-spy-base",
+  "version": "1.9.0",
+  "description": "The common utils of PageSpy.",
+  "dependencies": {
+    "@huolala-tech/page-spy-types": "*"
+  },
+  "license": "MIT",
+  "main": "dist/iife/index.min.js",
+  "module": "dist/esm/index.min.js",
+  "types": "types/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://www.pagespy.org/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HuolalaTech/page-spy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HuolalaTech/page-spy/issues"
+  },
+  "files": [
+    "dist",
+    "types"
+  ],
+  "keywords": [
+    "pagespy",
+    "debug",
+    "remote",
+    "inspect",
+    "devtools",
+    "reactnative"
+  ]
+}

@@ -1,11 +1,11 @@
 import { makeMessage } from '../message/index';
-import { psLog } from '../index';
-import RequestItem from '../request-item';
+import { psLog } from '../utils';
+import { RequestItem } from '../request-item';
 import { SocketStoreBase } from '../socket-base';
 import { ReqReadyState } from './common';
 
 type RequestStore = Record<string, RequestItem | null>;
-export default class NetworkProxyBase {
+export class NetworkProxyBase {
   private reqMap: RequestStore = Object.create(null);
 
   constructor(private socketStore: SocketStoreBase) {}

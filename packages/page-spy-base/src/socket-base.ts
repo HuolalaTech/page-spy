@@ -5,14 +5,14 @@
 
 import { SpyMessage, SpySocket, SpyBase } from '@huolala-tech/page-spy-types';
 import { PackedEvent } from '@huolala-tech/page-spy-types/lib/socket-event';
-import { getRandomId, psLog, stringifyData } from './index';
+import { getRandomId, psLog, stringifyData } from './utils';
 import {
   makeMessage,
   makeBroadcastMessage,
   makeUnicastMessage,
 } from './message';
 import * as SERVER_MESSAGE_TYPE from './message/server-type';
-import atom from './atom';
+import { atom } from './atom';
 import Client from './client';
 
 type InteractiveType = SpyMessage.InteractiveType;
