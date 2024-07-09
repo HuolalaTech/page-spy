@@ -12,7 +12,7 @@ describe('makePrimitiveValue: convert data to showable string', () => {
       { received: Infinity, expected: 'Infinity' },
       { received: -Infinity, expected: '-Infinity' },
       { received: NaN, expected: 'NaN' },
-      { received: 123n, expected: '123n' },
+      { received: BigInt(123), expected: '123n' },
       { received: Symbol('foo'), expected: 'Symbol(foo)' },
       { received: null, expected: null },
     ].forEach(({ received, expected }) => {
@@ -44,7 +44,7 @@ describe('getValueType', () => {
   expect(getValueType(new String())).toBe('object');
 
   expect(getValueType(123)).toBe('number');
-  expect(getValueType(123n)).toBe('bigint');
+  expect(getValueType(BigInt(123))).toBe('bigint');
   expect(getValueType(new Number(123))).toBe('object');
 
   expect(getValueType(() => {})).toBe('function');

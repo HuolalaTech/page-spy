@@ -4,9 +4,9 @@ import type {
   PageSpyPlugin,
   OnInitParams,
   SpyBase,
+  InitConfigBase,
 } from '@huolala-tech/page-spy-types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { InitConfig } from '@huolala-tech/page-spy-react-native';
 import type {
   Callback,
   MultiCallback,
@@ -22,7 +22,7 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
   private static socketStore: SpyBase.SocketStoreType | null = null;
 
   // eslint-disable-next-line class-methods-use-this
-  public onInit(params: OnInitParams<InitConfig>) {
+  public onInit(params: OnInitParams<InitConfigBase>) {
     if (RNAsyncStoragePlugin.hasInitd) return;
     RNAsyncStoragePlugin.hasInitd = true;
 

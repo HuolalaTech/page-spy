@@ -7,7 +7,7 @@
     "resolveJsonModule": true,
     "moduleResolution": "Bundler",
     "importHelpers": true,
-    "target": "esnext",
+    "target": "ESNext",
     "module": "esnext",
     "lib": ["DOM", "DOM.Iterable", "esnext"],
     "skipLibCheck": true,

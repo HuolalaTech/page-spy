@@ -1,6 +1,6 @@
 import BeaconProxy from 'page-spy-browser/src/plugins/network/proxy/beacon-proxy';
 import FetchProxy from 'page-spy-browser/src/plugins/network/proxy/fetch-proxy';
-import RequestItem from 'page-spy-base/src';
+import { RequestItem } from 'page-spy-base/src';
 import XhrProxy from 'page-spy-browser/src/plugins/network/proxy/xhr-proxy';
 
 type RequestStore = Record<string, RequestItem | null>;
