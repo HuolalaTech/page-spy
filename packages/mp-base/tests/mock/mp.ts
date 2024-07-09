@@ -29,13 +29,15 @@ export class MockSocket {
   }
 }
 
-export class MockMP implements MPSystemAPI, MPNetworkAPI, MPStorageAPI {
+export class MockMP
+  implements MPSystemAPI, MPNetworkAPI, MPStorageAPI, MPSystemAPI
+{
   private store: Record<string, any> = {};
   private listeners = new Map<string, CBType[]>();
   private socketInstance: MockSocket | null = null;
   constructor() {
     this.listeners.set('onError', []);
-    this.listeners.set('onUnHandledRejection', []);
+    this.listeners.set('onUnhandledRejection', []);
     this.listeners.set('onAppShow', []);
   }
 
@@ -193,11 +195,11 @@ export class MockMP implements MPSystemAPI, MPNetworkAPI, MPStorageAPI {
   offError(cb: CBType) {
     this.off('onError', cb);
   }
-  onUnHandledRejection(cb: CBType) {
-    this.listeners.get('onUnHandledRejection')?.push(cb);
+  onUnhandledRejection(cb: CBType) {
+    this.listeners.get('onUnhandledRejection')?.push(cb);
   }
-  offUnHandledRejection(cb: CBType) {
-    this.off('onUnHandledRejection', cb);
+  offUnhandledRejection(cb: CBType) {
+    this.off('onUnhandledRejection', cb);
   }
   onAppShow(cb: CBType) {
     this.listeners.get('onAppShow')?.push(cb);

@@ -16,7 +16,7 @@ afterEach(() => {
 describe('Error plugin', () => {
   it('Trigger error', () => {
     mp.trigger('onError', new Event('error'));
-    mp.trigger('onUnHandledRejection', new Event('unhandledrejection'));
+    mp.trigger('onUnhandledRejection', new Event('unhandledrejection'));
     expect(errorOccupied).toHaveBeenCalledTimes(2);
   });
 
