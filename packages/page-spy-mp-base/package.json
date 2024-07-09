@@ -20,8 +20,8 @@
   },
   "dependencies": {
     "@huolala-tech/eval5": "^0.0.1",
-    "@huolala-tech/page-spy-base": "*",
-    "@huolala-tech/page-spy-types": "*"
+    "@huolala-tech/page-spy-base": "^1.0.0",
+    "@huolala-tech/page-spy-types": "^1.9.0"
   },
   "publishConfig": {
     "access": "public"

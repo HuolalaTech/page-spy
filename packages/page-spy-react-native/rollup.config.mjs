@@ -2,8 +2,6 @@ import typescript from 'rollup-plugin-typescript2';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
 import babel from '@rollup/plugin-babel';
 import del from 'rollup-plugin-delete';
-import postcss from 'rollup-plugin-postcss';
-import autoprefixer from 'autoprefixer';
 import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
@@ -37,11 +35,6 @@ const plugins = [
   replace({
     PKG_VERSION: `"${pkg.version}"`,
     preventAssignment: true,
-  }),
-  postcss({
-    extensions: ['.css', '.less'],
-    extract: false,
-    plugins: [autoprefixer()],
   }),
   terser(),
 ];

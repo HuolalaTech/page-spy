@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "The common utils of PageSpy.",
   "dependencies": {
-    "@huolala-tech/page-spy-types": "*"
+    "@huolala-tech/page-spy-types": "^1.9.0"
   },
   "license": "MIT",
   "main": "./dist/index.js",
@@ -25,8 +25,7 @@
     "url": "https://github.com/HuolalaTech/page-spy/issues"
   },
   "files": [
-    "dist",
-    "types"
+    "dist"
   ],
   "keywords": [
     "pagespy",

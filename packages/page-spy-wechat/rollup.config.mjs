@@ -6,15 +6,12 @@ import nodeResolve from '@rollup/plugin-node-resolve';
 import json from '@rollup/plugin-json';
 import replace from '@rollup/plugin-replace';
 import terser from '@rollup/plugin-terser';
-import image from '@rollup/plugin-image';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
 import fs from 'fs';
 
-const root = process.cwd();
 const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 
 const plugins = [
-  image(),
   json(),
   nodeResolve(),
   commonjs(),
