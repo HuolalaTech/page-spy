@@ -1,5 +1,5 @@
 import RequestProxy from 'page-spy-mp-base/src/plugins/network/proxy/request';
-import RequestItem from 'page-spy-base/src';
+import { RequestItem } from 'page-spy-base/src';
 
 type RequestStore = Record<string, RequestItem | null>;
 interface RequestsInfo {

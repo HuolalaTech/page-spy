@@ -1,4 +1,4 @@
-import { getFormattedBody } from '../../src';
+import { getFormattedBody } from 'page-spy-base/src';
 
 describe('Network common utils', () => {
   it('getFormattedBody()', () => {

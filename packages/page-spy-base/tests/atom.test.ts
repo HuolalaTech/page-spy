@@ -1,4 +1,4 @@
-import { atom } from '../src';
+import { atom } from 'page-spy-base/src';
 
 // jest.mock('base/src/utils/atom.ts');
 beforeEach(() => {

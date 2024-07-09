@@ -4,7 +4,7 @@ import {
   SocketWrapper,
   NetworkProxyBase,
   RequestItem,
-} from '../../src';
+} from 'page-spy-base/src';
 
 class PlatformSocketWrapper extends SocketWrapper {
   init(url: string): void {

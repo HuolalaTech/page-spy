@@ -1,4 +1,8 @@
-import { makePrimitiveValue, getValueType, isArrayLike } from '../src';
+import {
+  makePrimitiveValue,
+  getValueType,
+  isArrayLike,
+} from 'page-spy-base/src';
 
 describe('makePrimitiveValue: convert data to showable string', () => {
   it('✅ Primitive is ok', () => {

@@ -1,4 +1,4 @@
-import { initStorageMock, mockWXStorage } from './mock/storage';
+import { initStorageMock } from './mock/storage';
 import { MockMP } from './mock/mp';
 import { getMPSDK, setMPSDK } from 'page-spy-mp-base/src/utils';
 
