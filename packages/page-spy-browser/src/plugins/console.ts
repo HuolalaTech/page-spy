@@ -1,12 +1,10 @@
-import { makeMessage } from 'base/src/message';
-import socketStore from 'page-spy-browser/src/helpers/socket';
 import type {
   SpyConsole,
   PageSpyPlugin,
   SpyBase,
 } from '@huolala-tech/page-spy-types';
-import atom from 'base/src/atom';
-import { getRandomId } from 'base/src';
+import { atom, getRandomId, makeMessage } from '@huolala-tech/page-spy-base';
+import socketStore from '../helpers/socket';
 
 export default class ConsolePlugin implements PageSpyPlugin {
   public name: string = 'ConsolePlugin';

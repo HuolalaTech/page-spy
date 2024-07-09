@@ -1,6 +1,6 @@
 import { initStorageMock, mockWXStorage } from './mock/storage';
 import { MockMP } from './mock/mp';
-import { getMPSDK, setMPSDK } from 'mp-base/src/utils';
+import { getMPSDK, setMPSDK } from 'page-spy-mp-base/src/utils';
 
 Object.defineProperty(globalThis, 'name', {
   value: '小程序单元测试',

@@ -1,6 +1,12 @@
-import { getRandomId, isPlainObject, psLog, toStringTag } from 'base/src/index';
-import { ReqReadyState, toLowerKeys } from 'base/src/network/common';
-import { getMPSDK } from 'mp-base/src/utils';
+import {
+  ReqReadyState,
+  toLowerKeys,
+  getRandomId,
+  isPlainObject,
+  psLog,
+  toStringTag,
+} from '@huolala-tech/page-spy-base';
+import { getMPSDK } from '../../../utils';
 import MPNetworkProxyBase from './base';
 
 export default class MPWeixinRequestProxy extends MPNetworkProxyBase {

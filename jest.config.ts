@@ -1,6 +1,6 @@
 import type { Config } from 'jest';
 import { pathsToModuleNameMapper } from 'ts-jest';
-import tsConfig from './tsconfig.json';
+import tsConfig from './tsconfig.paths.json';
 
 const moduleNameMapper = {
   ...pathsToModuleNameMapper(tsConfig.compilerOptions.paths, {
@@ -36,7 +36,7 @@ const config: Config = {
       },
       preset: 'ts-jest',
       testEnvironment: 'jsdom',
-      testMatch: ['**/packages/base/tests/**/*.test.ts'],
+      testMatch: ['**/packages/page-spy-base/tests/**/*.test.ts'],
       moduleNameMapper,
     },
     {
@@ -59,9 +59,11 @@ const config: Config = {
         color: 'green',
       },
       preset: 'ts-jest',
-      testMatch: ['**/packages/mp-base/tests/**/*.test.ts'],
+      testMatch: ['**/packages/page-spy-mp-base/tests/**/*.test.ts'],
       moduleNameMapper,
-      setupFilesAfterEnv: ['<rootDir>/packages/mp-base/tests/setup.ts'],
+      setupFilesAfterEnv: [
+        '<rootDir>/packages/page-spy-mp-base/tests/setup.ts',
+      ],
     },
   ],
 };

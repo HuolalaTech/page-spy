@@ -1,7 +1,6 @@
 import type { SpyMP } from '@huolala-tech/page-spy-types';
-import Client, { combineName } from 'base/src/client';
-import { getMPSDK, joinQuery, promisifyMPApi } from 'mp-base/src/utils';
-import { getRandomId } from 'base/src';
+import { Client, combineName, getRandomId } from '@huolala-tech/page-spy-base';
+import { getMPSDK, joinQuery, promisifyMPApi } from '../utils';
 import { Config } from '../config';
 
 interface TResponse<T> {

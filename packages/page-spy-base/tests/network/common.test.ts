@@ -1,4 +1,4 @@
-import { getFormattedBody } from 'base/src/network/common';
+import { getFormattedBody } from '../../src';
 
 describe('Network common utils', () => {
   it('getFormattedBody()', () => {

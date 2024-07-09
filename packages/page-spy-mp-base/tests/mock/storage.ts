@@ -1,4 +1,4 @@
-import { getMPSDK } from 'mp-base/src/utils';
+import { getMPSDK } from 'page-spy-mp-base/src/utils';
 
 export function mockWXStorage(): MPStorageAPI {
   let store: Record<string, any> = {};

@@ -1,6 +1,6 @@
-import { makeMessage } from 'base/src/message';
+import { makeMessage } from '@huolala-tech/page-spy-base';
 import { SpyStorage, PageSpyPlugin } from '@huolala-tech/page-spy-types';
-import socketStore from 'page-spy-browser/src/helpers/socket';
+import socketStore from '../helpers/socket';
 
 export class StoragePlugin implements PageSpyPlugin {
   public name = 'StoragePlugin';

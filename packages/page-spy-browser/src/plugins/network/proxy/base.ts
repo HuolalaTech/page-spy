@@ -1,5 +1,5 @@
-import socketStore from 'page-spy-browser/src/helpers/socket';
-import NetworkProxyBase from 'base/src/network/base';
+import { NetworkProxyBase } from '@huolala-tech/page-spy-base';
+import socketStore from '../../../helpers/socket';
 
 export default class WebNetworkProxyBase extends NetworkProxyBase {
   constructor() {

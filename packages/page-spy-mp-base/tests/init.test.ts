@@ -1,14 +1,14 @@
-import { isBrowser } from 'base/src';
-import SDK from 'mp-base/src/index';
+import { isBrowser } from 'page-spy-base/src';
+import SDK from 'page-spy-mp-base/src/index';
 
-import ConsolePlugin from 'mp-base/src/plugins/console';
-import StoragePlugin from 'mp-base/src/plugins/storage';
-import NetworkPlugin from 'mp-base/src/plugins/network';
-import ErrorPlugin from 'mp-base/src/plugins/error';
-import SystemPlugin from 'mp-base/src/plugins/system';
+import ConsolePlugin from 'page-spy-mp-base/src/plugins/console';
+import StoragePlugin from 'page-spy-mp-base/src/plugins/storage';
+import NetworkPlugin from 'page-spy-mp-base/src/plugins/network';
+import ErrorPlugin from 'page-spy-mp-base/src/plugins/error';
+import SystemPlugin from 'page-spy-mp-base/src/plugins/system';
 
 import { SpyConsole } from '@huolala-tech/page-spy-types/index';
-import { ROOM_SESSION_KEY } from 'base/src/constants';
+import { ROOM_SESSION_KEY } from 'page-spy-base/src';
 import { initStorageMock } from './mock/storage';
 import { mp } from './setup';
 

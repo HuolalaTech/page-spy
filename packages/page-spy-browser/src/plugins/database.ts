@@ -1,8 +1,7 @@
 import { DBInfo, DBStoreInfo } from '@huolala-tech/page-spy-types/lib/database';
-import { psLog } from 'base/src';
-import socketStore from 'page-spy-browser/src/helpers/socket';
-import { makeMessage } from 'base/src/message';
+import { psLog, makeMessage } from '@huolala-tech/page-spy-base';
 import { SpyDatabase, PageSpyPlugin } from '@huolala-tech/page-spy-types';
+import socketStore from '../helpers/socket';
 
 export function promisify<T = any>(req: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {

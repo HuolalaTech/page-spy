@@ -1,4 +1,4 @@
-import ConsolePlugin from 'mp-base/src/plugins/console';
+import ConsolePlugin from 'page-spy-mp-base/src/plugins/console';
 
 afterEach(() => {
   jest.restoreAllMocks();

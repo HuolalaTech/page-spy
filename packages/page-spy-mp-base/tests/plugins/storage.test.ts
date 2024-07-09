@@ -1,4 +1,6 @@
-import StoragePlugin, { mpDataStringify } from 'mp-base/src/plugins/storage';
+import StoragePlugin, {
+  mpDataStringify,
+} from 'page-spy-mp-base/src/plugins/storage';
 import { initStorageMock } from '../mock/storage';
 import { mp } from '../setup';
 

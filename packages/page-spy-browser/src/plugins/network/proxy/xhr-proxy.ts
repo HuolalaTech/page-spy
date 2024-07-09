@@ -7,15 +7,13 @@ import {
   getObjectKeys,
   psLog,
   blob2base64Async,
-} from 'base/src';
-import RequestItem from 'base/src/request-item';
-import {
   MAX_SIZE,
   Reason,
   addContentTypeHeader,
   getFormattedBody,
   resolveUrlInfo,
-} from 'base/src/network/common';
+  RequestItem,
+} from '@huolala-tech/page-spy-base';
 import WebNetworkProxyBase from './base';
 
 declare global {

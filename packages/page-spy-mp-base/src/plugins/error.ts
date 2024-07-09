@@ -1,13 +1,10 @@
-/* eslint-disable class-methods-use-this */
-import atom from 'base/src/atom';
-import { makeMessage } from 'base/src/message';
-import socketStore from 'mp-base/src/helpers/socket';
+import { atom, makeMessage, formatErrorObj } from '@huolala-tech/page-spy-base';
 import type {
   SpyConsole,
   PageSpyPlugin,
 } from '@huolala-tech/page-spy-types/index';
+import socketStore from '../helpers/socket';
 import { getMPSDK } from '../utils';
-import { formatErrorObj } from 'base/src';
 
 // TODO this plugin should test on multiple platforms
 export default class ErrorPlugin implements PageSpyPlugin {

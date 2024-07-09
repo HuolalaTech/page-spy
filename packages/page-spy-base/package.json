@@ -6,11 +6,11 @@
     "@huolala-tech/page-spy-types": "*"
   },
   "license": "MIT",
-  "main": "dist/iife/index.min.js",
-  "module": "dist/esm/index.min.js",
-  "types": "types/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "yarn clean && tsc",
+    "clean": "rm -rf ./dist"
   },
   "publishConfig": {
     "access": "public"

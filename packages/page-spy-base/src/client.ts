@@ -71,7 +71,7 @@ export const combineName = ({
 }: SpyClient.ClientInfo) =>
   `${osType}/${osVersion} ${browserType}/${browserVersion}`;
 
-export default class Client {
+export class Client {
   static info: SpyClient.ClientInfo = {
     // browserName and framework should be overwritten by package implementation\
     osType: 'unknown',

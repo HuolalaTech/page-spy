@@ -1,5 +1,5 @@
-import socketStore from 'mp-base/src/helpers/socket';
-import NetworkProxyBase from 'base/src/network/base';
+import { NetworkProxyBase } from '@huolala-tech/page-spy-base';
+import socketStore from '../../../helpers/socket';
 
 export default class MPNetworkProxyBase extends NetworkProxyBase {
   constructor() {

@@ -1,5 +1,5 @@
-import { getRandomId } from 'base/src';
-import { InitConfig } from 'page-spy-browser/types';
+import { getRandomId } from '@huolala-tech/page-spy-base';
+import { InitConfig } from '../config';
 
 interface TResponse<T> {
   code: string;

@@ -13,7 +13,7 @@ import {
 } from './message';
 import * as SERVER_MESSAGE_TYPE from './message/server-type';
 import { atom } from './atom';
-import Client from './client';
+import { Client } from './client';
 
 type InteractiveType = SpyMessage.InteractiveType;
 type InternalMsgType = SpyMessage.InternalMsgType;

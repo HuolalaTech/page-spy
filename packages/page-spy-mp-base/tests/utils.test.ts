@@ -1,4 +1,4 @@
-import { joinQuery, promisifyMPApi } from 'mp-base/src/utils';
+import { joinQuery, promisifyMPApi } from 'page-spy-mp-base/src/utils';
 
 afterEach(() => {
   jest.clearAllMocks();

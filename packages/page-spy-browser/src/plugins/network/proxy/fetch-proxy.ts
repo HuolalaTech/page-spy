@@ -6,14 +6,12 @@ import {
   isString,
   isURL,
   psLog,
-} from 'base/src';
-import {
   addContentTypeHeader,
   getFormattedBody,
   MAX_SIZE,
   Reason,
   resolveUrlInfo,
-} from 'base/src/network/common';
+} from '@huolala-tech/page-spy-base';
 import WebNetworkProxyBase from './base';
 
 export default class FetchProxy extends WebNetworkProxyBase {

@@ -1,6 +1,9 @@
-import { getRandomId } from 'base/src';
-import RequestItem from 'base/src/request-item';
-import { ReqReadyState, resolveUrlInfo } from 'base/src/network/common';
+import {
+  getRandomId,
+  RequestItem,
+  ReqReadyState,
+  resolveUrlInfo,
+} from '@huolala-tech/page-spy-base';
 import WebNetworkProxyBase from './base';
 
 const OriginEventSource = window.EventSource;

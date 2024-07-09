@@ -1,11 +1,12 @@
 {
+  "extends": "./tsconfig.paths.json",
   "compilerOptions": {
     "rootDir": ".",
-    "declaration": true,
     "noEmit": true,
+    "declaration": true,
     "strict": true,
     "resolveJsonModule": true,
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "importHelpers": true,
     "target": "esnext",
     "module": "esnext",

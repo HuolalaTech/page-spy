@@ -1,9 +1,10 @@
-import { getRandomId, psLog } from 'base/src';
 import {
   addContentTypeHeader,
+  getRandomId,
+  psLog,
   getFormattedBody,
   resolveUrlInfo,
-} from 'base/src/network/common';
+} from '@huolala-tech/page-spy-base';
 import WebNetworkProxyBase from './base';
 
 export default class BeaconProxy extends WebNetworkProxyBase {

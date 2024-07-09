@@ -1,7 +1,6 @@
-import socketStore from 'mp-base/src/helpers/socket';
-import { makeMessage } from 'base/src/message';
 import type { SpySystem, PageSpyPlugin } from '@huolala-tech/page-spy-types';
-import Client, { combineName } from 'base/src/client';
+import { Client, combineName, makeMessage } from '@huolala-tech/page-spy-base';
+import socketStore from '../helpers/socket';
 
 export default class SystemPlugin implements PageSpyPlugin {
   public name = 'SystemPlugin';

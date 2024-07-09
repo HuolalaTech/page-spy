@@ -1,9 +1,7 @@
-import { makeMessage } from 'base/src/message';
+import { makeMessage, Client, psLog } from '@huolala-tech/page-spy-base';
 import type { SpyStorage, PageSpyPlugin } from '@huolala-tech/page-spy-types';
-import socketStore from 'mp-base/src/helpers/socket';
-import { psLog } from 'base/src';
+import socketStore from '../helpers/socket';
 import { getMPSDK, utilAPI } from '../utils';
-import Client from 'base/src/client';
 
 export function mpDataStringify(data: any) {
   const typeOfValue = typeof data;

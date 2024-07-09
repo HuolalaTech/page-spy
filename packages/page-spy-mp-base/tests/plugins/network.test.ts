@@ -1,4 +1,4 @@
-import NetworkPlugin from 'mp-base/src/plugins/network';
+import NetworkPlugin from 'page-spy-mp-base/src/plugins/network';
 import { computeRequestMapInfo } from './util';
 import { mp } from '../setup';
 

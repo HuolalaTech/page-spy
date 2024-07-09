@@ -3,9 +3,11 @@
   "compilerOptions": {
     "rootDir": "./src",
     "target": "ESNext",
-    "module": "ESNext",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "noEmit": false,
-    "outDir": "dist"
+    "outDir": "dist/cjs",
+    "declaration": false
   },
   "include": ["src"]
 }

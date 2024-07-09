@@ -1,4 +1,4 @@
-import { SocketState } from 'base/src/socket-base';
+import { SocketState } from 'page-spy-base/src';
 import { mockRequest } from './request';
 import EventEmitter from 'events';
 type CBType = (event?: any) => any;

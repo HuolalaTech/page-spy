@@ -1,10 +1,9 @@
-import { makeMessage } from 'base/src/message';
-import socketStore from 'mp-base/src/helpers/socket';
 import type {
   SpyConsole,
   PageSpyPlugin,
 } from '@huolala-tech/page-spy-types/index';
-import atom from 'base/src/atom';
+import { atom, makeMessage } from '@huolala-tech/page-spy-base';
+import socketStore from '../helpers/socket';
 import { joinQuery } from '../utils';
 
 export default class ConsolePlugin implements PageSpyPlugin {

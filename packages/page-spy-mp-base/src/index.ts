@@ -1,4 +1,13 @@
-import { getAuthSecret, isArray, isClass, psLog } from 'base/src';
+import {
+  Client,
+  atom,
+  getAuthSecret,
+  isArray,
+  isClass,
+  psLog,
+  SocketState,
+  ROOM_SESSION_KEY,
+} from '@huolala-tech/page-spy-base';
 import type {
   SpyMP,
   PageSpyPlugin,
@@ -6,8 +15,6 @@ import type {
   PluginOrder,
   PageSpyPluginLifecycleArgs,
 } from '@huolala-tech/page-spy-types';
-import { SocketState } from 'base/src/socket-base';
-import { ROOM_SESSION_KEY } from 'base/src/constants';
 
 import ConsolePlugin from './plugins/console';
 import ErrorPlugin from './plugins/error';
@@ -22,8 +29,6 @@ import Request from './api';
 // eslint-disable-next-line import/order
 import { Config } from './config';
 import { getMPSDK, utilAPI } from './utils';
-import Client from 'base/src/client';
-import atom from 'base/src/atom';
 
 type UpdateConfig = {
   title?: string;

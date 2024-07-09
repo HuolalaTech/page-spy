@@ -5,8 +5,8 @@ import {
   getContentType,
   getFormattedBody,
   resolveUrlInfo,
-} from 'base/src/network/common';
-import { isBrowser, toStringTag } from 'base/src';
+} from 'page-spy-base/src';
+import { isBrowser, toStringTag } from 'page-spy-base/src';
 
 describe('Network utilities', () => {
   // format the USP and FormData data which be used in request payload,

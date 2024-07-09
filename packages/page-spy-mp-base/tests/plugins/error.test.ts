@@ -1,4 +1,4 @@
-import ErrorPlugin from 'mp-base/src/plugins/error';
+import ErrorPlugin from 'page-spy-mp-base/src/plugins/error';
 import { mp } from '../setup';
 
 const plugin = new ErrorPlugin();

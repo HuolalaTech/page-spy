@@ -23,7 +23,7 @@ const plugins = [
   nodeResolve(),
   commonjs(),
   typescript({
-    // exclude: '**/tests/**/*.test.ts',
+    useTsconfigDeclarationDir: true,
   }),
   replace({
     PKG_VERSION: `"${pkg.version}"`,
@@ -33,12 +33,6 @@ const plugins = [
     extensions: ['.css', '.less'],
     extract: false,
     plugins: [autoprefixer()],
-  }),
-  alias({
-    entries: [
-      { find: 'page-spy-browser', replacement: root },
-      { find: 'base', replacement: resolve(root, '../base') },
-    ],
   }),
   terser(),
 ];

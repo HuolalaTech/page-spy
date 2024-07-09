@@ -7,11 +7,9 @@ import PagePlugin from 'page-spy-browser/src/plugins/page';
 import { StoragePlugin } from 'page-spy-browser/src/plugins/storage';
 import { SpyConsole } from '@huolala-tech/page-spy-types';
 import socketStore from 'page-spy-browser/src/helpers/socket';
-import { ROOM_SESSION_KEY } from 'base/src/constants';
-import { Config } from 'page-spy-browser/src/config';
-import { isBrowser } from 'base/src';
+import { ROOM_SESSION_KEY } from 'page-spy-base/src';
+import { isBrowser } from 'page-spy-base/src';
 import Request from 'page-spy-browser/src/api';
-import { JSDOM } from 'jsdom';
 import { DatabasePlugin } from 'page-spy-browser/src/plugins/database';
 
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));

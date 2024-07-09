@@ -1,9 +1,6 @@
-/* eslint-disable class-methods-use-this */
-import atom from 'base/src/atom';
-import { makeMessage } from 'base/src/message';
-import socketStore from 'page-spy-browser/src/helpers/socket';
+import { atom, formatErrorObj, makeMessage } from '@huolala-tech/page-spy-base';
 import type { SpyConsole, PageSpyPlugin } from '@huolala-tech/page-spy-types';
-import { formatErrorObj } from 'base/src';
+import socketStore from '../helpers/socket';
 
 export default class ErrorPlugin implements PageSpyPlugin {
   public name = 'ErrorPlugin';

@@ -1,14 +1,14 @@
-import { ROOM_SESSION_KEY } from 'base/src/constants';
 import {
+  Client,
   SocketStoreBase,
   SocketState,
   SocketWrapper,
-} from 'base/src/socket-base';
-import { UPDATE_ROOM_INFO } from 'base/src/message/server-type';
+  combineName,
+  UPDATE_ROOM_INFO,
+  ROOM_SESSION_KEY,
+} from '@huolala-tech/page-spy-base';
 import type { SpyMP } from '@huolala-tech/page-spy-types';
-import Client, { combineName } from 'base/src/client';
 import { getMPSDK, utilAPI } from '../utils';
-import { DataItem } from 'packages/page-spy-types/lib/client';
 
 export class MPSocketWrapper extends SocketWrapper {
   private socketInstance: MPSocket | null = null;

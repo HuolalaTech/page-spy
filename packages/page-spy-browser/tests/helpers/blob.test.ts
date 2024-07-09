@@ -1,4 +1,4 @@
-import { blob2base64Async } from 'base/src';
+import { blob2base64Async } from 'page-spy-base/src';
 
 describe('blob2base64Async', () => {
   test('should convert a Blob to base64', async () => {

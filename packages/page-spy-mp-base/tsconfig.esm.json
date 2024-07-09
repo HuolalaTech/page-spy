@@ -5,7 +5,9 @@
     "target": "ESNext",
     "module": "ESNext",
     "noEmit": false,
-    "outDir": "dist"
+    "outDir": "dist/esm",
+    "declaration": true,
+    "declarationDir": "dist/types"
   },
   "include": ["src"]
 }

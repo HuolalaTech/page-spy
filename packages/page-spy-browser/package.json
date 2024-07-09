@@ -5,7 +5,7 @@
   "license": "MIT",
   "main": "dist/iife/index.min.js",
   "module": "dist/esm/index.min.js",
-  "types": "types/index.d.ts",
+  "types": "dist/types/index.d.ts",
   "files": [
     "dist",
     "types"
@@ -32,8 +32,8 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.0",
-    "@huolala-tech/page-spy-types": "^1.9.0",
     "@huolala-tech/page-spy-base": "*",
+    "@huolala-tech/page-spy-types": "^1.9.0",
     "copy-to-clipboard": "^3.3.1"
   },
   "devDependencies": {
