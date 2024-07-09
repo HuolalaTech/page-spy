@@ -74,6 +74,11 @@ interface OnInitParams<T extends InitConfigBase> {
    * communicate with Web / API by it.
    */
   socketStore: SocketStoreType;
+
+  /**
+   * The atom instance to store js object info.
+   */
+  atom: any;
 }
 
 export interface OnMountedParams {
