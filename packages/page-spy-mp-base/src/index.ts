@@ -293,3 +293,5 @@ INTERNAL_PLUGINS.forEach((p) => {
 });
 
 export default PageSpy;
+export * from './utils';
+export * from './helpers/socket';

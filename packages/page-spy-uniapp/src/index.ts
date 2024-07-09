@@ -1,22 +1,17 @@
-import { setMPSDK } from 'mp-base/src/utils';
-import PageSpy from 'mp-base/src';
-import Client from 'base/src/client';
-import { SocketStoreBase } from 'base/src/socket-base';
-import { psLog } from 'base/src';
-import { MPSocketWrapper } from 'mp-base/src/helpers/socket';
-import { SpyClient } from 'packages/page-spy-types';
+/// <reference types="@huolala-tech/page-spy-mp-base/global" />
 
-declare const uni: any;
+import PageSpy, {
+  setMPSDK,
+  MPSocketWrapper,
+} from '@huolala-tech/page-spy-mp-base';
+import { psLog, Client, SocketStoreBase } from '@huolala-tech/page-spy-base';
+import { SpyClient } from '@huolala-tech/page-spy-types';
+
+declare const uni: MPSDK;
 
 setMPSDK(uni);
 
-const info = uni.getSystemInfoSync() as {
-  osName: string;
-  osVersion: string;
-  appVersion: string;
-  hostName: string;
-  uniPlatform: string;
-};
+const info = uni.getSystemInfoSync();
 
 let browserType: SpyClient.ClientInfo['browserType'] = 'unknown';
 

@@ -1,7 +1,8 @@
-import { setMPSDK } from 'mp-base/src/utils';
-import PageSpy from 'mp-base/src';
-import Client from 'base/src/client';
-import { SpyClient } from 'packages/page-spy-types';
+/// <reference types="@huolala-tech/page-spy-mp-base/global" />
+
+import PageSpy, { setMPSDK } from '@huolala-tech/page-spy-mp-base';
+import { Client } from '@huolala-tech/page-spy-base';
+import { SpyClient } from '@huolala-tech/page-spy-types';
 
 declare const wx: MPSDK;
 

@@ -1,12 +1,14 @@
-import { setCustomGlobal, setMPSDK } from 'mp-base/src/utils';
-import PageSpy from 'mp-base/src';
-import { SpyClient, SpyMP } from 'packages/page-spy-types';
-import { SocketStoreBase, SocketWrapper } from 'base/src/socket-base';
-import { psLog } from 'base/src';
-import { MPSocketWrapper } from 'mp-base/src/helpers/socket';
-import Client from 'base/src/client';
+/// <reference types="@huolala-tech/page-spy-mp-base/global" />
 
-declare var tt: MPSDK;
+import PageSpy, {
+  MPSocketWrapper,
+  setCustomGlobal,
+  setMPSDK,
+} from '@huolala-tech/page-spy-mp-base';
+import { SpyClient, SpyMP } from '@huolala-tech/page-spy-types';
+import { Client, psLog } from '@huolala-tech/page-spy-base';
+
+declare const tt: any;
 
 class PageSpyTaro extends PageSpy {
   constructor(
@@ -14,7 +16,7 @@ class PageSpyTaro extends PageSpy {
       taro: any;
     },
   ) {
-    const taro = init.taro;
+    const { taro } = init;
     if (
       !taro ||
       typeof taro !== 'object' ||

@@ -3,11 +3,10 @@
   "compilerOptions": {
     "rootDir": "./src",
     "target": "ESNext",
-    "module": "CommonJS",
-    "moduleResolution": "Node",
+    "module": "ESNext",
     "noEmit": false,
-    "outDir": "dist/cjs",
-    "declaration": false
+    "outDir": "dist",
+    "declaration": true
   },
-  "include": ["src"]
+  "include": ["src", "global.d.ts"]
 }

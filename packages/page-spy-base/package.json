@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-base",
-  "version": "1.9.0",
+  "version": "1.0.0",
   "description": "The common utils of PageSpy.",
   "dependencies": {
     "@huolala-tech/page-spy-types": "*"
