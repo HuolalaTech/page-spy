@@ -7,15 +7,13 @@ import {
   getObjectKeys,
   psLog,
   blob2base64Async,
-} from 'base/src';
-import RequestItem from 'base/src/request-item';
-import {
+  RequestItem,
   MAX_SIZE,
   Reason,
   addContentTypeHeader,
   getFormattedBody,
   resolveUrlInfo,
-} from 'base/src/network/common';
+} from '@huolala-tech/page-spy-base';
 import RNNetworkProxyBase from './base';
 
 /**
@@ -91,7 +89,7 @@ class XhrProxy extends RNNetworkProxyBase {
           "The request object is not found on XMLHttpRequest's setRequestHeader event",
         );
       } /* c8 ignore stop */
-      return setRequestHeader.apply(this, [key, value]);
+      setRequestHeader.apply(this, [key, value]);
     };
 
     XMLHttpRequest.prototype.send = function (body) {
@@ -149,7 +147,7 @@ class XhrProxy extends RNNetworkProxyBase {
               req.endTime = Date.now();
               req.costTime = req.endTime - (req.startTime || req.endTime);
 
-              let responseType = XMLReq.responseType;
+              let { responseType } = XMLReq;
               if (
                 !responseType ||
                 (XMLReq.isFetch && responseType === 'blob')

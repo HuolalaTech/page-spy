@@ -5,12 +5,10 @@ import nodeResolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
 import terser from '@rollup/plugin-terser';
-import alias from '@rollup/plugin-alias';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
 import fs from 'fs';
-import { resolve, dirname } from 'path';
+import { dirname } from 'path';
 
-const root = process.cwd();
 const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 const getBabel = (mode) => {
   return babel({
@@ -42,15 +40,11 @@ const plugins = [
   nodeResolve(),
   commonjs(),
   typescript({
-    // exclude: 'tests/**/*',
-    tsconfigOverride: { include: ['packages/page-spy-plugin-rrweb/src'] },
+    useTsconfigDeclarationDir: true,
   }),
   replace({
     PKG_VERSION: `"${pkg.version}"`,
     preventAssignment: true,
-  }),
-  alias({
-    entries: [{ find: 'base', replacement: resolve(root, '../base') }],
   }),
   terser(),
 ];

@@ -1,4 +1,4 @@
-import { isBrowser, isNumber } from 'base/src';
+import { isBrowser, isNumber } from '@huolala-tech/page-spy-base';
 
 interface HarborConfig {
   maximum?: number;
@@ -14,7 +14,7 @@ export class Harbor {
 
   // Specify the maximum bytes of single harbor's container.
   // Default 10MB.
-  private maximum = 10 * 1024 * 1024;
+  maximum = 10 * 1024 * 1024;
 
   constructor(config?: HarborConfig) {
     if (config && isNumber(config.maximum) && config.maximum >= 0) {

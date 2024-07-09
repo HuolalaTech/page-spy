@@ -51,6 +51,7 @@ export interface InitConfigBase {
    * @private
    */
   secret?: string;
+  [key: string]: any;
 }
 
 export interface UpdateConfig {

@@ -1,4 +1,4 @@
-import { makeMessage } from 'base/src/message';
+import { makeMessage } from '@huolala-tech/page-spy-base';
 import type {
   SpyStorage,
   PageSpyPlugin,
@@ -6,11 +6,11 @@ import type {
   SpyBase,
 } from '@huolala-tech/page-spy-types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { InitConfig } from 'page-spy-react-native/types';
+import type { InitConfig } from '@huolala-tech/page-spy-react-native';
 import type {
   Callback,
   MultiCallback,
-} from '@react-native-async-storage/async-storage/src/types';
+} from '@react-native-async-storage/async-storage/lib/typescript/types';
 
 export default class RNAsyncStoragePlugin implements PageSpyPlugin {
   public name = 'RNAsyncStoragePlugin';

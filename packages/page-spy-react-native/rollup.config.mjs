@@ -8,18 +8,15 @@ import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 import terser from '@rollup/plugin-terser';
-import alias from '@rollup/plugin-alias';
 import fs from 'fs';
-import { resolve } from 'path';
 
-const root = process.cwd();
 const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 
 const plugins = [
   nodeResolve(),
   commonjs(),
   typescript({
-    // exclude: '**/tests/**/*.test.ts',
+    useTsconfigDeclarationDir: true,
   }),
   babel({
     exclude: ['node_modules/**'],
@@ -46,13 +43,6 @@ const plugins = [
     extract: false,
     plugins: [autoprefixer()],
   }),
-  alias({
-    entries: [
-      { find: 'mp-base', replacement: resolve(root, '../mp-base') },
-      { find: 'base', replacement: resolve(root, '../base') },
-      { find: 'page-spy-react-native', replacement: resolve(root, '../page-spy-react-native') }
-    ],
-  }),
   terser(),
 ];
 
@@ -73,9 +63,10 @@ export default {
       sourcemap: true,
     },
   ],
-  plugins: [
-    ...plugins,
-    del({ targets: ['dist/*'] }),
+  plugins: [...plugins, del({ targets: ['dist/*'] })],
+  external: [
+    'react-native',
+    'promise/setimmediate/rejection-tracking',
+    'promise/setimmediate/es6-extensions',
   ],
-  external: ['react-native','promise/setimmediate/rejection-tracking','promise/setimmediate/es6-extensions']
 };

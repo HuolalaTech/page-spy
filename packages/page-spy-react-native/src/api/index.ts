@@ -1,8 +1,6 @@
-import { Config } from '../config';
+import { Client, getRandomId, combineName } from '@huolala-tech/page-spy-base';
+import { Config, InitConfig } from '../config';
 import { joinQuery } from '../utils';
-import { InitConfig } from 'page-spy-react-native/types';
-import { getRandomId } from 'base/src';
-import Client, { combineName } from 'base/src/client';
 
 interface TResponse<T> {
   code: string;
@@ -55,6 +53,7 @@ export default class Request {
     })
       .then((res) => res.json())
       .then((res: TResponse<TCreateRoom>) => {
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         const { name, address } = res.data || {};
         const roomUrl = this.getRoomUrl(address);
         return {

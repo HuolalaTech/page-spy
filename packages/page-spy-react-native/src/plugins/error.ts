@@ -1,17 +1,14 @@
-import atom from 'base/src/atom';
-import { makeMessage } from 'base/src/message';
+import { atom, makeMessage, formatErrorObj } from '@huolala-tech/page-spy-base';
 import type {
   SpyConsole,
   PageSpyPlugin,
 } from '@huolala-tech/page-spy-types/index';
-import socketStore from '../helpers/socket';
 import { ErrorHandlerCallback } from 'react-native';
 // @ts-ignore
 import LocalPromise from 'promise/setimmediate/es6-extensions';
 // @ts-ignore
 import RejectTracking from 'promise/setimmediate/rejection-tracking';
-
-import { formatErrorObj } from 'base/src';
+import socketStore from '../helpers/socket';
 
 // TODO this plugin should test on multiple platforms
 export default class ErrorPlugin implements PageSpyPlugin {
@@ -57,8 +54,8 @@ export default class ErrorPlugin implements PageSpyPlugin {
         this.errorHandler(error);
         // origin error message
         console.warn('Possible Unhandled Promise Rejection (id: ' + id + '):');
-        var errStr = (error && (error.stack || error)) + '';
-        errStr.split('\n').forEach(function (line) {
+        const errStr = (error && (error.stack || error)) + '';
+        errStr.split('\n').forEach((line) => {
           console.warn('  ' + line);
         });
       },

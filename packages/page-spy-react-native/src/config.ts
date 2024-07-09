@@ -1,8 +1,22 @@
-import { ConfigBase } from 'base/src/config';
-import { InitConfig } from 'page-spy-react-native/types';
+import { ConfigBase } from '@huolala-tech/page-spy-base';
+import { InitConfigBase } from '@huolala-tech/page-spy-types';
+
+type InternalPlugins =
+  | 'ConsolePlugin'
+  | 'ErrorPlugin'
+  | 'NetworkPlugin'
+  | 'SystemPlugin';
+export interface InitConfig extends InitConfigBase {
+  /**
+   * All internal plugins are carried with PageSpy by default out of the box.
+   * You can disable some plugins as needed.
+   */
+  disabledPlugins?: (InternalPlugins | string)[];
+}
 
 export class Config extends ConfigBase<InitConfig> {
   protected privateKeys: (keyof InitConfig)[] = ['secret'];
+
   // I need to use generic type on this method, so it can't be static
   /* eslint-disable-next-line class-methods-use-this */
   protected defaultConfig() {
