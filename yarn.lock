@@ -2255,13 +2255,6 @@
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
 
-"@rollup/plugin-alias@^4.0.3":
-  version "4.0.4"
-  resolved "https://registry.npmjs.org/@rollup/plugin-alias/-/plugin-alias-4.0.4.tgz#67734ec44a7747916aa52a3b1a0e8d459dbf3ae2"
-  integrity sha512-0CaAY238SMtYAWEXXptWSR8iz8NYZnH7zNBKuJ14xFJSGwLtPgjvXYsoApAHfzYXXH1ejxpVw7WlHss3zhh9SQ==
-  dependencies:
-    slash "^4.0.0"
-
 "@rollup/plugin-babel@^6.0.3":
   version "6.0.4"
   resolved "https://registry.npmjs.org/@rollup/plugin-babel/-/plugin-babel-6.0.4.tgz#bd698e351fa9aa9619fcae780aea2a603d98e4c4"
@@ -10277,11 +10270,6 @@ slash@3.0.0, slash@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/slash/-/slash-3.0.0.tgz#6539be870c165adbd5240220dbe361f1bc4d4634"
   integrity sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==
-
-slash@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.npmjs.org/slash/-/slash-4.0.0.tgz#2422372176c4c6c5addb5e2ada885af984b396a7"
-  integrity sha512-3dOsAHXXUkQTpOYcoAxLIorMTp4gIQr5IW3iVb7A7lFIp0VHhnynm9izx6TssdrIcVIESAlVjtnO2K8bg+Coew==
 
 slice-ansi@^2.0.0:
   version "2.1.0"
