@@ -35,7 +35,6 @@
     "@huolala-tech/page-spy-react-native": "*",
     "@huolala-tech/page-spy-types": "^1.9.0",
     "@react-native-async-storage/async-storage": "^1.23.1",
-    "@rollup/plugin-alias": "^4.0.3",
     "@rollup/plugin-babel": "^6.0.3",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.0.1",
