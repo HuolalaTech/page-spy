@@ -28,8 +28,8 @@ export default class ErrorPlugin implements PageSpyPlugin {
     if (mp.canIUse('offError')) {
       mp.offError(this.errorHandler);
     }
-    if (mp.canIUse('offUnHandledRejection')) {
-      mp.offUnHandledRejection(this.unhandledRejectionHandler);
+    if (mp.canIUse('offUnhandledRejection')) {
+      mp.offUnhandledRejection(this.unhandledRejectionHandler);
     }
     ErrorPlugin.hasInitd = false;
   }
@@ -71,8 +71,8 @@ export default class ErrorPlugin implements PageSpyPlugin {
   private onUnhandledRejectionError() {
     const mp = getMPSDK();
     // Promise unhandledRejection Error
-    if (mp.canIUse('onUnHandledRejection')) {
-      mp.onUnHandledRejection(this.unhandledRejectionHandler);
+    if (mp.canIUse('onUnhandledRejection')) {
+      mp.onUnhandledRejection(this.unhandledRejectionHandler);
     }
   }
 

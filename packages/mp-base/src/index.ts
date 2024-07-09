@@ -67,7 +67,8 @@ class PageSpy {
 
     const mp = getMPSDK();
 
-    if (mp.canIUse('getAccountInfoSync')) {
+    // in uniapp, caniuse may return true but...
+    if (mp.canIUse('getAccountInfoSync') && mp.getAccountInfoSync) {
       const accountInfo = mp.getAccountInfoSync().miniProgram;
       if (
         accountInfo.envVersion === 'release' &&

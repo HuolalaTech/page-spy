@@ -162,8 +162,8 @@ type MPSystemAPI = {
   };
   onError(listener: (res: { message: string; stack: string }) => void);
   offError(listener: (res: { message: string; stack: string }) => void);
-  onUnHandledRejection(listener: (res: { reason: string }) => void);
-  offUnHandledRejection(listener: (res: { reason: string }) => void);
+  onUnhandledRejection(listener: (res: { reason: string }) => void);
+  offUnhandledRejection(listener: (res: { reason: string }) => void);
   onAppShow(
     listener: (res: {
       path: string;
