@@ -8,8 +8,7 @@
   "module": "dist/esm/index.min.js",
   "types": "dist/types/index.d.ts",
   "files": [
-    "dist",
-    "types"
+    "dist"
   ],
   "publishConfig": {
     "access": "public"

@@ -4,12 +4,11 @@
   "description": "Used for code evaluation in mini program.",
   "homepage": "https://github.com/HuolalaTech/page-spy/tree/main/packages/page-spy-plugin-mp-eval",
   "license": "MIT",
-  "main": "dist/iife/index.min.js",
+  "main": "dist/esm/index.min.js",
   "module": "dist/esm/index.min.js",
-  "types": "types/index.d.ts",
+  "types": "dist/types/index.d.ts",
   "files": [
-    "dist",
-    "types"
+    "dist"
   ],
   "publishConfig": {
     "access": "public"
@@ -27,15 +26,15 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.0",
-    "fflate": "^0.8.1"
+    "@huolala-tech/eval5": "^0.0.1",
+    "@huolala-tech/page-spy-base": "*",
+    "@huolala-tech/page-spy-mp-base": "*"
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
     "@babel/preset-env": "^7.14.1",
     "@babel/preset-typescript": "^7.13.0",
-    "@huolala-tech/eval5": "^0.0.1",
     "@huolala-tech/page-spy-types": "^1.9.0",
-    "@rollup/plugin-alias": "^4.0.3",
     "@rollup/plugin-babel": "^6.0.3",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.0.1",

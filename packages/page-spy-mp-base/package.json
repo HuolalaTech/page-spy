@@ -36,7 +36,7 @@
   },
   "files": [
     "dist",
-    "types.d.ts"
+    "global.d.ts"
   ],
   "keywords": [
     "pagespy",
