@@ -1,0 +1,21 @@
+{
+  "name": "@huolala/page-spy-harmony",
+  "version": "2.0.0",
+  "description": "PageSpy 可以用于远程调试 WEB / 小程序 / 鸿蒙等环境应用的开发者工具",
+  "main": "Index.ets",
+  "author": "Blucas",
+  "license": "MIT",
+  "repository": "https://github.com/HuolalaTech/page-spy-web/",
+  "homepage": "https://github.com/HuolalaTech/page-spy-web/",
+  "keywords": [
+    "PageSpy",
+    "debug",
+    "remote",
+    "devtool"
+  ],
+  "dependencies": {
+    "@ohos/axios": "^2.1.0"
+  },
+  "devDependencies": {
+  }
+}

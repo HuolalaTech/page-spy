@@ -25,6 +25,8 @@ export function moveable(el: UElement) {
   };
   const touch = { x: 0, y: 0 };
   function handleHidden() {
+    if (!(critical.xAxis || critical.yAxis)) return;
+
     // 第一时间计算 el.isHidden，保证点击显示弹窗行为正常
     const { left, top } = el.getBoundingClientRect();
     if (left >= 0 && left <= critical.xAxis) {

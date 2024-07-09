@@ -3,6 +3,7 @@ import type { PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import XhrProxy from './proxy/xhr-proxy';
 import FetchProxy from './proxy/fetch-proxy';
 import BeaconProxy from './proxy/beacon-proxy';
+import SSEProxy from './proxy/sse-proxy';
 
 export default class NetworkPlugin implements PageSpyPlugin {
   public name = 'NetworkPlugin';
@@ -13,6 +14,8 @@ export default class NetworkPlugin implements PageSpyPlugin {
 
   public beaconProxy: BeaconProxy | null = null;
 
+  public sseProxy: SSEProxy | null = null;
+
   public static hasInitd = false;
 
   public onInit() {
@@ -22,12 +25,14 @@ export default class NetworkPlugin implements PageSpyPlugin {
     this.xhrProxy = new XhrProxy();
     this.fetchProxy = new FetchProxy();
     this.beaconProxy = new BeaconProxy();
+    this.sseProxy = new SSEProxy();
   }
 
   public onReset() {
     this.xhrProxy?.reset();
     this.fetchProxy?.reset();
     this.beaconProxy?.reset();
+    this.sseProxy?.reset();
     NetworkPlugin.hasInitd = false;
   }
 }
