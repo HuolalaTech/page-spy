@@ -46,7 +46,7 @@ export default class StoragePlugin implements PageSpyPlugin {
     });
   }
 
-  private static initStorageProxy() {
+  public static initStorageProxy() {
     const { sendSetItem, sendRemoveItem, sendClearItem } = StoragePlugin;
     ['setAndLink', 'setAndProp'].forEach((fnName) => {
       Object.defineProperties(AppStorage, {
@@ -106,7 +106,7 @@ export default class StoragePlugin implements PageSpyPlugin {
     });
   }
 
-  private static listenRefreshEvent() {
+  public static listenRefreshEvent() {
     socketStore.addListener('refresh', async ({ source }) => {
       const { data: storageType } = source;
       if (storageType === 'AppStorage') {
@@ -137,7 +137,7 @@ export default class StoragePlugin implements PageSpyPlugin {
     }
   }
 
-  private static sendSetItem(key: string, value: any) {
+  public static sendSetItem(key: string, value: any) {
     StoragePlugin.sendStorageItem({
       type: 'AppStorage',
       action: 'set',
@@ -146,7 +146,7 @@ export default class StoragePlugin implements PageSpyPlugin {
     } as SpyStorage.SetTypeDataItem);
   }
 
-  private static sendRemoveItem(key: string) {
+  public static sendRemoveItem(key: string) {
     StoragePlugin.sendStorageItem({
       type: 'AppStorage',
       action: 'remove',
@@ -154,14 +154,14 @@ export default class StoragePlugin implements PageSpyPlugin {
     } as SpyStorage.RemoveTypeDataItem);
   }
 
-  private static sendClearItem() {
+  public static sendClearItem() {
     StoragePlugin.sendStorageItem({
       type: 'AppStorage',
       action: 'clear',
     } as SpyStorage.ClearTypeDataItem);
   }
 
-  private static sendStorageItem(info: Omit<SpyStorage.DataItem, 'id'>) {
+  public static sendStorageItem(info: Omit<SpyStorage.DataItem, 'id'>) {
     const data = makeMessage('storage', info);
     socketStore.dispatchEvent('public-data', data);
     // The user wouldn't want to get the stale data, so here we set the 2nd parameter to true.

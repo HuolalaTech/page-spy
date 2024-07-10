@@ -25,17 +25,17 @@ export default class SSEProxy extends WebNetworkProxyBase {
     this.initProxyHandler();
   }
 
-  private initProxyHandler() {
+  public initProxyHandler() {
     if (!window.EventSource) {
       return;
     }
 
     const _sseProxy = this;
     window.EventSource = class EventSourceProxy {
-      private content =
+      public content =
         'The "window.EventSource" is being proxied by PageSpy\'s NetworkPlugin.';
 
-      private es: EventSource;
+      public es: EventSource;
 
       constructor(url: string | URL, eventSourceInitDict?: EventSourceInit) {
         const id = getRandomId();

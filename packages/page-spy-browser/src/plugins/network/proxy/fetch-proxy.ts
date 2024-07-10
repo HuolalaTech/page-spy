@@ -15,7 +15,7 @@ import {
 import WebNetworkProxyBase from './base';
 
 export default class FetchProxy extends WebNetworkProxyBase {
-  private fetch: WindowOrWorkerGlobalScope['fetch'] | null = null;
+  public fetch: WindowOrWorkerGlobalScope['fetch'] | null = null;
 
   constructor() {
     super();
@@ -28,7 +28,7 @@ export default class FetchProxy extends WebNetworkProxyBase {
     }
   }
 
-  private initProxyHandler() {
+  public initProxyHandler() {
     const that = this;
     const originFetch = window.fetch;
 

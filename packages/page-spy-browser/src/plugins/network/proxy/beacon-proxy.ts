@@ -8,7 +8,7 @@ import {
 import WebNetworkProxyBase from './base';
 
 export default class BeaconProxy extends WebNetworkProxyBase {
-  private sendBeacon: Navigator['sendBeacon'] | null = null;
+  public sendBeacon: Navigator['sendBeacon'] | null = null;
 
   public constructor() {
     super();
@@ -21,7 +21,7 @@ export default class BeaconProxy extends WebNetworkProxyBase {
     }
   }
 
-  private initProxyHandler() {
+  public initProxyHandler() {
     const originSendBeacon = window.navigator.sendBeacon;
     if (!originSendBeacon) {
       return;

@@ -15,7 +15,7 @@ import { SpyBase } from '@huolala-tech/page-spy-types';
 import { InitConfig } from '../config';
 
 export class RNWebSocketWrapper extends SocketWrapper {
-  private socketInstance: WebSocket | null = null;
+  public socketInstance: WebSocket | null = null;
 
   init(url: string) {
     this.socketInstance = new WebSocket(url);
@@ -88,7 +88,7 @@ export class RNWebSocketStore extends SocketStoreBase {
   }
 
   // run executable code which received from remote and send back the result
-  private static handleDebugger(
+  public static handleDebugger(
     { source }: SpyBase.InteractiveEvent<string>,
     reply: (data: any) => void,
   ) {

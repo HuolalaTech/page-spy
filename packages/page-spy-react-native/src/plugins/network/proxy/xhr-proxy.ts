@@ -38,18 +38,18 @@ declare global {
   }
 }
 class XhrProxy extends RNNetworkProxyBase {
-  private xhrOpen: XMLHttpRequest['open'] | null = null;
+  public xhrOpen: XMLHttpRequest['open'] | null = null;
 
-  private xhrSend: XMLHttpRequest['send'] | null = null;
+  public xhrSend: XMLHttpRequest['send'] | null = null;
 
-  private xhrSetRequestHeader: XMLHttpRequest['setRequestHeader'] | null = null;
+  public xhrSetRequestHeader: XMLHttpRequest['setRequestHeader'] | null = null;
 
   public constructor() {
     super();
     this.initProxyHandler();
   }
 
-  private initProxyHandler() {
+  public initProxyHandler() {
     const that = this;
     const { open, send, setRequestHeader } = XMLHttpRequest.prototype;
     this.xhrOpen = open;
@@ -230,7 +230,7 @@ class XhrProxy extends RNNetworkProxyBase {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  private async formatResponse(
+  public async formatResponse(
     XMLReq: XMLHttpRequest,
     type: XMLHttpRequestResponseType,
   ) {

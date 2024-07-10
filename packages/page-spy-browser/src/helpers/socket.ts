@@ -10,7 +10,7 @@ import {
 import { InitConfig } from '../config';
 
 export class WebSocketWrapper extends SocketWrapper {
-  private socketInstance: WebSocket | null = null;
+  public socketInstance: WebSocket | null = null;
 
   init(url: string) {
     this.socketInstance = new WebSocket(url);

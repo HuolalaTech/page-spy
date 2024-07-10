@@ -6,9 +6,9 @@ import { ReqReadyState } from './common';
 
 type RequestStore = Record<string, RequestItem | null>;
 export class NetworkProxyBase {
-  private reqMap: RequestStore = Object.create(null);
+  public reqMap: RequestStore = Object.create(null);
 
-  constructor(private socketStore: SocketStoreBase) {}
+  constructor(public socketStore: SocketStoreBase) {}
 
   public getRequestMap() {
     return this.reqMap;
@@ -70,7 +70,7 @@ export class NetworkProxyBase {
     }
   }
 
-  private deferDeleteRequest(id: string) {
+  public deferDeleteRequest(id: string) {
     const req = this.getRequest(id);
     if (req && req.readyState === ReqReadyState.DONE) {
       setTimeout(() => {

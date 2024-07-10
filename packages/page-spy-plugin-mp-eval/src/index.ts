@@ -43,7 +43,7 @@ export default class MPEvalPlugin implements PageSpyPlugin {
   }
 
   // run executable code which received from remote and send back the result
-  private static handleDebugger(
+  public static handleDebugger(
     {
       source,
     }: SpyBase.InteractiveEvent<{

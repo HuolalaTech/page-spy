@@ -31,7 +31,7 @@ export default class ErrorPlugin implements PageSpyPlugin {
     ErrorPlugin.hasInitd = false;
   }
 
-  private errorHandler(error: { message: string; stack: string }) {
+  public errorHandler(error: { message: string; stack: string }) {
     if (!ErrorPlugin.hasInitd) {
       return;
     }
@@ -48,7 +48,7 @@ export default class ErrorPlugin implements PageSpyPlugin {
     }
   }
 
-  private unhandledRejectionHandler(evt: { reason: string }) {
+  public unhandledRejectionHandler(evt: { reason: string }) {
     if (!ErrorPlugin.hasInitd) {
       return;
     }
@@ -58,14 +58,14 @@ export default class ErrorPlugin implements PageSpyPlugin {
     });
   }
 
-  private onUncaughtError() {
+  public onUncaughtError() {
     const mp = getMPSDK();
     if (mp.canIUse('onError')) {
       mp.onError(this.errorHandler);
     }
   }
 
-  private onUnhandledRejectionError() {
+  public onUnhandledRejectionError() {
     const mp = getMPSDK();
     // Promise unhandledRejection Error
     if (mp.canIUse('onUnhandledRejection')) {

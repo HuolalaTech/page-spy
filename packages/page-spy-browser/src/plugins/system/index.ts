@@ -52,7 +52,7 @@ export default class SystemPlugin implements PageSpyPlugin {
     SystemPlugin.hasInitd = false;
   }
 
-  private static async getSystemInfo() {
+  public static async getSystemInfo() {
     const features = await computeResult();
     const msg = makeMessage('system', {
       system: {

@@ -16,9 +16,9 @@ export default class ErrorPlugin implements PageSpyPlugin {
 
   public static hasInitd = false;
 
-  private originHandler: ErrorHandlerCallback | null = null;
+  public originHandler: ErrorHandlerCallback | null = null;
 
-  private originPromise: Promise<any> | null = null;
+  public originPromise: Promise<any> | null = null;
 
   public onInit() {
     if (ErrorPlugin.hasInitd) return;
@@ -27,7 +27,7 @@ export default class ErrorPlugin implements PageSpyPlugin {
     this.onUnhandledRejectionError();
   }
 
-  private onUncaughtError() {
+  public onUncaughtError() {
     const originHandler = ErrorUtils.getGlobalHandler();
     if (originHandler) {
       this.originHandler = originHandler;
@@ -41,7 +41,7 @@ export default class ErrorPlugin implements PageSpyPlugin {
     });
   }
 
-  private onUnhandledRejectionError() {
+  public onUnhandledRejectionError() {
     if (!ErrorPlugin.hasInitd) {
       return;
     }
@@ -66,7 +66,7 @@ export default class ErrorPlugin implements PageSpyPlugin {
     // });
   }
 
-  private errorHandler(error: Error) {
+  public errorHandler(error: Error) {
     if (!ErrorPlugin.hasInitd) {
       return;
     }

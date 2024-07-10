@@ -11,9 +11,9 @@ import type { SpyMP } from '@huolala-tech/page-spy-types';
 import { getMPSDK, utilAPI } from '../utils';
 
 export class MPSocketWrapper extends SocketWrapper {
-  private socketInstance: MPSocket | null = null;
+  public socketInstance: MPSocket | null = null;
 
-  private state: SocketState = 0;
+  public state: SocketState = 0;
 
   // some ali-family app only support single socket connection...
   public static isSingleSocket = false;

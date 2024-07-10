@@ -10,7 +10,7 @@ import { getMPSDK } from '../../../utils';
 import MPNetworkProxyBase from './base';
 
 export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
-  private request: MPNetworkAPI['request'] | null = null;
+  public request: MPNetworkAPI['request'] | null = null;
 
   constructor() {
     super();
@@ -26,7 +26,7 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
     }
   }
 
-  private initProxyHandler() {
+  public initProxyHandler() {
     const that = this;
     const mp = getMPSDK();
     const originRequest = mp.request;

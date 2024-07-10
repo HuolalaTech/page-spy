@@ -7,9 +7,9 @@ import { PUBLIC_DATA } from '../message/debug-type';
 
 type RequestStore = Record<string, RequestItem | null>;
 export default class NetworkProxyBase {
-  private reqMap: RequestStore = Object.create(null);
+  public reqMap: RequestStore = Object.create(null);
 
-  constructor(private socketStore: SocketStoreBase) {}
+  constructor(public socketStore: SocketStoreBase) {}
 
   public getRequestMap() {
     return this.reqMap;
@@ -63,7 +63,7 @@ export default class NetworkProxyBase {
     this.deferDeleteRequest(id);
   }
 
-  private deferDeleteRequest(id: string) {
+  public deferDeleteRequest(id: string) {
     const req = this.getRequest(id);
     if (req && req.readyState === ReqReadyState.DONE) {
       setTimeout(() => {

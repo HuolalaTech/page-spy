@@ -3,7 +3,7 @@
  * Clear all notifications use `Toast.destroy()`
  */
 export class Toast {
-  private static timer: ReturnType<typeof setTimeout> | null = null;
+  public static timer: ReturnType<typeof setTimeout> | null = null;
 
   static message(text: string) {
     const node = document.createElement('div');

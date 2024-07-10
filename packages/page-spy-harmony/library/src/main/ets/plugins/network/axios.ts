@@ -14,15 +14,15 @@ import {
 } from '@ohos/axios';
 
 export default class AxiosProxy extends NetworkProxyBase {
-  private requestInterceptor: number | null = null;
-  private responseInterceptor: number | null = null;
+  public requestInterceptor: number | null = null;
+  public responseInterceptor: number | null = null;
 
   constructor(public axios: AxiosStatic | AxiosInstance) {
     super(socketStore);
     this.initProxyHandler();
   }
 
-  private initProxyHandler() {
+  public initProxyHandler() {
     this.requestInterceptor = this.axios.interceptors.request.use((config) => {
       const id = getRandomId();
       this.createRequest(id);

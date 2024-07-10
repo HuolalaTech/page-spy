@@ -25,7 +25,7 @@ export default class PagePlugin implements PageSpyPlugin {
     PagePlugin.hasInitd = false;
   }
 
-  private static collectHtml() {
+  public static collectHtml() {
     const originHtml = document.documentElement.outerHTML;
     const msg = makeMessage('page', {
       html: originHtml,

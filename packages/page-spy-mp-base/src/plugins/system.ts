@@ -26,7 +26,7 @@ export default class SystemPlugin implements PageSpyPlugin {
     SystemPlugin.hasInitd = false;
   }
 
-  private static getSystemInfo() {
+  public static getSystemInfo() {
     const deviceInfo = Client.info;
     const msg = makeMessage('system', {
       system: {

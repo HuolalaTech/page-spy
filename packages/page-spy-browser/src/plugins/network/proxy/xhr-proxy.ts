@@ -24,18 +24,18 @@ declare global {
   }
 }
 class XhrProxy extends WebNetworkProxyBase {
-  private xhrOpen: XMLHttpRequest['open'] | null = null;
+  public xhrOpen: XMLHttpRequest['open'] | null = null;
 
-  private xhrSend: XMLHttpRequest['send'] | null = null;
+  public xhrSend: XMLHttpRequest['send'] | null = null;
 
-  private xhrSetRequestHeader: XMLHttpRequest['setRequestHeader'] | null = null;
+  public xhrSetRequestHeader: XMLHttpRequest['setRequestHeader'] | null = null;
 
   public constructor() {
     super();
     this.initProxyHandler();
   }
 
-  private initProxyHandler() {
+  public initProxyHandler() {
     const that = this;
     if (!window.XMLHttpRequest) {
       return;
@@ -182,7 +182,7 @@ class XhrProxy extends WebNetworkProxyBase {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  private async formatResponse(XMLReq: XMLHttpRequest) {
+  public async formatResponse(XMLReq: XMLHttpRequest) {
     const result: {
       response: RequestItem['response'];
       responseReason: RequestItem['responseReason'];

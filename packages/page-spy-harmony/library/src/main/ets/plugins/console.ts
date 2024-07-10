@@ -10,7 +10,7 @@ export default class ConsolePlugin implements PageSpyPlugin {
 
   public static hasInitd = false;
 
-  private proxyTypes: SpyConsole.ProxyType[] = [
+  public proxyTypes: SpyConsole.ProxyType[] = [
     'log',
     'info',
     'error',
@@ -18,7 +18,7 @@ export default class ConsolePlugin implements PageSpyPlugin {
     'debug',
   ];
 
-  private console: Record<string, any> = {};
+  public console: Record<string, any> = {};
 
   public async onInit() {
     if (ConsolePlugin.hasInitd) return;
@@ -52,7 +52,7 @@ export default class ConsolePlugin implements PageSpyPlugin {
     ConsolePlugin.hasInitd = false;
   }
 
-  private static handleDebugger(
+  public static handleDebugger(
     { source }: SpyBase.InteractiveEvent<string>,
     reply: (data: any) => void,
   ) {
@@ -92,7 +92,7 @@ export default class ConsolePlugin implements PageSpyPlugin {
     }
   }
 
-  private printLog(data: SpyConsole.DataItem) {
+  public printLog(data: SpyConsole.DataItem) {
     if (data.logs && data.logs.length) {
       this.console[data.logType](...data.logs);
       data.logs = data.logs.map((log) => atom.transformToAtom(log));
