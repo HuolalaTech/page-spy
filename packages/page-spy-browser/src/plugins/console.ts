@@ -1,19 +1,17 @@
-import { makeMessage } from 'base/src/message';
-import socketStore from 'page-spy-browser/src/helpers/socket';
 import type {
   SpyConsole,
   PageSpyPlugin,
   SpyBase,
 } from '@huolala-tech/page-spy-types';
-import atom from 'base/src/atom';
-import { getRandomId } from 'base/src';
+import { atom, getRandomId, makeMessage } from '@huolala-tech/page-spy-base';
+import socketStore from '../helpers/socket';
 
 export default class ConsolePlugin implements PageSpyPlugin {
   public name: string = 'ConsolePlugin';
 
   public static hasInitd = false;
 
-  private proxyTypes: SpyConsole.ProxyType[] = [
+  public proxyTypes: SpyConsole.ProxyType[] = [
     'log',
     'info',
     'error',
@@ -21,7 +19,7 @@ export default class ConsolePlugin implements PageSpyPlugin {
     'debug',
   ];
 
-  private console: Record<string, any> = {};
+  public console: Record<string, any> = {};
 
   // eslint-disable-next-line class-methods-use-this
   public async onInit() {
@@ -51,7 +49,7 @@ export default class ConsolePlugin implements PageSpyPlugin {
   }
 
   // run executable code which received from remote and send back the result
-  private static handleDebugger(
+  public static handleDebugger(
     { source }: SpyBase.InteractiveEvent<string>,
     reply: (data: any) => void,
   ) {
@@ -91,7 +89,7 @@ export default class ConsolePlugin implements PageSpyPlugin {
     }
   }
 
-  private printLog(data: SpyConsole.DataItem) {
+  public printLog(data: SpyConsole.DataItem) {
     if (data.logs && data.logs.length) {
       this.console[data.logType](...data.logs);
       // eslint-disable-next-line no-param-reassign

@@ -1,10 +1,13 @@
-import { OnInitParams, PageSpyPlugin, SpyBase } from 'packages/page-spy-types';
 import { Interpreter } from '@huolala-tech/eval5';
-import { makeMessage } from 'base/src/message';
-import { getRandomId } from 'base/src';
-import { getGlobal } from 'mp-base/src/utils';
-import { SocketStoreType } from 'packages/page-spy-types/lib/base';
-import type { Atom } from 'base/src/atom';
+import { makeMessage, getRandomId } from '@huolala-tech/page-spy-base';
+import { getGlobal } from '@huolala-tech/page-spy-mp-base';
+import type {
+  OnInitParams,
+  PageSpyPlugin,
+  SpyBase,
+} from '@huolala-tech/page-spy-types';
+import type { Atom } from '@huolala-tech/page-spy-base';
+import type { SocketStoreType } from '@huolala-tech/page-spy-types/lib/base';
 
 export default class MPEvalPlugin implements PageSpyPlugin {
   public name: string = 'MPEvalPlugin';
@@ -40,7 +43,7 @@ export default class MPEvalPlugin implements PageSpyPlugin {
   }
 
   // run executable code which received from remote and send back the result
-  private static handleDebugger(
+  public static handleDebugger(
     {
       source,
     }: SpyBase.InteractiveEvent<{

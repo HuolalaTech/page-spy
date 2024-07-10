@@ -1,19 +1,19 @@
-import { makeMessage } from 'base/src/message';
+import { makeMessage } from '@huolala-tech/page-spy-base';
 import { SpyStorage, PageSpyPlugin } from '@huolala-tech/page-spy-types';
-import socketStore from 'page-spy-browser/src/helpers/socket';
+import socketStore from '../helpers/socket';
 
 export class StoragePlugin implements PageSpyPlugin {
   public name = 'StoragePlugin';
 
   public static hasInitd = false;
 
-  private originSetItem: Storage['setItem'] | null = null;
+  public originSetItem: Storage['setItem'] | null = null;
 
-  private originRemoveItem: Storage['removeItem'] | null = null;
+  public originRemoveItem: Storage['removeItem'] | null = null;
 
-  private originClear: Storage['clear'] | null = null;
+  public originClear: Storage['clear'] | null = null;
 
-  private cookieStoreChangeListener: ((evt: Event) => void) | null = null;
+  public cookieStoreChangeListener: ((evt: Event) => void) | null = null;
 
   // eslint-disable-next-line class-methods-use-this
   public onInit() {
@@ -65,7 +65,7 @@ export class StoragePlugin implements PageSpyPlugin {
     }
   }
 
-  private static listenRefreshEvent() {
+  public static listenRefreshEvent() {
     /* c8 ignore next 5 */
     socketStore.addListener('refresh', async ({ source }) => {
       /* c8 ignore next 3 */
@@ -74,7 +74,7 @@ export class StoragePlugin implements PageSpyPlugin {
     });
   }
 
-  private static takeStorage(type: 'localStorage' | 'sessionStorage') {
+  public static takeStorage(type: 'localStorage' | 'sessionStorage') {
     const data: SpyStorage.GetTypeDataItem = {
       type,
       action: 'get',
@@ -97,7 +97,7 @@ export class StoragePlugin implements PageSpyPlugin {
     return data;
   }
 
-  private static async takeCookie() {
+  public static async takeCookie() {
     const data: SpyStorage.GetTypeDataItem = {
       type: 'cookie',
       action: 'get',
@@ -117,7 +117,7 @@ export class StoragePlugin implements PageSpyPlugin {
     return data;
   }
 
-  private initStorageProxy() {
+  public initStorageProxy() {
     const { getStorageType, sendStorageItem } = StoragePlugin;
     const { clear, removeItem, setItem } = Storage.prototype;
     this.originClear = clear;
@@ -196,13 +196,13 @@ export class StoragePlugin implements PageSpyPlugin {
     });
   }
 
-  private static getStorageType(ins: Storage): SpyStorage.DataType {
+  public static getStorageType(ins: Storage): SpyStorage.DataType {
     if (ins === localStorage) return 'localStorage';
     if (ins === sessionStorage) return 'sessionStorage';
     return ins.constructor.name as any;
   }
 
-  private static sendStorageItem(info: Omit<SpyStorage.DataItem, 'id'>) {
+  public static sendStorageItem(info: Omit<SpyStorage.DataItem, 'id'>) {
     const data = makeMessage('storage', info);
     socketStore.dispatchEvent('public-data', data);
     // The user wouldn't want to get the stale data, so here we set the 2nd parameter to true.

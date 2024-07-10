@@ -1,7 +1,7 @@
-import socketStore from 'page-spy-browser/src/helpers/socket';
-import { makeMessage } from 'base/src/message';
+import { makeMessage } from '@huolala-tech/page-spy-base';
 import '../../deps/modernizr';
 import { SpySystem, PageSpyPlugin } from '@huolala-tech/page-spy-types';
+import socketStore from '../../helpers/socket';
 import { computeResult } from './feature';
 
 window.Modernizr.addTest(
@@ -52,7 +52,7 @@ export default class SystemPlugin implements PageSpyPlugin {
     SystemPlugin.hasInitd = false;
   }
 
-  private static async getSystemInfo() {
+  public static async getSystemInfo() {
     const features = await computeResult();
     const msg = makeMessage('system', {
       system: {

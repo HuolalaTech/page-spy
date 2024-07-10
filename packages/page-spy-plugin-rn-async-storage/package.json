@@ -6,10 +6,9 @@
   "license": "MIT",
   "main": "dist/cjs/index.min.js",
   "module": "dist/esm/index.min.js",
-  "types": "types/index.d.ts",
+  "types": "dist/types/index.d.ts",
   "files": [
-    "dist",
-    "types"
+    "dist"
   ],
   "publishConfig": {
     "access": "public"
@@ -26,7 +25,8 @@
     "build:watch": "rollup -c -w"
   },
   "dependencies": {
-    "@babel/runtime": "^7.13.0"
+    "@babel/runtime": "^7.13.0",
+    "@huolala-tech/page-spy-base": "^1.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
@@ -34,7 +34,6 @@
     "@babel/preset-typescript": "^7.13.0",
     "@huolala-tech/page-spy-types": "^1.9.0",
     "@react-native-async-storage/async-storage": "^1.23.1",
-    "@rollup/plugin-alias": "^4.0.3",
     "@rollup/plugin-babel": "^6.0.3",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.0.1",
@@ -59,6 +58,7 @@
     "not op_mini all"
   ],
   "peerDependencies": {
+    "@huolala-tech/page-spy-react-native": "^1.9.0",
     "@react-native-async-storage/async-storage": "^1.23.1"
   }
 }

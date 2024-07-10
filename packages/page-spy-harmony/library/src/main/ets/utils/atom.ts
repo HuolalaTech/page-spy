@@ -11,7 +11,7 @@ import {
 } from './index';
 
 class Atom {
-  private store: Record<string, any> = {};
+  public store: Record<string, any> = {};
 
   public getStore() {
     return this.store;
@@ -22,7 +22,7 @@ class Atom {
   }
 
   // { __atomId: instanceId }
-  private instanceStore: Record<string, string> = {};
+  public instanceStore: Record<string, string> = {};
 
   public getInstanceStore() {
     return this.instanceStore;
@@ -88,7 +88,7 @@ class Atom {
     return Atom.getAtomOverview({ atomId: id, value: name, instanceId });
   }
 
-  private static getAtomOverview({
+  public static getAtomOverview({
     instanceId = '',
     atomId,
     value,
@@ -107,7 +107,7 @@ class Atom {
     };
   }
 
-  private static getSemanticValue(data: any) {
+  public static getSemanticValue(data: any) {
     if (isPlainObject(data)) {
       return 'Object {...}';
     }
@@ -118,7 +118,7 @@ class Atom {
     return constructorName;
   }
 
-  private addExtraProperty(id: string) {
+  public addExtraProperty(id: string) {
     const data = this.store[id];
     const instanceId = this.instanceStore[id];
     const result: Record<string, any> = {};

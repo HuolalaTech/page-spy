@@ -1,4 +1,4 @@
-import { isCN, psLog, removeEndSlash } from 'base/src';
+import { isCN, psLog, removeEndSlash } from '@huolala-tech/page-spy-base';
 import type { Harbor } from '../harbor';
 import { UPLOAD_TIPS } from './TIP_CONTENT';
 import { formatFilename } from '.';

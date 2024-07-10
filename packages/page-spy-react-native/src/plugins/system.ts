@@ -1,8 +1,6 @@
-import { getRandomId } from 'base/src';
-import { makeMessage } from 'base/src/message';
+import { makeMessage, Client, combineName } from '@huolala-tech/page-spy-base';
 import type { SpySystem, PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import socketStore from '../helpers/socket';
-import Client, { combineName } from 'base/src/client';
 
 export default class SystemPlugin implements PageSpyPlugin {
   public name = 'SystemPlugin';
@@ -29,7 +27,7 @@ export default class SystemPlugin implements PageSpyPlugin {
     SystemPlugin.hasInitd = false;
   }
 
-  private static getSystemInfo() {
+  public static getSystemInfo() {
     const msg = makeMessage('system', {
       system: {
         ua: combineName(Client.info),

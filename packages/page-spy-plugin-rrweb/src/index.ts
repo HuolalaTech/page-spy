@@ -1,10 +1,12 @@
-import { OnInitParams, PageSpyPlugin } from '@huolala-tech/page-spy-types';
+import {
+  InitConfigBase,
+  OnInitParams,
+  PageSpyPlugin,
+} from '@huolala-tech/page-spy-types';
 import { record } from 'rrweb';
 import type { recordOptions } from 'rrweb/typings/types';
 import type { eventWithTime, listenerHandler } from '@rrweb/types';
-import { makeMessage } from 'base/src/message';
-import { isBrowser, psLog } from 'base/src';
-import type { InitConfig } from 'page-spy-browser/types';
+import { makeMessage, isBrowser, psLog } from '@huolala-tech/page-spy-base';
 
 interface Options extends recordOptions<eventWithTime> {
   // The data from 'rrweb-event' is typically larger (more interactions and complex
@@ -25,7 +27,7 @@ export default class RRWebPlugin implements PageSpyPlugin {
 
   constructor(public options: Options = {}) {}
 
-  public onInit({ socketStore }: OnInitParams<InitConfig>) {
+  public onInit({ socketStore }: OnInitParams<InitConfigBase>) {
     if (!isBrowser()) {
       psLog.warn(`${this.name} can only used in browser environment`);
       return;

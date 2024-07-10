@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "page-spy-base/*": ["./packages/page-spy-base/*"],
+      "page-spy-mp-base/*": ["./packages/page-spy-mp-base/*"],
+      "page-spy-browser/*": ["./packages/page-spy-browser/*"],
+      "page-spy-wechat/*": ["./packages/page-spy-wechat/*"],
+      "page-spy-react-native/*": ["./packages/page-spy-react-native/*"]
+    }
+  }
+}

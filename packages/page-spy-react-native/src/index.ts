@@ -1,4 +1,10 @@
-import { getAuthSecret, getRandomId, isArray, isClass, psLog } from 'base/src';
+import {
+  getAuthSecret,
+  isArray,
+  isClass,
+  psLog,
+  Client,
+} from '@huolala-tech/page-spy-base';
 import type {
   PageSpyPlugin,
   PageSpyPluginLifecycle,
@@ -7,6 +13,7 @@ import type {
   SpyClient,
 } from '@huolala-tech/page-spy-types';
 
+import { Platform } from 'react-native';
 import ConsolePlugin from './plugins/console';
 import ErrorPlugin from './plugins/error';
 import NetworkPlugin from './plugins/network';
@@ -16,10 +23,7 @@ import socketStore from './helpers/socket';
 import Request from './api';
 
 // eslint-disable-next-line import/order
-import { Config } from './config';
-import { InitConfig } from '../types';
-import { Platform } from 'react-native';
-import Client from 'base/src/client';
+import { Config, InitConfig } from './config';
 
 const osMap: Record<typeof Platform.OS, SpyClient.OS> = {
   android: 'android',

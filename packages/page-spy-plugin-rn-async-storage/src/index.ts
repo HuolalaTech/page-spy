@@ -1,28 +1,28 @@
-import { makeMessage } from 'base/src/message';
+import { makeMessage } from '@huolala-tech/page-spy-base';
 import type {
   SpyStorage,
   PageSpyPlugin,
   OnInitParams,
   SpyBase,
+  InitConfigBase,
 } from '@huolala-tech/page-spy-types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { InitConfig } from 'page-spy-react-native/types';
 import type {
   Callback,
   MultiCallback,
-} from '@react-native-async-storage/async-storage/src/types';
+} from '@react-native-async-storage/async-storage/lib/typescript/types';
 
 export default class RNAsyncStoragePlugin implements PageSpyPlugin {
   public name = 'RNAsyncStoragePlugin';
 
   public static hasInitd = false;
 
-  private static originFunctions = {} as typeof AsyncStorage;
+  public static originFunctions = {} as typeof AsyncStorage;
 
-  private static socketStore: SpyBase.SocketStoreType | null = null;
+  public static socketStore: SpyBase.SocketStoreType | null = null;
 
   // eslint-disable-next-line class-methods-use-this
-  public onInit(params: OnInitParams<InitConfig>) {
+  public onInit(params: OnInitParams<InitConfigBase>) {
     if (RNAsyncStoragePlugin.hasInitd) return;
     RNAsyncStoragePlugin.hasInitd = true;
 
@@ -68,7 +68,7 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
   }
 
   /* c8 ignore start */
-  private static listenRefreshEvent() {
+  public static listenRefreshEvent() {
     RNAsyncStoragePlugin.socketStore?.addListener(
       'refresh',
       async ({ source }) => {
@@ -81,7 +81,7 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
   }
   /* c8 ignore stop */
 
-  private static initStorageProxy() {
+  public static initStorageProxy() {
     const { sendClearItem, sendRemoveItem, sendSetItem } = RNAsyncStoragePlugin;
     const proxyFunctions = [
       'setItem',
@@ -199,7 +199,7 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
     });
   }
 
-  private static sendSetItem(key: string, value: string) {
+  public static sendSetItem(key: string, value: string) {
     RNAsyncStoragePlugin.sendStorageItem({
       type: 'asyncStorage',
       action: 'set',
@@ -208,7 +208,7 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
     } as SpyStorage.SetTypeDataItem);
   }
 
-  private static sendRemoveItem(key: string) {
+  public static sendRemoveItem(key: string) {
     RNAsyncStoragePlugin.sendStorageItem({
       type: 'asyncStorage',
       action: 'remove',
@@ -216,14 +216,14 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
     } as SpyStorage.RemoveTypeDataItem);
   }
 
-  private static sendClearItem() {
+  public static sendClearItem() {
     RNAsyncStoragePlugin.sendStorageItem({
       type: 'asyncStorage',
       action: 'clear',
     } as SpyStorage.ClearTypeDataItem);
   }
 
-  private static sendStorageItem(info: Omit<SpyStorage.DataItem, 'id'>) {
+  public static sendStorageItem(info: Omit<SpyStorage.DataItem, 'id'>) {
     const data = makeMessage('storage', info);
     RNAsyncStoragePlugin.socketStore?.dispatchEvent('public-data', data);
     // The user wouldn't want to get the stale data, so here we set the 2nd parameter to true.

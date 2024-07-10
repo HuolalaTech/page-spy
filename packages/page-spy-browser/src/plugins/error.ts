@@ -1,16 +1,13 @@
-/* eslint-disable class-methods-use-this */
-import atom from 'base/src/atom';
-import { makeMessage } from 'base/src/message';
-import socketStore from 'page-spy-browser/src/helpers/socket';
+import { atom, formatErrorObj, makeMessage } from '@huolala-tech/page-spy-base';
 import type { SpyConsole, PageSpyPlugin } from '@huolala-tech/page-spy-types';
-import { formatErrorObj } from 'base/src';
+import socketStore from '../helpers/socket';
 
 export default class ErrorPlugin implements PageSpyPlugin {
   public name = 'ErrorPlugin';
 
   public static hasInitd = false;
 
-  private uncaughtErrorListener = (e: ErrorEvent) => {
+  public uncaughtErrorListener = (e: ErrorEvent) => {
     if (e.error) {
       const { message, stack } = e.error;
       const errorDetail = formatErrorObj(e.error);
@@ -23,7 +20,7 @@ export default class ErrorPlugin implements PageSpyPlugin {
     }
   };
 
-  private resourceLoadErrorListener = (evt: Event) => {
+  public resourceLoadErrorListener = (evt: Event) => {
     if (!(evt instanceof ErrorEvent)) {
       const { target } = evt as any;
       ErrorPlugin.sendMessage(
@@ -35,7 +32,7 @@ export default class ErrorPlugin implements PageSpyPlugin {
     }
   };
 
-  private rejectionListener = (evt: PromiseRejectionEvent) => {
+  public rejectionListener = (evt: PromiseRejectionEvent) => {
     const errorDetail = formatErrorObj(evt.reason);
     ErrorPlugin.sendMessage(evt.reason, errorDetail);
   };
@@ -56,17 +53,17 @@ export default class ErrorPlugin implements PageSpyPlugin {
     ErrorPlugin.hasInitd = false;
   }
 
-  private onUncaughtError() {
+  public onUncaughtError() {
     window.addEventListener('error', this.uncaughtErrorListener);
   }
 
-  private onResourceLoadError() {
+  public onResourceLoadError() {
     // Resource load failed
     // Track the error on capture-phase
     window.addEventListener('error', this.resourceLoadErrorListener, true);
   }
 
-  private onUnhandledRejectionError() {
+  public onUnhandledRejectionError() {
     // Promise unhandledRejection Error
     window.addEventListener('unhandledrejection', this.rejectionListener);
   }

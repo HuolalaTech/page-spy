@@ -4,11 +4,15 @@ import type {
   OnMountedParams,
   PageSpyPlugin,
   PluginOrder,
+  InitConfigBase,
 } from '@huolala-tech/page-spy-types';
-import { isBrowser, isPlainObject, psLog } from 'base/src';
+import {
+  isBrowser,
+  isPlainObject,
+  psLog,
+  RequestItem,
+} from '@huolala-tech/page-spy-base';
 import { strFromU8, zlibSync, strToU8 } from 'fflate';
-import type RequestItem from 'base/src/request-item';
-import type { InitConfig } from 'page-spy-browser/types';
 import { Harbor } from './harbor';
 import { DownloadArgs, handleDownload, startDownload } from './utils/download';
 import { UploadArgs, handleUpload, startUpload } from './utils/upload';
@@ -48,10 +52,10 @@ export default class DataHarborPlugin implements PageSpyPlugin {
   public name = 'DataHarborPlugin';
 
   // "Harbor" is an abstraction for scheduling data actions.
-  private harbor: Harbor;
+  public harbor: Harbor;
 
   // Specify which types of data to collect.
-  private caredData: Record<DataType, boolean> = {
+  public caredData: Record<DataType, boolean> = {
     console: true,
     network: true,
     storage: true,
@@ -59,15 +63,15 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     'rrweb-event': true,
   };
 
-  private apiBase: string = '';
+  public apiBase: string = '';
 
-  private $pageSpyConfig: InitConfig | null = null;
+  public $pageSpyConfig: InitConfigBase | null = null;
 
-  private filename: DataHarborConfig['filename'] = () => {
+  public filename: DataHarborConfig['filename'] = () => {
     return new Date().toLocaleString();
   };
 
-  private onDownload: DataHarborConfig['onDownload'];
+  public onDownload: DataHarborConfig['onDownload'];
 
   public static hasInited = false;
 
@@ -89,7 +93,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     this.harbor = new Harbor({ maximum: config.maximum });
   }
 
-  public async onInit({ socketStore, config }: OnInitParams<InitConfig>) {
+  public async onInit({ socketStore, config }: OnInitParams<InitConfigBase>) {
     if (DataHarborPlugin.hasInited) return;
     DataHarborPlugin.hasInited = true;
 
@@ -182,7 +186,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     }
   }
 
-  private isCaredPublicData(message: SpyMessage.MessageItem) {
+  public isCaredPublicData(message: SpyMessage.MessageItem) {
     if (!message) return false;
     const { type } = message;
     switch (type) {

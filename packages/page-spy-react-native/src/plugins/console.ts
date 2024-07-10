@@ -1,20 +1,15 @@
-import { makeMessage } from 'base/src/message';
-import type {
-  SpyConsole,
-  PageSpyPlugin,
-  SpyBase,
-} from '@huolala-tech/page-spy-types/index';
-import atom from 'base/src/atom';
+import type { SpyConsole, PageSpyPlugin } from '@huolala-tech/page-spy-types';
+import { atom, makeMessage } from '@huolala-tech/page-spy-base';
 import socketStore from '../helpers/socket';
 
 export default class ConsolePlugin implements PageSpyPlugin {
   public name: string = 'ConsolePlugin';
 
-  private console: Record<string, any> = {};
+  public console: Record<string, any> = {};
 
   public static hasInitd = false;
 
-  private proxyTypes: SpyConsole.ProxyType[] = [
+  public proxyTypes: SpyConsole.ProxyType[] = [
     'log',
     'info',
     'error',
@@ -54,7 +49,7 @@ export default class ConsolePlugin implements PageSpyPlugin {
     ConsolePlugin.hasInitd = false;
   }
 
-  private printLog(data: SpyConsole.DataItem) {
+  public printLog(data: SpyConsole.DataItem) {
     if (data.logs && data.logs.length) {
       this.console[data.logType](...data.logs);
       // eslint-disable-next-line no-param-reassign

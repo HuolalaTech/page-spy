@@ -111,20 +111,20 @@ export abstract class SocketStoreBase {
 
   protected abstract updateRoomInfo(): void;
 
-  private socketUrl: string = '';
+  public socketUrl: string = '';
 
-  private socketConnection: SpySocket.Connection | null = null;
+  public socketConnection: SpySocket.Connection | null = null;
 
-  private debuggerConnection: SpySocket.Connection | null = null;
+  public debuggerConnection: SpySocket.Connection | null = null;
 
   // ping timer used for send next ping.
   // a ping is sent after last msg (normal msg or pong) received.
-  private pingTimer: ReturnType<typeof setTimeout> | null = null;
+  public pingTimer: ReturnType<typeof setTimeout> | null = null;
 
   // pong timer used for waiting for pong, if pong not received, close the connection
-  private pongTimer: ReturnType<typeof setTimeout> | null = null;
+  public pongTimer: ReturnType<typeof setTimeout> | null = null;
 
-  private retryTimer: ReturnType<typeof setTimeout> | null = null;
+  public retryTimer: ReturnType<typeof setTimeout> | null = null;
 
   // Cache messages only in online mode
   public isOffline = false;
@@ -134,10 +134,10 @@ export abstract class SocketStoreBase {
   public messageCapacity: number = 0;
 
   // messages store
-  private messages: SpySocket.BroadcastEvent[] = [];
+  public messages: SpySocket.BroadcastEvent[] = [];
 
   // events center
-  private events: Record<
+  public events: Record<
     InteractiveType | InternalMsgType,
     SpyBase.EventCallback[]
   > = {
@@ -151,7 +151,7 @@ export abstract class SocketStoreBase {
   };
 
   // initial retry interval.
-  private retryInterval = INIT_RETRY_INTERVAL;
+  public retryInterval = INIT_RETRY_INTERVAL;
 
   connectable = true;
 
@@ -249,13 +249,13 @@ export abstract class SocketStoreBase {
     });
   }
 
-  private connectOnline() {
+  public connectOnline() {
     this.retryInterval = INIT_RETRY_INTERVAL;
     this.updateRoomInfo();
     this.ping();
   }
 
-  private connectOffline() {
+  public connectOffline() {
     this.socketConnection = null;
     this.debuggerConnection = null;
     this.clearPing();
@@ -277,7 +277,7 @@ export abstract class SocketStoreBase {
     this.init(this.socketUrl);
   }
 
-  private ping() {
+  public ping() {
     if (this.pingTimer) {
       clearTimeout(this.pingTimer);
     }
@@ -298,7 +298,7 @@ export abstract class SocketStoreBase {
     }, HEARTBEAT_INTERVAL);
   }
 
-  private clearPing() {
+  public clearPing() {
     if (this.pingTimer) {
       clearTimeout(this.pingTimer);
       this.pingTimer = null;
@@ -309,7 +309,7 @@ export abstract class SocketStoreBase {
     }
   }
 
-  private handlePong() {
+  public handlePong() {
     clearTimeout(this.pongTimer!);
     this.pongTimer = null;
     this.ping();
@@ -404,7 +404,7 @@ export abstract class SocketStoreBase {
     });
   }
 
-  private unicastMessage(
+  public unicastMessage(
     msg: SpyMessage.MessageItem<SpyMessage.InteractiveType>,
     to: SpySocket.Connection,
   ) {
@@ -412,7 +412,7 @@ export abstract class SocketStoreBase {
     this.send(message);
   }
 
-  private handleFlushBuffer(
+  public handleFlushBuffer(
     message: SpyBase.InteractiveEvent<{ latestId: string }>,
   ) {
     const { latestId } = message.source.data;
@@ -434,7 +434,7 @@ export abstract class SocketStoreBase {
     });
   }
 
-  private static handleResolveAtom(
+  public static handleResolveAtom(
     { source }: SpyBase.InteractiveEvent<string>,
     reply: (data: any) => void,
   ) {
@@ -446,7 +446,7 @@ export abstract class SocketStoreBase {
     }
   }
 
-  private static handleAtomPropertyGetter(
+  public static handleAtomPropertyGetter(
     { source }: SpyBase.InteractiveEvent<GetterMember>,
     reply: (data: any) => void,
   ) {
@@ -494,7 +494,7 @@ export abstract class SocketStoreBase {
     }
   }
 
-  private checkIfSend(msg: SpySocket.ClientEvent) {
+  public checkIfSend(msg: SpySocket.ClientEvent) {
     if (this.socketWrapper.getState() !== SocketState.OPEN) return false;
     if (
       [SERVER_MESSAGE_TYPE.UPDATE_ROOM_INFO, SERVER_MESSAGE_TYPE.PING].includes(
@@ -508,7 +508,7 @@ export abstract class SocketStoreBase {
     return true;
   }
 
-  private checkIfCache(msg: SpySocket.ClientEvent, noCache: boolean = false) {
+  public checkIfCache(msg: SpySocket.ClientEvent, noCache: boolean = false) {
     if (this.isOffline || noCache) return false;
     if (
       [SERVER_MESSAGE_TYPE.MESSAGE, SERVER_MESSAGE_TYPE.PING].includes(msg.type)
@@ -518,7 +518,7 @@ export abstract class SocketStoreBase {
     return true;
   }
 
-  private sendClientInfo() {
+  public sendClientInfo() {
     const clientInfo = Client.makeClientInfoMsg();
     this.broadcastMessage(
       {

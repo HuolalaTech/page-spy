@@ -1,6 +1,9 @@
-import { getRandomId } from 'base/src';
-import RequestItem from 'base/src/request-item';
-import { ReqReadyState, resolveUrlInfo } from 'base/src/network/common';
+import {
+  getRandomId,
+  RequestItem,
+  ReqReadyState,
+  resolveUrlInfo,
+} from '@huolala-tech/page-spy-base';
 import WebNetworkProxyBase from './base';
 
 const OriginEventSource = window.EventSource;
@@ -22,17 +25,17 @@ export default class SSEProxy extends WebNetworkProxyBase {
     this.initProxyHandler();
   }
 
-  private initProxyHandler() {
+  public initProxyHandler() {
     if (!window.EventSource) {
       return;
     }
 
     const _sseProxy = this;
     window.EventSource = class EventSourceProxy {
-      private content =
+      public content =
         'The "window.EventSource" is being proxied by PageSpy\'s NetworkPlugin.';
 
-      private es: EventSource;
+      public es: EventSource;
 
       constructor(url: string | URL, eventSourceInitDict?: EventSourceInit) {
         const id = getRandomId();

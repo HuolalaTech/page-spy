@@ -10,9 +10,9 @@ import {
 } from '../utils/socket-base';
 
 export class OHSocketWrapper extends SocketWrapper {
-  private state: SocketState = 0;
+  public state: SocketState = 0;
 
-  private socketInstance: webSocket.WebSocket | null = null;
+  public socketInstance: webSocket.WebSocket | null = null;
 
   init(url: string) {
     this.state = SocketState.CONNECTING;

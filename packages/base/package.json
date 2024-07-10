@@ -1,8 +1,0 @@
-{
-  "name": "@huolala-tech/page-spy-base",
-  "private": true,
-  "description": "The common utils of PageSpy.",
-  "dependencies": {
-    "@huolala-tech/page-spy-types": "*"
-  }
-}

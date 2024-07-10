@@ -9,7 +9,7 @@ export default class ErrorPlugin implements PageSpyPlugin {
 
   public static hasInitd = false;
 
-  private static observerId: number;
+  public static observerId: number;
 
   public onInit() {
     if (ErrorPlugin.hasInitd) return;

@@ -8,13 +8,10 @@ import nodeResolve from '@rollup/plugin-node-resolve';
 import json from '@rollup/plugin-json';
 import replace from '@rollup/plugin-replace';
 import terser from '@rollup/plugin-terser';
-import alias from '@rollup/plugin-alias';
 import image from '@rollup/plugin-image';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
 import fs from 'fs';
-import { resolve } from 'path';
 
-const root = process.cwd();
 const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 
 const plugins = [
@@ -23,7 +20,7 @@ const plugins = [
   nodeResolve(),
   commonjs(),
   typescript({
-    // exclude: '**/tests/**/*.test.ts',
+    useTsconfigDeclarationDir: true,
   }),
   replace({
     PKG_VERSION: `"${pkg.version}"`,
@@ -33,12 +30,6 @@ const plugins = [
     extensions: ['.css', '.less'],
     extract: false,
     plugins: [autoprefixer()],
-  }),
-  alias({
-    entries: [
-      { find: 'page-spy-browser', replacement: root },
-      { find: 'base', replacement: resolve(root, '../base') },
-    ],
   }),
   terser(),
 ];

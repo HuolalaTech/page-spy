@@ -6,18 +6,16 @@ import {
   isString,
   isURL,
   psLog,
-} from 'base/src';
-import {
   addContentTypeHeader,
   getFormattedBody,
   MAX_SIZE,
   Reason,
   resolveUrlInfo,
-} from 'base/src/network/common';
+} from '@huolala-tech/page-spy-base';
 import WebNetworkProxyBase from './base';
 
 export default class FetchProxy extends WebNetworkProxyBase {
-  private fetch: WindowOrWorkerGlobalScope['fetch'] | null = null;
+  public fetch: WindowOrWorkerGlobalScope['fetch'] | null = null;
 
   constructor() {
     super();
@@ -30,7 +28,7 @@ export default class FetchProxy extends WebNetworkProxyBase {
     }
   }
 
-  private initProxyHandler() {
+  public initProxyHandler() {
     const that = this;
     const originFetch = window.fetch;
 

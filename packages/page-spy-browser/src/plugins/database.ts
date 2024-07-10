@@ -1,8 +1,7 @@
 import { DBInfo, DBStoreInfo } from '@huolala-tech/page-spy-types/lib/database';
-import { psLog } from 'base/src';
-import socketStore from 'page-spy-browser/src/helpers/socket';
-import { makeMessage } from 'base/src/message';
+import { psLog, makeMessage } from '@huolala-tech/page-spy-base';
 import { SpyDatabase, PageSpyPlugin } from '@huolala-tech/page-spy-types';
+import socketStore from '../helpers/socket';
 
 export function promisify<T = any>(req: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -20,15 +19,15 @@ export class DatabasePlugin implements PageSpyPlugin {
 
   public static hasInitd = false;
 
-  private originAdd: IDBObjectStore['add'] | null = null;
+  public originAdd: IDBObjectStore['add'] | null = null;
 
-  private originPut: IDBObjectStore['put'] | null = null;
+  public originPut: IDBObjectStore['put'] | null = null;
 
-  private originDelete: IDBObjectStore['delete'] | null = null;
+  public originDelete: IDBObjectStore['delete'] | null = null;
 
-  private originClear: IDBObjectStore['clear'] | null = null;
+  public originClear: IDBObjectStore['clear'] | null = null;
 
-  private originDrop: IDBFactory['deleteDatabase'] | null = null;
+  public originDrop: IDBFactory['deleteDatabase'] | null = null;
 
   public static get isSupport() {
     if (
@@ -72,7 +71,7 @@ export class DatabasePlugin implements PageSpyPlugin {
     DatabasePlugin.hasInitd = false;
   }
 
-  private static listenEvents() {
+  public static listenEvents() {
     socketStore.addListener('refresh', async ({ source }) => {
       if (source.data === 'indexedDB') {
         const result = await this.takeBasicInfo();
@@ -94,7 +93,7 @@ export class DatabasePlugin implements PageSpyPlugin {
     });
   }
 
-  private initIndexedDBProxy() {
+  public initIndexedDBProxy() {
     const {
       put: originPut,
       add: originAdd,
@@ -159,7 +158,7 @@ export class DatabasePlugin implements PageSpyPlugin {
     };
   }
 
-  private static async takeBasicInfo() {
+  public static async takeBasicInfo() {
     const dbs = await window.indexedDB.databases();
     if (!dbs.length) {
       return null;
@@ -175,7 +174,7 @@ export class DatabasePlugin implements PageSpyPlugin {
     return data.filter(Boolean) as DBInfo[];
   }
 
-  private static async getDBData(info: Required<IDBDatabaseInfo>) {
+  public static async getDBData(info: Required<IDBDatabaseInfo>) {
     try {
       const result: DBInfo = {
         name: info.name,
@@ -207,7 +206,7 @@ export class DatabasePlugin implements PageSpyPlugin {
     }
   }
 
-  private static async getStoreDataWithPagination({
+  public static async getStoreDataWithPagination({
     db,
     store,
     page,
@@ -267,7 +266,7 @@ export class DatabasePlugin implements PageSpyPlugin {
     });
   }
 
-  private static sendData(info: Omit<SpyDatabase.DataItem, 'id'>) {
+  public static sendData(info: Omit<SpyDatabase.DataItem, 'id'>) {
     const data = makeMessage('database', info);
     // The user wouldn't want to get the stale data, so here we set the 2nd parameter to true.
     socketStore.broadcastMessage(data, true);

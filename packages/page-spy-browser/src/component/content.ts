@@ -1,4 +1,4 @@
-import { isCN } from 'base/src';
+import { isCN } from '@huolala-tech/page-spy-base';
 
 interface ContentParams {
   className?: string;

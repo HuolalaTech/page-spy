@@ -1,0 +1,4 @@
+{
+  "extends": ["../../../tsconfig.paths.json", "../../../tsconfig.json"],
+  "include": ["../global.d.ts", "."]
+}

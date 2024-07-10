@@ -1,6 +1,0 @@
-{
-  "name": "@huolala-tech/page-spy-mp-base",
-  "private": true,
-  "description": "The base files of PageSpy mini program.",
-  "dependencies": {}
-}

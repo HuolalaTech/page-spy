@@ -1,4 +1,4 @@
-import { isCN, psLog } from 'base/src';
+import { isCN, psLog } from '@huolala-tech/page-spy-base';
 import type { Harbor } from '../harbor';
 import type { CacheMessageItem } from '../index';
 import { DOWNLOAD_TIPS } from './TIP_CONTENT';

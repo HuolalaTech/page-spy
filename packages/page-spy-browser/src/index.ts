@@ -1,14 +1,20 @@
-import type { InitConfig } from 'page-spy-browser/types/index';
 import copy from 'copy-to-clipboard';
-import { getAuthSecret, isArray, isClass, psLog } from 'base/src';
-import { ROOM_SESSION_KEY } from 'base/src/constants';
+import {
+  Client,
+  getAuthSecret,
+  isArray,
+  isClass,
+  psLog,
+  ROOM_SESSION_KEY,
+  SocketState,
+} from '@huolala-tech/page-spy-base';
 import type {
   PageSpyPlugin,
   PageSpyPluginLifecycle,
   PageSpyPluginLifecycleArgs,
   PluginOrder,
 } from '@huolala-tech/page-spy-types';
-import { SocketState } from 'base/src/socket-base';
+import type { InitConfig } from './config';
 import { Modal } from './component/modal';
 import { Content } from './component/content';
 
@@ -29,7 +35,6 @@ import './index.less';
 // eslint-disable-next-line import/order
 import { Config } from './config';
 import { Toast } from './component/toast';
-import Client from 'base/src/client';
 
 const Identifier = '__pageSpy';
 

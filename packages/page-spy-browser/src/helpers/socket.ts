@@ -1,16 +1,16 @@
-import { stringifyData } from 'base/src';
-import { ROOM_SESSION_KEY } from 'base/src/constants';
-import { UPDATE_ROOM_INFO } from 'base/src/message/server-type';
 import {
+  stringifyData,
+  ROOM_SESSION_KEY,
+  UPDATE_ROOM_INFO,
   SocketStoreBase,
   SocketState,
   SocketWrapper,
   WebSocketEvents,
-} from 'base/src/socket-base';
-import { InitConfig } from 'page-spy-browser/types';
+} from '@huolala-tech/page-spy-base';
+import { InitConfig } from '../config';
 
 export class WebSocketWrapper extends SocketWrapper {
-  private socketInstance: WebSocket | null = null;
+  public socketInstance: WebSocket | null = null;
 
   init(url: string) {
     this.socketInstance = new WebSocket(url);

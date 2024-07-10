@@ -6,19 +6,17 @@ import {
   isString,
   isURL,
   psLog,
-} from 'base/src';
-import {
   addContentTypeHeader,
   getFormattedBody,
   MAX_SIZE,
   Reason,
   resolveUrlInfo,
-} from 'base/src/network/common';
+} from '@huolala-tech/page-spy-base';
 import RNNetworkProxyBase from './base';
 import { IS_FETCH_HEADER } from './xhr-proxy';
 
 export default class FetchProxy extends RNNetworkProxyBase {
-  private fetch: WindowOrWorkerGlobalScope['fetch'] | null = null;
+  public fetch: WindowOrWorkerGlobalScope['fetch'] | null = null;
 
   constructor() {
     super();
@@ -31,7 +29,7 @@ export default class FetchProxy extends RNNetworkProxyBase {
     }
   }
 
-  private initProxyHandler() {
+  public initProxyHandler() {
     const that = this;
     const originFetch = globalThis.fetch;
 

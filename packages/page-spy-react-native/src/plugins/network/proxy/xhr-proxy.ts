@@ -7,15 +7,13 @@ import {
   getObjectKeys,
   psLog,
   blob2base64Async,
-} from 'base/src';
-import RequestItem from 'base/src/request-item';
-import {
+  RequestItem,
   MAX_SIZE,
   Reason,
   addContentTypeHeader,
   getFormattedBody,
   resolveUrlInfo,
-} from 'base/src/network/common';
+} from '@huolala-tech/page-spy-base';
 import RNNetworkProxyBase from './base';
 
 /**
@@ -40,18 +38,18 @@ declare global {
   }
 }
 class XhrProxy extends RNNetworkProxyBase {
-  private xhrOpen: XMLHttpRequest['open'] | null = null;
+  public xhrOpen: XMLHttpRequest['open'] | null = null;
 
-  private xhrSend: XMLHttpRequest['send'] | null = null;
+  public xhrSend: XMLHttpRequest['send'] | null = null;
 
-  private xhrSetRequestHeader: XMLHttpRequest['setRequestHeader'] | null = null;
+  public xhrSetRequestHeader: XMLHttpRequest['setRequestHeader'] | null = null;
 
   public constructor() {
     super();
     this.initProxyHandler();
   }
 
-  private initProxyHandler() {
+  public initProxyHandler() {
     const that = this;
     const { open, send, setRequestHeader } = XMLHttpRequest.prototype;
     this.xhrOpen = open;
@@ -91,7 +89,7 @@ class XhrProxy extends RNNetworkProxyBase {
           "The request object is not found on XMLHttpRequest's setRequestHeader event",
         );
       } /* c8 ignore stop */
-      return setRequestHeader.apply(this, [key, value]);
+      setRequestHeader.apply(this, [key, value]);
     };
 
     XMLHttpRequest.prototype.send = function (body) {
@@ -149,7 +147,7 @@ class XhrProxy extends RNNetworkProxyBase {
               req.endTime = Date.now();
               req.costTime = req.endTime - (req.startTime || req.endTime);
 
-              let responseType = XMLReq.responseType;
+              let { responseType } = XMLReq;
               if (
                 !responseType ||
                 (XMLReq.isFetch && responseType === 'blob')
@@ -232,7 +230,7 @@ class XhrProxy extends RNNetworkProxyBase {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  private async formatResponse(
+  public async formatResponse(
     XMLReq: XMLHttpRequest,
     type: XMLHttpRequestResponseType,
   ) {

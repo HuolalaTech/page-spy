@@ -1,9 +1,25 @@
-import type { Config } from 'jest';
-import { pathsToModuleNameMapper } from 'ts-jest';
-import tsConfig from './tsconfig.json';
+import { JestConfigWithTsJest, pathsToModuleNameMapper } from 'ts-jest';
+import tsconfigBase from './tsconfig.json';
+import tsconfigPath from './tsconfig.paths.json';
+
+// tell ts-jest about the path mapping info
+const tsCompilerOptions = {
+  ...tsconfigBase.compilerOptions,
+  ...tsconfigPath.compilerOptions,
+};
+
+// use ts-jest to transpile .js, .jsx, .ts, .tsx
+const transform: any = {
+  '^.+\\.[tj]sx?$': [
+    'ts-jest',
+    {
+      tsconfig: tsCompilerOptions,
+    },
+  ],
+};
 
 const moduleNameMapper = {
-  ...pathsToModuleNameMapper(tsConfig.compilerOptions.paths, {
+  ...pathsToModuleNameMapper(tsconfigPath.compilerOptions.paths, {
     prefix: '<rootDir>/',
   }),
   '\\.(css|less|svg|png|jpg)$':
@@ -16,9 +32,10 @@ const moduleNameMapper = {
  * - moduleNameMapper
  * - testMatch
  * - preset
+ * - transform
  */
 
-const config: Config = {
+const config: JestConfigWithTsJest = {
   collectCoverageFrom: [
     'packages/**/*.ts',
     '!packages/**/*.d.ts',
@@ -34,34 +51,36 @@ const config: Config = {
         name: 'Base',
         color: 'cyanBright',
       },
-      preset: 'ts-jest',
       testEnvironment: 'jsdom',
-      testMatch: ['**/packages/base/tests/**/*.test.ts'],
+      testMatch: ['**/packages/page-spy-base/tests/**/*.test.ts'],
       moduleNameMapper,
+      transform,
     },
     {
       displayName: {
         name: 'Browser',
         color: 'yellow',
       },
-      preset: 'ts-jest',
       testEnvironment: 'jsdom',
       testMatch: ['**/packages/page-spy-browser/tests/**/*.test.ts'],
-      moduleNameMapper,
       setupFilesAfterEnv: [
         '<rootDir>/packages/page-spy-browser/tests/setup.ts',
         'jest-canvas-mock',
       ],
+      moduleNameMapper,
+      transform,
     },
     {
       displayName: {
         name: 'MPBase',
         color: 'green',
       },
-      preset: 'ts-jest',
-      testMatch: ['**/packages/mp-base/tests/**/*.test.ts'],
+      testMatch: ['**/packages/page-spy-mp-base/tests/**/*.test.ts'],
+      setupFilesAfterEnv: [
+        '<rootDir>/packages/page-spy-mp-base/tests/setup.ts',
+      ],
       moduleNameMapper,
-      setupFilesAfterEnv: ['<rootDir>/packages/mp-base/tests/setup.ts'],
+      transform,
     },
   ],
 };

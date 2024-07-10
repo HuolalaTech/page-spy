@@ -1,4 +1,4 @@
-import { psLog } from 'base/src';
+import { psLog } from '@huolala-tech/page-spy-base';
 import {
   Container,
   PRIVATE_DB_NAME,

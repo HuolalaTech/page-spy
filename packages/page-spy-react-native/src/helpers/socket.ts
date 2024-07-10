@@ -1,19 +1,21 @@
-import { getRandomId, stringifyData } from 'base/src';
-import atom from 'base/src/atom';
-import Client, { combineName } from 'base/src/client';
-import { makeMessage } from 'base/src/message';
-import { UPDATE_ROOM_INFO } from 'base/src/message/server-type';
 import {
+  getRandomId,
+  stringifyData,
+  combineName,
+  UPDATE_ROOM_INFO,
+  makeMessage,
+  Client,
+  atom,
   SocketStoreBase,
   SocketState,
   SocketWrapper,
   WebSocketEvents,
-} from 'base/src/socket-base';
-import { SpyBase } from 'packages/page-spy-types';
-import { InitConfig } from 'page-spy-react-native/types';
+} from '@huolala-tech/page-spy-base';
+import { SpyBase } from '@huolala-tech/page-spy-types';
+import { InitConfig } from '../config';
 
 export class RNWebSocketWrapper extends SocketWrapper {
-  private socketInstance: WebSocket | null = null;
+  public socketInstance: WebSocket | null = null;
 
   init(url: string) {
     this.socketInstance = new WebSocket(url);
@@ -86,7 +88,7 @@ export class RNWebSocketStore extends SocketStoreBase {
   }
 
   // run executable code which received from remote and send back the result
-  private static handleDebugger(
+  public static handleDebugger(
     { source }: SpyBase.InteractiveEvent<string>,
     reply: (data: any) => void,
   ) {

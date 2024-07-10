@@ -1,5 +1,4 @@
-import { isBrowser } from 'base/src';
-import { ROOM_SESSION_KEY } from 'base/src/constants';
+import { isBrowser, ROOM_SESSION_KEY } from '@huolala-tech/page-spy-base';
 
 export const getDeviceId = () => {
   if (isBrowser()) {

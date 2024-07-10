@@ -4,9 +4,9 @@ import type {
   ConnectEvent,
   ErrorEvent,
 } from '@huolala-tech/page-spy-types/lib/socket-event';
-import * as SERVER_MESSAGE_TYPE from 'base/src/message/server-type';
+import * as SERVER_MESSAGE_TYPE from 'page-spy-base/src';
 import { SpyMessage } from '@huolala-tech/page-spy-types';
-import { SocketState } from 'base/src/socket-base';
+import { SocketState } from 'page-spy-base/src';
 // Mock micro task delay
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 

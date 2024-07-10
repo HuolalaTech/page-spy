@@ -1,7 +1,7 @@
 import NetworkPlugin from 'page-spy-browser/src/plugins/network';
 import startServer from '../../server/index';
 import data from '../../server/data.json';
-import { Reason } from 'base/src/network/common';
+import { Reason } from 'page-spy-base/src';
 import { computeRequestMapInfo } from './util';
 
 const port = 6677;

@@ -1,8 +1,6 @@
-import { setMPSDK, utilAPI } from 'mp-base/src/utils';
-import PageSpy from 'mp-base/src';
-import { SocketStoreBase } from 'base/src/socket-base';
-import Client from 'base/src/client';
-import { SpyClient } from 'packages/page-spy-types';
+import PageSpy, { setMPSDK, utilAPI } from '@huolala-tech/page-spy-mp-base';
+import { Client, SocketStoreBase } from '@huolala-tech/page-spy-base';
+import { SpyClient } from '@huolala-tech/page-spy-types';
 
 // reassign the global.mp to uni
 
