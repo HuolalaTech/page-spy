@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-wechat",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "description": "A developer tool for debugging wechat miniprogram",
   "license": "MIT",
   "main": "dist/cjs/index.min.js",
@@ -32,7 +32,7 @@
     "@babel/runtime": "^7.13.0",
     "@huolala-tech/page-spy-base": "^1.0.0",
     "@huolala-tech/page-spy-mp-base": "^1.0.0",
-    "@huolala-tech/page-spy-types": "^1.9.0"
+    "@huolala-tech/page-spy-types": "^1.9.1"
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
