@@ -4,6 +4,10 @@
       "cache": true,
       "dependsOn": ["^build"],
       "outputs": ["{projectRoot}/dist"]
+    },
+    "test": {
+      "cache": true,
+      "inputs": ["{projectRoot}/**/?(*.)+(spec|test).ts"]
     }
   }
 }

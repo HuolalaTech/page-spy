@@ -20,16 +20,7 @@
     "release:patch": "lerna publish patch --yes",
     "release:beta": "lerna publish prerelease --dist-tag beta --yes"
   },
-  "nx": {
-    "targets": {
-      "test": {
-        "cache": true,
-        "inputs": [
-          "{projectRoot}/tests"
-        ]
-      }
-    }
-  },
+  "nx": {},
   "gitHooks": {
     "pre-commit": "lint-staged"
   },
