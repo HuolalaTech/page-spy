@@ -13,8 +13,8 @@ export class Harbor {
   container: any[] = [];
 
   // Specify the maximum bytes of single harbor's container.
-  // Default 10MB.
-  maximum = 10 * 1024 * 1024;
+  // 0 means no limitation.
+  maximum = 0;
 
   constructor(config?: HarborConfig) {
     if (config && isNumber(config.maximum) && config.maximum >= 0) {

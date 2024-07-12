@@ -7,7 +7,8 @@ export type DataType =
   | 'page'
   | 'storage'
   | 'database'
-  | 'rrweb-event';
+  | 'rrweb-event'
+  | 'mark'; // DataHarborPlugin use the 'mark'
 
 /**
  * Interactive: some type which sended by developer and need to reply something

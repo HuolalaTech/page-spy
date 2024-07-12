@@ -1,9 +1,8 @@
-import { makeMessage } from '@huolala-tech/page-spy-base';
+import { makeMessage, SocketStoreBase } from '@huolala-tech/page-spy-base';
 import type {
   SpyStorage,
   PageSpyPlugin,
   OnInitParams,
-  SpyBase,
   InitConfigBase,
 } from '@huolala-tech/page-spy-types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -19,7 +18,7 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
 
   public static originFunctions = {} as typeof AsyncStorage;
 
-  public $socketStore: SpyBase.SocketStoreType | null = null;
+  public $socketStore: SocketStoreBase | null = null;
 
   public $pageSpyConfig: InitConfigBase | null = null;
 
