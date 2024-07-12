@@ -38,6 +38,80 @@
   "fileMap": {
     "nonProjectFiles": [],
     "projectFileMap": {
+      "@huolala-tech/page-spy-types": [
+        {
+          "file": "packages/page-spy-types/LICENSE",
+          "hash": "5589612977552745521"
+        },
+        {
+          "file": "packages/page-spy-types/README.md",
+          "hash": "5259653339521808668"
+        },
+        {
+          "file": "packages/page-spy-types/README_ZH.md",
+          "hash": "3861002276364048499"
+        },
+        {
+          "file": "packages/page-spy-types/index.d.ts",
+          "hash": "12827708308892827496"
+        },
+        {
+          "file": "packages/page-spy-types/lib/atom.d.ts",
+          "hash": "6119044560723544629"
+        },
+        {
+          "file": "packages/page-spy-types/lib/base.d.ts",
+          "hash": "18368376009581912436"
+        },
+        {
+          "file": "packages/page-spy-types/lib/client.d.ts",
+          "hash": "16544978620608097573"
+        },
+        {
+          "file": "packages/page-spy-types/lib/console.d.ts",
+          "hash": "14500235129997983384"
+        },
+        {
+          "file": "packages/page-spy-types/lib/database.d.ts",
+          "hash": "8079110993195123669"
+        },
+        {
+          "file": "packages/page-spy-types/lib/index.d.ts",
+          "hash": "13467274968543625984"
+        },
+        {
+          "file": "packages/page-spy-types/lib/message-type.d.ts",
+          "hash": "2454015757685701527"
+        },
+        {
+          "file": "packages/page-spy-types/lib/mini-program.d.ts",
+          "hash": "12140863634108515997"
+        },
+        {
+          "file": "packages/page-spy-types/lib/network.d.ts",
+          "hash": "673188497952302200"
+        },
+        {
+          "file": "packages/page-spy-types/lib/page.d.ts",
+          "hash": "2681891305106361381"
+        },
+        {
+          "file": "packages/page-spy-types/lib/socket-event.d.ts",
+          "hash": "12352064812756097315"
+        },
+        {
+          "file": "packages/page-spy-types/lib/storage.d.ts",
+          "hash": "1671890953860163896"
+        },
+        {
+          "file": "packages/page-spy-types/lib/system.d.ts",
+          "hash": "2407346800378181528"
+        },
+        {
+          "file": "packages/page-spy-types/package.json",
+          "hash": "11998212076372014797"
+        }
+      ],
       "@huolala-tech/page-spy-uniapp": [
         {
           "file": "packages/page-spy-uniapp/LICENSE",
@@ -85,6 +159,189 @@
         },
         {
           "file": "packages/page-spy-uniapp/tsconfig.json",
+          "hash": "6001209201597755308"
+        }
+      ],
+      "@huolala-tech/page-spy-wechat": [
+        {
+          "file": "packages/page-spy-wechat/LICENSE",
+          "hash": "5589612977552745521"
+        },
+        {
+          "file": "packages/page-spy-wechat/README.md",
+          "hash": "3099698262406252869"
+        },
+        {
+          "file": "packages/page-spy-wechat/README_ZH.md",
+          "hash": "5475134198599626134"
+        },
+        {
+          "file": "packages/page-spy-wechat/package.json",
+          "hash": "10049507937521578178",
+          "deps": [
+            "npm:@babel/core",
+            "npm:@babel/preset-env",
+            "npm:@babel/preset-typescript",
+            "npm:@huolala-tech/eval5",
+            "npm:@rollup/plugin-babel",
+            "npm:@rollup/plugin-commonjs",
+            "npm:@rollup/plugin-json",
+            "npm:@rollup/plugin-node-resolve",
+            "npm:@rollup/plugin-replace",
+            "npm:@rollup/plugin-terser",
+            "npm:core-js@3.37.0",
+            "npm:rollup",
+            "npm:rollup-plugin-delete",
+            "npm:rollup-plugin-typescript2",
+            "npm:@babel/runtime",
+            "@huolala-tech/page-spy-base",
+            "@huolala-tech/page-spy-mp-base",
+            "@huolala-tech/page-spy-types"
+          ]
+        },
+        {
+          "file": "packages/page-spy-wechat/rollup.config.mjs",
+          "hash": "15949444288377894930"
+        },
+        {
+          "file": "packages/page-spy-wechat/src/index.ts",
+          "hash": "15686167550858536536"
+        },
+        {
+          "file": "packages/page-spy-wechat/tsconfig.json",
+          "hash": "6001209201597755308"
+        }
+      ],
+      "@huolala-tech/page-spy-base": [
+        {
+          "file": "packages/page-spy-base/package.json",
+          "hash": "13296864026256794229",
+          "deps": ["@huolala-tech/page-spy-types"]
+        },
+        {
+          "file": "packages/page-spy-base/src/atom.ts",
+          "hash": "8338491748752188987"
+        },
+        {
+          "file": "packages/page-spy-base/src/client.ts",
+          "hash": "3557848711693254435"
+        },
+        {
+          "file": "packages/page-spy-base/src/config.ts",
+          "hash": "6109307611986581921"
+        },
+        {
+          "file": "packages/page-spy-base/src/constants.ts",
+          "hash": "4883590075084889201"
+        },
+        {
+          "file": "packages/page-spy-base/src/index.ts",
+          "hash": "6397688290226072674"
+        },
+        {
+          "file": "packages/page-spy-base/src/message/index.ts",
+          "hash": "13828667107118655741"
+        },
+        {
+          "file": "packages/page-spy-base/src/message/server-type.ts",
+          "hash": "10223397244384694055"
+        },
+        {
+          "file": "packages/page-spy-base/src/network/base.ts",
+          "hash": "673115018899716509"
+        },
+        {
+          "file": "packages/page-spy-base/src/network/common.ts",
+          "hash": "11672977985870286947"
+        },
+        {
+          "file": "packages/page-spy-base/src/request-item.ts",
+          "hash": "153866465865537417"
+        },
+        {
+          "file": "packages/page-spy-base/src/socket-base.ts",
+          "hash": "10897120027063590175"
+        },
+        {
+          "file": "packages/page-spy-base/src/utils.ts",
+          "hash": "16056823533191909589"
+        },
+        {
+          "file": "packages/page-spy-base/tests/atom.test.ts",
+          "hash": "10409059750943856253"
+        },
+        {
+          "file": "packages/page-spy-base/tests/index.test.ts",
+          "hash": "72140506428540942"
+        },
+        {
+          "file": "packages/page-spy-base/tests/network/base.test.ts",
+          "hash": "12289538123016943790"
+        },
+        {
+          "file": "packages/page-spy-base/tests/network/common.test.ts",
+          "hash": "17088776857013648283"
+        },
+        {
+          "file": "packages/page-spy-base/tests/tsconfig.json",
+          "hash": "4966579386405493409"
+        },
+        {
+          "file": "packages/page-spy-base/tests/ua.test.ts",
+          "hash": "9346446179490648735"
+        },
+        {
+          "file": "packages/page-spy-base/tsconfig.json",
+          "hash": "16934358766169975315"
+        }
+      ],
+      "@huolala-tech/page-spy-plugin-mp-eval": [
+        {
+          "file": "packages/page-spy-plugin-mp-eval/LICENSE",
+          "hash": "5589612977552745521"
+        },
+        {
+          "file": "packages/page-spy-plugin-mp-eval/README.md",
+          "hash": "13030147653316943278"
+        },
+        {
+          "file": "packages/page-spy-plugin-mp-eval/README_ZH.md",
+          "hash": "1110808643197397037"
+        },
+        {
+          "file": "packages/page-spy-plugin-mp-eval/package.json",
+          "hash": "2185357451232329225",
+          "deps": [
+            "npm:@babel/core",
+            "npm:@babel/preset-env",
+            "npm:@babel/preset-typescript",
+            "@huolala-tech/page-spy-types",
+            "npm:@rollup/plugin-babel",
+            "npm:@rollup/plugin-commonjs@25.0.7",
+            "npm:@rollup/plugin-node-resolve",
+            "npm:@rollup/plugin-replace",
+            "npm:@rollup/plugin-terser",
+            "npm:core-js",
+            "npm:rollup",
+            "npm:rollup-plugin-delete",
+            "npm:rollup-plugin-peer-deps-external",
+            "npm:rollup-plugin-typescript2",
+            "npm:@babel/runtime",
+            "npm:@huolala-tech/eval5",
+            "@huolala-tech/page-spy-base",
+            "@huolala-tech/page-spy-mp-base"
+          ]
+        },
+        {
+          "file": "packages/page-spy-plugin-mp-eval/rollup.config.mjs",
+          "hash": "1008509724593818684"
+        },
+        {
+          "file": "packages/page-spy-plugin-mp-eval/src/index.ts",
+          "hash": "3754419386005463366"
+        },
+        {
+          "file": "packages/page-spy-plugin-mp-eval/tsconfig.json",
           "hash": "6001209201597755308"
         }
       ],
@@ -644,10 +901,519 @@
         {
           "file": "yarn.lock",
           "hash": "5735717659410134310"
+        }
+      ],
+      "@huolala-tech/page-spy-plugin-data-harbor": [
+        {
+          "file": "packages/page-spy-plugin-data-harbor/LICENSE",
+          "hash": "5589612977552745521"
         },
         {
-          "file": ".nx/workspace-data/d/server-process.json",
-          "hash": "12983028605259709890"
+          "file": "packages/page-spy-plugin-data-harbor/README.md",
+          "hash": "6612845420215126791"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/README_ZH.md",
+          "hash": "12335113284156995936"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/package.json",
+          "hash": "8603779796856989467",
+          "deps": [
+            "npm:@babel/core",
+            "npm:@babel/preset-env",
+            "npm:@babel/preset-typescript",
+            "@huolala-tech/page-spy-types",
+            "npm:@rollup/plugin-babel",
+            "npm:@rollup/plugin-commonjs@25.0.7",
+            "npm:@rollup/plugin-node-resolve",
+            "npm:@rollup/plugin-replace",
+            "npm:@rollup/plugin-terser",
+            "npm:core-js",
+            "npm:rollup",
+            "npm:rollup-plugin-delete",
+            "npm:rollup-plugin-peer-deps-external",
+            "npm:rollup-plugin-typescript2",
+            "npm:@babel/runtime",
+            "@huolala-tech/page-spy-base",
+            "npm:fflate"
+          ]
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/rollup.config.mjs",
+          "hash": "14436590048692071473"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/screenshots/guide-en.jpg",
+          "hash": "11256364948723120741"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/screenshots/guide.jpg",
+          "hash": "16033889333948518145"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/screenshots/modal-en.jpg",
+          "hash": "5743805574192872886"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/screenshots/modal.jpg",
+          "hash": "13418275004777173032"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/src/api.d.ts",
+          "hash": "3991790399639086544"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/src/harbor/base.ts",
+          "hash": "5429587531980924827"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/src/harbor/idb-container.ts",
+          "hash": "12015331004997636817"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/src/harbor/index.ts",
+          "hash": "15040999724687765773"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/src/harbor/memory-container.ts",
+          "hash": "15762317582376312857"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/src/index.ts",
+          "hash": "1662572569107130768"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/src/skip-public.ts",
+          "hash": "9559471021517457815"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/src/utils/TIP_CONTENT.ts",
+          "hash": "16740241985232702238"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/src/utils/download.ts",
+          "hash": "9445562691365854298"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/src/utils/index.ts",
+          "hash": "4562644808376439642"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/src/utils/upload.ts",
+          "hash": "14624766658820488705"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/tsconfig.json",
+          "hash": "6001209201597755308"
+        }
+      ],
+      "@huolala-tech/page-spy-alipay": [
+        {
+          "file": "packages/page-spy-alipay/LICENSE",
+          "hash": "5589612977552745521"
+        },
+        {
+          "file": "packages/page-spy-alipay/README.md",
+          "hash": "9374719461721541040"
+        },
+        {
+          "file": "packages/page-spy-alipay/README_ZH.md",
+          "hash": "12017388620996107947"
+        },
+        {
+          "file": "packages/page-spy-alipay/package.json",
+          "hash": "8053484152076853657",
+          "deps": [
+            "npm:@babel/core",
+            "npm:@babel/preset-env",
+            "npm:@babel/preset-typescript",
+            "npm:@huolala-tech/eval5",
+            "npm:@rollup/plugin-babel",
+            "npm:@rollup/plugin-commonjs",
+            "npm:@rollup/plugin-json",
+            "npm:@rollup/plugin-node-resolve",
+            "npm:@rollup/plugin-replace",
+            "npm:@rollup/plugin-terser",
+            "npm:core-js@3.37.0",
+            "npm:rollup",
+            "npm:rollup-plugin-delete",
+            "npm:rollup-plugin-typescript2",
+            "npm:@babel/runtime",
+            "@huolala-tech/page-spy-base",
+            "@huolala-tech/page-spy-mp-base",
+            "@huolala-tech/page-spy-types"
+          ]
+        },
+        {
+          "file": "packages/page-spy-alipay/rollup.config.mjs",
+          "hash": "15949444288377894930"
+        },
+        {
+          "file": "packages/page-spy-alipay/src/index.ts",
+          "hash": "8761573735098846085"
+        },
+        {
+          "file": "packages/page-spy-alipay/tsconfig.json",
+          "hash": "6001209201597755308"
+        }
+      ],
+      "@huolala-tech/page-spy-taro": [
+        {
+          "file": "packages/page-spy-taro/LICENSE",
+          "hash": "5589612977552745521"
+        },
+        {
+          "file": "packages/page-spy-taro/README.md",
+          "hash": "14520035456583921334"
+        },
+        {
+          "file": "packages/page-spy-taro/README_ZH.md",
+          "hash": "3865950307079939654"
+        },
+        {
+          "file": "packages/page-spy-taro/package.json",
+          "hash": "6033483705792059012",
+          "deps": [
+            "npm:@babel/core",
+            "npm:@babel/preset-env",
+            "npm:@babel/preset-typescript",
+            "npm:@rollup/plugin-babel",
+            "npm:@rollup/plugin-commonjs",
+            "npm:@rollup/plugin-json",
+            "npm:@rollup/plugin-node-resolve",
+            "npm:@rollup/plugin-replace",
+            "npm:@rollup/plugin-terser",
+            "npm:core-js@3.37.0",
+            "npm:rollup",
+            "npm:rollup-plugin-delete",
+            "npm:rollup-plugin-typescript2",
+            "npm:@babel/runtime",
+            "@huolala-tech/page-spy-base",
+            "@huolala-tech/page-spy-mp-base",
+            "@huolala-tech/page-spy-types"
+          ]
+        },
+        {
+          "file": "packages/page-spy-taro/rollup.config.mjs",
+          "hash": "1071616420736078874"
+        },
+        {
+          "file": "packages/page-spy-taro/src/index.ts",
+          "hash": "12926544745415578389"
+        },
+        {
+          "file": "packages/page-spy-taro/tsconfig.json",
+          "hash": "6001209201597755308"
+        }
+      ],
+      "@huolala-tech/page-spy-plugin-rrweb": [
+        {
+          "file": "packages/page-spy-plugin-rrweb/LICENSE",
+          "hash": "5589612977552745521"
+        },
+        {
+          "file": "packages/page-spy-plugin-rrweb/README.md",
+          "hash": "8579295342120300916"
+        },
+        {
+          "file": "packages/page-spy-plugin-rrweb/README_ZH.md",
+          "hash": "7092444559361380816"
+        },
+        {
+          "file": "packages/page-spy-plugin-rrweb/package.json",
+          "hash": "7735385269177602991",
+          "deps": [
+            "npm:@babel/core",
+            "npm:@babel/preset-env",
+            "npm:@babel/preset-typescript",
+            "npm:@rollup/plugin-babel",
+            "npm:@rollup/plugin-commonjs@25.0.7",
+            "npm:@rollup/plugin-node-resolve",
+            "npm:@rollup/plugin-replace",
+            "npm:@rollup/plugin-terser",
+            "npm:core-js",
+            "npm:rollup",
+            "npm:rollup-plugin-delete",
+            "npm:rollup-plugin-peer-deps-external",
+            "npm:rollup-plugin-typescript2",
+            "npm:@babel/runtime",
+            "@huolala-tech/page-spy-base",
+            "@huolala-tech/page-spy-types",
+            "npm:rrweb"
+          ]
+        },
+        {
+          "file": "packages/page-spy-plugin-rrweb/rollup.config.mjs",
+          "hash": "10058180318152543691"
+        },
+        {
+          "file": "packages/page-spy-plugin-rrweb/src/index.ts",
+          "hash": "10634119778746278095"
+        },
+        {
+          "file": "packages/page-spy-plugin-rrweb/tsconfig.json",
+          "hash": "6001209201597755308"
+        }
+      ],
+      "@huolala-tech/page-spy-plugin-rn-async-storage": [
+        {
+          "file": "packages/page-spy-plugin-rn-async-storage/LICENSE",
+          "hash": "5589612977552745521"
+        },
+        {
+          "file": "packages/page-spy-plugin-rn-async-storage/README.md",
+          "hash": "16936271214540629220"
+        },
+        {
+          "file": "packages/page-spy-plugin-rn-async-storage/README_ZH.md",
+          "hash": "15562786816249233292"
+        },
+        {
+          "file": "packages/page-spy-plugin-rn-async-storage/package.json",
+          "hash": "9816563105704134864",
+          "deps": [
+            "@huolala-tech/page-spy-react-native",
+            "npm:@react-native-async-storage/async-storage",
+            "npm:@babel/core",
+            "npm:@babel/preset-env",
+            "npm:@babel/preset-typescript",
+            "@huolala-tech/page-spy-types",
+            "npm:@rollup/plugin-babel",
+            "npm:@rollup/plugin-commonjs@25.0.7",
+            "npm:@rollup/plugin-node-resolve",
+            "npm:@rollup/plugin-replace",
+            "npm:@rollup/plugin-terser",
+            "npm:core-js",
+            "npm:rollup",
+            "npm:rollup-plugin-delete",
+            "npm:rollup-plugin-peer-deps-external",
+            "npm:rollup-plugin-typescript2",
+            "npm:@babel/runtime",
+            "@huolala-tech/page-spy-base"
+          ]
+        },
+        {
+          "file": "packages/page-spy-plugin-rn-async-storage/rollup.config.mjs",
+          "hash": "8469678479636445171"
+        },
+        {
+          "file": "packages/page-spy-plugin-rn-async-storage/src/index.ts",
+          "hash": "17157260497325022164"
+        },
+        {
+          "file": "packages/page-spy-plugin-rn-async-storage/tsconfig.json",
+          "hash": "6001209201597755308"
+        }
+      ],
+      "@huolala-tech/page-spy-react-native": [
+        {
+          "file": "packages/page-spy-react-native/README.md",
+          "hash": "4542090655871171071"
+        },
+        {
+          "file": "packages/page-spy-react-native/README_ZH.md",
+          "hash": "1944648793371659649"
+        },
+        {
+          "file": "packages/page-spy-react-native/package.json",
+          "hash": "16459012739556275288",
+          "deps": [
+            "npm:react-native",
+            "npm:@babel/core",
+            "npm:@babel/plugin-transform-runtime",
+            "npm:@babel/preset-env",
+            "npm:@babel/preset-typescript",
+            "npm:@rollup/plugin-babel",
+            "npm:@rollup/plugin-commonjs",
+            "npm:@rollup/plugin-node-resolve",
+            "npm:@rollup/plugin-replace",
+            "npm:@rollup/plugin-terser",
+            "npm:core-js@3.37.0",
+            "npm:rollup",
+            "npm:rollup-plugin-delete",
+            "npm:rollup-plugin-typescript2",
+            "npm:@babel/runtime",
+            "@huolala-tech/page-spy-base",
+            "@huolala-tech/page-spy-types",
+            "npm:promise"
+          ]
+        },
+        {
+          "file": "packages/page-spy-react-native/rollup.config.mjs",
+          "hash": "6292202981589012550"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/api/index.ts",
+          "hash": "2124855350280138827"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/config.ts",
+          "hash": "16832055671029302919"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/env.d.ts",
+          "hash": "8842014522480922741"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/helpers/socket.ts",
+          "hash": "14845455077952774334"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/index.ts",
+          "hash": "10851674403459881745"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/plugins/console.ts",
+          "hash": "5067684193747565132"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/plugins/error.ts",
+          "hash": "9908247712890530650"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/plugins/network/index.ts",
+          "hash": "10626319561208223892"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/plugins/network/proxy/base.ts",
+          "hash": "6496766357151391185"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/plugins/network/proxy/fetch-proxy.ts",
+          "hash": "9959718590906411767"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/plugins/network/proxy/xhr-proxy.ts",
+          "hash": "11564833592218465082"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/plugins/system.ts",
+          "hash": "3239759979029977508"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/utils.ts",
+          "hash": "4831523096274956406"
+        },
+        {
+          "file": "packages/page-spy-react-native/tsconfig.json",
+          "hash": "6608552333948279827"
+        }
+      ],
+      "@huolala-tech/page-spy-mp-base": [
+        {
+          "file": "packages/page-spy-mp-base/global.d.ts",
+          "hash": "16664115162209380883"
+        },
+        {
+          "file": "packages/page-spy-mp-base/package.json",
+          "hash": "17733568867576320897",
+          "deps": [
+            "npm:typescript@5.5.3",
+            "npm:@huolala-tech/eval5",
+            "@huolala-tech/page-spy-base",
+            "@huolala-tech/page-spy-types"
+          ]
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/api/index.ts",
+          "hash": "582268438169646020"
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/config.ts",
+          "hash": "193109739526232466"
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/helpers/socket.ts",
+          "hash": "7534836214477615115"
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/index.ts",
+          "hash": "4553851887770938780"
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/plugins/console.ts",
+          "hash": "430638502794656970"
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/plugins/error.ts",
+          "hash": "8434872041001388941"
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/plugins/network/index.ts",
+          "hash": "10052598154395264739"
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/plugins/network/proxy/base.ts",
+          "hash": "6367377106759640364"
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/plugins/network/proxy/request.ts",
+          "hash": "6616926809154415684"
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/plugins/storage.ts",
+          "hash": "1461688461280412118"
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/plugins/system.ts",
+          "hash": "345379344726032298"
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/utils.ts",
+          "hash": "5755318704881722930"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/init.test.ts",
+          "hash": "5848647118581679261"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/mock/mp.ts",
+          "hash": "3217854751684352407"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/mock/request.ts",
+          "hash": "10789542219692023293"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/mock/storage.ts",
+          "hash": "3552587223854415212"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/plugins/console.test.ts",
+          "hash": "18316652565599689026"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/plugins/error.test.ts",
+          "hash": "18185439091386074495"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/plugins/network.test.ts",
+          "hash": "16504738375734576122"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/plugins/storage.test.ts",
+          "hash": "16112106821883624341"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/plugins/util.ts",
+          "hash": "4077095040839371622"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/setup.ts",
+          "hash": "12937859701964487442"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/tsconfig.json",
+          "hash": "13559582335446764960"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/utils.test.ts",
+          "hash": "5294880577002562876"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tsconfig.json",
+          "hash": "15598379945787233206"
         }
       ],
       "@huolala-tech/page-spy-browser": [
@@ -891,778 +1657,6 @@
         },
         {
           "file": "packages/page-spy-browser/tsconfig.json",
-          "hash": "6001209201597755308"
-        }
-      ],
-      "@huolala-tech/page-spy-base": [
-        {
-          "file": "packages/page-spy-base/package.json",
-          "hash": "13296864026256794229",
-          "deps": [
-            "@huolala-tech/page-spy-types"
-          ]
-        },
-        {
-          "file": "packages/page-spy-base/src/atom.ts",
-          "hash": "8338491748752188987"
-        },
-        {
-          "file": "packages/page-spy-base/src/client.ts",
-          "hash": "3557848711693254435"
-        },
-        {
-          "file": "packages/page-spy-base/src/config.ts",
-          "hash": "6109307611986581921"
-        },
-        {
-          "file": "packages/page-spy-base/src/constants.ts",
-          "hash": "4883590075084889201"
-        },
-        {
-          "file": "packages/page-spy-base/src/index.ts",
-          "hash": "6397688290226072674"
-        },
-        {
-          "file": "packages/page-spy-base/src/message/index.ts",
-          "hash": "13828667107118655741"
-        },
-        {
-          "file": "packages/page-spy-base/src/message/server-type.ts",
-          "hash": "10223397244384694055"
-        },
-        {
-          "file": "packages/page-spy-base/src/network/base.ts",
-          "hash": "673115018899716509"
-        },
-        {
-          "file": "packages/page-spy-base/src/network/common.ts",
-          "hash": "11672977985870286947"
-        },
-        {
-          "file": "packages/page-spy-base/src/request-item.ts",
-          "hash": "153866465865537417"
-        },
-        {
-          "file": "packages/page-spy-base/src/socket-base.ts",
-          "hash": "10897120027063590175"
-        },
-        {
-          "file": "packages/page-spy-base/src/utils.ts",
-          "hash": "16056823533191909589"
-        },
-        {
-          "file": "packages/page-spy-base/tests/atom.test.ts",
-          "hash": "10409059750943856253"
-        },
-        {
-          "file": "packages/page-spy-base/tests/index.test.ts",
-          "hash": "72140506428540942"
-        },
-        {
-          "file": "packages/page-spy-base/tests/network/base.test.ts",
-          "hash": "12289538123016943790"
-        },
-        {
-          "file": "packages/page-spy-base/tests/network/common.test.ts",
-          "hash": "17088776857013648283"
-        },
-        {
-          "file": "packages/page-spy-base/tests/tsconfig.json",
-          "hash": "4966579386405493409"
-        },
-        {
-          "file": "packages/page-spy-base/tests/ua.test.ts",
-          "hash": "9346446179490648735"
-        },
-        {
-          "file": "packages/page-spy-base/tsconfig.json",
-          "hash": "16934358766169975315"
-        }
-      ],
-      "@huolala-tech/page-spy-types": [
-        {
-          "file": "packages/page-spy-types/LICENSE",
-          "hash": "5589612977552745521"
-        },
-        {
-          "file": "packages/page-spy-types/README.md",
-          "hash": "5259653339521808668"
-        },
-        {
-          "file": "packages/page-spy-types/README_ZH.md",
-          "hash": "3861002276364048499"
-        },
-        {
-          "file": "packages/page-spy-types/index.d.ts",
-          "hash": "12827708308892827496"
-        },
-        {
-          "file": "packages/page-spy-types/lib/atom.d.ts",
-          "hash": "6119044560723544629"
-        },
-        {
-          "file": "packages/page-spy-types/lib/base.d.ts",
-          "hash": "18368376009581912436"
-        },
-        {
-          "file": "packages/page-spy-types/lib/client.d.ts",
-          "hash": "16544978620608097573"
-        },
-        {
-          "file": "packages/page-spy-types/lib/console.d.ts",
-          "hash": "14500235129997983384"
-        },
-        {
-          "file": "packages/page-spy-types/lib/database.d.ts",
-          "hash": "8079110993195123669"
-        },
-        {
-          "file": "packages/page-spy-types/lib/index.d.ts",
-          "hash": "13467274968543625984"
-        },
-        {
-          "file": "packages/page-spy-types/lib/message-type.d.ts",
-          "hash": "2454015757685701527"
-        },
-        {
-          "file": "packages/page-spy-types/lib/mini-program.d.ts",
-          "hash": "12140863634108515997"
-        },
-        {
-          "file": "packages/page-spy-types/lib/network.d.ts",
-          "hash": "673188497952302200"
-        },
-        {
-          "file": "packages/page-spy-types/lib/page.d.ts",
-          "hash": "2681891305106361381"
-        },
-        {
-          "file": "packages/page-spy-types/lib/socket-event.d.ts",
-          "hash": "12352064812756097315"
-        },
-        {
-          "file": "packages/page-spy-types/lib/storage.d.ts",
-          "hash": "1671890953860163896"
-        },
-        {
-          "file": "packages/page-spy-types/lib/system.d.ts",
-          "hash": "2407346800378181528"
-        },
-        {
-          "file": "packages/page-spy-types/package.json",
-          "hash": "11998212076372014797"
-        }
-      ],
-      "@huolala-tech/page-spy-mp-base": [
-        {
-          "file": "packages/page-spy-mp-base/global.d.ts",
-          "hash": "16664115162209380883"
-        },
-        {
-          "file": "packages/page-spy-mp-base/package.json",
-          "hash": "17733568867576320897",
-          "deps": [
-            "npm:typescript@5.5.3",
-            "npm:@huolala-tech/eval5",
-            "@huolala-tech/page-spy-base",
-            "@huolala-tech/page-spy-types"
-          ]
-        },
-        {
-          "file": "packages/page-spy-mp-base/src/api/index.ts",
-          "hash": "582268438169646020"
-        },
-        {
-          "file": "packages/page-spy-mp-base/src/config.ts",
-          "hash": "193109739526232466"
-        },
-        {
-          "file": "packages/page-spy-mp-base/src/helpers/socket.ts",
-          "hash": "7534836214477615115"
-        },
-        {
-          "file": "packages/page-spy-mp-base/src/index.ts",
-          "hash": "4553851887770938780"
-        },
-        {
-          "file": "packages/page-spy-mp-base/src/plugins/console.ts",
-          "hash": "430638502794656970"
-        },
-        {
-          "file": "packages/page-spy-mp-base/src/plugins/error.ts",
-          "hash": "8434872041001388941"
-        },
-        {
-          "file": "packages/page-spy-mp-base/src/plugins/network/index.ts",
-          "hash": "10052598154395264739"
-        },
-        {
-          "file": "packages/page-spy-mp-base/src/plugins/network/proxy/base.ts",
-          "hash": "6367377106759640364"
-        },
-        {
-          "file": "packages/page-spy-mp-base/src/plugins/network/proxy/request.ts",
-          "hash": "6616926809154415684"
-        },
-        {
-          "file": "packages/page-spy-mp-base/src/plugins/storage.ts",
-          "hash": "1461688461280412118"
-        },
-        {
-          "file": "packages/page-spy-mp-base/src/plugins/system.ts",
-          "hash": "345379344726032298"
-        },
-        {
-          "file": "packages/page-spy-mp-base/src/utils.ts",
-          "hash": "5755318704881722930"
-        },
-        {
-          "file": "packages/page-spy-mp-base/tests/init.test.ts",
-          "hash": "5848647118581679261"
-        },
-        {
-          "file": "packages/page-spy-mp-base/tests/mock/mp.ts",
-          "hash": "3217854751684352407"
-        },
-        {
-          "file": "packages/page-spy-mp-base/tests/mock/request.ts",
-          "hash": "10789542219692023293"
-        },
-        {
-          "file": "packages/page-spy-mp-base/tests/mock/storage.ts",
-          "hash": "3552587223854415212"
-        },
-        {
-          "file": "packages/page-spy-mp-base/tests/plugins/console.test.ts",
-          "hash": "18316652565599689026"
-        },
-        {
-          "file": "packages/page-spy-mp-base/tests/plugins/error.test.ts",
-          "hash": "18185439091386074495"
-        },
-        {
-          "file": "packages/page-spy-mp-base/tests/plugins/network.test.ts",
-          "hash": "16504738375734576122"
-        },
-        {
-          "file": "packages/page-spy-mp-base/tests/plugins/storage.test.ts",
-          "hash": "16112106821883624341"
-        },
-        {
-          "file": "packages/page-spy-mp-base/tests/plugins/util.ts",
-          "hash": "4077095040839371622"
-        },
-        {
-          "file": "packages/page-spy-mp-base/tests/setup.ts",
-          "hash": "12937859701964487442"
-        },
-        {
-          "file": "packages/page-spy-mp-base/tests/tsconfig.json",
-          "hash": "13559582335446764960"
-        },
-        {
-          "file": "packages/page-spy-mp-base/tests/utils.test.ts",
-          "hash": "5294880577002562876"
-        },
-        {
-          "file": "packages/page-spy-mp-base/tsconfig.json",
-          "hash": "15598379945787233206"
-        }
-      ],
-      "@huolala-tech/page-spy-plugin-data-harbor": [
-        {
-          "file": "packages/page-spy-plugin-data-harbor/LICENSE",
-          "hash": "5589612977552745521"
-        },
-        {
-          "file": "packages/page-spy-plugin-data-harbor/README.md",
-          "hash": "6612845420215126791"
-        },
-        {
-          "file": "packages/page-spy-plugin-data-harbor/README_ZH.md",
-          "hash": "12335113284156995936"
-        },
-        {
-          "file": "packages/page-spy-plugin-data-harbor/package.json",
-          "hash": "8603779796856989467",
-          "deps": [
-            "npm:@babel/core",
-            "npm:@babel/preset-env",
-            "npm:@babel/preset-typescript",
-            "@huolala-tech/page-spy-types",
-            "npm:@rollup/plugin-babel",
-            "npm:@rollup/plugin-commonjs@25.0.7",
-            "npm:@rollup/plugin-node-resolve",
-            "npm:@rollup/plugin-replace",
-            "npm:@rollup/plugin-terser",
-            "npm:core-js",
-            "npm:rollup",
-            "npm:rollup-plugin-delete",
-            "npm:rollup-plugin-peer-deps-external",
-            "npm:rollup-plugin-typescript2",
-            "npm:@babel/runtime",
-            "@huolala-tech/page-spy-base",
-            "npm:fflate"
-          ]
-        },
-        {
-          "file": "packages/page-spy-plugin-data-harbor/rollup.config.mjs",
-          "hash": "14436590048692071473"
-        },
-        {
-          "file": "packages/page-spy-plugin-data-harbor/screenshots/guide-en.jpg",
-          "hash": "11256364948723120741"
-        },
-        {
-          "file": "packages/page-spy-plugin-data-harbor/screenshots/guide.jpg",
-          "hash": "16033889333948518145"
-        },
-        {
-          "file": "packages/page-spy-plugin-data-harbor/screenshots/modal-en.jpg",
-          "hash": "5743805574192872886"
-        },
-        {
-          "file": "packages/page-spy-plugin-data-harbor/screenshots/modal.jpg",
-          "hash": "13418275004777173032"
-        },
-        {
-          "file": "packages/page-spy-plugin-data-harbor/src/api.d.ts",
-          "hash": "3991790399639086544"
-        },
-        {
-          "file": "packages/page-spy-plugin-data-harbor/src/harbor/base.ts",
-          "hash": "5429587531980924827"
-        },
-        {
-          "file": "packages/page-spy-plugin-data-harbor/src/harbor/idb-container.ts",
-          "hash": "12015331004997636817"
-        },
-        {
-          "file": "packages/page-spy-plugin-data-harbor/src/harbor/index.ts",
-          "hash": "15040999724687765773"
-        },
-        {
-          "file": "packages/page-spy-plugin-data-harbor/src/harbor/memory-container.ts",
-          "hash": "15762317582376312857"
-        },
-        {
-          "file": "packages/page-spy-plugin-data-harbor/src/index.ts",
-          "hash": "1662572569107130768"
-        },
-        {
-          "file": "packages/page-spy-plugin-data-harbor/src/skip-public.ts",
-          "hash": "9559471021517457815"
-        },
-        {
-          "file": "packages/page-spy-plugin-data-harbor/src/utils/TIP_CONTENT.ts",
-          "hash": "16740241985232702238"
-        },
-        {
-          "file": "packages/page-spy-plugin-data-harbor/src/utils/download.ts",
-          "hash": "9445562691365854298"
-        },
-        {
-          "file": "packages/page-spy-plugin-data-harbor/src/utils/index.ts",
-          "hash": "4562644808376439642"
-        },
-        {
-          "file": "packages/page-spy-plugin-data-harbor/src/utils/upload.ts",
-          "hash": "14624766658820488705"
-        },
-        {
-          "file": "packages/page-spy-plugin-data-harbor/tsconfig.json",
-          "hash": "6001209201597755308"
-        }
-      ],
-      "@huolala-tech/page-spy-plugin-rrweb": [
-        {
-          "file": "packages/page-spy-plugin-rrweb/LICENSE",
-          "hash": "5589612977552745521"
-        },
-        {
-          "file": "packages/page-spy-plugin-rrweb/README.md",
-          "hash": "8579295342120300916"
-        },
-        {
-          "file": "packages/page-spy-plugin-rrweb/README_ZH.md",
-          "hash": "7092444559361380816"
-        },
-        {
-          "file": "packages/page-spy-plugin-rrweb/package.json",
-          "hash": "7735385269177602991",
-          "deps": [
-            "npm:@babel/core",
-            "npm:@babel/preset-env",
-            "npm:@babel/preset-typescript",
-            "npm:@rollup/plugin-babel",
-            "npm:@rollup/plugin-commonjs@25.0.7",
-            "npm:@rollup/plugin-node-resolve",
-            "npm:@rollup/plugin-replace",
-            "npm:@rollup/plugin-terser",
-            "npm:core-js",
-            "npm:rollup",
-            "npm:rollup-plugin-delete",
-            "npm:rollup-plugin-peer-deps-external",
-            "npm:rollup-plugin-typescript2",
-            "npm:@babel/runtime",
-            "@huolala-tech/page-spy-base",
-            "@huolala-tech/page-spy-types",
-            "npm:rrweb"
-          ]
-        },
-        {
-          "file": "packages/page-spy-plugin-rrweb/rollup.config.mjs",
-          "hash": "10058180318152543691"
-        },
-        {
-          "file": "packages/page-spy-plugin-rrweb/src/index.ts",
-          "hash": "10634119778746278095"
-        },
-        {
-          "file": "packages/page-spy-plugin-rrweb/tsconfig.json",
-          "hash": "6001209201597755308"
-        }
-      ],
-      "@huolala-tech/page-spy-taro": [
-        {
-          "file": "packages/page-spy-taro/LICENSE",
-          "hash": "5589612977552745521"
-        },
-        {
-          "file": "packages/page-spy-taro/README.md",
-          "hash": "14520035456583921334"
-        },
-        {
-          "file": "packages/page-spy-taro/README_ZH.md",
-          "hash": "3865950307079939654"
-        },
-        {
-          "file": "packages/page-spy-taro/package.json",
-          "hash": "6033483705792059012",
-          "deps": [
-            "npm:@babel/core",
-            "npm:@babel/preset-env",
-            "npm:@babel/preset-typescript",
-            "npm:@rollup/plugin-babel",
-            "npm:@rollup/plugin-commonjs",
-            "npm:@rollup/plugin-json",
-            "npm:@rollup/plugin-node-resolve",
-            "npm:@rollup/plugin-replace",
-            "npm:@rollup/plugin-terser",
-            "npm:core-js@3.37.0",
-            "npm:rollup",
-            "npm:rollup-plugin-delete",
-            "npm:rollup-plugin-typescript2",
-            "npm:@babel/runtime",
-            "@huolala-tech/page-spy-base",
-            "@huolala-tech/page-spy-mp-base",
-            "@huolala-tech/page-spy-types"
-          ]
-        },
-        {
-          "file": "packages/page-spy-taro/rollup.config.mjs",
-          "hash": "1071616420736078874"
-        },
-        {
-          "file": "packages/page-spy-taro/src/index.ts",
-          "hash": "12926544745415578389"
-        },
-        {
-          "file": "packages/page-spy-taro/tsconfig.json",
-          "hash": "6001209201597755308"
-        }
-      ],
-      "@huolala-tech/page-spy-react-native": [
-        {
-          "file": "packages/page-spy-react-native/README.md",
-          "hash": "4542090655871171071"
-        },
-        {
-          "file": "packages/page-spy-react-native/README_ZH.md",
-          "hash": "1944648793371659649"
-        },
-        {
-          "file": "packages/page-spy-react-native/package.json",
-          "hash": "16459012739556275288",
-          "deps": [
-            "npm:react-native",
-            "npm:@babel/core",
-            "npm:@babel/plugin-transform-runtime",
-            "npm:@babel/preset-env",
-            "npm:@babel/preset-typescript",
-            "npm:@rollup/plugin-babel",
-            "npm:@rollup/plugin-commonjs",
-            "npm:@rollup/plugin-node-resolve",
-            "npm:@rollup/plugin-replace",
-            "npm:@rollup/plugin-terser",
-            "npm:core-js@3.37.0",
-            "npm:rollup",
-            "npm:rollup-plugin-delete",
-            "npm:rollup-plugin-typescript2",
-            "npm:@babel/runtime",
-            "@huolala-tech/page-spy-base",
-            "@huolala-tech/page-spy-types",
-            "npm:promise"
-          ]
-        },
-        {
-          "file": "packages/page-spy-react-native/rollup.config.mjs",
-          "hash": "6292202981589012550"
-        },
-        {
-          "file": "packages/page-spy-react-native/src/api/index.ts",
-          "hash": "2124855350280138827"
-        },
-        {
-          "file": "packages/page-spy-react-native/src/config.ts",
-          "hash": "16832055671029302919"
-        },
-        {
-          "file": "packages/page-spy-react-native/src/env.d.ts",
-          "hash": "8842014522480922741"
-        },
-        {
-          "file": "packages/page-spy-react-native/src/helpers/socket.ts",
-          "hash": "14845455077952774334"
-        },
-        {
-          "file": "packages/page-spy-react-native/src/index.ts",
-          "hash": "10851674403459881745"
-        },
-        {
-          "file": "packages/page-spy-react-native/src/plugins/console.ts",
-          "hash": "5067684193747565132"
-        },
-        {
-          "file": "packages/page-spy-react-native/src/plugins/error.ts",
-          "hash": "9908247712890530650"
-        },
-        {
-          "file": "packages/page-spy-react-native/src/plugins/network/index.ts",
-          "hash": "10626319561208223892"
-        },
-        {
-          "file": "packages/page-spy-react-native/src/plugins/network/proxy/base.ts",
-          "hash": "6496766357151391185"
-        },
-        {
-          "file": "packages/page-spy-react-native/src/plugins/network/proxy/fetch-proxy.ts",
-          "hash": "9959718590906411767"
-        },
-        {
-          "file": "packages/page-spy-react-native/src/plugins/network/proxy/xhr-proxy.ts",
-          "hash": "11564833592218465082"
-        },
-        {
-          "file": "packages/page-spy-react-native/src/plugins/system.ts",
-          "hash": "3239759979029977508"
-        },
-        {
-          "file": "packages/page-spy-react-native/src/utils.ts",
-          "hash": "4831523096274956406"
-        },
-        {
-          "file": "packages/page-spy-react-native/tsconfig.json",
-          "hash": "6608552333948279827"
-        }
-      ],
-      "@huolala-tech/page-spy-wechat": [
-        {
-          "file": "packages/page-spy-wechat/LICENSE",
-          "hash": "5589612977552745521"
-        },
-        {
-          "file": "packages/page-spy-wechat/README.md",
-          "hash": "3099698262406252869"
-        },
-        {
-          "file": "packages/page-spy-wechat/README_ZH.md",
-          "hash": "5475134198599626134"
-        },
-        {
-          "file": "packages/page-spy-wechat/package.json",
-          "hash": "10049507937521578178",
-          "deps": [
-            "npm:@babel/core",
-            "npm:@babel/preset-env",
-            "npm:@babel/preset-typescript",
-            "npm:@huolala-tech/eval5",
-            "npm:@rollup/plugin-babel",
-            "npm:@rollup/plugin-commonjs",
-            "npm:@rollup/plugin-json",
-            "npm:@rollup/plugin-node-resolve",
-            "npm:@rollup/plugin-replace",
-            "npm:@rollup/plugin-terser",
-            "npm:core-js@3.37.0",
-            "npm:rollup",
-            "npm:rollup-plugin-delete",
-            "npm:rollup-plugin-typescript2",
-            "npm:@babel/runtime",
-            "@huolala-tech/page-spy-base",
-            "@huolala-tech/page-spy-mp-base",
-            "@huolala-tech/page-spy-types"
-          ]
-        },
-        {
-          "file": "packages/page-spy-wechat/rollup.config.mjs",
-          "hash": "15949444288377894930"
-        },
-        {
-          "file": "packages/page-spy-wechat/src/index.ts",
-          "hash": "15686167550858536536"
-        },
-        {
-          "file": "packages/page-spy-wechat/tsconfig.json",
-          "hash": "6001209201597755308"
-        }
-      ],
-      "@huolala-tech/page-spy-plugin-mp-eval": [
-        {
-          "file": "packages/page-spy-plugin-mp-eval/LICENSE",
-          "hash": "5589612977552745521"
-        },
-        {
-          "file": "packages/page-spy-plugin-mp-eval/README.md",
-          "hash": "13030147653316943278"
-        },
-        {
-          "file": "packages/page-spy-plugin-mp-eval/README_ZH.md",
-          "hash": "1110808643197397037"
-        },
-        {
-          "file": "packages/page-spy-plugin-mp-eval/package.json",
-          "hash": "2185357451232329225",
-          "deps": [
-            "npm:@babel/core",
-            "npm:@babel/preset-env",
-            "npm:@babel/preset-typescript",
-            "@huolala-tech/page-spy-types",
-            "npm:@rollup/plugin-babel",
-            "npm:@rollup/plugin-commonjs@25.0.7",
-            "npm:@rollup/plugin-node-resolve",
-            "npm:@rollup/plugin-replace",
-            "npm:@rollup/plugin-terser",
-            "npm:core-js",
-            "npm:rollup",
-            "npm:rollup-plugin-delete",
-            "npm:rollup-plugin-peer-deps-external",
-            "npm:rollup-plugin-typescript2",
-            "npm:@babel/runtime",
-            "npm:@huolala-tech/eval5",
-            "@huolala-tech/page-spy-base",
-            "@huolala-tech/page-spy-mp-base"
-          ]
-        },
-        {
-          "file": "packages/page-spy-plugin-mp-eval/rollup.config.mjs",
-          "hash": "1008509724593818684"
-        },
-        {
-          "file": "packages/page-spy-plugin-mp-eval/src/index.ts",
-          "hash": "3754419386005463366"
-        },
-        {
-          "file": "packages/page-spy-plugin-mp-eval/tsconfig.json",
-          "hash": "6001209201597755308"
-        }
-      ],
-      "@huolala-tech/page-spy-alipay": [
-        {
-          "file": "packages/page-spy-alipay/LICENSE",
-          "hash": "5589612977552745521"
-        },
-        {
-          "file": "packages/page-spy-alipay/README.md",
-          "hash": "9374719461721541040"
-        },
-        {
-          "file": "packages/page-spy-alipay/README_ZH.md",
-          "hash": "12017388620996107947"
-        },
-        {
-          "file": "packages/page-spy-alipay/package.json",
-          "hash": "8053484152076853657",
-          "deps": [
-            "npm:@babel/core",
-            "npm:@babel/preset-env",
-            "npm:@babel/preset-typescript",
-            "npm:@huolala-tech/eval5",
-            "npm:@rollup/plugin-babel",
-            "npm:@rollup/plugin-commonjs",
-            "npm:@rollup/plugin-json",
-            "npm:@rollup/plugin-node-resolve",
-            "npm:@rollup/plugin-replace",
-            "npm:@rollup/plugin-terser",
-            "npm:core-js@3.37.0",
-            "npm:rollup",
-            "npm:rollup-plugin-delete",
-            "npm:rollup-plugin-typescript2",
-            "npm:@babel/runtime",
-            "@huolala-tech/page-spy-base",
-            "@huolala-tech/page-spy-mp-base",
-            "@huolala-tech/page-spy-types"
-          ]
-        },
-        {
-          "file": "packages/page-spy-alipay/rollup.config.mjs",
-          "hash": "15949444288377894930"
-        },
-        {
-          "file": "packages/page-spy-alipay/src/index.ts",
-          "hash": "8761573735098846085"
-        },
-        {
-          "file": "packages/page-spy-alipay/tsconfig.json",
-          "hash": "6001209201597755308"
-        }
-      ],
-      "@huolala-tech/page-spy-plugin-rn-async-storage": [
-        {
-          "file": "packages/page-spy-plugin-rn-async-storage/LICENSE",
-          "hash": "5589612977552745521"
-        },
-        {
-          "file": "packages/page-spy-plugin-rn-async-storage/README.md",
-          "hash": "16936271214540629220"
-        },
-        {
-          "file": "packages/page-spy-plugin-rn-async-storage/README_ZH.md",
-          "hash": "15562786816249233292"
-        },
-        {
-          "file": "packages/page-spy-plugin-rn-async-storage/package.json",
-          "hash": "9816563105704134864",
-          "deps": [
-            "@huolala-tech/page-spy-react-native",
-            "npm:@react-native-async-storage/async-storage",
-            "npm:@babel/core",
-            "npm:@babel/preset-env",
-            "npm:@babel/preset-typescript",
-            "@huolala-tech/page-spy-types",
-            "npm:@rollup/plugin-babel",
-            "npm:@rollup/plugin-commonjs@25.0.7",
-            "npm:@rollup/plugin-node-resolve",
-            "npm:@rollup/plugin-replace",
-            "npm:@rollup/plugin-terser",
-            "npm:core-js",
-            "npm:rollup",
-            "npm:rollup-plugin-delete",
-            "npm:rollup-plugin-peer-deps-external",
-            "npm:rollup-plugin-typescript2",
-            "npm:@babel/runtime",
-            "@huolala-tech/page-spy-base"
-          ]
-        },
-        {
-          "file": "packages/page-spy-plugin-rn-async-storage/rollup.config.mjs",
-          "hash": "8469678479636445171"
-        },
-        {
-          "file": "packages/page-spy-plugin-rn-async-storage/src/index.ts",
-          "hash": "17157260497325022164"
-        },
-        {
-          "file": "packages/page-spy-plugin-rn-async-storage/tsconfig.json",
           "hash": "6001209201597755308"
         }
       ]
