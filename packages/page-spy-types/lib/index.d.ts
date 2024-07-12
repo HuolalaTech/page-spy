@@ -1,4 +1,4 @@
-import { SocketStoreType } from './base';
+import { SocketStoreBase } from '@huolala-tech/page-spy-base';
 
 export interface InitConfigBase {
   /**
@@ -80,7 +80,7 @@ interface OnInitParams<T extends InitConfigBase> {
    * Wrap the origin websocket instance, plugin developers can
    * communicate with Web / API by it.
    */
-  socketStore: SocketStoreType;
+  socketStore: SocketStoreBase;
 
   /**
    * The atom instance to store js object info.
@@ -97,7 +97,7 @@ export interface OnMountedParams {
 
   // Wrap the origin socket instance, plugin developers can
   // communicate with Web / API by it.
-  socketStore: SocketStoreType;
+  socketStore: SocketStoreBase;
 }
 
 export type PluginOrder = 'pre' | 'post';

@@ -7,18 +7,23 @@ import type {
   InitConfigBase,
 } from '@huolala-tech/page-spy-types';
 import {
+  getRandomId,
   isBrowser,
-  isPlainObject,
+  isString,
   psLog,
   RequestItem,
 } from '@huolala-tech/page-spy-base';
-import { strFromU8, zlibSync, strToU8 } from 'fflate';
 import { Harbor } from './harbor';
 import { DownloadArgs, handleDownload, startDownload } from './utils/download';
 import { UploadArgs, handleUpload, startUpload } from './utils/upload';
-import { getDeviceId } from './utils';
+import { getDeviceId, makeData } from './utils';
 
 type DataType = 'console' | 'network' | 'system' | 'storage' | 'rrweb-event';
+
+interface MetricMessage {
+  type: 'metric';
+  data: any;
+}
 
 export type CacheMessageItem = Pick<
   SpyMessage.MessageItem<SpyMessage.DataType, any>,
@@ -28,22 +33,38 @@ export type CacheMessageItem = Pick<
 };
 
 interface DataHarborConfig {
+  // Specify the maximum bytes of single harbor's container.
+  // Default 10MB.
   maximum?: number;
+
+  // Specify which types of data to collect.
   caredData?: Record<DataType, boolean>;
+
+  // Custom uploaded filename by this.
+  // Default value is `new Date().toLocaleString()`.
   filename?: () => string;
+
+  // Custom download behavior.
   onDownload?: (data: CacheMessageItem[]) => void;
+
+  // By default, multiple calls to `window.$harbor.markAndFlush` within 1 minute
+  // will only trigger one upload. This parameter specifies the upload interval.
+  throttleTimeOfMarkLog?: number;
 }
 
-const minifyData = (d: any) => {
-  return strFromU8(zlibSync(strToU8(JSON.stringify(d)), { level: 9 }), true);
-};
-
-const makeData = (type: SpyMessage.DataType, data: any) => {
-  return {
-    type,
-    timestamp: Date.now(),
-    data: minifyData(data),
-  };
+const defaultConfig: DataHarborConfig = {
+  maximum: 10 * 1024 * 1024,
+  caredData: {
+    console: true,
+    network: true,
+    storage: true,
+    system: true,
+    'rrweb-event': true,
+  },
+  filename: () => {
+    return new Date().toLocaleString();
+  },
+  throttleTimeOfMarkLog: 60 * 1000,
 };
 
 export default class DataHarborPlugin implements PageSpyPlugin {
@@ -54,42 +75,22 @@ export default class DataHarborPlugin implements PageSpyPlugin {
   // "Harbor" is an abstraction for scheduling data actions.
   public harbor: Harbor;
 
-  // Specify which types of data to collect.
-  public caredData: Record<DataType, boolean> = {
-    console: true,
-    network: true,
-    storage: true,
-    system: true,
-    'rrweb-event': true,
-  };
-
   public apiBase: string = '';
 
   public $pageSpyConfig: InitConfigBase | null = null;
 
-  public filename: DataHarborConfig['filename'] = () => {
-    return new Date().toLocaleString();
-  };
-
-  public onDownload: DataHarborConfig['onDownload'];
+  public $harborConfig: Required<DataHarborConfig>;
 
   public static hasInited = false;
 
   public static hasMounted = false;
 
-  constructor(config: DataHarborConfig = {}) {
-    if (isPlainObject(config.caredData)) {
-      this.caredData = {
-        ...this.caredData,
-        ...config.caredData,
-      };
-    }
-    if (typeof config.onDownload === 'function') {
-      this.onDownload = config.onDownload;
-    }
-    if (typeof config.filename === 'function') {
-      this.filename = config.filename;
-    }
+  constructor(config: DataHarborConfig) {
+    this.$harborConfig = {
+      ...defaultConfig,
+      ...config,
+    } as Required<DataHarborConfig>;
+
     this.harbor = new Harbor({ maximum: config.maximum });
   }
 
@@ -113,6 +114,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       if (!this.isCaredPublicData(message)) return;
 
       const data = makeData(message.type, message.data);
+      this.pageLogQueue.push(data);
 
       const ok = this.harbor.save(data);
       if (!ok) {
@@ -137,17 +139,18 @@ export default class DataHarborPlugin implements PageSpyPlugin {
   getParams(type: 'download'): DownloadArgs;
   getParams(type: 'upload'): UploadArgs;
   getParams(type: any) {
+    const { onDownload, filename } = this.$harborConfig;
     if (type === 'download') {
       return {
         harbor: this.harbor,
-        filename: this.filename!,
-        customDownload: this.onDownload,
+        filename,
+        customDownload: onDownload,
       };
     }
     return {
       harbor: this.harbor,
       uploadUrl: this.apiBase,
-      filename: this.filename!,
+      filename,
       debugClient: this.$pageSpyConfig?.clientOrigin!,
       tags: {
         project: this.$pageSpyConfig?.project,
@@ -186,27 +189,57 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     }
   }
 
-  public isCaredPublicData(message: SpyMessage.MessageItem) {
+  public pageId = getRandomId();
+
+  public pageLogQueue: ReturnType<typeof makeData>[] = [];
+
+  public pageLogThrottleTimer: ReturnType<typeof setTimeout> | null = null;
+
+  // During offline log recording, users can call this method to mark custom events.
+  // For example, when the program encounters an error, calling
+  // `window.$harbor.markAndFlush('error')` will insert `{type: 'mark', data: 'error'}`
+  // into the log queue, upload the current log list fragment, and start a new log queue.
+  // The default value "dida", think it as water droplets 😄
+  public markAndFlush(data: string = 'dida') {
+    this.pageLogQueue.push(makeData('mark', data));
+    if (this.pageLogThrottleTimer) return;
+
+    try {
+      if (!isString(data)) {
+        data = JSON.stringify(data);
+      }
+    } catch (e) {
+      data = data.toString();
+    }
+    this.pageLogThrottleTimer = setTimeout(() => {
+      // TODO 上传日志
+      this.pageLogQueue = [];
+      this.pageLogThrottleTimer = null;
+    }, this.$harborConfig.throttleTimeOfMarkLog);
+  }
+
+  public isCaredPublicData(message: SpyMessage.MessageItem | MetricMessage) {
     if (!message) return false;
     const { type } = message;
+    const { caredData } = this.$harborConfig;
     switch (type) {
       case 'console':
-        if (this.caredData.console) return true;
+        if (caredData.console) return true;
         return false;
       case 'storage':
-        if (this.caredData.storage) return true;
+        if (caredData.storage) return true;
         return false;
       case 'system':
-        if (this.caredData.system) return true;
+        if (caredData.system) return true;
         return false;
       case 'rrweb-event':
-        if (this.caredData['rrweb-event']) return true;
+        if (caredData['rrweb-event']) return true;
         return false;
       case 'network':
         const { url } = message.data as RequestItem;
         const isFetchHarborStockUrl = this.harbor.stock.includes(url);
 
-        if (this.caredData.network && !isFetchHarborStockUrl) return true;
+        if (caredData.network && !isFetchHarborStockUrl) return true;
         return false;
       // case DEBUG_MESSAGE_TYPE.DATABASE:
       //   if (['update', 'clear', 'drop'].includes(data.action)) {

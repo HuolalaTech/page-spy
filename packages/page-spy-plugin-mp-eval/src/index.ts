@@ -6,8 +6,7 @@ import type {
   PageSpyPlugin,
   SpyBase,
 } from '@huolala-tech/page-spy-types';
-import type { Atom } from '@huolala-tech/page-spy-base';
-import type { SocketStoreType } from '@huolala-tech/page-spy-types/lib/base';
+import type { Atom, SocketStoreBase } from '@huolala-tech/page-spy-base';
 
 export default class MPEvalPlugin implements PageSpyPlugin {
   public name: string = 'MPEvalPlugin';
@@ -16,7 +15,7 @@ export default class MPEvalPlugin implements PageSpyPlugin {
 
   protected static interpreter: Interpreter | null = null;
 
-  protected static socketStore: SocketStoreType | null = null;
+  protected static socketStore: SocketStoreBase | null = null;
 
   protected static atom: Atom | null = null;
 
