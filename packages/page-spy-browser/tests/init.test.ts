@@ -41,7 +41,7 @@ describe('new PageSpy([config])', () => {
     const config = sdk.config.get();
     expect(config).toEqual(
       expect.objectContaining({
-        api: 'example.com',
+        api: 'cc.example.com',
         clientOrigin: 'https://example.com',
       }),
     );
