@@ -86,12 +86,6 @@ class PageSpy {
     }
 
     PageSpy.instance = this;
-    const mpWarningText =
-      '!!!WARNING!!!: When submitting the mini program for review, be sure to delete the SDK in the code, otherwise the review will fail.';
-
-    psLog.log(mpWarningText);
-    psLog.info(mpWarningText);
-    psLog.warn(mpWarningText);
 
     // Here will check the config api
     this.request = new Request(this.config);

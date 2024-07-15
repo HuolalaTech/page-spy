@@ -1,5 +1,5 @@
 import { Interpreter } from '@huolala-tech/eval5';
-import { makeMessage, getRandomId } from '@huolala-tech/page-spy-base';
+import { makeMessage, getRandomId, psLog } from '@huolala-tech/page-spy-base';
 import { getGlobal } from '@huolala-tech/page-spy-mp-base';
 import type {
   OnInitParams,
@@ -22,6 +22,14 @@ export default class MPEvalPlugin implements PageSpyPlugin {
 
   public onInit({ socketStore, atom }: OnInitParams<any>) {
     if (MPEvalPlugin.hasInitd) return;
+
+    const mpWarningText =
+      '!!!WARNING!!!: When submitting the mini program for review, be sure to delete the [@huolala-tech/page-spy-plugin-mp-eval] in the code, otherwise the review will fail.';
+
+    psLog.log(mpWarningText);
+    psLog.info(mpWarningText);
+    psLog.warn(mpWarningText);
+
     MPEvalPlugin.hasInitd = true;
     MPEvalPlugin.socketStore = socketStore;
     MPEvalPlugin.atom = atom;
