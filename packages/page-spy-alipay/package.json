@@ -29,7 +29,6 @@
     "build:watch": "rollup -c -w"
   },
   "dependencies": {
-    "@babel/runtime": "^7.13.0",
     "@huolala-tech/page-spy-base": "^1.0.0",
     "@huolala-tech/page-spy-mp-base": "^1.0.0",
     "@huolala-tech/page-spy-types": "^1.9.1"
@@ -38,6 +37,7 @@
     "@babel/core": "^7.14.0",
     "@babel/preset-env": "^7.14.1",
     "@babel/preset-typescript": "^7.13.0",
+    "@babel/runtime": "^7.13.0",
     "@huolala-tech/eval5": "^0.0.1",
     "@rollup/plugin-babel": "^6.0.3",
     "@rollup/plugin-commonjs": "^24.0.1",
