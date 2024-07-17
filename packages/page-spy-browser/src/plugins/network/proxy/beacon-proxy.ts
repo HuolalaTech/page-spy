@@ -3,7 +3,6 @@ import {
   getRandomId,
   psLog,
   getFormattedBody,
-  resolveUrlInfo,
 } from '@huolala-tech/page-spy-base';
 import WebNetworkProxyBase from './base';
 
@@ -39,10 +38,7 @@ export default class BeaconProxy extends WebNetworkProxyBase {
       that.createRequest(id);
       const req = that.getRequest(id);
       if (req) {
-        const urlInfo = resolveUrlInfo(url, window.location.href);
-        req.url = urlInfo.url;
-        req.name = urlInfo.name;
-        req.getData = urlInfo.query;
+        req.url = new URL(url, window.location.href).toString();
         req.method = 'POST';
         req.status = 0;
         req.statusText = 'Pending';

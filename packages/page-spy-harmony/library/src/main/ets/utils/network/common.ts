@@ -58,23 +58,15 @@ export function toLowerKeys(obj: any) {
   return lowerKeys;
 }
 
-export function resolveUrlInfo(config: AxiosRequestConfig) {
+export function getFullPath(config: AxiosRequestConfig) {
   const urlObj = url.URL.parseURL(config.url, config.baseURL);
-  Object.entries(config.params || {}).forEach(([key, value]) => {
-    try {
-      urlObj.params.append(key, JSON.stringify(value));
-    } catch (e) {
-      psLog.warn(
-        `params[${key}] with invalid value in request: ${urlObj.href}`,
-      );
-    }
+  if (!config.params) return urlObj.toString();
+
+  const searchParams = new url.URLParams(urlObj.search.slice(1));
+  Object.entries(config.params).forEach(([key, val]) => {
+    searchParams.append(key, val as string);
   });
 
-  const getData = [...urlObj.params.entries()];
-
-  return {
-    url: urlObj.toString(),
-    name: urlObj.pathname,
-    getData,
-  };
+  const fullpath = `${urlObj.pathname}?${searchParams.toString()}`;
+  return url.URL.parseURL(fullpath, config.baseURL).toString();
 }

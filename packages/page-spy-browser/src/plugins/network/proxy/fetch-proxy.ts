@@ -10,7 +10,6 @@ import {
   getFormattedBody,
   MAX_SIZE,
   Reason,
-  resolveUrlInfo,
 } from '@huolala-tech/page-spy-base';
 import WebNetworkProxyBase from './base';
 
@@ -59,11 +58,7 @@ export default class FetchProxy extends WebNetworkProxyBase {
           requestHeader = input.headers;
         }
 
-        const urlInfo = resolveUrlInfo(url, window.location.href);
-        req.url = urlInfo.url;
-        req.name = urlInfo.name;
-        req.getData = urlInfo.query;
-
+        req.url = new URL(url, window.location.href).toString();
         req.method = method.toUpperCase();
         req.requestType = 'fetch';
         req.status = 0;

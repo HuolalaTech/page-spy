@@ -4,9 +4,7 @@ import {
   formatEntries,
   getContentType,
   getFormattedBody,
-  resolveUrlInfo,
 } from 'page-spy-base/src';
-import { isBrowser, toStringTag } from 'page-spy-base/src';
 
 describe('Network utilities', () => {
   // format the USP and FormData data which be used in request payload,
@@ -37,51 +35,6 @@ describe('Network utilities', () => {
       ['color', 'blue'],
     ];
     expect(usp_data_format).toEqual(usp_data_result);
-  });
-
-  describe('resolveUrlInfo()', () => {
-    it('Normal location context', () => {
-      const urlInfo = resolveUrlInfo('./foo?bar=bar', 'http://localhost/');
-      expect(urlInfo).toEqual({
-        url: 'http://localhost/foo?bar=bar',
-        name: 'foo?bar=bar',
-        query: [['bar', 'bar']],
-      });
-    });
-    it('Unknown wired location context', () => {
-      const originLocation = window.location;
-      Object.defineProperty(window, 'location', {
-        value: {
-          href: null,
-        },
-        writable: true,
-      });
-      const urlInfo = resolveUrlInfo('./foo?bar=bar');
-      expect(urlInfo).toEqual({
-        url: 'Unknown',
-        name: 'Unknown',
-        query: null,
-      });
-      window.location = originLocation;
-    });
-    it('Format `Name` field', () => {
-      [
-        { received: 'https://exp.com', expected: 'exp.com/' },
-        { received: 'https://exp.com/', expected: 'exp.com/' },
-        { received: 'https://exp.com/devtools', expected: 'devtools' },
-        { received: 'https://exp.com/devtools/', expected: 'devtools/' },
-        {
-          received: 'https://exp.com/devtools?version=Mac/10.15.7',
-          expected: 'devtools?version=Mac/10.15.7',
-        },
-        {
-          received: 'https://exp.com/devtools/?version=Mac/10.15.7',
-          expected: 'devtools/?version=Mac/10.15.7',
-        },
-      ].forEach(({ received, expected }) => {
-        expect(resolveUrlInfo(received).name).toBe(expected);
-      });
-    });
   });
 
   it('getContentType()', () => {

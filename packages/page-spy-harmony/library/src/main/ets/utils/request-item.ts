@@ -4,8 +4,6 @@ import { ReqReadyState, ResponseType } from './network/common';
 export class RequestItem implements SpyNetwork.RequestInfo {
   id = '';
 
-  name: string = '';
-
   method: string = 'GET';
 
   url: string = '';
@@ -33,8 +31,6 @@ export class RequestItem implements SpyNetwork.RequestInfo {
   endTime: number = 0;
 
   costTime: number = 0;
-
-  getData: [string, string][] | null = null;
 
   /**
    * @deprecated please using `requestPayload`

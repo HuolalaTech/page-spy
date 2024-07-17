@@ -1,7 +1,7 @@
 import { getRandomId, isString } from '../../utils';
 import {
+  getFullPath,
   ReqReadyState,
-  resolveUrlInfo,
   ResponseType,
 } from '../../utils/network/common';
 import NetworkProxyBase from '../../utils/network/base';
@@ -28,11 +28,7 @@ export default class AxiosProxy extends NetworkProxyBase {
       this.createRequest(id);
       const reqItem = this.getRequest(id);
 
-      const urlInfo = resolveUrlInfo(config);
-      reqItem.url = urlInfo.url;
-      reqItem.name = urlInfo.name;
-      reqItem.getData = urlInfo.getData;
-
+      reqItem.url = getFullPath(config);
       reqItem.method = config.method;
       reqItem.status = 0;
       reqItem.statusText = 'Pending';

@@ -1,7 +1,6 @@
 import type { SpyNetwork } from '@huolala-tech/page-spy-types';
 import {
   isBlob,
-  isBrowser,
   isDocument,
   isFile,
   isFormData,
@@ -43,58 +42,6 @@ export function formatEntries(data: IterableIterator<[string, unknown]>) {
     processor = data.next();
   }
   return result;
-}
-
-// parse url params without URLSearchParams
-function parseUrlParams(url: string): [string, string][] {
-  const reg = /[?&]([^=#]+)=([^&#]*)/g;
-  const result: [string, string][] = [];
-  let match;
-
-  // eslint-disable-next-line no-cond-assign
-  while ((match = reg.exec(url)) !== null) {
-    const key = decodeURIComponent(match[1]);
-    const value = decodeURIComponent(match[2]);
-    result.push([key, value]);
-  }
-
-  return result;
-}
-
-// TODO: 这部分逻辑可以移到调试端去做？因为收集端可能不在浏览器环境
-export function resolveUrlInfo(target: URL | string, base?: string | URL) {
-  try {
-    let url: string;
-    let query: [string, string][];
-
-    if (isBrowser()) {
-      const { searchParams, href } = new URL(target, base);
-      url = href;
-      query = [...searchParams.entries()];
-    } else {
-      url = target.toString();
-      query = parseUrlParams(url);
-    }
-    // https://exp.com => "exp.com/"
-    // https://exp.com/ => "exp.com/"
-    // https://exp.com/devtools => "devtools"
-    // https://exp.com/devtools/ => "devtools/"
-    // https://exp.com/devtools?version=Mac/10.15.7 => "devtools?version=Mac/10.15.7"
-    // https://exp.com/devtools/?version=Mac/10.15.7 => "devtools/?version=Mac/10.15.7"
-    const name = url.replace(/^.*?([^/]+)(\/)*(\?.*?)?$/, '$1$2$3') || '';
-
-    return {
-      url,
-      name,
-      query,
-    };
-  } /* c8 ignore start */ catch (e) {
-    return {
-      url: 'Unknown',
-      name: 'Unknown',
-      query: null,
-    };
-  } /* c8 ignore stop */
 }
 
 export function getContentType(data: Document | RequestInit['body']) {
