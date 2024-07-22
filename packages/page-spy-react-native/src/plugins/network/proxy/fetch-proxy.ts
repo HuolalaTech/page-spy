@@ -10,7 +10,6 @@ import {
   getFormattedBody,
   MAX_SIZE,
   Reason,
-  resolveUrlInfo,
 } from '@huolala-tech/page-spy-base';
 import RNNetworkProxyBase from './base';
 import { IS_FETCH_HEADER } from './xhr-proxy';
@@ -70,11 +69,7 @@ export default class FetchProxy extends RNNetworkProxyBase {
           requestHeader = input.headers;
         }
 
-        const urlInfo = resolveUrlInfo(url);
-        req.url = urlInfo.url;
-        req.name = urlInfo.name;
-        req.getData = urlInfo.query;
-
+        req.url = new URL(url).toString();
         req.method = method.toUpperCase();
         req.requestType = 'fetch';
         req.status = 0;

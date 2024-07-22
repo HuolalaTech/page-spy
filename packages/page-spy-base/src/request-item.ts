@@ -3,8 +3,6 @@ import { SpyNetwork } from '@huolala-tech/page-spy-types';
 export class RequestItem implements SpyNetwork.RequestInfo {
   id = '';
 
-  name: string = '';
-
   method: string = '';
 
   url: string = '';
@@ -38,8 +36,6 @@ export class RequestItem implements SpyNetwork.RequestInfo {
   endTime: number = 0;
 
   costTime: number = 0;
-
-  getData: [string, string][] | null = null;
 
   /**
    * @deprecated please using `requestPayload`

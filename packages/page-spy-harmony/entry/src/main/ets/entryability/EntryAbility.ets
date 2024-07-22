@@ -18,6 +18,7 @@ export default class EntryAbility extends UIAbility {
     const $pageSpy = new PageSpy({
       context: this.context,
       api: 'page-spy-web-v.huolala.work',
+      enableSSL: true,
       axios,
       project: 'hello-harmony',
       title: '测试 API-11'

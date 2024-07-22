@@ -11,7 +11,6 @@ import {
   Reason,
   addContentTypeHeader,
   getFormattedBody,
-  resolveUrlInfo,
   RequestItem,
 } from '@huolala-tech/page-spy-base';
 import WebNetworkProxyBase from './base';
@@ -144,10 +143,7 @@ class XhrProxy extends WebNetworkProxyBase {
       } = XMLReq;
       const req = that.getRequest(pageSpyRequestId);
       if (req) {
-        const urlInfo = resolveUrlInfo(pageSpyRequestUrl, window.location.href);
-        req.url = urlInfo.url;
-        req.name = urlInfo.name;
-        req.getData = urlInfo.query;
+        req.url = new URL(pageSpyRequestUrl, window.location.href).toString();
         req.method = pageSpyRequestMethod.toUpperCase();
         req.requestType = 'xhr';
         req.responseType = XMLReq.responseType;

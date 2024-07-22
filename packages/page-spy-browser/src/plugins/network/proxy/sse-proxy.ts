@@ -2,7 +2,6 @@ import {
   getRandomId,
   RequestItem,
   ReqReadyState,
-  resolveUrlInfo,
 } from '@huolala-tech/page-spy-base';
 import WebNetworkProxyBase from './base';
 
@@ -40,11 +39,8 @@ export default class SSEProxy extends WebNetworkProxyBase {
       constructor(url: string | URL, eventSourceInitDict?: EventSourceInit) {
         const id = getRandomId();
         const req = new RequestItem(id);
-        const urlInfo = resolveUrlInfo(url, window.location.href);
+        req.url = new URL(url, window.location.href).toString();
         req.method = 'GET';
-        req.url = urlInfo.url;
-        req.name = urlInfo.name;
-        req.getData = urlInfo.query;
         req.requestType = 'eventsource';
         req.requestHeader = [
           ['Accept', 'text/event-stream'],

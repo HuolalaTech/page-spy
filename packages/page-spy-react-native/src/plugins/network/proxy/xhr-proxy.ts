@@ -12,7 +12,6 @@ import {
   Reason,
   addContentTypeHeader,
   getFormattedBody,
-  resolveUrlInfo,
 } from '@huolala-tech/page-spy-base';
 import RNNetworkProxyBase from './base';
 
@@ -194,10 +193,7 @@ class XhrProxy extends RNNetworkProxyBase {
       });
 
       if (req) {
-        const urlInfo = resolveUrlInfo(pageSpyRequestUrl);
-        req.url = urlInfo.url;
-        req.name = urlInfo.name;
-        req.getData = urlInfo.query;
+        req.url = new URL(pageSpyRequestUrl).toString();
         req.method = pageSpyRequestMethod.toUpperCase();
         req.requestType = 'xhr';
         req.withCredentials = XMLReq.withCredentials;

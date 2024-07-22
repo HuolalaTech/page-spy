@@ -1,6 +1,5 @@
 export interface RequestInfo {
   id: string;
-  name: string;
   method: string;
   url: string;
   requestType:
@@ -34,7 +33,6 @@ export interface RequestInfo {
   startTime: number;
   endTime: number;
   costTime: number;
-  getData: [string, string][] | null;
   /**
    * @deprecated please using `requestPayload`
    */
