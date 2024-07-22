@@ -29,6 +29,7 @@ export class Config extends ConfigBase<InitConfig> {
       useSecret: false,
       secret: '',
       messageCapacity: 0,
+      serializeData: true,
     };
   }
 }

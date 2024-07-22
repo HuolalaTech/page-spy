@@ -16,6 +16,7 @@ export class Config extends ConfigBase<InitConfig> {
       messageCapacity: 1000,
       useSecret: false,
       secret: '',
+      serializeData: true,
     };
   };
 }

@@ -34,14 +34,31 @@ export class Atom {
     this.instanceStore = {};
   }
 
-  public transformToAtom(data: any): any {
+  public transformToAtom(data: any, serializeData = false): any {
     const { value, ok } = makePrimitiveValue(data);
+    const id = getRandomId();
     if (ok) {
       return {
-        id: getRandomId(),
+        id,
         type: getValueType(data),
         value,
       };
+    }
+    if (serializeData) {
+      try {
+        return {
+          id,
+          type: 'json',
+          value: JSON.stringify(data),
+        };
+      } catch (e) {
+        // type === 'json' && value === null 作为无法序列化数据时的硬编码
+        return {
+          id,
+          type: 'json',
+          value: null,
+        };
+      }
     }
     return this.add(data);
   }

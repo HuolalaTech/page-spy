@@ -1,6 +1,11 @@
-import type { SpyConsole, PageSpyPlugin } from '@huolala-tech/page-spy-types';
+import type {
+  SpyConsole,
+  PageSpyPlugin,
+  OnInitParams,
+} from '@huolala-tech/page-spy-types';
 import { atom, makeMessage } from '@huolala-tech/page-spy-base';
 import socketStore from '../helpers/socket';
+import type { InitConfig } from '../config';
 
 export default class ConsolePlugin implements PageSpyPlugin {
   public name: string = 'ConsolePlugin';
@@ -17,12 +22,14 @@ export default class ConsolePlugin implements PageSpyPlugin {
     'debug',
   ];
 
-  // eslint-disable-next-line class-methods-use-this
-  public async onInit() {
+  public $pageSpyConfig: InitConfig | null = null;
+
+  public async onInit({ config }: OnInitParams<InitConfig>) {
     if (ConsolePlugin.hasInitd) return;
     ConsolePlugin.hasInitd = true;
 
     const that = this;
+    this.$pageSpyConfig = config;
     this.proxyTypes.forEach((item) => {
       // Not using globalThis or global, cause "console" exists in any env,
       // but global may be blocked.
@@ -52,14 +59,30 @@ export default class ConsolePlugin implements PageSpyPlugin {
   public printLog(data: SpyConsole.DataItem) {
     if (data.logs && data.logs.length) {
       this.console[data.logType](...data.logs);
-      // eslint-disable-next-line no-param-reassign
-      data.logs = data.logs.map((log) => atom.transformToAtom(log));
-      const log = makeMessage('console', {
-        time: Date.now(),
+
+      const atomLog = makeMessage('console', {
         ...data,
+        time: Date.now(),
+        logs: data.logs.map((log) => {
+          return atom.transformToAtom(log, false);
+        }),
       });
-      socketStore.dispatchEvent('public-data', log);
-      socketStore.broadcastMessage(log);
+      socketStore.broadcastMessage(atomLog);
+
+      if (!this.$pageSpyConfig?.serializeData) {
+        socketStore.dispatchEvent('public-data', atomLog);
+      } else {
+        const serializeLog = {
+          ...atomLog,
+          data: {
+            ...atomLog.data,
+            logs: data.logs.map((log) => {
+              return atom.transformToAtom(log, true);
+            }),
+          },
+        };
+        socketStore.dispatchEvent('public-data', serializeLog);
+      }
     }
   }
 }

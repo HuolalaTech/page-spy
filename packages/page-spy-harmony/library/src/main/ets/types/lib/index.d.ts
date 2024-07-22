@@ -47,6 +47,11 @@ export interface InitConfigBase {
    * @private
    */
   secret?: string;
+
+  /**
+   *
+   */
+  serializeData?: boolean;
 }
 
 export interface PageSpyBase {
