@@ -64,7 +64,7 @@ export function getFullPath(config: AxiosRequestConfig) {
 
   const searchParams = new url.URLParams(urlObj.search.slice(1));
   Object.entries(config.params).forEach(([key, val]) => {
-    searchParams.append(key, val as string);
+    searchParams.append(key, val.toString());
   });
 
   const fullpath = `${urlObj.pathname}?${searchParams.toString()}`;
