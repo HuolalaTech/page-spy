@@ -7,7 +7,7 @@ describe('Console plugin', () => {
   it('When call console, the origin function is called ', () => {
     const logSpy = jest.spyOn(console, 'log');
     const plugin = new ConsolePlugin();
-    plugin.onInit();
+    plugin.onInit({} as any);
     console.log('test');
     expect(logSpy).toBeCalled();
     plugin.onReset();
