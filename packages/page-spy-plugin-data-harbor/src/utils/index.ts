@@ -12,5 +12,5 @@ export const getDeviceId = () => {
 };
 
 export const formatFilename = (name: string) => {
-  return name.toString().replace(/[\s|\\/]/g, '_');
+  return name.toString().replace(/[^\w]/g, '_');
 };
