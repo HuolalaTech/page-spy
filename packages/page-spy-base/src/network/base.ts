@@ -57,9 +57,7 @@ export class NetworkProxyBase {
         },
         false,
       );
-      if (Number(req.readyState) === ReqReadyState.DONE) {
-        this.socketStore.dispatchEvent('public-data', message);
-      }
+      this.socketStore.dispatchEvent('public-data', message);
       this.socketStore.broadcastMessage(
         message,
         req.readyState !== ReqReadyState.DONE,
