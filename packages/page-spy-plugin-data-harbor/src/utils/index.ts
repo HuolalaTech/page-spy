@@ -6,7 +6,9 @@ export const getDeviceId = () => {
     if (cache) {
       return JSON.parse(cache)?.address || '--';
     }
-    return window.$pageSpy?.address || window.PageSpy.instance.address || '--';
+    return (
+      window.$pageSpy?.address || window.PageSpy?.instance?.address || '--'
+    );
   }
   return '--';
 };
