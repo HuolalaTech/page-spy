@@ -97,7 +97,7 @@ describe('new PageSpy([config])', () => {
     expect(Object.keys(cPlugin.console)).toHaveLength(0);
 
     // changed!
-    cPlugin.onInit();
+    cPlugin.onInit({} as any);
     expect(consoleKey.map((i) => console[i])).not.toEqual(originConsole);
     // @ts-ignore
     expect(Object.keys(cPlugin.console)).toHaveLength(consoleKey.length);

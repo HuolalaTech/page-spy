@@ -33,5 +33,6 @@ module.exports = {
     'no-underscore-dangle': 'off',
     'no-restricted-properties': 'off',
     'prefer-exponentiation-operator': 'off',
+    'implicit-arrow-linebreak': 'off',
   },
 };

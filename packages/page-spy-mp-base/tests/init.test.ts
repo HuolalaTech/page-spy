@@ -106,7 +106,7 @@ describe('new PageSpy([config])', () => {
     expect(Object.keys(cPlugin.console)).toHaveLength(0);
 
     // changed!
-    cPlugin.onInit();
+    cPlugin.onInit({} as any);
     expect(consoleKey.map((i) => console[i])).not.toEqual(originConsole);
     // @ts-ignore
     expect(Object.keys(cPlugin.console)).toHaveLength(5);
@@ -133,14 +133,14 @@ describe('new PageSpy([config])', () => {
     const nPlugin = new NetworkPlugin();
     nPlugin.onInit();
     const cPlugin = new ConsolePlugin();
-    cPlugin.onInit();
+    cPlugin.onInit({} as any);
     const sPlugin = new StoragePlugin();
     sPlugin.onInit();
     const originRequestProxy = nPlugin.requestProxy;
     const originConsoleWrap = console.log;
     const originStorageWrap = mp.setStorageSync;
     nPlugin.onInit();
-    cPlugin.onInit();
+    cPlugin.onInit({} as any);
     sPlugin.onInit();
 
     expect(nPlugin.requestProxy).toEqual(originRequestProxy);

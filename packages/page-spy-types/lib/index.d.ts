@@ -51,6 +51,12 @@ export interface InitConfigBase {
    * @private
    */
   secret?: string;
+
+  /**
+   *
+   */
+  serializeData?: boolean;
+
   [key: string]: any;
 }
 

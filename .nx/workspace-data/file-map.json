@@ -1,0 +1,1636 @@
+{
+  "version": "6.0",
+  "nxVersion": "19.5.3",
+  "deps": {
+    "@babel/plugin-transform-flow-strip-types": "^7.24.1",
+    "@testing-library/dom": "^9.3.4",
+    "@testing-library/jest-dom": "^6.2.0",
+    "@testing-library/react-native": "^12.5.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/jest": "^29.5.11",
+    "@types/jsdom": "^21.1.0",
+    "@typescript-eslint/eslint-plugin": "^6.18.1",
+    "@typescript-eslint/parser": "^6.18.1",
+    "eslint": "^8.56.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^17.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "events": "^3.3.0",
+    "express": "^4.18.2",
+    "fake-indexeddb": "^5.0.2",
+    "jest": "^29.7.0",
+    "jest-canvas-mock": "^2.5.2",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-websocket-mock": "^2.4.0",
+    "jsdom": "^23.2.0",
+    "lerna": "^8.0.0",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.1.1",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0",
+    "whatwg-fetch": "^3.6.2",
+    "yorkie": "^2.0.0"
+  },
+  "pathMappings": {},
+  "nxJsonPlugins": [],
+  "fileMap": {
+    "nonProjectFiles": [
+      {
+        "file": "packages/page-spy-harmony/build-profile.json5",
+        "hash": "17720428150500272579"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/config.ts",
+        "hash": "12258223186328223147"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/build-profile.json5",
+        "hash": "17370017769994073169"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/types/lib/index.d.ts",
+        "hash": "17385786299834771958"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/ohosTest/ets/test/Ability.test.ets",
+        "hash": "17073128921733242658"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/resources/base/media/mate60_device_info.png",
+        "hash": "7213040766716932449"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/utils/index.ts",
+        "hash": "11470571656324850536"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/utils/socket-base.ts",
+        "hash": "10978852893975851950"
+      },
+      {
+        "file": ".gitignore",
+        "hash": "15627397359187156465"
+      },
+      {
+        "file": "LICENSE",
+        "hash": "5589612977552745521"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/hvigorfile.ts",
+        "hash": "12615517845899951801"
+      },
+      {
+        "file": "packages/page-spy-harmony/oh-package.json5",
+        "hash": "7544191469021658719"
+      },
+      {
+        "file": "logo.svg",
+        "hash": "12485757303848103492"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/test/LocalUnit.test.ets",
+        "hash": "6878177483858036450"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/index.ts",
+        "hash": "6923180146507974854"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/main/ets/entryability/EntryAbility.ets",
+        "hash": "11642965089594448972"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/test/LocalUnit.test.ets",
+        "hash": "6878177483858036450"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/ohosTest/ets/test/List.test.ets",
+        "hash": "1816761220204065206"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/utils/preferences.ts",
+        "hash": "16430545353334624121"
+      },
+      {
+        "file": ".eslintrc.js",
+        "hash": "934191035676239021"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/oh-package-lock.json5",
+        "hash": "723299427523885488"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/types/lib/message-type.d.ts",
+        "hash": "2454015757685701527"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/types/lib/mini-program.d.ts",
+        "hash": "16779636968064842292"
+      },
+      {
+        "file": "tsconfig.json",
+        "hash": "5701072803775469720"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/ohosTest/resources/base/element/string.json",
+        "hash": "8779125475741598912"
+      },
+      {
+        "file": ".prettierrc",
+        "hash": "18333637368487063698"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/oh-package.json5",
+        "hash": "15261759126967413131"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/LICENSE",
+        "hash": "7085639833408511852"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/oh-package-lock.json5",
+        "hash": "11411353972359970940"
+      },
+      {
+        "file": "packages/page-spy-harmony/release.sh",
+        "hash": "12446162395733717645"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/types/index.d.ts",
+        "hash": "382061965810958802"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/utils/message/index.ts",
+        "hash": "6181575104023581709"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/main/ets/components/TrackDemo.ets",
+        "hash": "2705011724681458069"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/test/List.test.ets",
+        "hash": "14236330075305564481"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/build-profile.json5",
+        "hash": "13498137355607557916"
+      },
+      {
+        "file": "packages/page-spy-harmony/AppScope/resources/base/element/string.json",
+        "hash": "5296245959473776520"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/types/lib/base.d.ts",
+        "hash": "2726038806734434039"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/.gitignore",
+        "hash": "5654240222469068622"
+      },
+      {
+        "file": "packages/page-spy-harmony/.gitignore",
+        "hash": "15101051515081575125"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/types/lib/network.d.ts",
+        "hash": "17693141118857359292"
+      },
+      {
+        "file": "packages/page-spy-harmony/hvigorw",
+        "hash": "12677822311134021921"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/module.json5",
+        "hash": "7983167209686067747"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/main/ets/components/PersistStorageDemo.ets",
+        "hash": "4552474338287858548"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/ohosTest/resources/base/element/color.json",
+        "hash": "18101293032758973520"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/main/resources/en_US/element/string.json",
+        "hash": "9024373739926746691"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/BuildProfile.ets",
+        "hash": "7564471296435187986"
+      },
+      {
+        "file": "nx.json",
+        "hash": "9490118356636906026"
+      },
+      {
+        "file": "README_ZH.md",
+        "hash": "5104256573732990515"
+      },
+      {
+        "file": ".github/workflows/coveralls.yml",
+        "hash": "12341889205741141419"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/obfuscation-rules.txt",
+        "hash": "18095591031511702523"
+      },
+      {
+        "file": "packages/page-spy-harmony/hvigorfile.ts",
+        "hash": "10257281682110843690"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/main/resources/base/element/color.json",
+        "hash": "18101293032758973520"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/utils/network/common.ts",
+        "hash": "12828465308210193327"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/oh-package.json5",
+        "hash": "14494539469814450691"
+      },
+      {
+        "file": "tsconfig.paths.json",
+        "hash": "39892615834648643"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/main/resources/base/media/startIcon.png",
+        "hash": "17257998577884635972"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/types/lib/socket-event.d.ts",
+        "hash": "12352064812756097315"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/main/ets/pages/Index.ets",
+        "hash": "10890250294073755978"
+      },
+      {
+        "file": "packages/page-spy-harmony/hvigor/hvigor-wrapper.js",
+        "hash": "5400774056001153353"
+      },
+      {
+        "file": "packages/page-spy-harmony/AppScope/resources/base/media/app_icon.png",
+        "hash": "4980560064604782111"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/types/lib/storage.d.ts",
+        "hash": "552293341695903958"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/utils/client.ts",
+        "hash": "7200774523420300329"
+      },
+      {
+        "file": ".eslintignore",
+        "hash": "10796897803517704143"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/utils/message/server-type.ts",
+        "hash": "10223397244384694055"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/.gitignore",
+        "hash": "5654240222469068622"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/utils/constants.ts",
+        "hash": "11356990252671904751"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/utils/network/base.ts",
+        "hash": "16617373842561267936"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/mock/mock-config.json5",
+        "hash": "17072122453326406118"
+      },
+      {
+        "file": "CHANGELOG.md",
+        "hash": "2272690231353459236"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/plugins/error.ts",
+        "hash": "11457262392743210473"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/main/module.json5",
+        "hash": "4121488941547148340"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/utils/atom.ts",
+        "hash": "4114805381414071357"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/ohosTest/resources/base/profile/test_pages.json",
+        "hash": "13793841231029166419"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/resources/base/element/string.json",
+        "hash": "10720267222765114195"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/utils/message/debug-type.ts",
+        "hash": "14273794773228188909"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/ohosTest/resources/base/media/icon.png",
+        "hash": "4980560064604782111"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/types/harmony.d.ts",
+        "hash": "10869185578776117155"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/main/resources/base/profile/main_pages.json",
+        "hash": "9096168524796232319"
+      },
+      {
+        "file": "yarn.lock",
+        "hash": "7445217054598522455"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/main/ets/api/index.ts",
+        "hash": "1836038624940868774"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/consumer-rules.txt",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "packages/page-spy-harmony/hvigorw.bat",
+        "hash": "4486369733429341276"
+      },
+      {
+        "file": "packages/page-spy-harmony/hvigor/hvigor-config.json5",
+        "hash": "13819549295613294430"
+      },
+      {
+        "file": "packages/page-spy-harmony/oh-package-lock.json5",
+        "hash": "3436629822151133298"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/test/List.test.ets",
+        "hash": "14236330075305564481"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/ohosTest/module.json5",
+        "hash": "6563084262392180209"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/resources/en_US/element/string.json",
+        "hash": "10720267222765114195"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/types/lib/client.d.ts",
+        "hash": "16544978620608097573"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/main/ets/api/axios.ts",
+        "hash": "8570400283625097484"
+      },
+      {
+        "file": "README.md",
+        "hash": "12633910156417783526"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/main/ets/components/LocalStorageDemo.ets",
+        "hash": "628708544332687479"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/types/lib/page.d.ts",
+        "hash": "2681891305106361381"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/types/lib/atom.d.ts",
+        "hash": "6119044560723544629"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/CHANGELOG.md",
+        "hash": "16638180351043352041"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/Index.ets",
+        "hash": "8274688980471958245"
+      },
+      {
+        "file": ".github/ISSUE_TEMPLATE/config.yml",
+        "hash": "6374314794450531580"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/plugins/storage.ts",
+        "hash": "442239917952809603"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/types/lib/database.d.ts",
+        "hash": "8079110993195123669"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/main/resources/base/media/foreground.png",
+        "hash": "13645043897042291869"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/utils/request-item.ts",
+        "hash": "3939171770310419690"
+      },
+      {
+        "file": "lerna.json",
+        "hash": "17718142099652773461"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/ohosTest/ets/testability/pages/Index.ets",
+        "hash": "15919168747588942176"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/helpers/socket.ts",
+        "hash": "5859383222108715426"
+      },
+      {
+        "file": "package.json",
+        "hash": "7290001871259167518"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/plugins/console.ts",
+        "hash": "7123126012453601388"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/resources/zh_CN/element/string.json",
+        "hash": "10720267222765114195"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/plugins/system.ts",
+        "hash": "17942636373713053653"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/hvigorfile.ts",
+        "hash": "15527690688438496699"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/resources/base/media/emulator_device_info.png",
+        "hash": "1131129294232662409"
+      },
+      {
+        "file": ".prettierignore",
+        "hash": "6478667235016243744"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/utils/config.ts",
+        "hash": "16773514232438724226"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/types/lib/system.d.ts",
+        "hash": "12726557130598219502"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/main/resources/zh_CN/element/string.json",
+        "hash": "11954109782999053385"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/plugins/network/index.ts",
+        "hash": "6689161864439508133"
+      },
+      {
+        "file": "packages/page-spy-harmony/AppScope/app.json5",
+        "hash": "9276718209607050049"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/ohosTest/ets/testability/TestAbility.ets",
+        "hash": "14190924008633940859"
+      },
+      {
+        "file": ".github/assets/interaction.png",
+        "hash": "17129367045773496347"
+      },
+      {
+        "file": ".nx/workspace-data/d/server-process.json",
+        "hash": "17767517767797599990"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/main/ets/pages/utils.js",
+        "hash": "5140594651939754704"
+      },
+      {
+        "file": ".npmrc",
+        "hash": "6138961496802330875"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/main/resources/base/media/layered_image.json",
+        "hash": "12651573549526004388"
+      },
+      {
+        "file": "docs/plugin_zh.md",
+        "hash": "12667081087083960662"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/types/lib/console.d.ts",
+        "hash": "14500235129997983384"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/ohosTest/ets/testrunner/OpenHarmonyTestRunner.ets",
+        "hash": "4832487260833243038"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/plugins/network/axios.ts",
+        "hash": "5285462053757518266"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/main/resources/base/element/string.json",
+        "hash": "9024373739926746691"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/README.md",
+        "hash": "11272260932737066434"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/src/main/resources/base/media/background.png",
+        "hash": "3025555375350052922"
+      },
+      {
+        "file": "packages/page-spy-harmony/library/src/main/ets/api/index.ts",
+        "hash": "7707083603820820937"
+      },
+      {
+        "file": "jest.config.ts",
+        "hash": "15613906268391385384"
+      },
+      {
+        "file": "packages/page-spy-harmony/entry/obfuscation-rules.txt",
+        "hash": "18095591031511702523"
+      },
+      {
+        "file": "docs/plugin.md",
+        "hash": "15250042398795569017"
+      }
+    ],
+    "projectFileMap": {
+      "@huolala-tech/page-spy-plugin-rn-async-storage": [
+        {
+          "file": "packages/page-spy-plugin-rn-async-storage/LICENSE",
+          "hash": "5589612977552745521"
+        },
+        {
+          "file": "packages/page-spy-plugin-rn-async-storage/README.md",
+          "hash": "16936271214540629220"
+        },
+        {
+          "file": "packages/page-spy-plugin-rn-async-storage/README_ZH.md",
+          "hash": "15562786816249233292"
+        },
+        {
+          "file": "packages/page-spy-plugin-rn-async-storage/package.json",
+          "hash": "13562932903548807279",
+          "deps": [
+            "@huolala-tech/page-spy-react-native",
+            "npm:@react-native-async-storage/async-storage",
+            "npm:@babel/core",
+            "npm:@babel/preset-env",
+            "npm:@babel/preset-typescript",
+            "npm:@babel/runtime",
+            "@huolala-tech/page-spy-types",
+            "npm:@rollup/plugin-babel",
+            "npm:@rollup/plugin-commonjs@25.0.7",
+            "npm:@rollup/plugin-node-resolve",
+            "npm:@rollup/plugin-replace",
+            "npm:@rollup/plugin-terser",
+            "npm:core-js",
+            "npm:rollup",
+            "npm:rollup-plugin-delete",
+            "npm:rollup-plugin-peer-deps-external",
+            "npm:rollup-plugin-typescript2",
+            "@huolala-tech/page-spy-base"
+          ]
+        },
+        {
+          "file": "packages/page-spy-plugin-rn-async-storage/rollup.config.mjs",
+          "hash": "8469678479636445171"
+        },
+        {
+          "file": "packages/page-spy-plugin-rn-async-storage/src/index.ts",
+          "hash": "17157260497325022164"
+        },
+        {
+          "file": "packages/page-spy-plugin-rn-async-storage/tsconfig.json",
+          "hash": "6001209201597755308"
+        }
+      ],
+      "@huolala-tech/page-spy-types": [
+        {
+          "file": "packages/page-spy-types/LICENSE",
+          "hash": "5589612977552745521"
+        },
+        {
+          "file": "packages/page-spy-types/README.md",
+          "hash": "5259653339521808668"
+        },
+        {
+          "file": "packages/page-spy-types/README_ZH.md",
+          "hash": "3861002276364048499"
+        },
+        {
+          "file": "packages/page-spy-types/index.d.ts",
+          "hash": "12827708308892827496"
+        },
+        {
+          "file": "packages/page-spy-types/lib/atom.d.ts",
+          "hash": "6119044560723544629"
+        },
+        {
+          "file": "packages/page-spy-types/lib/base.d.ts",
+          "hash": "18368376009581912436"
+        },
+        {
+          "file": "packages/page-spy-types/lib/client.d.ts",
+          "hash": "16544978620608097573"
+        },
+        {
+          "file": "packages/page-spy-types/lib/console.d.ts",
+          "hash": "14500235129997983384"
+        },
+        {
+          "file": "packages/page-spy-types/lib/database.d.ts",
+          "hash": "8079110993195123669"
+        },
+        {
+          "file": "packages/page-spy-types/lib/index.d.ts",
+          "hash": "16158289675392620123"
+        },
+        {
+          "file": "packages/page-spy-types/lib/message-type.d.ts",
+          "hash": "2454015757685701527"
+        },
+        {
+          "file": "packages/page-spy-types/lib/mini-program.d.ts",
+          "hash": "12140863634108515997"
+        },
+        {
+          "file": "packages/page-spy-types/lib/network.d.ts",
+          "hash": "18184415854479908948"
+        },
+        {
+          "file": "packages/page-spy-types/lib/page.d.ts",
+          "hash": "2681891305106361381"
+        },
+        {
+          "file": "packages/page-spy-types/lib/socket-event.d.ts",
+          "hash": "12352064812756097315"
+        },
+        {
+          "file": "packages/page-spy-types/lib/storage.d.ts",
+          "hash": "1671890953860163896"
+        },
+        {
+          "file": "packages/page-spy-types/lib/system.d.ts",
+          "hash": "2407346800378181528"
+        },
+        {
+          "file": "packages/page-spy-types/package.json",
+          "hash": "11998212076372014797"
+        }
+      ],
+      "@huolala-tech/page-spy-alipay": [
+        {
+          "file": "packages/page-spy-alipay/LICENSE",
+          "hash": "5589612977552745521"
+        },
+        {
+          "file": "packages/page-spy-alipay/README.md",
+          "hash": "9374719461721541040"
+        },
+        {
+          "file": "packages/page-spy-alipay/README_ZH.md",
+          "hash": "12017388620996107947"
+        },
+        {
+          "file": "packages/page-spy-alipay/package.json",
+          "hash": "1773986213932963546",
+          "deps": [
+            "npm:@babel/core",
+            "npm:@babel/preset-env",
+            "npm:@babel/preset-typescript",
+            "npm:@babel/runtime",
+            "npm:@huolala-tech/eval5",
+            "npm:@rollup/plugin-babel",
+            "npm:@rollup/plugin-commonjs",
+            "npm:@rollup/plugin-json",
+            "npm:@rollup/plugin-node-resolve",
+            "npm:@rollup/plugin-replace",
+            "npm:@rollup/plugin-terser",
+            "npm:core-js@3.37.0",
+            "npm:rollup",
+            "npm:rollup-plugin-delete",
+            "npm:rollup-plugin-typescript2",
+            "@huolala-tech/page-spy-base",
+            "@huolala-tech/page-spy-mp-base",
+            "@huolala-tech/page-spy-types"
+          ]
+        },
+        {
+          "file": "packages/page-spy-alipay/rollup.config.mjs",
+          "hash": "15949444288377894930"
+        },
+        {
+          "file": "packages/page-spy-alipay/src/index.ts",
+          "hash": "8761573735098846085"
+        },
+        {
+          "file": "packages/page-spy-alipay/tsconfig.json",
+          "hash": "6001209201597755308"
+        }
+      ],
+      "@huolala-tech/page-spy-plugin-rrweb": [
+        {
+          "file": "packages/page-spy-plugin-rrweb/LICENSE",
+          "hash": "5589612977552745521"
+        },
+        {
+          "file": "packages/page-spy-plugin-rrweb/README.md",
+          "hash": "8579295342120300916"
+        },
+        {
+          "file": "packages/page-spy-plugin-rrweb/README_ZH.md",
+          "hash": "7092444559361380816"
+        },
+        {
+          "file": "packages/page-spy-plugin-rrweb/package.json",
+          "hash": "14420431038818670852",
+          "deps": [
+            "npm:@babel/core",
+            "npm:@babel/preset-env",
+            "npm:@babel/preset-typescript",
+            "npm:@rollup/plugin-babel",
+            "npm:@rollup/plugin-commonjs@25.0.7",
+            "npm:@rollup/plugin-node-resolve",
+            "npm:@rollup/plugin-replace",
+            "npm:@rollup/plugin-terser",
+            "npm:core-js",
+            "npm:rollup",
+            "npm:rollup-plugin-delete",
+            "npm:rollup-plugin-peer-deps-external",
+            "npm:rollup-plugin-typescript2",
+            "npm:@babel/runtime",
+            "@huolala-tech/page-spy-base",
+            "@huolala-tech/page-spy-types",
+            "npm:rrweb"
+          ]
+        },
+        {
+          "file": "packages/page-spy-plugin-rrweb/rollup.config.mjs",
+          "hash": "10058180318152543691"
+        },
+        {
+          "file": "packages/page-spy-plugin-rrweb/src/index.ts",
+          "hash": "10634119778746278095"
+        },
+        {
+          "file": "packages/page-spy-plugin-rrweb/tsconfig.json",
+          "hash": "6001209201597755308"
+        }
+      ],
+      "@huolala-tech/page-spy-browser": [
+        {
+          "file": "packages/page-spy-browser/LICENSE",
+          "hash": "5589612977552745521"
+        },
+        {
+          "file": "packages/page-spy-browser/README.md",
+          "hash": "18299118565633451398"
+        },
+        {
+          "file": "packages/page-spy-browser/README_ZH.md",
+          "hash": "6837794253916945201"
+        },
+        {
+          "file": "packages/page-spy-browser/package.json",
+          "hash": "5128121957570214469",
+          "deps": [
+            "npm:@babel/core",
+            "npm:@babel/plugin-transform-runtime",
+            "npm:@babel/preset-env",
+            "npm:@babel/preset-typescript",
+            "npm:@rollup/plugin-babel",
+            "npm:@rollup/plugin-commonjs",
+            "npm:@rollup/plugin-image",
+            "npm:@rollup/plugin-json",
+            "npm:@rollup/plugin-node-resolve",
+            "npm:@rollup/plugin-replace",
+            "npm:@rollup/plugin-terser",
+            "npm:autoprefixer",
+            "npm:core-js",
+            "npm:less",
+            "npm:postcss",
+            "npm:rollup",
+            "npm:rollup-plugin-delete",
+            "npm:rollup-plugin-peer-deps-external",
+            "npm:rollup-plugin-postcss",
+            "npm:rollup-plugin-typescript2",
+            "npm:@babel/runtime",
+            "@huolala-tech/page-spy-base",
+            "@huolala-tech/page-spy-types",
+            "npm:copy-to-clipboard"
+          ]
+        },
+        {
+          "file": "packages/page-spy-browser/rollup.config.mjs",
+          "hash": "174667161702244498"
+        },
+        {
+          "file": "packages/page-spy-browser/src/api/index.ts",
+          "hash": "7611515864199193989"
+        },
+        {
+          "file": "packages/page-spy-browser/src/assets/logo.svg",
+          "hash": "13241356460310722464"
+        },
+        {
+          "file": "packages/page-spy-browser/src/component/content.ts",
+          "hash": "10662565422413225407"
+        },
+        {
+          "file": "packages/page-spy-browser/src/component/modal.ts",
+          "hash": "3167581380360746468"
+        },
+        {
+          "file": "packages/page-spy-browser/src/component/toast.ts",
+          "hash": "16564141781246542701"
+        },
+        {
+          "file": "packages/page-spy-browser/src/config.ts",
+          "hash": "7634924520652168613"
+        },
+        {
+          "file": "packages/page-spy-browser/src/deps/modernizr.js",
+          "hash": "768973170718460457"
+        },
+        {
+          "file": "packages/page-spy-browser/src/env.d.ts",
+          "hash": "1592089341486995845"
+        },
+        {
+          "file": "packages/page-spy-browser/src/helpers/moveable.ts",
+          "hash": "5880377003520701529"
+        },
+        {
+          "file": "packages/page-spy-browser/src/helpers/socket.ts",
+          "hash": "12232300824735319479"
+        },
+        {
+          "file": "packages/page-spy-browser/src/index.less",
+          "hash": "16778206375562711675"
+        },
+        {
+          "file": "packages/page-spy-browser/src/index.ts",
+          "hash": "6755828528062363131"
+        },
+        {
+          "file": "packages/page-spy-browser/src/plugins/console.ts",
+          "hash": "2660223845842426681"
+        },
+        {
+          "file": "packages/page-spy-browser/src/plugins/database.ts",
+          "hash": "18100041024368043455"
+        },
+        {
+          "file": "packages/page-spy-browser/src/plugins/error.ts",
+          "hash": "7736311587554679212"
+        },
+        {
+          "file": "packages/page-spy-browser/src/plugins/network/index.ts",
+          "hash": "2110219315872282545"
+        },
+        {
+          "file": "packages/page-spy-browser/src/plugins/network/proxy/base.ts",
+          "hash": "17700355314304837748"
+        },
+        {
+          "file": "packages/page-spy-browser/src/plugins/network/proxy/beacon-proxy.ts",
+          "hash": "14864553026789026472"
+        },
+        {
+          "file": "packages/page-spy-browser/src/plugins/network/proxy/fetch-proxy.ts",
+          "hash": "7517798482927431924"
+        },
+        {
+          "file": "packages/page-spy-browser/src/plugins/network/proxy/sse-proxy.ts",
+          "hash": "2855111757731893043"
+        },
+        {
+          "file": "packages/page-spy-browser/src/plugins/network/proxy/xhr-proxy.ts",
+          "hash": "5788826290486583494"
+        },
+        {
+          "file": "packages/page-spy-browser/src/plugins/page.ts",
+          "hash": "11843885844847084221"
+        },
+        {
+          "file": "packages/page-spy-browser/src/plugins/storage.ts",
+          "hash": "11139493709524470315"
+        },
+        {
+          "file": "packages/page-spy-browser/src/plugins/system/feature.ts",
+          "hash": "10867056995040881065"
+        },
+        {
+          "file": "packages/page-spy-browser/src/plugins/system/index.ts",
+          "hash": "8315015522663423937"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/__mocks__/assets.js",
+          "hash": "17885336269764724938"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/__mocks__/cookie-store.js",
+          "hash": "6224821015712830796"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/api/index.test.ts",
+          "hash": "4449064644224146723"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/helpers/blob.test.ts",
+          "hash": "9699852382919693410"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/helpers/socket.test.ts",
+          "hash": "3278266079116572499"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/init.test.ts",
+          "hash": "15188855251902812651"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/plugins/database.test.ts",
+          "hash": "18243144578466632645"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/plugins/error.test.ts",
+          "hash": "5326546493064041224"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/plugins/network/beacon-proxy.test.ts",
+          "hash": "6189069379976632157"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/plugins/network/common.test.ts",
+          "hash": "6509552844571461718"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/plugins/network/fetch-proxy.test.ts",
+          "hash": "1917956433878209183"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/plugins/network/util.ts",
+          "hash": "5880077487153079920"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/plugins/network/xhr-proxy.test.ts",
+          "hash": "7957116581248955604"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/plugins/page.test.ts",
+          "hash": "6544354109403863340"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/plugins/storage.test.ts",
+          "hash": "586400309968785007"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/plugins/system.test.ts",
+          "hash": "6412726269067337156"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/render.test.ts",
+          "hash": "5000488693427653055"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/server/data.json",
+          "hash": "2396248449427951178"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/server/favicon.png",
+          "hash": "13402560043085226048"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/server/index.js",
+          "hash": "15362263524254310108"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/server/unsplash.jpeg",
+          "hash": "16176790873235642043"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/setup.ts",
+          "hash": "8323868146631006602"
+        },
+        {
+          "file": "packages/page-spy-browser/tests/tsconfig.json",
+          "hash": "4966579386405493409"
+        },
+        {
+          "file": "packages/page-spy-browser/tsconfig.json",
+          "hash": "6001209201597755308"
+        }
+      ],
+      "@huolala-tech/page-spy-wechat": [
+        {
+          "file": "packages/page-spy-wechat/LICENSE",
+          "hash": "5589612977552745521"
+        },
+        {
+          "file": "packages/page-spy-wechat/README.md",
+          "hash": "3099698262406252869"
+        },
+        {
+          "file": "packages/page-spy-wechat/README_ZH.md",
+          "hash": "5475134198599626134"
+        },
+        {
+          "file": "packages/page-spy-wechat/package.json",
+          "hash": "9583710061386857239",
+          "deps": [
+            "npm:@babel/core",
+            "npm:@babel/preset-env",
+            "npm:@babel/preset-typescript",
+            "npm:@babel/runtime",
+            "npm:@huolala-tech/eval5",
+            "npm:@rollup/plugin-babel",
+            "npm:@rollup/plugin-commonjs",
+            "npm:@rollup/plugin-json",
+            "npm:@rollup/plugin-node-resolve",
+            "npm:@rollup/plugin-replace",
+            "npm:@rollup/plugin-terser",
+            "npm:core-js@3.37.0",
+            "npm:rollup",
+            "npm:rollup-plugin-delete",
+            "npm:rollup-plugin-typescript2",
+            "@huolala-tech/page-spy-base",
+            "@huolala-tech/page-spy-mp-base",
+            "@huolala-tech/page-spy-types"
+          ]
+        },
+        {
+          "file": "packages/page-spy-wechat/rollup.config.mjs",
+          "hash": "15949444288377894930"
+        },
+        {
+          "file": "packages/page-spy-wechat/src/index.ts",
+          "hash": "15686167550858536536"
+        },
+        {
+          "file": "packages/page-spy-wechat/tsconfig.json",
+          "hash": "6001209201597755308"
+        }
+      ],
+      "@huolala-tech/page-spy-plugin-data-harbor": [
+        {
+          "file": "packages/page-spy-plugin-data-harbor/LICENSE",
+          "hash": "5589612977552745521"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/README.md",
+          "hash": "6612845420215126791"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/README_ZH.md",
+          "hash": "12335113284156995936"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/package.json",
+          "hash": "18123665846093250378",
+          "deps": [
+            "npm:@babel/core",
+            "npm:@babel/preset-env",
+            "npm:@babel/preset-typescript",
+            "@huolala-tech/page-spy-types",
+            "npm:@rollup/plugin-babel",
+            "npm:@rollup/plugin-commonjs@25.0.7",
+            "npm:@rollup/plugin-node-resolve",
+            "npm:@rollup/plugin-replace",
+            "npm:@rollup/plugin-terser",
+            "npm:core-js",
+            "npm:rollup",
+            "npm:rollup-plugin-delete",
+            "npm:rollup-plugin-peer-deps-external",
+            "npm:rollup-plugin-typescript2",
+            "npm:@babel/runtime",
+            "@huolala-tech/page-spy-base",
+            "npm:fflate"
+          ]
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/rollup.config.mjs",
+          "hash": "14436590048692071473"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/screenshots/guide-en.jpg",
+          "hash": "11256364948723120741"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/screenshots/guide.jpg",
+          "hash": "16033889333948518145"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/screenshots/modal-en.jpg",
+          "hash": "5743805574192872886"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/screenshots/modal.jpg",
+          "hash": "13418275004777173032"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/src/api.d.ts",
+          "hash": "3991790399639086544"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/src/harbor/base.ts",
+          "hash": "5429587531980924827"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/src/harbor/idb-container.ts",
+          "hash": "12015331004997636817"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/src/harbor/index.ts",
+          "hash": "15040999724687765773"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/src/harbor/memory-container.ts",
+          "hash": "15762317582376312857"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/src/index.ts",
+          "hash": "1662572569107130768"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/src/skip-public.ts",
+          "hash": "9559471021517457815"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/src/utils/TIP_CONTENT.ts",
+          "hash": "16740241985232702238"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/src/utils/download.ts",
+          "hash": "9445562691365854298"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/src/utils/index.ts",
+          "hash": "4562644808376439642"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/src/utils/upload.ts",
+          "hash": "14624766658820488705"
+        },
+        {
+          "file": "packages/page-spy-plugin-data-harbor/tsconfig.json",
+          "hash": "6001209201597755308"
+        }
+      ],
+      "@huolala-tech/page-spy-mp-base": [
+        {
+          "file": "packages/page-spy-mp-base/global.d.ts",
+          "hash": "16664115162209380883"
+        },
+        {
+          "file": "packages/page-spy-mp-base/package.json",
+          "hash": "1834103946272437425",
+          "deps": [
+            "npm:typescript@5.5.3",
+            "@huolala-tech/page-spy-base",
+            "@huolala-tech/page-spy-types"
+          ]
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/api/index.ts",
+          "hash": "582268438169646020"
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/config.ts",
+          "hash": "3706679431270775896"
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/helpers/socket.ts",
+          "hash": "7534836214477615115"
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/index.ts",
+          "hash": "18186550049272129527"
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/plugins/console.ts",
+          "hash": "619399241955207247"
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/plugins/error.ts",
+          "hash": "8434872041001388941"
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/plugins/network/index.ts",
+          "hash": "10052598154395264739"
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/plugins/network/proxy/base.ts",
+          "hash": "6367377106759640364"
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/plugins/network/proxy/request.ts",
+          "hash": "6616926809154415684"
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/plugins/storage.ts",
+          "hash": "1461688461280412118"
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/plugins/system.ts",
+          "hash": "345379344726032298"
+        },
+        {
+          "file": "packages/page-spy-mp-base/src/utils.ts",
+          "hash": "5755318704881722930"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/init.test.ts",
+          "hash": "8693348416080393410"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/mock/mp.ts",
+          "hash": "3217854751684352407"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/mock/request.ts",
+          "hash": "10789542219692023293"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/mock/storage.ts",
+          "hash": "3552587223854415212"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/plugins/console.test.ts",
+          "hash": "902233685430727631"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/plugins/error.test.ts",
+          "hash": "18185439091386074495"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/plugins/network.test.ts",
+          "hash": "16504738375734576122"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/plugins/storage.test.ts",
+          "hash": "16112106821883624341"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/plugins/util.ts",
+          "hash": "4077095040839371622"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/setup.ts",
+          "hash": "12937859701964487442"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/tsconfig.json",
+          "hash": "13559582335446764960"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tests/utils.test.ts",
+          "hash": "5294880577002562876"
+        },
+        {
+          "file": "packages/page-spy-mp-base/tsconfig.json",
+          "hash": "1263718912958733129"
+        }
+      ],
+      "@huolala-tech/page-spy-uniapp": [
+        {
+          "file": "packages/page-spy-uniapp/LICENSE",
+          "hash": "5589612977552745521"
+        },
+        {
+          "file": "packages/page-spy-uniapp/README.md",
+          "hash": "6795939887893338598"
+        },
+        {
+          "file": "packages/page-spy-uniapp/README_ZH.md",
+          "hash": "15677590830826629765"
+        },
+        {
+          "file": "packages/page-spy-uniapp/package.json",
+          "hash": "3583881733733316151",
+          "deps": [
+            "npm:@babel/core",
+            "npm:@babel/preset-env",
+            "npm:@babel/preset-typescript",
+            "npm:@babel/runtime",
+            "npm:@huolala-tech/eval5",
+            "npm:@rollup/plugin-babel",
+            "npm:@rollup/plugin-commonjs",
+            "npm:@rollup/plugin-json",
+            "npm:@rollup/plugin-node-resolve",
+            "npm:@rollup/plugin-replace",
+            "npm:@rollup/plugin-terser",
+            "npm:core-js@3.37.0",
+            "npm:rollup",
+            "npm:rollup-plugin-delete",
+            "npm:rollup-plugin-typescript2",
+            "@huolala-tech/page-spy-base",
+            "@huolala-tech/page-spy-mp-base",
+            "@huolala-tech/page-spy-types"
+          ]
+        },
+        {
+          "file": "packages/page-spy-uniapp/rollup.config.mjs",
+          "hash": "15949444288377894930"
+        },
+        {
+          "file": "packages/page-spy-uniapp/src/index.ts",
+          "hash": "12485759924992174257"
+        },
+        {
+          "file": "packages/page-spy-uniapp/tsconfig.json",
+          "hash": "6001209201597755308"
+        }
+      ],
+      "@huolala-tech/page-spy-taro": [
+        {
+          "file": "packages/page-spy-taro/LICENSE",
+          "hash": "5589612977552745521"
+        },
+        {
+          "file": "packages/page-spy-taro/README.md",
+          "hash": "14520035456583921334"
+        },
+        {
+          "file": "packages/page-spy-taro/README_ZH.md",
+          "hash": "3865950307079939654"
+        },
+        {
+          "file": "packages/page-spy-taro/package.json",
+          "hash": "3202442700931457118",
+          "deps": [
+            "npm:@babel/core",
+            "npm:@babel/preset-env",
+            "npm:@babel/preset-typescript",
+            "npm:@babel/runtime",
+            "npm:@rollup/plugin-babel",
+            "npm:@rollup/plugin-commonjs",
+            "npm:@rollup/plugin-json",
+            "npm:@rollup/plugin-node-resolve",
+            "npm:@rollup/plugin-replace",
+            "npm:@rollup/plugin-terser",
+            "npm:core-js@3.37.0",
+            "npm:rollup",
+            "npm:rollup-plugin-delete",
+            "npm:rollup-plugin-typescript2",
+            "@huolala-tech/page-spy-base",
+            "@huolala-tech/page-spy-mp-base",
+            "@huolala-tech/page-spy-types"
+          ]
+        },
+        {
+          "file": "packages/page-spy-taro/rollup.config.mjs",
+          "hash": "1071616420736078874"
+        },
+        {
+          "file": "packages/page-spy-taro/src/index.ts",
+          "hash": "12926544745415578389"
+        },
+        {
+          "file": "packages/page-spy-taro/tsconfig.json",
+          "hash": "6001209201597755308"
+        }
+      ],
+      "@huolala-tech/page-spy-plugin-mp-eval": [
+        {
+          "file": "packages/page-spy-plugin-mp-eval/LICENSE",
+          "hash": "5589612977552745521"
+        },
+        {
+          "file": "packages/page-spy-plugin-mp-eval/README.md",
+          "hash": "13030147653316943278"
+        },
+        {
+          "file": "packages/page-spy-plugin-mp-eval/README_ZH.md",
+          "hash": "1110808643197397037"
+        },
+        {
+          "file": "packages/page-spy-plugin-mp-eval/package.json",
+          "hash": "9552952516403944246",
+          "deps": [
+            "npm:@babel/core",
+            "npm:@babel/preset-env",
+            "npm:@babel/preset-typescript",
+            "npm:@babel/runtime",
+            "@huolala-tech/page-spy-types",
+            "npm:@rollup/plugin-babel",
+            "npm:@rollup/plugin-commonjs@25.0.7",
+            "npm:@rollup/plugin-node-resolve",
+            "npm:@rollup/plugin-replace",
+            "npm:@rollup/plugin-terser",
+            "npm:core-js",
+            "npm:rollup",
+            "npm:rollup-plugin-delete",
+            "npm:rollup-plugin-peer-deps-external",
+            "npm:rollup-plugin-typescript2",
+            "npm:@huolala-tech/eval5@0.0.2",
+            "@huolala-tech/page-spy-base",
+            "@huolala-tech/page-spy-mp-base"
+          ]
+        },
+        {
+          "file": "packages/page-spy-plugin-mp-eval/rollup.config.mjs",
+          "hash": "1008509724593818684"
+        },
+        {
+          "file": "packages/page-spy-plugin-mp-eval/src/index.ts",
+          "hash": "7903925143197107813"
+        },
+        {
+          "file": "packages/page-spy-plugin-mp-eval/tsconfig.json",
+          "hash": "6001209201597755308"
+        }
+      ],
+      "@huolala-tech/page-spy-base": [
+        {
+          "file": "packages/page-spy-base/package.json",
+          "hash": "5487384527453572216",
+          "deps": [
+            "@huolala-tech/page-spy-types"
+          ]
+        },
+        {
+          "file": "packages/page-spy-base/src/atom.ts",
+          "hash": "8161273676108086666"
+        },
+        {
+          "file": "packages/page-spy-base/src/client.ts",
+          "hash": "3557848711693254435"
+        },
+        {
+          "file": "packages/page-spy-base/src/config.ts",
+          "hash": "6109307611986581921"
+        },
+        {
+          "file": "packages/page-spy-base/src/constants.ts",
+          "hash": "4883590075084889201"
+        },
+        {
+          "file": "packages/page-spy-base/src/index.ts",
+          "hash": "6397688290226072674"
+        },
+        {
+          "file": "packages/page-spy-base/src/message/index.ts",
+          "hash": "13828667107118655741"
+        },
+        {
+          "file": "packages/page-spy-base/src/message/server-type.ts",
+          "hash": "10223397244384694055"
+        },
+        {
+          "file": "packages/page-spy-base/src/network/base.ts",
+          "hash": "673115018899716509"
+        },
+        {
+          "file": "packages/page-spy-base/src/network/common.ts",
+          "hash": "3998562768203780560"
+        },
+        {
+          "file": "packages/page-spy-base/src/request-item.ts",
+          "hash": "16654934284015900424"
+        },
+        {
+          "file": "packages/page-spy-base/src/socket-base.ts",
+          "hash": "10897120027063590175"
+        },
+        {
+          "file": "packages/page-spy-base/src/utils.ts",
+          "hash": "16056823533191909589"
+        },
+        {
+          "file": "packages/page-spy-base/tests/atom.test.ts",
+          "hash": "10409059750943856253"
+        },
+        {
+          "file": "packages/page-spy-base/tests/index.test.ts",
+          "hash": "72140506428540942"
+        },
+        {
+          "file": "packages/page-spy-base/tests/network/base.test.ts",
+          "hash": "12289538123016943790"
+        },
+        {
+          "file": "packages/page-spy-base/tests/network/common.test.ts",
+          "hash": "17088776857013648283"
+        },
+        {
+          "file": "packages/page-spy-base/tests/tsconfig.json",
+          "hash": "4966579386405493409"
+        },
+        {
+          "file": "packages/page-spy-base/tests/ua.test.ts",
+          "hash": "9346446179490648735"
+        },
+        {
+          "file": "packages/page-spy-base/tsconfig.json",
+          "hash": "2911651818690590493"
+        }
+      ],
+      "@huolala-tech/page-spy-react-native": [
+        {
+          "file": "packages/page-spy-react-native/README.md",
+          "hash": "4542090655871171071"
+        },
+        {
+          "file": "packages/page-spy-react-native/README_ZH.md",
+          "hash": "1944648793371659649"
+        },
+        {
+          "file": "packages/page-spy-react-native/package.json",
+          "hash": "16931356010513335864",
+          "deps": [
+            "npm:react-native",
+            "npm:@babel/core",
+            "npm:@babel/plugin-transform-runtime",
+            "npm:@babel/preset-env",
+            "npm:@babel/preset-typescript",
+            "npm:@babel/runtime",
+            "npm:@rollup/plugin-babel",
+            "npm:@rollup/plugin-commonjs",
+            "npm:@rollup/plugin-node-resolve",
+            "npm:@rollup/plugin-replace",
+            "npm:@rollup/plugin-terser",
+            "npm:core-js@3.37.0",
+            "npm:rollup",
+            "npm:rollup-plugin-delete",
+            "npm:rollup-plugin-typescript2",
+            "@huolala-tech/page-spy-base",
+            "@huolala-tech/page-spy-types",
+            "npm:promise"
+          ]
+        },
+        {
+          "file": "packages/page-spy-react-native/rollup.config.mjs",
+          "hash": "6292202981589012550"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/api/index.ts",
+          "hash": "2124855350280138827"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/config.ts",
+          "hash": "5456274152151183977"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/env.d.ts",
+          "hash": "8842014522480922741"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/helpers/socket.ts",
+          "hash": "14845455077952774334"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/index.ts",
+          "hash": "10851674403459881745"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/plugins/console.ts",
+          "hash": "4664791139832076082"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/plugins/error.ts",
+          "hash": "9908247712890530650"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/plugins/network/index.ts",
+          "hash": "10626319561208223892"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/plugins/network/proxy/base.ts",
+          "hash": "6496766357151391185"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/plugins/network/proxy/fetch-proxy.ts",
+          "hash": "8058076135999647452"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/plugins/network/proxy/xhr-proxy.ts",
+          "hash": "1561111402468095531"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/plugins/system.ts",
+          "hash": "3239759979029977508"
+        },
+        {
+          "file": "packages/page-spy-react-native/src/utils.ts",
+          "hash": "4831523096274956406"
+        },
+        {
+          "file": "packages/page-spy-react-native/tsconfig.json",
+          "hash": "6608552333948279827"
+        }
+      ]
+    }
+  }
+}
