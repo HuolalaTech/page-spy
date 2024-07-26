@@ -49,7 +49,8 @@ export interface InitConfigBase {
   secret?: string;
 
   /**
-   *
+   * Indicate whether serialize data which emit by 'public-data' event.
+   * @default false
    */
   serializeData?: boolean;
 }

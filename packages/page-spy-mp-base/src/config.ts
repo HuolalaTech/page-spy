@@ -18,7 +18,7 @@ export class Config extends ConfigBase<SpyMP.MPInitConfig> {
       messageCapacity: 1000,
       useSecret: false,
       secret: '',
-      serializeData: true,
+      serializeData: false,
     };
   }
 }
