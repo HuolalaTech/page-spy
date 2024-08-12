@@ -1,11 +1,23 @@
 declare namespace H {
-  export type UploadResult = {
+  interface SingleLog {
+    name: string;
+    fileId: string;
+    size: number;
+  }
+
+  interface GroupLog extends SingleLog {
+    groupId: string;
+    tags: {
+      createdAt: string;
+      updatedAt: string;
+      key: string;
+      value: string;
+    }[];
+  }
+
+  export type UploadResult<T = SingleLog | GroupLog> = {
     code: string;
-    data: {
-      name: string;
-      fileId: string;
-      size: number;
-    };
+    data: T;
     success: boolean;
     message: string;
   };
