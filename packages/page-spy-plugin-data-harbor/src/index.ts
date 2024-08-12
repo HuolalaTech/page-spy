@@ -20,11 +20,22 @@ import {
   DownloadArgs,
   startDownload,
 } from './utils/download';
-import { UploadArgs, buttonBindWithUpload, startUpload } from './utils/upload';
+import {
+  UploadArgs,
+  buttonBindWithUpload,
+  isGroupLog,
+  startUpload,
+} from './utils/upload';
 import { getDeviceId, jsonToFile, makeData } from './utils';
 import { UPLOAD_TIPS } from './utils/TIP_CONTENT';
 
 type DataType = 'console' | 'network' | 'system' | 'storage' | 'rrweb-event';
+
+type FileAction =
+  | 'download'
+  | 'upload'
+  // | 'upload-fragment'
+  | 'upload-partial';
 
 interface MetricMessage {
   type: 'metric';
@@ -94,7 +105,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       ...config,
     } as Required<DataHarborConfig>;
 
-    this.harbor = new Harbor({ maximum: config.maximum });
+    this.harbor = new Harbor({ maximum: this.$harborConfig.maximum });
   }
 
   public async onInit({ socketStore, config }: OnInitParams<InitConfigBase>) {
@@ -143,17 +154,10 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       const uploadBtn = buttonBindWithUpload(async () => {
         const params = await this.getParams('upload');
         const result = await startUpload(params);
-        let debugUrl = '';
-        if (result) {
-          const onlineLogUrl = `${this.apiBase}/api/v1/log/download?fileId=${result.data.fileId}`;
-          const debugClientWithoutSlash = removeEndSlash(
-            this.$pageSpyConfig?.clientOrigin!,
-          );
-          debugUrl = `${debugClientWithoutSlash}/#/replay?url=${onlineLogUrl}`;
+        const debugUrl = this.getDebugUrl(result);
+        if (debugUrl) {
+          psLog.info(`${UPLOAD_TIPS.success}: ${debugUrl}`);
         }
-
-        psLog.info(`${UPLOAD_TIPS.success}: ${debugUrl}`);
-
         return debugUrl;
       });
 
@@ -164,7 +168,8 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
   getParams(type: 'download'): Promise<DownloadArgs>;
   getParams(type: 'upload'): Promise<UploadArgs>;
-  async getParams(type: 'upload' | 'download') {
+  getParams(type: 'upload-partial'): Promise<UploadArgs>;
+  async getParams(type: FileAction) {
     const { onDownload, filename } = this.$harborConfig;
     const { project = '', title = '' } = this.$pageSpyConfig!;
     const tags = {
@@ -180,6 +185,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
         customDownload: onDownload,
       } as DownloadArgs;
     }
+
     if (type === 'upload') {
       const data = await this.harbor.getHarborData();
       const file = jsonToFile(data, filename());
@@ -190,21 +196,51 @@ export default class DataHarborPlugin implements PageSpyPlugin {
         body: form,
       } as UploadArgs;
     }
+
+    if (type === 'upload-partial') {
+      let harborData: any;
+      if (!this.markHarbor) {
+        this.markHarbor = new Harbor({ maximum: this.$harborConfig.maximum });
+        harborData = await this.harbor.getHarborData();
+      } else {
+        harborData = await this.markHarbor.getHarborData();
+        this.markHarbor.clear();
+      }
+      const file = jsonToFile(harborData, this.$harborConfig.filename());
+      const form = new FormData();
+      form.append('log', file);
+      return {
+        url: `${this.apiBase}/api/v1/logGroup/upload?groupId=${this.groupId}&${new URLSearchParams(tags).toString()}`,
+        body: form,
+      } as UploadArgs;
+    }
   }
 
-  async onOfflineLog(type: 'download' | 'upload') {
+  onOfflineLog(type: 'download'): Promise<void>;
+  onOfflineLog(type: 'upload'): Promise<string>;
+  onOfflineLog(type: 'upload-partial'): Promise<string>;
+  async onOfflineLog(type: FileAction): Promise<void | string> {
     try {
-      switch (type) {
-        case 'download':
-          const downloadArgs = await this.getParams('download');
-          startDownload(downloadArgs);
-          break;
-        case 'upload':
-          const uploadArgs = await this.getParams('upload');
-          const url = await startUpload(uploadArgs);
-          return url;
-        default:
-          break;
+      if (type === 'download') {
+        const downloadArgs = await this.getParams('download');
+        startDownload(downloadArgs);
+        return;
+      }
+
+      if (type === 'upload') {
+        const uploadArgs = await this.getParams('upload');
+        const result = await startUpload(uploadArgs);
+        return this.getDebugUrl(result);
+      }
+
+      if (type === 'upload-partial') {
+        if (!markHarborUploadIdle) return;
+        markHarborUploadIdle = false;
+
+        const uploadArgs = await this.getParams('upload-partial');
+        const result = await startUpload(uploadArgs);
+        markHarborUploadIdle = true;
+        return this.getDebugUrl(result);
       }
     } catch (e: any) {
       psLog.error(e.message);
@@ -213,6 +249,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
   onReset() {
     this.harbor.clear();
+    this.markHarbor?.clear();
     DataHarborPlugin.hasInited = false;
     DataHarborPlugin.hasMounted = false;
     const node = document.getElementById('data-harbor-plugin-download');
@@ -221,34 +258,9 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     }
   }
 
-  public sessionId = getRandomId();
+  public groupId = getRandomId();
 
   public markHarbor: Harbor | null = null;
-
-  // Users can call this method to mark custom events during offline log recording. For example,
-  // when a user clicks a button, changes routes, or the program encounters an error, calling
-  // `window.$harbor.markAndFlush('<custom-data-by-yourself>')` will perform the following actions:
-  // 1. Insert `{type: 'mark', data: '<custom-data-by-yourself>'}` into the markHarbor;
-  // 2. Upload the current logs in markHarbor;
-  // 3. Clear the data in markHarbor.
-  // The default value for the mark parameter is "dida", which can be thought of as water droplets 😄
-  public async markAndFlush(mark: string = 'dida') {
-    if (!markHarborUploadIdle) return;
-    markHarborUploadIdle = false;
-
-    let harborData: any;
-    if (!this.markHarbor) {
-      this.markHarbor = new Harbor({ maximum: this.$harborConfig.maximum });
-      harborData = await this.harbor.getHarborData();
-    } else {
-      harborData = await this.markHarbor.getHarborData();
-      this.markHarbor.clear();
-    }
-    const data = [...harborData, makeData('mark', mark)];
-    const file = jsonToFile(data, this.$harborConfig.filename());
-    const form = new FormData();
-    form.append('log', file);
-  }
 
   public isCaredPublicData(message: SpyMessage.MessageItem | MetricMessage) {
     if (!message) return false;
@@ -284,5 +296,18 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       default:
         return false;
     }
+  }
+
+  getDebugUrl(result: H.UploadResult | null) {
+    if (!result || !result.success) return '';
+
+    const debugOrigin = `${removeEndSlash(this.$pageSpyConfig?.clientOrigin!)}/#/replay`;
+
+    if (isGroupLog(result.data)) {
+      const filesUrl = `${this.apiBase}/api/v1/logGroup/files?groupId=${result.data.groupId}`;
+      return `${debugOrigin}?files=${filesUrl}`;
+    }
+    const logUrl = `${this.apiBase}/api/v1/log/download?fileId=${result.data.fileId}`;
+    return `${debugOrigin}?url=${logUrl}`;
   }
 }
