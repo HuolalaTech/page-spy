@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import type {
   SpyMessage,
   OnInitParams,
@@ -9,14 +10,19 @@ import type {
 import {
   getRandomId,
   isBrowser,
-  isString,
   psLog,
+  removeEndSlash,
   RequestItem,
 } from '@huolala-tech/page-spy-base';
 import { Harbor } from './harbor';
-import { DownloadArgs, handleDownload, startDownload } from './utils/download';
-import { UploadArgs, handleUpload, startUpload } from './utils/upload';
-import { getDeviceId, makeData } from './utils';
+import {
+  buttonBindWithDownload,
+  DownloadArgs,
+  startDownload,
+} from './utils/download';
+import { UploadArgs, buttonBindWithUpload, startUpload } from './utils/upload';
+import { getDeviceId, jsonToFile, makeData } from './utils';
+import { UPLOAD_TIPS } from './utils/TIP_CONTENT';
 
 type DataType = 'console' | 'network' | 'system' | 'storage' | 'rrweb-event';
 
@@ -46,10 +52,6 @@ interface DataHarborConfig {
 
   // Custom download behavior.
   onDownload?: (data: CacheMessageItem[]) => void;
-
-  // By default, multiple calls to `window.$harbor.markAndFlush` within 1 minute
-  // will only trigger one upload. This parameter specifies the upload interval.
-  throttleTimeOfMarkLog?: number;
 }
 
 const defaultConfig: DataHarborConfig = {
@@ -64,8 +66,9 @@ const defaultConfig: DataHarborConfig = {
   filename: () => {
     return new Date().toLocaleString();
   },
-  throttleTimeOfMarkLog: 60 * 1000,
 };
+
+let markHarborUploadIdle = true;
 
 export default class DataHarborPlugin implements PageSpyPlugin {
   public enforce: PluginOrder = 'pre';
@@ -107,18 +110,23 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       );
     } else {
       const apiScheme = enableSSL ? 'https://' : 'http://';
-      this.apiBase = `${apiScheme}${api}`;
+      this.apiBase = removeEndSlash(`${apiScheme}${api}`);
     }
 
     socketStore.addListener('public-data', async (message) => {
       if (!this.isCaredPublicData(message)) return;
 
       const data = makeData(message.type, message.data);
-      this.pageLogQueue.push(data);
 
-      const ok = this.harbor.save(data);
-      if (!ok) {
-        psLog.warn(`[${this.name}] Save data failed`, data);
+      const ok1 = this.harbor.save(data);
+      if (!ok1) {
+        psLog.warn(`[${this.name}] Fail to save data in harbor `, data);
+      }
+      if (this.markHarbor) {
+        const ok2 = this.markHarbor.save(data);
+        if (!ok2) {
+          psLog.warn(`[${this.name}] Fail to save data in markHarbor`, data);
+        }
       }
     });
   }
@@ -128,48 +136,72 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     DataHarborPlugin.hasMounted = true;
 
     if (isBrowser()) {
-      const downloadBtn = handleDownload(this.getParams('download'));
-      const uploadBtn = handleUpload(this.getParams('upload'));
+      const downloadBtn = buttonBindWithDownload(async () => {
+        const params = await this.getParams('download');
+        startDownload(params);
+      });
+      const uploadBtn = buttonBindWithUpload(async () => {
+        const params = await this.getParams('upload');
+        const result = await startUpload(params);
+        let debugUrl = '';
+        if (result) {
+          const onlineLogUrl = `${this.apiBase}/api/v1/log/download?fileId=${result.data.fileId}`;
+          const debugClientWithoutSlash = removeEndSlash(
+            this.$pageSpyConfig?.clientOrigin!,
+          );
+          debugUrl = `${debugClientWithoutSlash}/#/replay?url=${onlineLogUrl}`;
+        }
+
+        psLog.info(`${UPLOAD_TIPS.success}: ${debugUrl}`);
+
+        return debugUrl;
+      });
 
       content.insertAdjacentElement('beforeend', downloadBtn);
       content.insertAdjacentElement('beforeend', uploadBtn);
     }
   }
 
-  getParams(type: 'download'): DownloadArgs;
-  getParams(type: 'upload'): UploadArgs;
-  getParams(type: any) {
+  getParams(type: 'download'): Promise<DownloadArgs>;
+  getParams(type: 'upload'): Promise<UploadArgs>;
+  async getParams(type: 'upload' | 'download') {
     const { onDownload, filename } = this.$harborConfig;
+    const { project = '', title = '' } = this.$pageSpyConfig!;
+    const tags = {
+      project,
+      title,
+      deviceId: getDeviceId(),
+      userAgent: navigator.userAgent,
+    };
     if (type === 'download') {
       return {
         harbor: this.harbor,
         filename,
         customDownload: onDownload,
-      };
+      } as DownloadArgs;
     }
-    return {
-      harbor: this.harbor,
-      uploadUrl: this.apiBase,
-      filename,
-      debugClient: this.$pageSpyConfig?.clientOrigin!,
-      tags: {
-        project: this.$pageSpyConfig?.project,
-        title: this.$pageSpyConfig?.title,
-        deviceId: getDeviceId(),
-        userAgent: navigator.userAgent,
-      },
-    } as UploadArgs;
+    if (type === 'upload') {
+      const data = await this.harbor.getHarborData();
+      const file = jsonToFile(data, filename());
+      const form = new FormData();
+      form.append('log', file);
+      return {
+        url: `${this.apiBase}/api/v1/log/upload?${new URLSearchParams(tags).toString()}`,
+        body: form,
+      } as UploadArgs;
+    }
   }
 
-  // eslint-disable-next-line consistent-return
   async onOfflineLog(type: 'download' | 'upload') {
     try {
       switch (type) {
         case 'download':
-          startDownload(this.getParams('download'));
+          const downloadArgs = await this.getParams('download');
+          startDownload(downloadArgs);
           break;
         case 'upload':
-          const url = await startUpload(this.getParams('upload'));
+          const uploadArgs = await this.getParams('upload');
+          const url = await startUpload(uploadArgs);
           return url;
         default:
           break;
@@ -189,33 +221,33 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     }
   }
 
-  public pageId = getRandomId();
+  public sessionId = getRandomId();
 
-  public pageLogQueue: ReturnType<typeof makeData>[] = [];
+  public markHarbor: Harbor | null = null;
 
-  public pageLogThrottleTimer: ReturnType<typeof setTimeout> | null = null;
+  // Users can call this method to mark custom events during offline log recording. For example,
+  // when a user clicks a button, changes routes, or the program encounters an error, calling
+  // `window.$harbor.markAndFlush('<custom-data-by-yourself>')` will perform the following actions:
+  // 1. Insert `{type: 'mark', data: '<custom-data-by-yourself>'}` into the markHarbor;
+  // 2. Upload the current logs in markHarbor;
+  // 3. Clear the data in markHarbor.
+  // The default value for the mark parameter is "dida", which can be thought of as water droplets 😄
+  public async markAndFlush(mark: string = 'dida') {
+    if (!markHarborUploadIdle) return;
+    markHarborUploadIdle = false;
 
-  // During offline log recording, users can call this method to mark custom events.
-  // For example, when the program encounters an error, calling
-  // `window.$harbor.markAndFlush('error')` will insert `{type: 'mark', data: 'error'}`
-  // into the log queue, upload the current log list fragment, and start a new log queue.
-  // The default value "dida", think it as water droplets 😄
-  public markAndFlush(data: string = 'dida') {
-    this.pageLogQueue.push(makeData('mark', data));
-    if (this.pageLogThrottleTimer) return;
-
-    try {
-      if (!isString(data)) {
-        data = JSON.stringify(data);
-      }
-    } catch (e) {
-      data = data.toString();
+    let harborData: any;
+    if (!this.markHarbor) {
+      this.markHarbor = new Harbor({ maximum: this.$harborConfig.maximum });
+      harborData = await this.harbor.getHarborData();
+    } else {
+      harborData = await this.markHarbor.getHarborData();
+      this.markHarbor.clear();
     }
-    this.pageLogThrottleTimer = setTimeout(() => {
-      // TODO 上传日志
-      this.pageLogQueue = [];
-      this.pageLogThrottleTimer = null;
-    }, this.$harborConfig.throttleTimeOfMarkLog);
+    const data = [...harborData, makeData('mark', mark)];
+    const file = jsonToFile(data, this.$harborConfig.filename());
+    const form = new FormData();
+    form.append('log', file);
   }
 
   public isCaredPublicData(message: SpyMessage.MessageItem | MetricMessage) {

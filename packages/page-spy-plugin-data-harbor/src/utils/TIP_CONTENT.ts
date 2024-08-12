@@ -1,3 +1,7 @@
+import { isCN } from '@huolala-tech/page-spy-base';
+
+const lang = isCN() ? 'zh' : 'en';
+
 export const DOWNLOAD_TIPS = {
   zh: {
     normal: '离线日志：下载',
@@ -13,7 +17,7 @@ export const DOWNLOAD_TIPS = {
     success: 'Download successful',
     fail: 'Download failed',
   },
-};
+}[lang];
 
 export const UPLOAD_TIPS = {
   zh: {
@@ -36,4 +40,4 @@ export const UPLOAD_TIPS = {
     success: 'Upload successful',
     fail: 'Upload failed',
   },
-};
+}[lang];
