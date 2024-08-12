@@ -28,3 +28,13 @@ export const makeData = <T extends SpyMessage.DataType>(type: T, data: any) => {
     data: minifyData(data),
   };
 };
+
+export const jsonToFile = (data: any, filename: string) => {
+  const blob = new Blob([JSON.stringify(data)], {
+    type: 'application/json',
+  });
+  const file = new File([blob], `${formatFilename(filename)}.json`, {
+    type: 'application/json',
+  });
+  return file;
+};
