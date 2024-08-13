@@ -1,7 +1,16 @@
 import NetworkPlugin from 'page-spy-browser/src/plugins/network';
 import startServer from '../../server/index';
 import { computeRequestMapInfo } from './util';
+import { OnInitParams } from 'packages/page-spy-types';
+import { Config, InitConfig } from 'page-spy-browser/src/config';
+import { atom } from 'page-spy-base/dist';
+import socket from 'page-spy-browser/src/helpers/socket';
 
+const initParams = {
+  config: new Config().mergeConfig({}),
+  socketStore: socket,
+  atom,
+} as OnInitParams<InitConfig>;
 const port = 6699;
 const apiPrefix = `http://localhost:${port}`;
 const stopServer = startServer(port);
@@ -20,13 +29,13 @@ describe('navigator.sendBeacon proxy', () => {
       value: undefined,
       writable: true,
     });
-    new NetworkPlugin().onInit();
+    new NetworkPlugin().onInit(initParams);
     expect(window.navigator.sendBeacon).toBe(undefined);
   });
   it('Wrap the navigator.sendBeacon', async () => {
     const sendBeaconSpy = jest.spyOn(window.navigator, 'sendBeacon');
     expect(window.navigator.sendBeacon).toBe(sendBeaconSpy);
-    new NetworkPlugin().onInit();
+    new NetworkPlugin().onInit(initParams);
     expect(window.navigator.sendBeacon).not.toBe(sendBeaconSpy);
   });
 
@@ -44,7 +53,7 @@ describe('navigator.sendBeacon proxy', () => {
       return true;
     });
     const np = new NetworkPlugin();
-    np.onInit();
+    np.onInit(initParams);
     const { beaconProxy } = np;
     window.navigator.sendBeacon(`${apiPrefix}/posts`);
 
@@ -59,7 +68,7 @@ describe('navigator.sendBeacon proxy', () => {
       return false;
     });
     const np = new NetworkPlugin();
-    np.onInit();
+    np.onInit(initParams);
     const { beaconProxy } = np;
     window.navigator.sendBeacon(`${apiPrefix}/posts`);
 
@@ -71,7 +80,7 @@ describe('navigator.sendBeacon proxy', () => {
 
   it('The SDK record the request information', () => {
     const np = new NetworkPlugin();
-    np.onInit();
+    np.onInit(initParams);
     const { beaconProxy } = np;
     expect(beaconProxy).not.toBe(null);
     expect(computeRequestMapInfo(beaconProxy).size).toBe(0);
@@ -86,7 +95,7 @@ describe('navigator.sendBeacon proxy', () => {
   it('The cached request items will be freed when no longer needed', async () => {
     jest.useFakeTimers();
     const np = new NetworkPlugin();
-    np.onInit();
+    np.onInit(initParams);
     const { beaconProxy } = np;
     expect(beaconProxy).not.toBe(null);
     expect(computeRequestMapInfo(beaconProxy).size).toBe(0);

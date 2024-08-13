@@ -4,10 +4,18 @@ import {
   promisify,
 } from 'page-spy-browser/src/plugins/database';
 import socket from 'page-spy-browser/src/helpers/socket';
+import { OnInitParams } from 'packages/page-spy-types';
+import { Config, InitConfig } from 'page-spy-browser/src/config';
+import { atom } from 'page-spy-base/dist';
 
+const initParams = {
+  config: new Config().mergeConfig({}),
+  socketStore: socket,
+  atom,
+} as OnInitParams<InitConfig>;
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 // @ts-ignore
-const dbTrigger = jest.spyOn(DatabasePlugin, 'sendData');
+const dbTrigger = jest.spyOn(DatabasePlugin.prototype, 'sendData');
 
 // init indexedDB store and fill data
 beforeEach(async () => {
@@ -41,7 +49,7 @@ describe('Database plugin', () => {
 
     expect(DatabasePlugin.isSupport).toBe(false);
 
-    new DatabasePlugin().onInit();
+    new DatabasePlugin().onInit(initParams);
 
     expect(DatabasePlugin.hasInitd).toBe(false);
 
@@ -52,7 +60,7 @@ describe('Database plugin', () => {
     const db = await indexedDB.databases();
     expect(db.length).toBe(1);
 
-    new DatabasePlugin().onInit();
+    new DatabasePlugin().onInit(initParams);
 
     await promisify(indexedDB.deleteDatabase('blog'));
     const db2 = await indexedDB.databases();
@@ -71,7 +79,7 @@ describe('Database plugin', () => {
     // @ts-ignore
     const originDelete = jest.spyOn(IDBObjectStore.prototype, 'delete');
 
-    new DatabasePlugin().onInit();
+    new DatabasePlugin().onInit(initParams);
 
     const db = await promisify(window.indexedDB.open('blog'));
     const store = db.transaction('posts', 'readwrite').objectStore('posts');
@@ -94,7 +102,7 @@ describe('Database plugin', () => {
   });
 
   it('DATABASE_PAGINATION event and REFRESH event', async () => {
-    new DatabasePlugin().onInit();
+    new DatabasePlugin().onInit(initParams);
 
     // @ts-ignore
     socket.dispatchEvent('refresh', {

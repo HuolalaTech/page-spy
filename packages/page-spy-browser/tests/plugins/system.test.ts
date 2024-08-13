@@ -1,5 +1,3 @@
-import socket from 'page-spy-browser/src/helpers/socket';
-import SystemPlugin from 'page-spy-browser/src/plugins/system';
 import { computeResult } from 'page-spy-browser/src/plugins/system/feature';
 
 describe('System plugin', () => {

@@ -1,9 +1,17 @@
 import NetworkPlugin from 'page-spy-browser/src/plugins/network';
 import startServer from '../../server/index';
 import data from '../../server/data.json';
-import { Reason } from 'page-spy-base/src';
+import { atom, Reason } from 'page-spy-base/src';
 import { computeRequestMapInfo } from './util';
+import { OnInitParams } from 'packages/page-spy-types';
+import { Config, InitConfig } from 'page-spy-browser/src/config';
+import socket from 'page-spy-browser/src/helpers/socket';
 
+const initParams = {
+  config: new Config().mergeConfig({}),
+  socketStore: socket,
+  atom,
+} as OnInitParams<InitConfig>;
 const port = 6677;
 const apiPrefix = `http://localhost:${port}`;
 const stopServer = startServer(port);
@@ -35,12 +43,12 @@ describe('XMLHttpRequest proxy', () => {
       value: undefined,
       writable: true,
     });
-    new NetworkPlugin().onInit();
+    new NetworkPlugin().onInit(initParams);
     expect(window.XMLHttpRequest).toBe(undefined);
     window.XMLHttpRequest = originXHR;
   });
   it('Wrap the XMLHttpRequest prototype method', () => {
-    new NetworkPlugin().onInit();
+    new NetworkPlugin().onInit(initParams);
 
     expect(XMLHttpRequest.prototype.open).not.toBe(spyOpen);
     expect(XMLHttpRequest.prototype.setRequestHeader).not.toBe(spySetHeader);
@@ -48,7 +56,7 @@ describe('XMLHttpRequest proxy', () => {
   });
 
   it("The origin's method will be called and get the response", (done) => {
-    new NetworkPlugin().onInit();
+    new NetworkPlugin().onInit(initParams);
 
     const api = `${apiPrefix}/posts`;
     const xhr = new XMLHttpRequest();
@@ -66,7 +74,7 @@ describe('XMLHttpRequest proxy', () => {
   });
 
   it('Request different type response', () => {
-    new NetworkPlugin().onInit();
+    new NetworkPlugin().onInit(initParams);
 
     const genPromise = (xhr: XMLHttpRequest) => {
       return new Promise<XMLHttpRequest>((resolve, reject) => {
@@ -141,7 +149,7 @@ describe('XMLHttpRequest proxy', () => {
 
   it('Big response entity will not be converted to base64 by PageSpy', (done) => {
     const np = new NetworkPlugin();
-    np.onInit();
+    np.onInit(initParams);
     const { xhrProxy } = np;
     expect(xhrProxy).not.toBe(null);
     expect(computeRequestMapInfo(xhrProxy!).size).toBe(0);
@@ -168,7 +176,7 @@ describe('XMLHttpRequest proxy', () => {
 
   it('The SDK record the request information', () => {
     const np = new NetworkPlugin();
-    np.onInit();
+    np.onInit(initParams);
     const { xhrProxy } = np;
     expect(xhrProxy).not.toBe(null);
     expect(computeRequestMapInfo(xhrProxy).size).toBe(0);
@@ -184,7 +192,7 @@ describe('XMLHttpRequest proxy', () => {
 
   it('The cached request items will be freed when no longer needed', () => {
     const np = new NetworkPlugin();
-    np.onInit();
+    np.onInit(initParams);
     const { xhrProxy } = np;
     expect(xhrProxy).not.toBe(null);
     expect(computeRequestMapInfo(xhrProxy).size).toBe(0);

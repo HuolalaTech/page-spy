@@ -1,4 +1,4 @@
-import { isBrowser } from 'page-spy-base/src';
+import { atom, isBrowser } from 'page-spy-base/src';
 import SDK from 'page-spy-mp-base/src/index';
 
 import ConsolePlugin from 'page-spy-mp-base/src/plugins/console';
@@ -7,11 +7,22 @@ import NetworkPlugin from 'page-spy-mp-base/src/plugins/network';
 import ErrorPlugin from 'page-spy-mp-base/src/plugins/error';
 import SystemPlugin from 'page-spy-mp-base/src/plugins/system';
 
-import { SpyConsole } from '@huolala-tech/page-spy-types/index';
+import {
+  OnInitParams,
+  SpyConsole,
+  SpyMP,
+} from '@huolala-tech/page-spy-types/index';
 import { ROOM_SESSION_KEY } from 'page-spy-base/src';
 import { initStorageMock } from './mock/storage';
 import { mp } from './setup';
+import { Config } from 'page-spy-mp-base/src/config';
+import socket from 'page-spy-mp-base/src/helpers/socket';
 
+const initParams = {
+  config: new Config().mergeConfig({ api: 'example.com' }),
+  socketStore: socket,
+  atom,
+} as OnInitParams<SpyMP.MPInitConfig>;
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 let sdk: SDK | null;
 
@@ -82,7 +93,7 @@ describe('new PageSpy([config])', () => {
 
     // changed!
     const plugin = new StoragePlugin();
-    plugin.onInit();
+    plugin.onInit(initParams);
     expect(storageAPIs.map((i) => mp[i])).not.toEqual(originStorageMethods);
 
     // reset
@@ -122,7 +133,7 @@ describe('new PageSpy([config])', () => {
     // origin
     expect(mp.request).toBe(originRequest);
     // changed!
-    plugin.onInit();
+    plugin.onInit(initParams);
     expect(mp.request).not.toBe(originRequest);
     // reset
     plugin.onReset();
@@ -131,17 +142,17 @@ describe('new PageSpy([config])', () => {
 
   it('Plugins can only be inited once', () => {
     const nPlugin = new NetworkPlugin();
-    nPlugin.onInit();
+    nPlugin.onInit(initParams);
     const cPlugin = new ConsolePlugin();
-    cPlugin.onInit({} as any);
+    cPlugin.onInit(initParams);
     const sPlugin = new StoragePlugin();
-    sPlugin.onInit();
+    sPlugin.onInit(initParams);
     const originRequestProxy = nPlugin.requestProxy;
     const originConsoleWrap = console.log;
     const originStorageWrap = mp.setStorageSync;
-    nPlugin.onInit();
-    cPlugin.onInit({} as any);
-    sPlugin.onInit();
+    nPlugin.onInit(initParams);
+    cPlugin.onInit(initParams);
+    sPlugin.onInit(initParams);
 
     expect(nPlugin.requestProxy).toEqual(originRequestProxy);
     expect(console.log).toEqual(originConsoleWrap);

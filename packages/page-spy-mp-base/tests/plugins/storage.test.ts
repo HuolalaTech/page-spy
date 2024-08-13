@@ -3,11 +3,19 @@ import StoragePlugin, {
 } from 'page-spy-mp-base/src/plugins/storage';
 import { initStorageMock } from '../mock/storage';
 import { mp } from '../setup';
+import { OnInitParams, SpyMP } from 'packages/page-spy-types';
+import { atom } from 'page-spy-base/src';
+import { Config } from 'page-spy-mp-base/src/config';
+import socket from 'page-spy-mp-base/src/helpers/socket';
 
+const initParams = {
+  config: new Config().mergeConfig({ api: 'example.com' }),
+  socketStore: socket,
+  atom,
+} as OnInitParams<SpyMP.MPInitConfig>;
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 
-// @ts-ignore
-const trigger = jest.spyOn(StoragePlugin, 'sendStorageItem');
+const trigger = jest.spyOn(StoragePlugin.prototype, 'sendStorageItem');
 
 const plugin = new StoragePlugin();
 
@@ -15,7 +23,7 @@ beforeAll(() => {
   initStorageMock();
 });
 beforeEach(() => {
-  plugin.onInit();
+  plugin.onInit(initParams);
 });
 afterEach(() => {
   trigger.mockReset();
@@ -111,7 +119,7 @@ describe('Storage plugin', () => {
   });
 
   it('Send refresh all storage', async () => {
-    StoragePlugin.sendRefresh();
+    plugin.sendRefresh();
     expect(trigger).toHaveBeenCalledTimes(1);
     expect(trigger).lastCalledWith(
       expect.objectContaining({

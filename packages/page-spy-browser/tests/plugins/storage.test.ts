@@ -1,11 +1,20 @@
+import { OnInitParams } from 'packages/page-spy-types';
+import { atom } from 'page-spy-base/dist';
+import { Config, InitConfig } from 'page-spy-browser/src/config';
+import socket from 'page-spy-browser/src/helpers/socket';
 import { StoragePlugin } from 'page-spy-browser/src/plugins/storage';
 
-// @ts-ignore
-const trigger = jest.spyOn(StoragePlugin, 'sendStorageItem');
+const initParams = {
+  config: new Config().mergeConfig({}),
+  socketStore: socket,
+  atom,
+} as OnInitParams<InitConfig>;
+const trigger = jest.spyOn(StoragePlugin.prototype, 'sendStorageItem');
+const storageInstance = new StoragePlugin();
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 
 beforeAll(() => {
-  new StoragePlugin().onInit();
+  storageInstance.onInit(initParams);
 });
 afterEach(() => {
   localStorage.clear();
@@ -79,16 +88,15 @@ describe('Storage plugin', () => {
     });
 
     expect(trigger).toHaveBeenCalledTimes(5);
-    // @ts-ignore
-    const storage = StoragePlugin.takeStorage('localStorage');
+    const storage = storageInstance.takeStorage('localStorage');
     expect(storage.data.length).toBe(5);
     expect(storage.data.map((i) => i.name)).toEqual(keys);
   });
 
   it('Response refresh event', async () => {
-    StoragePlugin.sendRefresh('sessionStorage');
-    StoragePlugin.sendRefresh('cookie');
-    StoragePlugin.sendRefresh('localStorage');
+    storageInstance.sendRefresh('sessionStorage');
+    storageInstance.sendRefresh('cookie');
+    storageInstance.sendRefresh('localStorage');
 
     await sleep();
 
