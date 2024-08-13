@@ -71,8 +71,11 @@ export default class ConsolePlugin implements PageSpyPlugin {
 
   public printLog(data: SpyConsole.DataItem) {
     if (data.logs && data.logs.length) {
-      this.console[data.logType](...data.logs);
+      const processedByUser =
+        this.$pageSpyConfig?.dataProcessor?.console?.(data);
+      if (processedByUser === false) return;
 
+      this.console[data.logType](...data.logs);
       const atomLog = makeMessage('console', {
         ...data,
         time: Date.now(),
