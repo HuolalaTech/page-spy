@@ -17,6 +17,7 @@ export class Config extends ConfigBase<InitConfig> {
       useSecret: false,
       secret: '',
       serializeData: false,
+      dataProcessor: {},
     };
   };
 }
