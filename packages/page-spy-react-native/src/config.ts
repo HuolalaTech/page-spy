@@ -18,7 +18,6 @@ export class Config extends ConfigBase<InitConfig> {
   protected privateKeys: (keyof InitConfig)[] = ['secret'];
 
   // I need to use generic type on this method, so it can't be static
-  /* eslint-disable-next-line class-methods-use-this */
   protected defaultConfig() {
     return {
       api: '',
@@ -30,6 +29,7 @@ export class Config extends ConfigBase<InitConfig> {
       secret: '',
       messageCapacity: 0,
       serializeData: false,
+      dataProcessor: {},
     };
   }
 }
