@@ -1,6 +1,10 @@
+import { RequestItem } from '@huolala-tech/page-spy-base';
 import { SocketStoreType } from './base';
 import { DataItem as ConsoleData } from './console';
 import { DataItem as StorageData } from './storage';
+import { DataItem as PageData } from './page';
+import { DataItem as DatabaseData } from './database';
+import { DataItem as SystemData } from './system';
 
 export interface InitConfigBase {
   /**
@@ -64,8 +68,11 @@ export interface InitConfigBase {
    */
   dataProcessor?: {
     console?: (data: ConsoleData) => boolean;
-    network?: (data: RequestInfo) => boolean;
+    network?: (data: RequestItem) => boolean;
     storage?: (data: StorageData) => boolean;
+    database?: (data: DatabaseData) => boolean;
+    page?: (data: PageData) => boolean;
+    system?: (data: SystemData) => boolean;
   };
 
   [key: string]: any;

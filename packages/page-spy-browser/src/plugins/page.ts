@@ -1,20 +1,30 @@
-import type { PageSpyPlugin } from '@huolala-tech/page-spy-types';
+import type { OnInitParams, PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import { makeMessage } from '@huolala-tech/page-spy-base';
 import socketStore from '../helpers/socket';
+import { InitConfig } from '../config';
 
 export default class PagePlugin implements PageSpyPlugin {
   public name = 'PagePlugin';
 
   public static hasInitd = false;
 
-  public onInit() {
+  public $pageSpyConfig: InitConfig | null = null;
+
+  public onInit({ config }: OnInitParams<InitConfig>) {
     if (PagePlugin.hasInitd) return;
     PagePlugin.hasInitd = true;
+
+    this.$pageSpyConfig = config;
 
     socketStore.addListener('refresh', ({ source }, reply) => {
       const { data } = source;
       if (data === 'page') {
-        const msg = PagePlugin.collectHtml();
+        const html = PagePlugin.collectHtml();
+        const processedByUser =
+          this.$pageSpyConfig?.dataProcessor?.page?.(html);
+        if (processedByUser === false) return;
+
+        const msg = makeMessage('page', html);
         socketStore.dispatchEvent('public-data', msg);
         reply(msg);
       }
@@ -27,10 +37,9 @@ export default class PagePlugin implements PageSpyPlugin {
 
   public static collectHtml() {
     const originHtml = document.documentElement.outerHTML;
-    const msg = makeMessage('page', {
+    return {
       html: originHtml,
       location: window.location,
-    });
-    return msg;
+    };
   }
 }

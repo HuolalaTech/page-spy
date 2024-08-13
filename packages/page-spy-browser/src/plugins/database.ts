@@ -1,7 +1,12 @@
 import { DBInfo, DBStoreInfo } from '@huolala-tech/page-spy-types/lib/database';
 import { psLog, makeMessage } from '@huolala-tech/page-spy-base';
-import { SpyDatabase, PageSpyPlugin } from '@huolala-tech/page-spy-types';
+import {
+  SpyDatabase,
+  PageSpyPlugin,
+  OnInitParams,
+} from '@huolala-tech/page-spy-types';
 import socketStore from '../helpers/socket';
+import { InitConfig } from '../config';
 
 export function promisify<T = any>(req: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -41,14 +46,16 @@ export class DatabasePlugin implements PageSpyPlugin {
     return true;
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  public onInit() {
-    if (!DatabasePlugin.isSupport) return;
+  public $pageSpyConfig: InitConfig | null = null;
 
+  public onInit({ config }: OnInitParams<InitConfig>) {
+    if (!DatabasePlugin.isSupport) return;
     if (DatabasePlugin.hasInitd) return;
     DatabasePlugin.hasInitd = true;
 
-    DatabasePlugin.listenEvents();
+    this.$pageSpyConfig = config;
+
+    this.listenEvents();
     this.initIndexedDBProxy();
   }
 
@@ -71,7 +78,7 @@ export class DatabasePlugin implements PageSpyPlugin {
     DatabasePlugin.hasInitd = false;
   }
 
-  public static listenEvents() {
+  public listenEvents() {
     socketStore.addListener('refresh', async ({ source }) => {
       if (source.data === 'indexedDB') {
         const result = await this.takeBasicInfo();
@@ -79,17 +86,17 @@ export class DatabasePlugin implements PageSpyPlugin {
           action: 'basic',
           result,
         };
-        DatabasePlugin.sendData(data);
+        this.sendData(data);
       }
     });
     socketStore.addListener('database-pagination', async ({ source }) => {
       const { db, store, page } = source.data;
-      const result = await DatabasePlugin.getStoreDataWithPagination({
+      const result = await this.getStoreDataWithPagination({
         db,
         store,
         page,
       });
-      DatabasePlugin.sendData(result);
+      this.sendData(result);
     });
   }
 
@@ -105,8 +112,6 @@ export class DatabasePlugin implements PageSpyPlugin {
     this.originPut = originPut;
     this.originDelete = originDelete;
     this.originClear = originClear;
-
-    const { sendData } = DatabasePlugin;
 
     const originProxyList = [
       {
@@ -127,6 +132,7 @@ export class DatabasePlugin implements PageSpyPlugin {
       },
     ] as const;
 
+    const that = this;
     originProxyList.forEach(({ origin, method }) => {
       IDBObjectStore.prototype[method] = function (...args: any) {
         const req = (origin as any).apply(this, args);
@@ -136,7 +142,7 @@ export class DatabasePlugin implements PageSpyPlugin {
           store: this.name,
         } as const;
         req.addEventListener('success', () => {
-          sendData(data);
+          that.sendData(data);
         });
         return req;
       };
@@ -152,13 +158,13 @@ export class DatabasePlugin implements PageSpyPlugin {
         database: name,
       };
       req.addEventListener('success', () => {
-        sendData(data);
+        that.sendData(data);
       });
       return req;
     };
   }
 
-  public static async takeBasicInfo() {
+  public async takeBasicInfo() {
     const dbs = await window.indexedDB.databases();
     if (!dbs.length) {
       return null;
@@ -168,13 +174,11 @@ export class DatabasePlugin implements PageSpyPlugin {
     ) as Required<IDBDatabaseInfo>[];
     if (!validDBs.length) return null;
 
-    const data = await Promise.all(
-      validDBs.map((i) => DatabasePlugin.getDBData(i)),
-    );
+    const data = await Promise.all(validDBs.map((i) => this.getDBData(i)));
     return data.filter(Boolean) as DBInfo[];
   }
 
-  public static async getDBData(info: Required<IDBDatabaseInfo>) {
+  public async getDBData(info: Required<IDBDatabaseInfo>) {
     try {
       const result: DBInfo = {
         name: info.name,
@@ -206,7 +210,7 @@ export class DatabasePlugin implements PageSpyPlugin {
     }
   }
 
-  public static async getStoreDataWithPagination({
+  public async getStoreDataWithPagination({
     db,
     store,
     page,
@@ -266,7 +270,12 @@ export class DatabasePlugin implements PageSpyPlugin {
     });
   }
 
-  public static sendData(info: Omit<SpyDatabase.DataItem, 'id'>) {
+  public sendData(info: Omit<SpyDatabase.DataItem, 'id'>) {
+    const processedByUser = this.$pageSpyConfig?.dataProcessor?.database?.(
+      info as any,
+    );
+    if (processedByUser === false) return;
+
     const data = makeMessage('database', info);
     // The user wouldn't want to get the stale data, so here we set the 2nd parameter to true.
     socketStore.broadcastMessage(data, true);

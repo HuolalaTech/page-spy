@@ -69,11 +69,7 @@ export class Config extends ConfigBase<InitConfig> {
       useSecret: false,
       secret: '',
       serializeData: false,
-      dataProcessor: {
-        console: () => true,
-        network: () => true,
-        storage: () => true,
-      },
+      dataProcessor: {},
     };
 
     if (!Config.scriptLink) {
