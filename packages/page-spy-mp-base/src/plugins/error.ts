@@ -14,6 +14,11 @@ export default class ErrorPlugin implements PageSpyPlugin {
 
   public static hasInitd = false;
 
+  constructor() {
+    this.errorHandler = this.errorHandler.bind(this);
+    this.unhandledRejectionHandler = this.unhandledRejectionHandler.bind(this);
+  }
+
   public $pageSpyConfig: SpyMP.MPInitConfig | null = null;
 
   public onInit({ config }: OnInitParams<SpyMP.MPInitConfig>) {
