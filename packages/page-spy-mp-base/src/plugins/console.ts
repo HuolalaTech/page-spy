@@ -30,8 +30,12 @@ export default class ConsolePlugin implements PageSpyPlugin {
     if (ConsolePlugin.hasInitd) return;
     ConsolePlugin.hasInitd = true;
 
-    const that = this;
     this.$pageSpyConfig = config;
+    this.init();
+  }
+
+  public init() {
+    const that = this;
     this.proxyTypes.forEach((item) => {
       // Not using globalThis or global, cause "console" exists in any env,
       // but global may be blocked.
@@ -59,20 +63,32 @@ export default class ConsolePlugin implements PageSpyPlugin {
     });
   }
 
-  public onReset() {
+  public reset() {
     this.proxyTypes.forEach((item) => {
       const originFn = this.console[item];
       if (originFn) {
         console[item] = originFn;
       }
     });
+  }
+
+  public onReset() {
+    this.reset();
     ConsolePlugin.hasInitd = false;
   }
 
   public printLog(data: SpyConsole.DataItem) {
     if (data.logs && data.logs.length) {
-      this.console[data.logType](...data.logs);
+      const processor = this.$pageSpyConfig?.dataProcessor?.console;
+      if (processor) {
+        this.reset();
+        const processedByUser = processor(data);
+        this.init();
 
+        if (processedByUser === false) return;
+      }
+
+      this.console[data.logType](...data.logs);
       const atomLog = makeMessage('console', {
         ...data,
         time: Date.now(),

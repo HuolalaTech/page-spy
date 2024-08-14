@@ -1,7 +1,12 @@
 import atom from '../utils/atom';
 import { makeMessage } from '../utils/message';
 import socketStore from '../helpers/socket';
-import type { SpyConsole, PageSpyPlugin } from '../types';
+import type {
+  SpyConsole,
+  PageSpyPlugin,
+  InitConfig,
+  OnInitParams,
+} from '../types';
 import errorManager from '@ohos.app.ability.errorManager';
 
 export default class ErrorPlugin implements PageSpyPlugin {
@@ -11,13 +16,17 @@ export default class ErrorPlugin implements PageSpyPlugin {
 
   public static observerId: number;
 
-  public onInit() {
+  public $pageSpyConfig: InitConfig | null = null;
+
+  public onInit({ config }: OnInitParams<InitConfig>) {
     if (ErrorPlugin.hasInitd) return;
     ErrorPlugin.hasInitd = true;
 
+    this.$pageSpyConfig = config;
+    const that = this;
     ErrorPlugin.observerId = errorManager.on('error', {
       onUnhandledException(err) {
-        ErrorPlugin.sendMessage(err, null);
+        that.sendMessage(err, null);
       },
     });
   }
@@ -27,18 +36,24 @@ export default class ErrorPlugin implements PageSpyPlugin {
     ErrorPlugin.hasInitd = false;
   }
 
-  public static sendMessage(
+  public sendMessage(
     data: any,
     errorDetail: SpyConsole.DataItem['errorDetail'] | null,
   ) {
     // Treat `error` data as `console`
     const error = {
       logType: 'error',
-      logs: [atom.transformToAtom(data)],
+      logs: [data],
       time: Date.now(),
       url: '',
       errorDetail,
     };
+    const processedByUser = this.$pageSpyConfig?.dataProcessor?.console?.(
+      error as SpyConsole.DataItem,
+    );
+    if (processedByUser === false) return;
+
+    error.logs = error.logs.map((l) => atom.transformToAtom(l));
     const message = makeMessage('console', error);
     socketStore.dispatchEvent('public-data', message);
     socketStore.broadcastMessage(message);

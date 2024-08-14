@@ -1,4 +1,10 @@
 import { SocketStoreType } from './base';
+import { DataItem as ConsoleData } from './console';
+import { DataItem as StorageData } from './storage';
+import { DataItem as PageData } from './page';
+import { DataItem as DatabaseData } from './database';
+import { DataItem as SystemData } from './system';
+import { RequestInfo } from './network';
 
 export interface InitConfigBase {
   /**
@@ -53,9 +59,21 @@ export interface InitConfigBase {
   secret?: string;
 
   /**
-   *
+   * Indicate whether serialize non-primitive data in offline log.
    */
   serializeData?: boolean;
+
+  /**
+   *
+   */
+  dataProcessor?: {
+    console?: (data: ConsoleData) => boolean;
+    network?: (data: RequestInfo) => boolean;
+    storage?: (data: StorageData) => boolean;
+    database?: (data: DatabaseData) => boolean;
+    page?: (data: PageData) => boolean;
+    system?: (data: SystemData) => boolean;
+  };
 
   [key: string]: any;
 }

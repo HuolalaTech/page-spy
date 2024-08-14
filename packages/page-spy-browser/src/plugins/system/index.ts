@@ -1,8 +1,13 @@
 import { makeMessage } from '@huolala-tech/page-spy-base';
 import '../../deps/modernizr';
-import { SpySystem, PageSpyPlugin } from '@huolala-tech/page-spy-types';
+import {
+  SpySystem,
+  PageSpyPlugin,
+  OnInitParams,
+} from '@huolala-tech/page-spy-types';
 import socketStore from '../../helpers/socket';
 import { computeResult } from './feature';
+import { InitConfig } from '../../config';
 
 window.Modernizr.addTest(
   'finally',
@@ -33,15 +38,24 @@ export default class SystemPlugin implements PageSpyPlugin {
 
   public static hasInitd = false;
 
-  // eslint-disable-next-line class-methods-use-this
-  public onInit() {
+  public $pageSpyConfig: InitConfig | null = null;
+
+  public onInit({ config }: OnInitParams<InitConfig>) {
     if (SystemPlugin.hasInitd) return;
     SystemPlugin.hasInitd = true;
+
+    this.$pageSpyConfig = config;
 
     socketStore.addListener('refresh', async ({ source }, reply) => {
       const { data } = source;
       if (data === 'system') {
-        const msg = await SystemPlugin.getSystemInfo();
+        const info = await SystemPlugin.getSystemInfo();
+        const processedByUser = this.$pageSpyConfig?.dataProcessor?.system?.(
+          info as SpySystem.DataItem,
+        );
+        if (processedByUser === false) return;
+
+        const msg = makeMessage('system', info);
         socketStore.dispatchEvent('public-data', msg);
         reply(msg);
       }
@@ -54,13 +68,11 @@ export default class SystemPlugin implements PageSpyPlugin {
 
   public static async getSystemInfo() {
     const features = await computeResult();
-    const msg = makeMessage('system', {
+    return {
       system: {
         ua: navigator.userAgent,
       },
       features,
-    } as SpySystem.DataItem);
-
-    return msg;
+    };
   }
 }

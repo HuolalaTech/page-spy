@@ -1,4 +1,9 @@
-import type { SpySystem, PageSpyPlugin } from '@huolala-tech/page-spy-types';
+import type {
+  SpySystem,
+  PageSpyPlugin,
+  SpyMP,
+  OnInitParams,
+} from '@huolala-tech/page-spy-types';
 import { Client, combineName, makeMessage } from '@huolala-tech/page-spy-base';
 import socketStore from '../helpers/socket';
 
@@ -7,15 +12,24 @@ export default class SystemPlugin implements PageSpyPlugin {
 
   public static hasInitd = false;
 
-  // eslint-disable-next-line class-methods-use-this
-  public onInit() {
+  public $pageSpyConfig: SpyMP.MPInitConfig | null = null;
+
+  public onInit({ config }: OnInitParams<SpyMP.MPInitConfig>) {
     if (SystemPlugin.hasInitd) return;
     SystemPlugin.hasInitd = true;
+
+    this.$pageSpyConfig = config;
 
     socketStore.addListener('refresh', ({ source }, reply) => {
       const { data } = source;
       if (data === 'system') {
-        const msg = SystemPlugin.getSystemInfo();
+        const info = SystemPlugin.getSystemInfo();
+        const processedByUser = this.$pageSpyConfig?.dataProcessor?.system?.(
+          info as SpySystem.DataItem,
+        );
+        if (processedByUser === false) return;
+
+        const msg = makeMessage('system', info);
         socketStore.dispatchEvent('public-data', msg);
         reply(msg);
       }
@@ -28,13 +42,11 @@ export default class SystemPlugin implements PageSpyPlugin {
 
   public static getSystemInfo() {
     const deviceInfo = Client.info;
-    const msg = makeMessage('system', {
+    return {
       system: {
         ua: combineName(deviceInfo),
       },
       features: {},
-    } as SpySystem.DataItem);
-
-    return msg;
+    };
   }
 }

@@ -41,7 +41,12 @@ export default class NetworkProxyBase {
     return true;
   }
 
+  public static dataProcessor?: (data: RequestItem) => boolean;
+
   protected sendRequestItem(id: string, req: RequestItem) {
+    const processedByUser = NetworkProxyBase.dataProcessor?.(req);
+    if (processedByUser === false) return;
+
     if (!this.reqMap[id]) {
       this.reqMap[id] = req;
     }

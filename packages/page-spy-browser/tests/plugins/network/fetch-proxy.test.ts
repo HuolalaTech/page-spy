@@ -1,9 +1,17 @@
 import NetworkPlugin from 'page-spy-browser/src/plugins/network';
 import startServer from '../../server/index';
 import data from '../../server/data.json';
-import { Reason } from 'page-spy-base/src';
+import { atom, Reason } from 'page-spy-base/src';
 import { computeRequestMapInfo } from './util';
+import { OnInitParams } from 'packages/page-spy-types';
+import { Config, InitConfig } from 'page-spy-browser/src/config';
+import socket from 'page-spy-browser/src/helpers/socket';
 
+const initParams = {
+  config: new Config().mergeConfig({}),
+  socketStore: socket,
+  atom,
+} as OnInitParams<InitConfig>;
 const port = 6688;
 const apiPrefix = `http://localhost:${port}`;
 const stopServer = startServer(port);
@@ -24,20 +32,20 @@ describe('window.fetch proxy', () => {
       value: undefined,
       writable: true,
     });
-    new NetworkPlugin().onInit();
+    new NetworkPlugin().onInit(initParams);
     expect(window.fetch).toBe(undefined);
   });
   it('Wrap fetch request', () => {
     const fetchSpy = jest.spyOn(window, 'fetch');
     expect(window.fetch).toBe(fetchSpy);
 
-    new NetworkPlugin().onInit();
+    new NetworkPlugin().onInit(initParams);
     expect(window.fetch).not.toBe(fetchSpy);
   });
 
   it('The origin fetch will be called and get response', async () => {
     const spyFetch = jest.spyOn(window, 'fetch');
-    new NetworkPlugin().onInit();
+    new NetworkPlugin().onInit(initParams);
 
     // fetch(url, init)
     const url = `${apiPrefix}/posts`;
@@ -61,7 +69,7 @@ describe('window.fetch proxy', () => {
 
   it('Request different type response', async () => {
     // text/plain
-    new NetworkPlugin().onInit();
+    new NetworkPlugin().onInit(initParams);
     const textUrl = `${apiPrefix}/plain-text`;
     const res1 = await (await fetch(textUrl)).clone().text();
     expect(res1).toEqual(expect.stringContaining('Hello PageSpy'));
@@ -88,7 +96,7 @@ describe('window.fetch proxy', () => {
 
   it('Big response entity will not be converted to base64 by PageSpy', async () => {
     const np = new NetworkPlugin();
-    np.onInit();
+    np.onInit(initParams);
     const { fetchProxy } = np;
     expect(computeRequestMapInfo(fetchProxy).size).toBe(0);
 
@@ -105,7 +113,7 @@ describe('window.fetch proxy', () => {
 
   it('The SDK record the request information', () => {
     const np = new NetworkPlugin();
-    np.onInit();
+    np.onInit(initParams);
     const { fetchProxy } = np;
     expect(fetchProxy).not.toBe(null);
     expect(computeRequestMapInfo(fetchProxy).size).toBe(0);
@@ -119,7 +127,7 @@ describe('window.fetch proxy', () => {
 
   it('The cached request items will be freed when no longer needed', async () => {
     const np = new NetworkPlugin();
-    np.onInit();
+    np.onInit(initParams);
     const { fetchProxy } = np;
     expect(fetchProxy).not.toBe(null);
     expect(computeRequestMapInfo(fetchProxy).size).toBe(0);

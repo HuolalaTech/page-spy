@@ -1,6 +1,11 @@
 import { makeMessage } from '@huolala-tech/page-spy-base';
-import { SpyStorage, PageSpyPlugin } from '@huolala-tech/page-spy-types';
+import {
+  SpyStorage,
+  PageSpyPlugin,
+  OnInitParams,
+} from '@huolala-tech/page-spy-types';
 import socketStore from '../helpers/socket';
+import { InitConfig } from '../config';
 
 export class StoragePlugin implements PageSpyPlugin {
   public name = 'StoragePlugin';
@@ -15,13 +20,16 @@ export class StoragePlugin implements PageSpyPlugin {
 
   public cookieStoreChangeListener: ((evt: Event) => void) | null = null;
 
-  // eslint-disable-next-line class-methods-use-this
-  public onInit() {
+  public $pageSpyConfig: InitConfig | null = null;
+
+  public onInit({ config }: OnInitParams<InitConfig>) {
     if (StoragePlugin.hasInitd) return;
     StoragePlugin.hasInitd = true;
 
-    StoragePlugin.listenRefreshEvent();
-    StoragePlugin.onceInitPublicData();
+    this.$pageSpyConfig = config;
+
+    this.listenRefreshEvent();
+    this.onceInitPublicData();
     this.initStorageProxy();
   }
 
@@ -44,16 +52,16 @@ export class StoragePlugin implements PageSpyPlugin {
     StoragePlugin.hasInitd = false;
   }
 
-  static async sendRefresh(type: string) {
+  async sendRefresh(type: string) {
     let result: SpyStorage.GetTypeDataItem | null = null;
 
     switch (type) {
       case 'localStorage':
       case 'sessionStorage':
-        result = StoragePlugin.takeStorage(type);
+        result = this.takeStorage(type);
         break;
       case 'cookie':
-        result = await StoragePlugin.takeCookie();
+        result = await this.takeCookie();
         break;
       /* c8 ignore next 2 */
       default:
@@ -61,20 +69,20 @@ export class StoragePlugin implements PageSpyPlugin {
     }
 
     if (result) {
-      StoragePlugin.sendStorageItem(result);
+      this.sendStorageItem(result);
     }
   }
 
-  public static listenRefreshEvent() {
+  public listenRefreshEvent() {
     /* c8 ignore next 5 */
     socketStore.addListener('refresh', async ({ source }) => {
       /* c8 ignore next 3 */
       const { data } = source;
-      StoragePlugin.sendRefresh(data);
+      this.sendRefresh(data);
     });
   }
 
-  public static takeStorage(type: 'localStorage' | 'sessionStorage') {
+  public takeStorage(type: 'localStorage' | 'sessionStorage') {
     const data: SpyStorage.GetTypeDataItem = {
       type,
       action: 'get',
@@ -97,7 +105,7 @@ export class StoragePlugin implements PageSpyPlugin {
     return data;
   }
 
-  public static async takeCookie() {
+  public async takeCookie() {
     const data: SpyStorage.GetTypeDataItem = {
       type: 'cookie',
       action: 'get',
@@ -118,38 +126,38 @@ export class StoragePlugin implements PageSpyPlugin {
   }
 
   public initStorageProxy() {
-    const { getStorageType, sendStorageItem } = StoragePlugin;
     const { clear, removeItem, setItem } = Storage.prototype;
     this.originClear = clear;
     this.originRemoveItem = removeItem;
     this.originSetItem = setItem;
 
+    const that = this;
     Storage.prototype.clear = function () {
       clear.call(this);
       const data = {
-        type: getStorageType(this),
+        type: that.getStorageType(this),
         action: 'clear',
       } as const;
-      sendStorageItem(data);
+      that.sendStorageItem(data);
     };
     Storage.prototype.removeItem = function (name: string) {
       removeItem.call(this, name);
       const data = {
-        type: getStorageType(this),
+        type: that.getStorageType(this),
         action: 'remove',
         name: String(name),
       } as const;
-      sendStorageItem(data);
+      that.sendStorageItem(data);
     };
     Storage.prototype.setItem = function (name: string, value: string) {
       setItem.call(this, name, value);
       const data = {
-        type: getStorageType(this),
+        type: that.getStorageType(this),
         action: 'set',
         name: String(name),
         value: String(value),
       } as const;
-      sendStorageItem(data);
+      that.sendStorageItem(data);
     };
 
     if (window.cookieStore) {
@@ -162,7 +170,7 @@ export class StoragePlugin implements PageSpyPlugin {
               action: 'set',
               ...cookie,
             } as const;
-            StoragePlugin.sendStorageItem(data);
+            this.sendStorageItem(data);
           });
         }
         if (deleted.length > 0) {
@@ -172,7 +180,7 @@ export class StoragePlugin implements PageSpyPlugin {
               action: 'remove',
               name: cookie.name,
             } as const;
-            StoragePlugin.sendStorageItem(data);
+            this.sendStorageItem(data);
           });
         }
       };
@@ -184,25 +192,35 @@ export class StoragePlugin implements PageSpyPlugin {
   }
 
   // For statistics plugin
-  static async onceInitPublicData() {
+  async onceInitPublicData() {
     const result = await Promise.all([
-      StoragePlugin.takeStorage('localStorage'),
-      StoragePlugin.takeStorage('sessionStorage'),
-      StoragePlugin.takeCookie(),
+      this.takeStorage('localStorage'),
+      this.takeStorage('sessionStorage'),
+      this.takeCookie(),
     ]);
     result.forEach((s) => {
+      const processedByUser = this.$pageSpyConfig?.dataProcessor?.storage?.(
+        s as any,
+      );
+      if (processedByUser === false) return;
+
       const data = makeMessage('storage', s);
       socketStore.dispatchEvent('public-data', data);
     });
   }
 
-  public static getStorageType(ins: Storage): SpyStorage.DataType {
+  public getStorageType(ins: Storage): SpyStorage.DataType {
     if (ins === localStorage) return 'localStorage';
     if (ins === sessionStorage) return 'sessionStorage';
     return ins.constructor.name as any;
   }
 
-  public static sendStorageItem(info: Omit<SpyStorage.DataItem, 'id'>) {
+  public sendStorageItem(info: Omit<SpyStorage.DataItem, 'id'>) {
+    const processedByUser = this.$pageSpyConfig?.dataProcessor?.storage?.(
+      info as any,
+    );
+    if (processedByUser === false) return;
+
     const data = makeMessage('storage', info);
     socketStore.dispatchEvent('public-data', data);
     // The user wouldn't want to get the stale data, so here we set the 2nd parameter to true.

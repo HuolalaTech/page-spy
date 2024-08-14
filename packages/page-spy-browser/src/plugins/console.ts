@@ -33,6 +33,10 @@ export default class ConsolePlugin implements PageSpyPlugin {
     socketStore.addListener('debug', ConsolePlugin.handleDebugger);
 
     this.$pageSpyConfig = config;
+    this.init();
+  }
+
+  public init() {
     this.proxyTypes.forEach((item) => {
       this.console[item] =
         window.console[item] || window.console.log || (() => {});
@@ -46,10 +50,14 @@ export default class ConsolePlugin implements PageSpyPlugin {
     });
   }
 
-  public onReset() {
+  public reset() {
     this.proxyTypes.forEach((item) => {
       window.console[item] = this.console[item];
     });
+  }
+
+  public onReset() {
+    this.reset();
     ConsolePlugin.hasInitd = false;
   }
 
@@ -96,8 +104,16 @@ export default class ConsolePlugin implements PageSpyPlugin {
 
   public printLog(data: SpyConsole.DataItem) {
     if (data.logs && data.logs.length) {
-      this.console[data.logType](...data.logs);
+      const processor = this.$pageSpyConfig?.dataProcessor?.console;
+      if (processor) {
+        this.reset();
+        const processedByUser = processor(data);
+        this.init();
 
+        if (processedByUser === false) return;
+      }
+
+      this.console[data.logType](...data.logs);
       const atomLog = makeMessage('console', {
         ...data,
         time: Date.now(),

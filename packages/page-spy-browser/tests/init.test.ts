@@ -5,13 +5,20 @@ import NetworkPlugin from 'page-spy-browser/src/plugins/network';
 import SystemPlugin from 'page-spy-browser/src/plugins/system';
 import PagePlugin from 'page-spy-browser/src/plugins/page';
 import { StoragePlugin } from 'page-spy-browser/src/plugins/storage';
-import { SpyConsole } from '@huolala-tech/page-spy-types';
+import { OnInitParams, SpyConsole } from '@huolala-tech/page-spy-types';
 import socketStore from 'page-spy-browser/src/helpers/socket';
-import { ROOM_SESSION_KEY } from 'page-spy-base/src';
+import { atom, ROOM_SESSION_KEY } from 'page-spy-base/src';
 import { isBrowser } from 'page-spy-base/src';
 import Request from 'page-spy-browser/src/api';
 import { DatabasePlugin } from 'page-spy-browser/src/plugins/database';
+import { Config, InitConfig } from 'page-spy-browser/src/config';
+import socket from 'page-spy-browser/src/helpers/socket';
 
+const initParams = {
+  config: new Config().mergeConfig({}),
+  socketStore: socket,
+  atom,
+} as OnInitParams<InitConfig>;
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 
 let sdk: SDK | null;
@@ -97,7 +104,7 @@ describe('new PageSpy([config])', () => {
     expect(Object.keys(cPlugin.console)).toHaveLength(0);
 
     // changed!
-    cPlugin.onInit({} as any);
+    cPlugin.onInit(initParams);
     expect(consoleKey.map((i) => console[i])).not.toEqual(originConsole);
     // @ts-ignore
     expect(Object.keys(cPlugin.console)).toHaveLength(consoleKey.length);
@@ -111,7 +118,7 @@ describe('new PageSpy([config])', () => {
     );
 
     // changed!
-    new StoragePlugin().onInit();
+    new StoragePlugin().onInit(initParams);
     expect(protoKey.map((i) => Storage.prototype[i])).not.toEqual(
       originProtoMethods,
     );
@@ -132,7 +139,7 @@ describe('new PageSpy([config])', () => {
     const originBeacon = window.navigator.sendBeacon;
 
     // changed!
-    new NetworkPlugin().onInit();
+    new NetworkPlugin().onInit(initParams);
     expect(
       xhrProtoKey.map((i) => window.XMLHttpRequest.prototype[i]),
     ).not.toEqual(originXhrProtoMethods);

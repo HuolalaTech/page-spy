@@ -1,46 +1,24 @@
 import { atom, formatErrorObj, makeMessage } from '@huolala-tech/page-spy-base';
-import type { SpyConsole, PageSpyPlugin } from '@huolala-tech/page-spy-types';
+import type {
+  SpyConsole,
+  PageSpyPlugin,
+  OnInitParams,
+} from '@huolala-tech/page-spy-types';
 import socketStore from '../helpers/socket';
+import { InitConfig } from '../config';
 
 export default class ErrorPlugin implements PageSpyPlugin {
   public name = 'ErrorPlugin';
 
   public static hasInitd = false;
 
-  public uncaughtErrorListener = (e: ErrorEvent) => {
-    if (e.error) {
-      const { message, stack } = e.error;
-      const errorDetail = formatErrorObj(e.error);
-      ErrorPlugin.sendMessage(stack || message, errorDetail);
-    } else {
-      // When the error does not exist, use default information
-      const defaultMessage =
-        '[PageSpy] An unknown error occurred and no stack trace available';
-      ErrorPlugin.sendMessage(defaultMessage, null);
-    }
-  };
+  public $pageSpyConfig: InitConfig | null = null;
 
-  public resourceLoadErrorListener = (evt: Event) => {
-    if (!(evt instanceof ErrorEvent)) {
-      const { target } = evt as any;
-      ErrorPlugin.sendMessage(
-        `[PageSpy] Resource Load Error: Cannot load resource of (${
-          target.src || target.href
-        })`,
-        null,
-      );
-    }
-  };
-
-  public rejectionListener = (evt: PromiseRejectionEvent) => {
-    const errorDetail = formatErrorObj(evt.reason);
-    ErrorPlugin.sendMessage(evt.reason, errorDetail);
-  };
-
-  public onInit() {
+  public onInit({ config }: OnInitParams<InitConfig>) {
     if (ErrorPlugin.hasInitd) return;
     ErrorPlugin.hasInitd = true;
 
+    this.$pageSpyConfig = config;
     this.onUncaughtError();
     this.onResourceLoadError();
     this.onUnhandledRejectionError();
@@ -68,18 +46,54 @@ export default class ErrorPlugin implements PageSpyPlugin {
     window.addEventListener('unhandledrejection', this.rejectionListener);
   }
 
-  public static sendMessage(
+  public uncaughtErrorListener = (e: ErrorEvent) => {
+    if (e.error) {
+      const { message, stack } = e.error;
+      const errorDetail = formatErrorObj(e.error);
+      this.sendMessage(stack || message, errorDetail);
+    } else {
+      // When the error does not exist, use default information
+      const defaultMessage =
+        '[PageSpy] An unknown error occurred and no stack trace available';
+      this.sendMessage(defaultMessage, null);
+    }
+  };
+
+  public resourceLoadErrorListener = (evt: Event) => {
+    if (!(evt instanceof ErrorEvent)) {
+      const { target } = evt as any;
+      this.sendMessage(
+        `[PageSpy] Resource Load Error: Cannot load resource of (${
+          target.src || target.href
+        })`,
+        null,
+      );
+    }
+  };
+
+  public rejectionListener = (evt: PromiseRejectionEvent) => {
+    const errorDetail = formatErrorObj(evt.reason);
+    this.sendMessage(evt.reason, errorDetail);
+  };
+
+  public sendMessage(
     data: any,
     errorDetail: SpyConsole.DataItem['errorDetail'] | null,
   ) {
     // Treat `error` data as `console`
     const error = {
       logType: 'error',
-      logs: [atom.transformToAtom(data)],
+      logs: [data],
       time: Date.now(),
       url: window.location.href,
       errorDetail,
     };
+    const processedByUser = this.$pageSpyConfig?.dataProcessor?.console?.(
+      error as SpyConsole.DataItem,
+    );
+    if (processedByUser === false) return;
+
+    error.logs = error.logs.map((l) => atom.transformToAtom(l));
     const message = makeMessage('console', error);
     socketStore.dispatchEvent('public-data', message);
     socketStore.broadcastMessage(message);

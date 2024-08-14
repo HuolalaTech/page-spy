@@ -1,5 +1,6 @@
 import type { InitConfig, OnInitParams, PageSpyPlugin } from '../../types';
 import { psLog } from '../../utils';
+import NetworkProxyBase from '../../utils/network/base';
 import AxiosProxy from './axios';
 
 export default class NetworkPlugin implements PageSpyPlugin {
@@ -18,6 +19,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
 
     if (NetworkPlugin.hasInitd) return;
     NetworkPlugin.hasInitd = true;
+    NetworkProxyBase.dataProcessor = config.dataProcessor.network;
 
     this.axiosProxy = new AxiosProxy(axios);
   }

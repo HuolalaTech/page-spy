@@ -19,19 +19,19 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
 
   public static originFunctions = {} as typeof AsyncStorage;
 
-  public static socketStore: SpyBase.SocketStoreType | null = null;
+  public $socketStore: SpyBase.SocketStoreType | null = null;
 
-  // eslint-disable-next-line class-methods-use-this
+  public $pageSpyConfig: InitConfigBase | null = null;
+
   public onInit(params: OnInitParams<InitConfigBase>) {
     if (RNAsyncStoragePlugin.hasInitd) return;
     RNAsyncStoragePlugin.hasInitd = true;
 
-    if (params.socketStore) {
-      RNAsyncStoragePlugin.socketStore = params.socketStore;
-    }
+    this.$pageSpyConfig = params.config;
+    this.$socketStore = params.socketStore;
 
-    RNAsyncStoragePlugin.initStorageProxy();
-    RNAsyncStoragePlugin.listenRefreshEvent();
+    this.initStorageProxy();
+    this.listenRefreshEvent();
   }
 
   public onReset() {
@@ -45,7 +45,7 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
     RNAsyncStoragePlugin.hasInitd = false;
   }
 
-  static async sendRefresh() {
+  async sendRefresh() {
     try {
       const keys = await AsyncStorage.getAllKeys();
       const data = await AsyncStorage.multiGet(keys);
@@ -61,28 +61,24 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
             };
           }),
       };
-      RNAsyncStoragePlugin.sendStorageItem(dataItem);
+      this.sendStorageItem(dataItem);
     } catch (e) {
       // TODO
     }
   }
 
   /* c8 ignore start */
-  public static listenRefreshEvent() {
-    RNAsyncStoragePlugin.socketStore?.addListener(
-      'refresh',
-      async ({ source }) => {
-        const { data: storageType } = source;
-        if (storageType === 'asyncStorage') {
-          RNAsyncStoragePlugin.sendRefresh();
-        }
-      },
-    );
+  public listenRefreshEvent() {
+    this.$socketStore?.addListener('refresh', async ({ source }) => {
+      const { data: storageType } = source;
+      if (storageType === 'asyncStorage') {
+        this.sendRefresh();
+      }
+    });
   }
   /* c8 ignore stop */
 
-  public static initStorageProxy() {
-    const { sendClearItem, sendRemoveItem, sendSetItem } = RNAsyncStoragePlugin;
+  public initStorageProxy() {
     const proxyFunctions = [
       'setItem',
       'mergeItem',
@@ -100,6 +96,7 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
       }
     });
 
+    const that = this;
     Object.defineProperties(AsyncStorage, {
       setItem: {
         value(key: string, value: string, callback?: Callback) {
@@ -108,7 +105,7 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
             value,
             callback,
           ).then(() => {
-            sendSetItem(key, value);
+            that.sendSetItem(key, value);
           });
         },
       },
@@ -121,9 +118,9 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
           ).then((res) => {
             AsyncStorage.getItem(key).then((v) => {
               if (v !== null) {
-                sendSetItem(key, v);
+                that.sendSetItem(key, v);
               } else {
-                sendRemoveItem(key);
+                that.sendRemoveItem(key);
               }
             });
             return res;
@@ -138,7 +135,7 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
             callback,
           ).then(() => {
             kvPairs.forEach((kv) => {
-              sendSetItem(kv[0], kv[1]);
+              that.sendSetItem(kv[0], kv[1]);
             });
           });
         },
@@ -153,9 +150,9 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
             AsyncStorage.multiGet(keys).then((data) => {
               data.forEach((kv) => {
                 if (kv[1] !== null) {
-                  sendSetItem(kv[0], kv[1]);
+                  that.sendSetItem(kv[0], kv[1]);
                 } else {
-                  sendRemoveItem(kv[0]);
+                  that.sendRemoveItem(kv[0]);
                 }
               });
             });
@@ -169,7 +166,7 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
             key,
             callback,
           ).then(() => {
-            sendRemoveItem(key);
+            that.sendRemoveItem(key);
           });
         },
       },
@@ -181,7 +178,7 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
             callback,
           ).then(() => {
             keys.forEach((key) => {
-              sendRemoveItem(key);
+              that.sendRemoveItem(key);
             });
           });
         },
@@ -191,7 +188,7 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
         value(callback?: Callback) {
           return RNAsyncStoragePlugin.originFunctions!.clear(callback).then(
             () => {
-              sendClearItem();
+              that.sendClearItem();
             },
           );
         },
@@ -199,8 +196,8 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
     });
   }
 
-  public static sendSetItem(key: string, value: string) {
-    RNAsyncStoragePlugin.sendStorageItem({
+  public sendSetItem(key: string, value: string) {
+    this.sendStorageItem({
       type: 'asyncStorage',
       action: 'set',
       name: key,
@@ -208,25 +205,30 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
     } as SpyStorage.SetTypeDataItem);
   }
 
-  public static sendRemoveItem(key: string) {
-    RNAsyncStoragePlugin.sendStorageItem({
+  public sendRemoveItem(key: string) {
+    this.sendStorageItem({
       type: 'asyncStorage',
       action: 'remove',
       name: key,
     } as SpyStorage.RemoveTypeDataItem);
   }
 
-  public static sendClearItem() {
-    RNAsyncStoragePlugin.sendStorageItem({
+  public sendClearItem() {
+    this.sendStorageItem({
       type: 'asyncStorage',
       action: 'clear',
     } as SpyStorage.ClearTypeDataItem);
   }
 
-  public static sendStorageItem(info: Omit<SpyStorage.DataItem, 'id'>) {
+  public sendStorageItem(info: Omit<SpyStorage.DataItem, 'id'>) {
+    const processedByUser = this.$pageSpyConfig?.dataProcessor?.storage?.(
+      info as any,
+    );
+    if (processedByUser === false) return;
+
     const data = makeMessage('storage', info);
-    RNAsyncStoragePlugin.socketStore?.dispatchEvent('public-data', data);
+    this.$socketStore?.dispatchEvent('public-data', data);
     // The user wouldn't want to get the stale data, so here we set the 2nd parameter to true.
-    RNAsyncStoragePlugin.socketStore?.broadcastMessage(data, true);
+    this.$socketStore?.broadcastMessage(data, true);
   }
 }

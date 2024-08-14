@@ -1,7 +1,16 @@
 import NetworkPlugin from 'page-spy-mp-base/src/plugins/network';
 import { computeRequestMapInfo } from './util';
 import { mp } from '../setup';
+import { OnInitParams, SpyMP } from 'packages/page-spy-types';
+import { atom } from 'page-spy-base/src';
+import { Config } from 'page-spy-mp-base/src/config';
+import socket from 'page-spy-mp-base/src/helpers/socket';
 
+const initParams = {
+  config: new Config().mergeConfig({ api: 'example.com' }),
+  socketStore: socket,
+  atom,
+} as OnInitParams<SpyMP.MPInitConfig>;
 const port = 6688;
 const apiPrefix = `http://localhost:${port}`;
 // const stopServer = startServer(port);
@@ -24,20 +33,20 @@ describe('mp.request proxy', () => {
       value: undefined,
       writable: true,
     });
-    plugin.onInit();
+    plugin.onInit(initParams);
     expect(mp.request).toBe(undefined);
   });
   it('Wrap mp request', () => {
     const reqSpy = jest.spyOn(mp, 'request');
     expect(mp.request).toBe(reqSpy);
 
-    plugin.onInit();
+    plugin.onInit(initParams);
     expect(mp.request).not.toBe(reqSpy);
   });
 
   it('The origin request will be called and get response', (done) => {
     const reqSpy = jest.spyOn(mp, 'request');
-    plugin.onInit();
+    plugin.onInit(initParams);
 
     // fetch(url, init)
     const url = `/`;
@@ -53,7 +62,7 @@ describe('mp.request proxy', () => {
 
   it('The origin callback will be called', async () => {
     const reqSpy = jest.spyOn(mp, 'request');
-    plugin.onInit();
+    plugin.onInit(initParams);
 
     const successCallback = jest.fn();
     const completeCallback = jest.fn();
@@ -81,7 +90,7 @@ describe('mp.request proxy', () => {
   });
 
   it('Request plain text', (done) => {
-    plugin.onInit();
+    plugin.onInit(initParams);
     mp.request({
       url: '/plain-text',
       success(res) {
@@ -114,7 +123,7 @@ describe('mp.request proxy', () => {
   });
 
   it('Array buffer response will not be converted to base64', (done) => {
-    plugin.onInit();
+    plugin.onInit(initParams);
     const { requestProxy } = plugin;
     expect(computeRequestMapInfo(requestProxy).size).toBe(0);
 
@@ -134,7 +143,7 @@ describe('mp.request proxy', () => {
   });
 
   it('The SDK record the request information', () => {
-    plugin.onInit();
+    plugin.onInit(initParams);
     const { requestProxy } = plugin;
     expect(requestProxy).not.toBe(null);
     expect(computeRequestMapInfo(requestProxy).size).toBe(0);

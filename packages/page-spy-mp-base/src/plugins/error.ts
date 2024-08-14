@@ -2,6 +2,8 @@ import { atom, makeMessage, formatErrorObj } from '@huolala-tech/page-spy-base';
 import type {
   SpyConsole,
   PageSpyPlugin,
+  SpyMP,
+  OnInitParams,
 } from '@huolala-tech/page-spy-types/index';
 import socketStore from '../helpers/socket';
 import { getMPSDK } from '../utils';
@@ -12,10 +14,18 @@ export default class ErrorPlugin implements PageSpyPlugin {
 
   public static hasInitd = false;
 
-  public onInit() {
+  constructor() {
+    this.errorHandler = this.errorHandler.bind(this);
+    this.unhandledRejectionHandler = this.unhandledRejectionHandler.bind(this);
+  }
+
+  public $pageSpyConfig: SpyMP.MPInitConfig | null = null;
+
+  public onInit({ config }: OnInitParams<SpyMP.MPInitConfig>) {
     if (ErrorPlugin.hasInitd) return;
     ErrorPlugin.hasInitd = true;
 
+    this.$pageSpyConfig = config;
     this.onUncaughtError();
     this.onUnhandledRejectionError();
   }
@@ -38,13 +48,13 @@ export default class ErrorPlugin implements PageSpyPlugin {
     if (error.stack || error.message) {
       /* c8 ignore start */
       const { message, stack } = error;
-      ErrorPlugin.sendMessage(stack || message, formatErrorObj(error));
+      this.sendMessage(stack || message, formatErrorObj(error));
       /* c8 ignore stop */
     } else {
       // When the error does not exist, use default information
       const defaultMessage =
         '[PageSpy] An unknown error occurred and no message or stack trace available';
-      ErrorPlugin.sendMessage(defaultMessage, null);
+      this.sendMessage(defaultMessage, null);
     }
   }
 
@@ -52,7 +62,7 @@ export default class ErrorPlugin implements PageSpyPlugin {
     if (!ErrorPlugin.hasInitd) {
       return;
     }
-    ErrorPlugin.sendMessage('UnHandled Rejection', {
+    this.sendMessage('UnHandled Rejection', {
       name: 'unhandledrejection',
       message: evt.reason,
     });
@@ -73,19 +83,25 @@ export default class ErrorPlugin implements PageSpyPlugin {
     }
   }
 
-  public static sendMessage(
+  public sendMessage(
     data: any,
     errorDetail: SpyConsole.DataItem['errorDetail'] | null,
   ) {
     // Treat `error` data as `console`
     const error = {
       logType: 'error',
-      logs: [atom.transformToAtom(data)],
+      logs: [data],
       time: Date.now(),
       // TODO: more mp types
       url: 'wx:light-app', // window.location.href,
       errorDetail,
     };
+    const processedByUser = this.$pageSpyConfig?.dataProcessor?.console?.(
+      error as SpyConsole.DataItem,
+    );
+    if (processedByUser === false) return;
+
+    error.logs = error.logs.map((l) => atom.transformToAtom(l));
     const message = makeMessage('console', error);
     socketStore.dispatchEvent('public-data', message);
     socketStore.broadcastMessage(message);
