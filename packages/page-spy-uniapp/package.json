@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-uniapp",
-  "version": "1.9.3",
+  "version": "1.9.4",
   "description": "A developer tool for debugging uniapp miniprogram",
   "license": "MIT",
   "main": "dist/cjs/index.min.js",
@@ -29,9 +29,9 @@
     "build:watch": "rollup -c -w"
   },
   "dependencies": {
-    "@huolala-tech/page-spy-base": "^1.0.2",
-    "@huolala-tech/page-spy-mp-base": "^1.0.2",
-    "@huolala-tech/page-spy-types": "^1.9.2"
+    "@huolala-tech/page-spy-base": "^1.0.3",
+    "@huolala-tech/page-spy-mp-base": "^1.0.3",
+    "@huolala-tech/page-spy-types": "^1.9.3"
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
