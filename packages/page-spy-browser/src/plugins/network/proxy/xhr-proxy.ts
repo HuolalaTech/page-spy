@@ -50,13 +50,18 @@ class XhrProxy extends WebNetworkProxyBase {
       const url = args[1];
       const id = getRandomId();
       that.createRequest(id);
+      const req = that.getRequest(id);
+      if (req) {
+        req.url = new URL(url, window.location.href).toString();
+        req.method = method.toUpperCase();
+        req.requestType = 'xhr';
+      }
 
       this.pageSpyRequestId = id;
       this.pageSpyRequestMethod = method;
       this.pageSpyRequestUrl = url;
 
       XMLReq.addEventListener('readystatechange', async () => {
-        const req = that.getRequest(id);
         if (req) {
           req.readyState = XMLReq.readyState;
 
@@ -136,16 +141,9 @@ class XhrProxy extends WebNetworkProxyBase {
 
     window.XMLHttpRequest.prototype.send = function (body) {
       const XMLReq = this;
-      const {
-        pageSpyRequestId,
-        pageSpyRequestMethod = 'GET',
-        pageSpyRequestUrl = '',
-      } = XMLReq;
+      const { pageSpyRequestId } = XMLReq;
       const req = that.getRequest(pageSpyRequestId);
       if (req) {
-        req.url = new URL(pageSpyRequestUrl, window.location.href).toString();
-        req.method = pageSpyRequestMethod.toUpperCase();
-        req.requestType = 'xhr';
         req.responseType = XMLReq.responseType;
         req.withCredentials = XMLReq.withCredentials;
         if (req.method !== 'GET') {
