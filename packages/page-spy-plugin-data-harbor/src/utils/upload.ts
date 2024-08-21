@@ -1,101 +1,58 @@
-import { isCN, psLog, removeEndSlash } from '@huolala-tech/page-spy-base';
-import type { Harbor } from '../harbor';
+import { psLog } from '@huolala-tech/page-spy-base';
 import { UPLOAD_TIPS } from './TIP_CONTENT';
-import { formatFilename } from '.';
-
-const lang = isCN() ? 'zh' : 'en';
-const TIPS = UPLOAD_TIPS[lang];
 
 export type UploadArgs = {
-  harbor: Harbor;
-  filename: () => string;
-  uploadUrl: string;
-  debugClient: string;
-  tags?: Partial<{
-    project: string;
-    title: string;
-    deviceId: string;
-    userAgent: string;
-  }>;
+  url: string;
+  body?: FormData;
 };
 
-export const startUpload = async ({
-  harbor,
-  filename,
-  uploadUrl,
-  debugClient,
-  tags = {},
-}: UploadArgs) => {
-  const data = await harbor.getHarborData();
-  const blob = new Blob([JSON.stringify(data)], {
-    type: 'application/json',
-  });
-  const file = new File([blob], `${formatFilename(filename())}.json`, {
-    type: 'application/json',
-  });
-  const form = new FormData();
-  form.append('log', file);
+export const isGroupLog = (
+  data: H.UploadResult['data'],
+): data is H.GroupLog => {
+  if (Object.prototype.hasOwnProperty.call(data, 'groupId')) return true;
+  return false;
+};
 
-  const response = await fetch(
-    `${uploadUrl}/api/v1/log/upload?${new URLSearchParams(tags).toString()}`,
-    {
+export const startUpload = async ({ url, body }: UploadArgs) => {
+  try {
+    const response = await fetch(url, {
       method: 'POST',
-      body: form,
-    },
-  );
-  if (!response.ok) {
-    psLog.warn('Upload failed');
+      body,
+    });
+    if (!response.ok) {
+      psLog.warn('Upload failed');
+      return null;
+    }
+
+    const result: H.UploadResult = await response.json();
+    if (!result.success) {
+      psLog.warn(result.message);
+      return null;
+    }
+
+    return result;
+  } catch (e: any) {
+    psLog.error(e.message);
     return null;
   }
-
-  const result: H.UploadResult = await response.json();
-  if (!result.success) {
-    psLog.warn(result.message);
-    return null;
-  }
-  const uploadUrlWithoutSlash = removeEndSlash(uploadUrl);
-  const onlineLogUrl = `${uploadUrlWithoutSlash}/api/v1/log/download?fileId=${result.data.fileId}`;
-
-  const debugClientWithoutSlash = removeEndSlash(debugClient);
-  const debugUrl = `${debugClientWithoutSlash}/#/replay?url=${onlineLogUrl}`;
-
-  psLog.info(`${TIPS.success}: ${debugUrl}`);
-
-  return debugUrl;
 };
 
-export const handleUpload = ({
-  harbor,
-  filename,
-  uploadUrl,
-  debugClient,
-  tags,
-}: UploadArgs) => {
+export const buttonBindWithUpload = (fn: () => Promise<string | null>) => {
   const uploadBtn = document.createElement('div');
   uploadBtn.id = 'data-harbor-plugin-upload';
   uploadBtn.className = 'page-spy-content__btn';
-  uploadBtn.textContent = TIPS.normal;
+  uploadBtn.textContent = UPLOAD_TIPS.normal;
   let idleWithUpload = true;
 
   uploadBtn.addEventListener('click', async () => {
-    if (!uploadUrl) {
-      uploadBtn.textContent = TIPS.invalid;
-      return;
-    }
-
     if (!idleWithUpload) return;
     idleWithUpload = false;
 
     try {
-      uploadBtn.textContent = TIPS.uploading;
-      const debugUrl = await startUpload({
-        harbor,
-        filename,
-        uploadUrl,
-        debugClient,
-        tags,
-      });
+      uploadBtn.textContent = UPLOAD_TIPS.uploading;
+      const debugUrl = await fn();
       if (!debugUrl) return;
+
       // Ready to copy
       const root = document.body || document.documentElement;
       const input = document.createElement('input');
@@ -106,7 +63,7 @@ export const handleUpload = ({
       root.removeChild(input);
       if (isOk) {
         document.querySelector('#uploaded-log-url')?.remove();
-        uploadBtn.textContent = TIPS.copied;
+        uploadBtn.textContent = UPLOAD_TIPS.copied;
       } else {
         //  If copy failed
         let logUrlElement: HTMLDivElement | null =
@@ -119,16 +76,16 @@ export const handleUpload = ({
           logUrlElement.style.borderTop = '1px solid #eee';
           uploadBtn.insertAdjacentElement('afterend', logUrlElement);
         }
-        const tipPrefix = TIPS.copyTip;
+        const tipPrefix = UPLOAD_TIPS.copyTip;
         logUrlElement.textContent = tipPrefix + debugUrl;
-        uploadBtn.textContent = TIPS.success;
+        uploadBtn.textContent = UPLOAD_TIPS.success;
       }
     } catch (e: any) {
-      uploadBtn.textContent = TIPS.fail;
+      uploadBtn.textContent = UPLOAD_TIPS.fail;
       psLog.error(e.message);
     } finally {
       setTimeout(() => {
-        uploadBtn.textContent = TIPS.normal;
+        uploadBtn.textContent = UPLOAD_TIPS.normal;
         idleWithUpload = true;
       }, 1500);
     }

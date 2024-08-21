@@ -13,8 +13,8 @@ export class Harbor {
   container: any[] = [];
 
   // Specify the maximum bytes of single harbor's container.
-  // Default 10MB.
-  maximum = 10 * 1024 * 1024;
+  // 0 means no limitation.
+  maximum = 0;
 
   constructor(config?: HarborConfig) {
     if (config && isNumber(config.maximum) && config.maximum >= 0) {
@@ -60,7 +60,33 @@ export class Harbor {
         try {
           const res = await fetch(i);
           if (!res.ok) return null;
-          const data = JSON.parse(await res.text());
+          return await res.json();
+        } catch (e) {
+          return null;
+        }
+      }),
+    );
+    const validStockData = stockData.filter(Boolean);
+    const combinedData = validStockData.reduce(
+      (acc, cur) => acc.concat(cur),
+      [],
+    );
+    return combinedData.concat(this.container);
+  }
+
+  async getHarborDataByIndex(indexOfStock: number, indexOfContainer: number) {
+    if (this.stock.length === 0) {
+      return this.container.slice(indexOfContainer);
+    }
+    const stockData = await Promise.all(
+      this.stock.slice(indexOfStock).map(async (s, i) => {
+        try {
+          const res = await fetch(s);
+          if (!res.ok) return null;
+          const data = await res.json();
+          if (i === 0) {
+            return data.slice(indexOfContainer);
+          }
           return data;
         } catch (e) {
           return null;

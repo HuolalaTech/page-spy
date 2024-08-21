@@ -23,6 +23,8 @@ export default class RRWebPlugin implements PageSpyPlugin {
 
   public stopListener: listenerHandler | null = null;
 
+  public static record = record;
+
   public static hasInited = false;
 
   constructor(public options: Options = {}) {}
