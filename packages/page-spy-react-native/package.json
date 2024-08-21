@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-react-native",
-  "version": "1.9.4",
+  "version": "1.9.5",
   "description": "An SDK of PageSpy for debugging react native app",
   "license": "MIT",
   "main": "dist/cjs/index.min.js",
@@ -29,8 +29,8 @@
     "build:watch": "rollup -c -w"
   },
   "dependencies": {
-    "@huolala-tech/page-spy-base": "^1.0.3",
-    "@huolala-tech/page-spy-types": "^1.9.3",
+    "@huolala-tech/page-spy-base": "^1.0.4",
+    "@huolala-tech/page-spy-types": "^1.9.4",
     "promise": "^8.3.0"
   },
   "devDependencies": {
