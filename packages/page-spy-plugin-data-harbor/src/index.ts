@@ -93,7 +93,7 @@ const defaultConfig: DataHarborConfig = {
   },
 };
 
-let markHarborUploadIdle = true;
+let groupHarborUploadIdle = true;
 
 export default class DataHarborPlugin implements PageSpyPlugin {
   public enforce: PluginOrder = 'pre';
@@ -149,10 +149,10 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       } else {
         this.saveRRWebCheckout(message, data.timestamp);
       }
-      if (this.markHarbor) {
-        const ok2 = this.markHarbor.save(data);
+      if (this.groupHarbor) {
+        const ok2 = this.groupHarbor.save(data);
         if (!ok2) {
-          psLog.warn(`[${this.name}] Fail to save data in markHarbor`, data);
+          psLog.warn(`[${this.name}] Fail to save data in groupHarbor`, data);
         }
       }
     });
@@ -234,12 +234,12 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
     if (type === 'upload-partial') {
       let harborData: any;
-      if (!this.markHarbor) {
-        this.markHarbor = new Harbor({ maximum });
+      if (!this.groupHarbor) {
+        this.groupHarbor = new Harbor({ maximum });
         harborData = await this.harbor.getHarborData();
       } else {
-        harborData = await this.markHarbor.getHarborData();
-        this.markHarbor.clear();
+        harborData = await this.groupHarbor.getHarborData();
+        this.groupHarbor.clear();
       }
       const file = jsonToFile(harborData, filename());
       const form = new FormData();
@@ -297,12 +297,12 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       }
 
       if (type === 'upload-partial') {
-        if (!markHarborUploadIdle) return;
-        markHarborUploadIdle = false;
+        if (!groupHarborUploadIdle) return;
+        groupHarborUploadIdle = false;
 
         const uploadArgs = await this.getParams('upload-partial');
         const result = await startUpload(uploadArgs);
-        markHarborUploadIdle = true;
+        groupHarborUploadIdle = true;
         return this.getDebugUrl(result);
       }
 
@@ -318,7 +318,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
   onReset() {
     this.harbor.clear();
-    this.markHarbor?.clear();
+    this.groupHarbor?.clear();
     DataHarborPlugin.hasInited = false;
     DataHarborPlugin.hasMounted = false;
     const node = document.getElementById('data-harbor-plugin-download');
@@ -329,7 +329,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
   public groupId = getRandomId();
 
-  public markHarbor: Harbor | null = null;
+  public groupHarbor: Harbor | null = null;
 
   public isCaredPublicData(message: SpyMessage.MessageItem | MetricMessage) {
     if (!message) return false;
