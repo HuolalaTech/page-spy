@@ -136,6 +136,7 @@ export abstract class SocketStoreBase {
     'debugger-online': [],
     'database-pagination': [],
     'public-data': [],
+    'harbor-clear': [],
   };
 
   // initial retry interval.

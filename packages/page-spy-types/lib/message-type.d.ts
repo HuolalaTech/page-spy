@@ -26,7 +26,7 @@ export type InteractiveType =
 /**
  * Internal types used in PageSpy self, such as plugin-plugin communication.
  */
-export type InternalMsgType = 'public-data';
+export type InternalMsgType = 'public-data' | 'harbor-clear';
 
 export type MessageType = DataType | InteractiveType | InternalMsgType;
 

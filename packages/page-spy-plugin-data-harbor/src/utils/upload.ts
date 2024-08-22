@@ -6,13 +6,6 @@ export type UploadArgs = {
   body?: FormData;
 };
 
-export const isGroupLog = (
-  data: H.UploadResult['data'],
-): data is H.GroupLog => {
-  if (Object.prototype.hasOwnProperty.call(data, 'groupId')) return true;
-  return false;
-};
-
 export const startUpload = async ({ url, body }: UploadArgs) => {
   try {
     const response = await fetch(url, {
