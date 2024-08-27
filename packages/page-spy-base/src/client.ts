@@ -63,14 +63,6 @@ export function parseUserAgent(
   };
 }
 
-export const combineName = ({
-  osType,
-  osVersion,
-  browserType,
-  browserVersion,
-}: SpyClient.ClientInfo) =>
-  `${osType}/${osVersion} ${browserType}/${browserVersion}`;
-
 export class Client {
   static info: SpyClient.ClientInfo = {
     // browserName and framework should be overwritten by package implementation\
@@ -86,13 +78,25 @@ export class Client {
   static plugins: string[] = [];
 
   static makeClientInfoMsg() {
-    const ua = Client.info.ua || combineName(Client.info);
     const msg: SpyClient.DataItem = {
       sdk: Client.info.sdk,
       isDevTools: Client.info.isDevTools,
-      ua,
+      ua: Client.getName(),
       plugins: Client.plugins,
     };
     return msg;
+  }
+
+  private static _name: string;
+
+  static getName() {
+    if (!Client._name) {
+      const { ua, osType, osVersion, browserType, browserVersion } =
+        Client.info;
+
+      Client._name =
+        ua || `${osType}/${osVersion} ${browserType}/${browserVersion}`;
+    }
+    return Client._name;
   }
 }

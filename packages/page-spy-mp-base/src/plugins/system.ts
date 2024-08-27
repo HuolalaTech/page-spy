@@ -4,7 +4,7 @@ import type {
   SpyMP,
   OnInitParams,
 } from '@huolala-tech/page-spy-types';
-import { Client, combineName, makeMessage } from '@huolala-tech/page-spy-base';
+import { Client, makeMessage } from '@huolala-tech/page-spy-base';
 import socketStore from '../helpers/socket';
 
 export default class SystemPlugin implements PageSpyPlugin {
@@ -41,10 +41,9 @@ export default class SystemPlugin implements PageSpyPlugin {
   }
 
   public static getSystemInfo() {
-    const deviceInfo = Client.info;
     return {
       system: {
-        ua: combineName(deviceInfo),
+        ua: Client.getName(),
       },
       features: {},
     };

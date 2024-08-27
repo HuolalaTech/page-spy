@@ -2,8 +2,9 @@ import type {
   SpyConsole,
   PageSpyPlugin,
   OnInitParams,
+  SpyBase,
 } from '@huolala-tech/page-spy-types';
-import { atom, makeMessage } from '@huolala-tech/page-spy-base';
+import { atom, getRandomId, makeMessage } from '@huolala-tech/page-spy-base';
 import socketStore from '../helpers/socket';
 import type { InitConfig } from '../config';
 
@@ -27,6 +28,8 @@ export default class ConsolePlugin implements PageSpyPlugin {
   public async onInit({ config }: OnInitParams<InitConfig>) {
     if (ConsolePlugin.hasInitd) return;
     ConsolePlugin.hasInitd = true;
+
+    socketStore.addListener('debug', ConsolePlugin.handleDebugger);
 
     this.$pageSpyConfig = config;
     this.init();
@@ -62,6 +65,47 @@ export default class ConsolePlugin implements PageSpyPlugin {
   public onReset() {
     this.reset();
     ConsolePlugin.hasInitd = false;
+  }
+
+  // run executable code which received from remote and send back the result
+  public static handleDebugger(
+    { source }: SpyBase.InteractiveEvent<string>,
+    reply: (data: any) => void,
+  ) {
+    const { type, data } = source;
+    if (type === 'debug') {
+      const originMsg = makeMessage('console', {
+        logType: 'debug-origin',
+        logs: [
+          {
+            id: getRandomId(),
+            type: 'debug-origin',
+            value: data,
+          },
+        ],
+      });
+      reply(originMsg);
+      try {
+        // eslint-disable-next-line no-new-func, @typescript-eslint/no-implied-eval
+        const result = new Function(`return ${data}`)();
+        const evalMsg = makeMessage('console', {
+          logType: 'debug-eval',
+          logs: [atom.transformToAtom(result)],
+        });
+        reply(evalMsg);
+      } catch (err) {
+        const errMsg = makeMessage('console', {
+          logType: 'error',
+          logs: [
+            {
+              type: 'error',
+              value: (err as Error).stack,
+            },
+          ],
+        });
+        reply(errMsg);
+      }
+    }
   }
 
   public printLog(data: SpyConsole.DataItem) {
