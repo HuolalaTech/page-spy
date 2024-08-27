@@ -32,15 +32,16 @@ to get more detail.
 
 ## SDKs
 
-| Repo                                                             | Type             | Status |
-| ---------------------------------------------------------------- | ---------------- | ------ |
-| [`@huolala-tech/page-spy-types`](./packages/page-spy-types/)     | Common types     | Done   |
-| [`@huolala-tech/page-spy-browser`](./packages/page-spy-browser/) | Web sdk          | Done   |
-| [`@huolala-tech/page-spy-wechat`](./packages/page-spy-wechat/)   | Wechat sdk       | Done   |
-| [`@huolala-tech/page-spy-alipay`](./packages/page-spy-alipay/)   | Alipay sdk       | Done   |
-| [`@huolala-tech/page-spy-uniapp`](./packages/page-spy-uniapp/)   | UniApp sdk       | Done   |
-| [`@huolala-tech/page-spy-taro`](./packages/page-spy-taro/)       | Taro sdk         | Done   |
-| `@huolala-tech/page-spy-rn`                                      | React Native sdk | WIP    |
+| Repo                                                                                               | Platform       | Status |
+| -------------------------------------------------------------------------------------------------- | -------------- | ------ |
+| [`@huolala-tech/page-spy-types`](./packages/page-spy-types/)                                       | _Common types_ | Done   |
+| [`@huolala-tech/page-spy-browser`](./packages/page-spy-browser/)                                   | Web            | Done   |
+| [`@huolala-tech/page-spy-wechat`](./packages/page-spy-wechat/)                                     | Wechat         | Done   |
+| [`@huolala-tech/page-spy-alipay`](./packages/page-spy-alipay/)                                     | Alipay         | Done   |
+| [`@huolala-tech/page-spy-uniapp`](./packages/page-spy-uniapp/)                                     | UniApp         | Done   |
+| [`@huolala-tech/page-spy-taro`](./packages/page-spy-taro/)                                         | Taro           | Done   |
+| [`@huolala-tech/page-spy-rn`](./packages/page-spy-rn/)                                             | React Native   | Done   |
+| [`@huolala/page-spy-harmony`](https://ohpm.openharmony.cn/#/cn/detail/@huolala%2Fpage-spy-harmony) | Huawei Harmony | Done   |
 
 ## Official plugins
 
