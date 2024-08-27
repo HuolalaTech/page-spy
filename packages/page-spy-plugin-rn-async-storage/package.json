@@ -22,7 +22,7 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "build:watch": "rollup -c -w"
+    "watch": "rollup -c -w"
   },
   "dependencies": {
     "@huolala-tech/page-spy-base": "^1.0.5"
