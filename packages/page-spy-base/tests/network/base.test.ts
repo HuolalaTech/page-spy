@@ -26,7 +26,6 @@ class PlatformSocketWrapper extends SocketWrapper {
 
 class PlatformSocket extends SocketStoreBase {
   protected socketWrapper: SocketWrapper = new PlatformSocketWrapper();
-  protected updateRoomInfo(): void {}
   onOffline(): void {
     throw new Error('Method not implemented.');
   }
