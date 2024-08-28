@@ -1,4 +1,4 @@
-import { Client, getRandomId, combineName } from '@huolala-tech/page-spy-base';
+import { Client, getRandomId } from '@huolala-tech/page-spy-base';
 import { Config, InitConfig } from '../config';
 import { joinQuery } from '../utils';
 
@@ -41,7 +41,7 @@ export default class Request {
   createRoom() {
     const config = this.config.get();
     const scheme = getScheme(config.enableSSL);
-    const name = combineName(Client.info);
+    const name = Client.getName();
     const query = joinQuery({
       name: encodeURIComponent(name),
       group: config.project,

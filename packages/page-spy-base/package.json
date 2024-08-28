@@ -11,6 +11,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "yarn clean && tsc",
+    "watch": "tsc -w",
     "clean": "rm -rf ./dist"
   },
   "publishConfig": {

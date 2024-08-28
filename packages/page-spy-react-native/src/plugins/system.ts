@@ -1,4 +1,4 @@
-import { makeMessage, Client, combineName } from '@huolala-tech/page-spy-base';
+import { makeMessage, Client } from '@huolala-tech/page-spy-base';
 import type {
   SpySystem,
   PageSpyPlugin,
@@ -43,7 +43,7 @@ export default class SystemPlugin implements PageSpyPlugin {
   public static getSystemInfo() {
     return {
       system: {
-        ua: combineName(Client.info),
+        ua: Client.getName(),
       },
       features: {},
     };

@@ -18,5 +18,5 @@
     "isolatedModules": true,
     "allowJs": true
   },
-  "exclude": ["**/dist", "packages/page-spy-harmony"]
+  "exclude": ["packages/**/dist", "packages/page-spy-harmony"]
 }

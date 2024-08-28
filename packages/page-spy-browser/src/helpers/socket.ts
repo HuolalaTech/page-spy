@@ -1,13 +1,11 @@
 import {
   stringifyData,
   ROOM_SESSION_KEY,
-  UPDATE_ROOM_INFO,
   SocketStoreBase,
   SocketState,
   SocketWrapper,
   WebSocketEvents,
 } from '@huolala-tech/page-spy-base';
-import { InitConfig } from '../config';
 
 export class WebSocketWrapper extends SocketWrapper {
   public socketInstance: WebSocket | null = null;
@@ -40,35 +38,6 @@ export class WebSocketWrapper extends SocketWrapper {
 export class WebSocketStore extends SocketStoreBase {
   // websocket instance
   protected socketWrapper: WebSocketWrapper = new WebSocketWrapper();
-
-  public getPageSpyConfig: (() => Required<InitConfig>) | null = null;
-
-  updateRoomInfo() {
-    if (this.getPageSpyConfig) {
-      const { project, title } = this.getPageSpyConfig();
-      this.send(
-        {
-          type: UPDATE_ROOM_INFO,
-          content: {
-            info: {
-              name: navigator.userAgent,
-              group: project,
-              tags: {
-                title,
-                name: navigator.userAgent,
-                group: project,
-              },
-            },
-          },
-        },
-        true,
-      );
-    }
-  }
-
-  public getSocket() {
-    return this.socketWrapper;
-  }
 
   // disable lint: this is an abstract method of parent class, so it cannot be static
   // eslint-disable-next-line class-methods-use-this

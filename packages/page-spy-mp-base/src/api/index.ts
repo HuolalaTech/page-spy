@@ -1,5 +1,5 @@
 import type { SpyMP } from '@huolala-tech/page-spy-types';
-import { Client, combineName, getRandomId } from '@huolala-tech/page-spy-base';
+import { Client, getRandomId } from '@huolala-tech/page-spy-base';
 import { getMPSDK, joinQuery, promisifyMPApi } from '../utils';
 import { Config } from '../config';
 
@@ -36,7 +36,7 @@ export default class Request {
   createRoom() {
     const { enableSSL, project, title, useSecret, secret } = this.config.get();
     const scheme = getScheme(enableSSL);
-    const device = combineName(Client.info);
+    const device = Client.getName();
 
     const query = joinQuery({
       group: project,

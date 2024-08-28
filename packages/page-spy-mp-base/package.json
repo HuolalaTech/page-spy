@@ -16,6 +16,7 @@
   },
   "scripts": {
     "build": "yarn clean && tsc",
+    "watch": "tsc -w",
     "clean": "rm -rf dist"
   },
   "dependencies": {

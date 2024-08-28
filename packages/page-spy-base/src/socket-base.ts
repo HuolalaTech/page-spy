@@ -3,7 +3,12 @@
  * 不同平台 socket 的 api 不同但功能相同，这里抽象一层
  */
 
-import { SpyMessage, SpySocket, SpyBase } from '@huolala-tech/page-spy-types';
+import {
+  SpyMessage,
+  SpySocket,
+  SpyBase,
+  InitConfigBase,
+} from '@huolala-tech/page-spy-types';
 import { PackedEvent } from '@huolala-tech/page-spy-types/lib/socket-event';
 import { getRandomId, psLog, stringifyData } from './utils';
 import {
@@ -95,10 +100,6 @@ export abstract class SocketWrapper {
 }
 
 export abstract class SocketStoreBase {
-  protected abstract socketWrapper: SocketWrapper;
-
-  protected abstract updateRoomInfo(): void;
-
   public socketUrl: string = '';
 
   public socketConnection: SpySocket.Connection | null = null;
@@ -142,7 +143,39 @@ export abstract class SocketStoreBase {
   // initial retry interval.
   public retryInterval = INIT_RETRY_INTERVAL;
 
-  connectable = true;
+  public connectable = true;
+
+  protected abstract socketWrapper: SocketWrapper;
+
+  public getSocket() {
+    return this.socketWrapper;
+  }
+
+  public getPageSpyConfig: (() => Required<InitConfigBase>) | null = null;
+
+  updateRoomInfo() {
+    if (this.getPageSpyConfig) {
+      const { project, title } = this.getPageSpyConfig();
+      const name = Client.getName();
+      this.send(
+        {
+          type: SERVER_MESSAGE_TYPE.UPDATE_ROOM_INFO,
+          content: {
+            info: {
+              name,
+              group: project,
+              tags: {
+                title,
+                name,
+                group: project,
+              },
+            },
+          },
+        },
+        true,
+      );
+    }
+  }
 
   // response message filters, to handle some wired messages
   public static messageFilters: ((data: any) => any)[] = [];

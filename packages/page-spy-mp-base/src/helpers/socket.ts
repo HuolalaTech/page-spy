@@ -1,13 +1,9 @@
 import {
-  Client,
   SocketStoreBase,
   SocketState,
   SocketWrapper,
-  combineName,
-  UPDATE_ROOM_INFO,
   ROOM_SESSION_KEY,
 } from '@huolala-tech/page-spy-base';
-import type { SpyMP } from '@huolala-tech/page-spy-types';
 import { getMPSDK, utilAPI } from '../utils';
 
 export class MPSocketWrapper extends SocketWrapper {
@@ -87,36 +83,6 @@ export class MPSocketWrapper extends SocketWrapper {
 export class MPSocketStore extends SocketStoreBase {
   // websocket socketInstance
   protected socketWrapper = new MPSocketWrapper();
-
-  public getPageSpyConfig: (() => Required<SpyMP.MPInitConfig>) | null = null;
-
-  updateRoomInfo() {
-    if (this.getPageSpyConfig) {
-      const { project, title } = this.getPageSpyConfig();
-      const device = combineName(Client.info);
-      this.send(
-        {
-          type: UPDATE_ROOM_INFO,
-          content: {
-            info: {
-              name: device,
-              group: project,
-              tags: {
-                title,
-                name: device,
-                group: project,
-              },
-            },
-          },
-        },
-        true,
-      );
-    }
-  }
-
-  public getSocket() {
-    return this.socketWrapper;
-  }
 
   // this is an abstract method of parent class, cannot be static
   /* eslint-disable-next-line */
