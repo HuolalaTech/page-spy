@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-mp-base",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "The base of PageSpy for miniprogram.",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -20,8 +20,8 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@huolala-tech/page-spy-base": "^1.0.5",
-    "@huolala-tech/page-spy-types": "^1.9.5"
+    "@huolala-tech/page-spy-base": "^1.0.6",
+    "@huolala-tech/page-spy-types": "^1.9.6"
   },
   "publishConfig": {
     "access": "public"

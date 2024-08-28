@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-taro",
-  "version": "1.9.6",
+  "version": "1.9.7",
   "description": "A developer tool for debugging taro miniprogram",
   "license": "MIT",
   "main": "dist/cjs/index.min.js",
@@ -29,9 +29,9 @@
     "watch": "rollup -c -w"
   },
   "dependencies": {
-    "@huolala-tech/page-spy-base": "^1.0.5",
-    "@huolala-tech/page-spy-mp-base": "^1.0.5",
-    "@huolala-tech/page-spy-types": "^1.9.5"
+    "@huolala-tech/page-spy-base": "^1.0.6",
+    "@huolala-tech/page-spy-mp-base": "^1.0.6",
+    "@huolala-tech/page-spy-types": "^1.9.6"
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
