@@ -11,7 +11,7 @@ import {
 } from './message';
 import * as SERVER_MESSAGE_TYPE from './message/server-type';
 import atom from './atom';
-import { SpyBase, SpyMessage, SpySocket } from '../types';
+import { InitConfig, SpyBase, SpyMessage, SpySocket } from '../types';
 import { PackedEvent } from '../types/lib/socket-event';
 import Client from './client';
 
@@ -109,7 +109,9 @@ export abstract class SocketWrapper {
 export abstract class SocketStoreBase {
   protected abstract socketWrapper: SocketWrapper;
 
-  protected abstract updateRoomInfo(): void;
+  public getSocket() {
+    return this.socketWrapper;
+  }
 
   public socketUrl: string = '';
 
@@ -154,6 +156,33 @@ export abstract class SocketStoreBase {
   public retryInterval = INIT_RETRY_INTERVAL;
 
   connectable = true;
+
+  public getPageSpyConfig: (() => Required<InitConfig>) | null = null;
+
+  updateRoomInfo() {
+    if (this.getPageSpyConfig) {
+      const { project, title } = this.getPageSpyConfig();
+      const name = Client.getName();
+
+      this.send(
+        {
+          type: SERVER_MESSAGE_TYPE.UPDATE_ROOM_INFO,
+          content: {
+            info: {
+              name,
+              group: project,
+              tags: {
+                title,
+                name,
+                group: project,
+              },
+            },
+          },
+        },
+        true,
+      );
+    }
+  }
 
   // response message filters, to handle some wired messages
   public static messageFilters: ((data: any) => any)[] = [];

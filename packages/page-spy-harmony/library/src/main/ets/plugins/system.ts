@@ -1,6 +1,6 @@
 import socketStore from '../helpers/socket';
 import { InitConfig, OnInitParams, PageSpyPlugin, SpySystem } from '../types';
-import Client, { combineName } from '../utils/client';
+import Client from '../utils/client';
 import { makeMessage } from '../utils/message';
 
 export default class SystemPlugin implements PageSpyPlugin {
@@ -38,7 +38,7 @@ export default class SystemPlugin implements PageSpyPlugin {
   public static getSystemInfo() {
     return {
       system: {
-        ua: combineName(Client.info),
+        ua: Client.getName(),
       },
       features: {},
     };
