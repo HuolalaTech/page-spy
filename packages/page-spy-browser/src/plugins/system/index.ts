@@ -46,33 +46,40 @@ export default class SystemPlugin implements PageSpyPlugin {
 
     this.$pageSpyConfig = config;
 
+    this.onceInitPublicData();
     socketStore.addListener('refresh', async ({ source }, reply) => {
       const { data } = source;
       if (data === 'system') {
-        const info = await SystemPlugin.getSystemInfo();
-        const processedByUser = this.$pageSpyConfig?.dataProcessor?.system?.(
-          info as SpySystem.DataItem,
-        );
-        if (processedByUser === false) return;
+        const info = await this.getSystemInfo();
+        if (info === null) return;
 
-        const msg = makeMessage('system', info);
-        socketStore.dispatchEvent('public-data', msg);
-        reply(msg);
+        reply(info);
       }
     });
+  }
+
+  public async onceInitPublicData() {
+    const info = await this.getSystemInfo();
+    if (info === null) return;
+
+    socketStore.dispatchEvent('public-data', info);
   }
 
   public onReset() {
     SystemPlugin.hasInitd = false;
   }
 
-  public static async getSystemInfo() {
+  public async getSystemInfo() {
     const features = await computeResult();
-    return {
+    const info = {
       system: {
         ua: navigator.userAgent,
       },
       features,
-    };
+    } as SpySystem.DataItem;
+    const processedByUser = this.$pageSpyConfig?.dataProcessor?.system?.(info);
+
+    if (processedByUser === false) return null;
+    return makeMessage('system', info);
   }
 }
