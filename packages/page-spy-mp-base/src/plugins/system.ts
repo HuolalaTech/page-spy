@@ -23,29 +23,35 @@ export default class SystemPlugin implements PageSpyPlugin {
     socketStore.addListener('refresh', ({ source }, reply) => {
       const { data } = source;
       if (data === 'system') {
-        const info = SystemPlugin.getSystemInfo();
-        const processedByUser = this.$pageSpyConfig?.dataProcessor?.system?.(
-          info as SpySystem.DataItem,
-        );
-        if (processedByUser === false) return;
+        const info = this.getSystemInfo();
+        if (info === null) return;
 
-        const msg = makeMessage('system', info);
-        socketStore.dispatchEvent('public-data', msg);
-        reply(msg);
+        reply(info);
       }
     });
+  }
+
+  public onceInitPublicData() {
+    const info = this.getSystemInfo();
+    if (info === null) return;
+
+    socketStore.dispatchEvent('public-data', info);
   }
 
   public onReset() {
     SystemPlugin.hasInitd = false;
   }
 
-  public static getSystemInfo() {
-    return {
+  public getSystemInfo() {
+    const info = {
       system: {
         ua: Client.getName(),
       },
       features: {},
-    };
+    } as SpySystem.DataItem;
+    const processedByUser = this.$pageSpyConfig?.dataProcessor?.system?.(info);
+
+    if (processedByUser === false) return null;
+    return makeMessage('system', info);
   }
 }
