@@ -19,6 +19,7 @@ export default class SystemPlugin implements PageSpyPlugin {
     SystemPlugin.hasInitd = true;
 
     this.$pageSpyConfig = config;
+    this.onceInitPublicData();
 
     socketStore.addListener('refresh', ({ source }, reply) => {
       const { data } = source;
