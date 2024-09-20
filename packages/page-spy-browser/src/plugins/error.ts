@@ -54,6 +54,7 @@ export default class ErrorPlugin implements PageSpyPlugin {
     } else {
       // When the error does not exist, use default information
       const defaultMessage =
+        e.message ||
         '[PageSpy] An unknown error occurred and no stack trace available';
       this.sendMessage(defaultMessage, null);
     }
