@@ -1,0 +1,59 @@
+{
+  "name": "@huolala-tech/page-spy-plugin-whole-bundle",
+  "version": "0.0.1",
+  "description": "Packed 3 packages: page-spy-browser / page-spy-plugin-data-harbor / page-spy-plugin-rrweb. Only available in browser.",
+  "license": "MIT",
+  "main": "dist/iife/index.min.js",
+  "types": "dist/types/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://www.pagespy.org/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HuolalaTech/page-spy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HuolalaTech/page-spy/issues"
+  },
+  "keywords": [
+    "pagespy",
+    "debug",
+    "remote",
+    "inspect",
+    "devtools"
+  ],
+  "scripts": {
+    "start": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@huolala-tech/page-spy-browser": "^1.9.10",
+    "@huolala-tech/page-spy-plugin-data-harbor": "^1.3.7",
+    "@huolala-tech/page-spy-plugin-rrweb": "^1.2.7"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/preset-typescript": "^7.24.7",
+    "@rollup/plugin-babel": "^6.0.4",
+    "autoprefixer": "^10.3.4",
+    "less": "^4.1.1",
+    "postcss": "^8.4.21",
+    "vite": "^5.4.8"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "all",
+    "printWidth": 80
+  },
+  "browserslist": [
+    "chrome > 75",
+    "safari > 11",
+    "> 0.1%",
+    "not dead",
+    "not op_mini all"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
