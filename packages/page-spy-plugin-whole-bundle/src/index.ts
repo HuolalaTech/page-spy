@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-console */
 import PageSpy from '@huolala-tech/page-spy-browser';
 import DataHarborPlugin from '@huolala-tech/page-spy-plugin-data-harbor';
@@ -39,6 +40,8 @@ class WholeBundle {
 
   startTime = 0;
 
+  static instance: WholeBundle;
+
   constructor(userCfg?: Config) {
     if (pageSpyExist()) {
       console.info(
@@ -46,6 +49,11 @@ class WholeBundle {
       );
       return;
     }
+    if (WholeBundle.instance) {
+      // eslint-disable-next-line no-constructor-return
+      return WholeBundle.instance;
+    }
+    WholeBundle.instance = this;
     this.config = {
       ...this.config,
       ...userCfg,
