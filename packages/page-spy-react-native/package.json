@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-react-native",
-  "version": "1.9.8",
+  "version": "1.9.9",
   "description": "An SDK of PageSpy for debugging react native app",
   "license": "MIT",
   "main": "dist/cjs/index.min.js",

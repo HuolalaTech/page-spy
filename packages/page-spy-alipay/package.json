@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-alipay",
-  "version": "1.9.8",
+  "version": "1.9.9",
   "description": "A developer tool for debugging alipay miniprogram",
   "license": "MIT",
   "main": "dist/cjs/index.min.js",
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@huolala-tech/page-spy-base": "^1.0.6",
-    "@huolala-tech/page-spy-mp-base": "^1.0.7",
+    "@huolala-tech/page-spy-mp-base": "^1.0.8",
     "@huolala-tech/page-spy-types": "^1.9.6"
   },
   "devDependencies": {
