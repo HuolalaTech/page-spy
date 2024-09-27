@@ -73,6 +73,7 @@ npm install @huolala-tech/page-spy-plugin-whole-bundle
 
 ```ts
 import WholeBundle from '@huolala-tech/page-spy-plugin-whole-bundle';
+import '@huolala-tech/page-spy-plugin-whole-bundle/dist/index.css';
 
 const $wholeBundle = new WholeBundle({
   /**
