@@ -90,7 +90,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
   public static hasMounted = false;
 
-  constructor(config: DataHarborConfig) {
+  constructor(config?: DataHarborConfig) {
     this.$harborConfig = {
       ...defaultConfig,
       ...config,
@@ -157,7 +157,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
   getParams(type: 'upload'): Promise<UploadArgs>;
   async getParams(type: FileAction) {
     const { onDownload, filename } = this.$harborConfig;
-    const { project = '', title = '' } = this.$pageSpyConfig!;
+    const { project = '', title = '' } = this.$pageSpyConfig || {};
     const tags = {
       project,
       title,

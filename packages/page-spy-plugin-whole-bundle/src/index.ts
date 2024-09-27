@@ -67,13 +67,21 @@ class WholeBundle {
   }
 
   init() {
-    [
-      (this.$harbor = new DataHarborPlugin({})),
-      (this.$rrweb = new RRWebPlugin()),
-    ].forEach((p) => {
-      PageSpy.registerPlugin(p);
-    });
+    let $harbor = PageSpy.pluginsWithOrder.find(
+      (i) => i.name === 'DataHarborPlugin',
+    );
+    if (!$harbor) {
+      $harbor = new DataHarborPlugin();
+      PageSpy.registerPlugin($harbor);
+    }
+    let $rrweb = PageSpy.pluginsWithOrder.find((i) => i.name === 'RRWebPlugin');
+    if (!$rrweb) {
+      $rrweb = new RRWebPlugin();
+      PageSpy.registerPlugin($rrweb);
+    }
 
+    this.$harbor = $harbor as DataHarborPlugin;
+    this.$rrweb = $rrweb as RRWebPlugin;
     this.$pageSpy = new PageSpy({
       offline: true,
       autoRender: false,
@@ -82,7 +90,7 @@ class WholeBundle {
   }
 
   render() {
-    if (document.readyState === 'complete') {
+    if (document.readyState !== 'loading') {
       this.startRender();
     } else {
       window.addEventListener('DOMContentLoaded', this.startRender.bind(this));
