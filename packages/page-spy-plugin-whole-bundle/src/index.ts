@@ -236,5 +236,4 @@ const src = (document.currentScript as HTMLScriptElement)?.src;
   }
 }());
 
-// export default WholeBundle;
-export default new WholeBundle();
+export default WholeBundle;

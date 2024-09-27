@@ -262,7 +262,7 @@ class PageSpy {
       (i) => i.name === plugin.name,
     );
     if (isExist) {
-      psLog.error(
+      psLog.info(
         `The ${plugin.name} has registered. Consider the following reasons:
       - Duplicate register one same plugin;
       - Plugin's "name" conflict with others, you can print all registered plugins by "PageSpy.plugins";`,
