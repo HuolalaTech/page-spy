@@ -40,7 +40,9 @@ class WholeBundle {
 
   startTime = 0;
 
-  static instance: WholeBundle;
+  timer: ReturnType<typeof setInterval> | null = null;
+
+  static instance: WholeBundle | null = null;
 
   constructor(userCfg?: Config) {
     if (pageSpyExist()) {
@@ -172,7 +174,7 @@ class WholeBundle {
       e.stopPropagation();
     });
     if (this.startTime && duration) {
-      setInterval(() => {
+      this.timer = setInterval(() => {
         const seconds = parseInt(
           String((Date.now() - this.startTime) / 1000),
           10,
@@ -207,6 +209,15 @@ class WholeBundle {
     } catch (e) {
       return null;
     }
+  }
+
+  abort() {
+    document.querySelector('#__pageSpyWholeBundle')?.remove();
+    this.$pageSpy?.abort();
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
+    WholeBundle.instance = null;
   }
 }
 
