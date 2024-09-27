@@ -48,7 +48,6 @@ export function moveable(el: UElement) {
     document.removeEventListener('touchend', end);
   }
   function start(evt: TouchEvent | MouseEvent) {
-    evt.preventDefault();
     el.isMoveEvent = false;
     rect = el.getBoundingClientRect();
     critical.xAxis = window.innerWidth - rect.width;

@@ -106,8 +106,8 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     this.$pageSpyConfig = config;
     this.$socketStore = socketStore;
 
-    const { api, enableSSL } = config;
-    if (!api) {
+    const { api, enableSSL, offline } = config;
+    if (!offline && !api) {
       psLog.warn(
         "Cannot upload log to PageSpy for miss 'api' configuration. See: ",
         config,

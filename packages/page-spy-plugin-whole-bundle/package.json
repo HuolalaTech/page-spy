@@ -4,6 +4,7 @@
   "description": "Packed 3 packages: page-spy-browser / page-spy-plugin-data-harbor / page-spy-plugin-rrweb. Only available in browser.",
   "license": "MIT",
   "main": "dist/iife/index.min.js",
+  "module": "dist/esm/index.min.js",
   "types": "dist/types/index.d.ts",
   "files": [
     "dist"
@@ -39,7 +40,8 @@
     "autoprefixer": "^10.3.4",
     "less": "^4.1.1",
     "postcss": "^8.4.21",
-    "vite": "^5.4.8"
+    "vite": "^5.4.8",
+    "vite-plugin-dts": "^4.2.2"
   },
   "prettier": {
     "singleQuote": true,

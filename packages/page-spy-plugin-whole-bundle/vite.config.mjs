@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import { babel } from '@rollup/plugin-babel';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
+import dts from 'vite-plugin-dts';
 
 export default defineConfig(({ command, mode }) => {
   const isBuild = command === 'build';
@@ -12,11 +13,10 @@ export default defineConfig(({ command, mode }) => {
         cssCodeSplit: true,
         lib: {
           entry: './src/index.ts',
-          name: '$wholeBundle',
-          formats: ['iife'],
+          name: 'WholeBundle',
+          formats: ['esm', 'iife'],
           fileName(format, entryName) {
-            console.log({ format, entryName });
-            return 'index.min.js';
+            return `${format}/index.min.js`;
           },
         },
       },
@@ -39,6 +39,10 @@ export default defineConfig(({ command, mode }) => {
             ],
             '@babel/preset-typescript',
           ],
+        }),
+        dts({
+          outDir: 'dist/types',
+          include: ['./src/index.ts'],
         }),
       ],
     };
