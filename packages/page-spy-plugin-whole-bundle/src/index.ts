@@ -121,7 +121,7 @@ class WholeBundle {
                 </div>
                 <div class="${classes.m_p_item}">
                   ${replaySvg}
-                  <b>2. 前往 <a href="https://pagespy.org/#/log-replay" target="_blank">回放实验室</a> 查看</b>
+                  <b>2. 前往 <a href="https://pagespy.org/#/replay-lab" target="_blank">回放实验室</a> 查看</b>
                 </div>
               </div>
               <div class="${classes.m_statement}">
