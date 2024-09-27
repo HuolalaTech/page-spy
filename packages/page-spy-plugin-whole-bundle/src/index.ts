@@ -22,6 +22,7 @@ interface Config {
    */
   logo?: string;
   statement?: string;
+  replayLabUrl?: string;
 }
 
 class WholeBundle {
@@ -36,6 +37,7 @@ class WholeBundle {
     logo: pageSpyLogo,
     statement:
       '声明：「问题反馈」组件处理的所有数据都是保存在您本地，不会主动将数据传输到任何服务器，可放心使用。',
+    replayLabUrl: 'https://pagespy.org/#/replay-lab',
   };
 
   startTime = 0;
@@ -89,7 +91,7 @@ class WholeBundle {
 
   startRender() {
     const logo = this.getLogo();
-    const { statement, title } = this.config;
+    const { statement, title, replayLabUrl } = this.config;
 
     const doc = new DOMParser().parseFromString(
       `
@@ -121,7 +123,7 @@ class WholeBundle {
                 </div>
                 <div class="${classes.m_p_item}">
                   ${replaySvg}
-                  <b>2. 前往 <a href="https://pagespy.org/#/replay-lab" target="_blank">回放实验室</a> 查看</b>
+                  <b>2. 前往 <a href="${replayLabUrl}" target="_blank">回放实验室</a> 查看</b>
                 </div>
               </div>
               <div class="${classes.m_statement}">

@@ -52,6 +52,10 @@
        */
       logo?: string;
       statement?: string;
+      /**
+       * Default is https://pagespy.org/#/replay-lab
+       */
+      replayLabUrl?: string;
     })
   </script>
 </head>
@@ -88,5 +92,9 @@ const $wholeBundle = new WholeBundle({
    */
   logo?: string;
   statement?: string;
+  /**
+   * Default is https://pagespy.org/#/replay-lab
+   */
+  replayLabUrl?: string;
 })
 ```
