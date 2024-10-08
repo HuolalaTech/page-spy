@@ -197,8 +197,6 @@ class PageSpy {
     const img = document.createElement('img');
     img.alt = 'PageSpy Logo';
     img.src = logoUrl;
-    img.width = 50;
-    img.height = 50;
     Object.entries(logoStyle).forEach(([key, value]) => {
       img.style[key as any] = value;
     });
