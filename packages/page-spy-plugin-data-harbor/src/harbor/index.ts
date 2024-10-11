@@ -31,6 +31,11 @@ export class Harbor {
 
   public save(data: any) {
     try {
+      if (this.maximum === 0) {
+        this.container.push(data);
+        return true;
+      }
+
       const { size } = new Blob([JSON.stringify(data)], {
         type: 'application/json',
       });
