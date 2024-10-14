@@ -76,7 +76,16 @@ class WholeBundle {
     }
     let $rrweb = PageSpy.pluginsWithOrder.find((i) => i.name === 'RRWebPlugin');
     if (!$rrweb) {
-      $rrweb = new RRWebPlugin();
+      $rrweb = new RRWebPlugin({
+        recordCanvas: true,
+        sampling: {
+          canvas: 15,
+        },
+        dataURLOptions: {
+          type: 'image/webp',
+          quality: 0.6,
+        },
+      });
       PageSpy.registerPlugin($rrweb);
     }
 
