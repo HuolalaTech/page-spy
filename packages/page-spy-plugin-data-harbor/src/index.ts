@@ -135,16 +135,11 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
     if (isBrowser()) {
       const downloadBtn = buttonBindWithDownload(async () => {
-        const params = await this.getParams('download');
-        startDownload(params);
+        await this.onOfflineLog('download', false);
       });
       const uploadBtn = buttonBindWithUpload(async () => {
-        const params = await this.getParams('upload');
-        const result = await startUpload(params);
-        const debugUrl = this.getDebugUrl(result);
-        if (debugUrl) {
-          psLog.info(`${UPLOAD_TIPS.success}: ${debugUrl}`);
-        }
+        const debugUrl = await this.onOfflineLog('upload', false);
+        psLog.info(`${UPLOAD_TIPS.success}: ${debugUrl}`);
         return debugUrl;
       });
 
@@ -184,9 +179,12 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     }
   }
 
-  onOfflineLog(type: 'download'): Promise<void>;
-  onOfflineLog(type: 'upload'): Promise<string>;
-  async onOfflineLog(type: FileAction): Promise<void | string> {
+  onOfflineLog(type: 'download', clearCache: boolean): Promise<void>;
+  onOfflineLog(type: 'upload', clearCache: boolean): Promise<string>;
+  async onOfflineLog(
+    type: FileAction,
+    clearCache = true,
+  ): Promise<void | string> {
     try {
       let result;
       if (type === 'download') {
@@ -198,8 +196,10 @@ export default class DataHarborPlugin implements PageSpyPlugin {
         result = await startUpload(uploadArgs);
       }
 
-      this.harbor.clear();
-      this.$socketStore?.dispatchEvent('harbor-clear', null);
+      if (clearCache) {
+        this.harbor.clear();
+        this.$socketStore?.dispatchEvent('harbor-clear', null);
+      }
 
       if (result) {
         return this.getDebugUrl(result);
