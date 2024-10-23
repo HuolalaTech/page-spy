@@ -80,6 +80,8 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
   public apiBase: string = '';
 
+  public isPaused = false;
+
   public $socketStore: SocketStoreBase | null = null;
 
   public $pageSpyConfig: InitConfigBase | null = null;
@@ -118,7 +120,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     }
 
     this.$socketStore.addListener('public-data', (message) => {
-      if (!this.isCaredPublicData(message)) return;
+      if (this.isPaused || !this.isCaredPublicData(message)) return;
 
       const data = makeData(message.type, message.data);
 
@@ -216,6 +218,23 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     const node = document.getElementById('data-harbor-plugin-download');
     if (node) {
       node.remove();
+    }
+  }
+
+  public pause() {
+    this.isPaused = true;
+  }
+
+  public resume() {
+    this.isPaused = false;
+  }
+
+  // Drop data in harbor and re-record
+  public reharbor() {
+    this.harbor.clear();
+    this.$socketStore?.dispatchEvent('harbor-clear', null);
+    if (this.isPaused) {
+      this.isPaused = false;
     }
   }
 
