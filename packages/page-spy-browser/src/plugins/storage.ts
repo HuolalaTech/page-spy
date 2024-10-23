@@ -31,6 +31,9 @@ export class StoragePlugin implements PageSpyPlugin {
     this.listenRefreshEvent();
     this.onceInitPublicData();
     this.initStorageProxy();
+    socketStore.addListener('harbor-clear', () => {
+      this.onceInitPublicData();
+    });
   }
 
   public onReset() {

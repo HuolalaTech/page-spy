@@ -56,6 +56,9 @@ export default class SystemPlugin implements PageSpyPlugin {
         reply(info);
       }
     });
+    socketStore.addListener('harbor-clear', () => {
+      this.onceInitPublicData();
+    });
   }
 
   public async onceInitPublicData() {
