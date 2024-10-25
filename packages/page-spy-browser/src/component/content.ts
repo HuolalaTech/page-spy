@@ -36,7 +36,6 @@ export class Content {
     info.innerHTML = content;
     /* bottom button */
     const button = document.createElement('div');
-    button.dataset.testid = 'copy-button';
     button.className = 'page-spy-content__btn';
     button.textContent = isCN() ? '复制在线调试链接' : 'Copy debug link';
     button.onclick = (e) => {

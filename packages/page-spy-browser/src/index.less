@@ -94,28 +94,89 @@
     }
   }
   .page-spy-modal {
+    display: none;
     position: fixed;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.5);
-    opacity: 0;
-    transition: all ease-out 0.3s;
+    inset: 0;
     z-index: 13000;
     &.show {
-      opacity: 1;
+      display: block;
+      animation: fadeIn 0.3s ease-in-out forwards;
+      @keyframes fadeIn {
+        0% {
+          background-color: rgba(0, 0, 0, 0);
+        }
+        100% {
+          background-color: rgba(0, 0, 0, 0.3);
+        }
+      }
+      .page-spy-content {
+        animation: scaleIn 0.3s ease-in forwards;
+        @keyframes scaleIn {
+          0% {
+            opacity: 0;
+            transform: translate3d(-50%, -50%, 0) scale(0.8);
+          }
+          70% {
+            opacity: 1;
+            transform: translate3d(-50%, -50%, 0) scale(1.1);
+          }
+          100% {
+            transform: translate3d(-50%, -50%, 0) scale(1);
+          }
+        }
+      }
+    }
+    &.leaving {
+      display: block;
+      animation: fadeOut 0.3s ease-in-out forwards;
+      @keyframes fadeOut {
+        0% {
+          background-color: rgba(0, 0, 0, 0.3);
+        }
+        100% {
+          background-color: rgba(0, 0, 0, 0);
+        }
+      }
+      .page-spy-content {
+        animation: scaleOut 0.3s ease-out forwards;
+        @keyframes scaleOut {
+          0% {
+            opacity: 1;
+            transform: translate3d(-50%, -50%, 0) scale(1);
+          }
+          30% {
+            transform: translate3d(-50%, -50%, 0) scale(1.1);
+          }
+          60% {
+            opacity: 0;
+            transform: translate3d(-50%, -50%, 0) scale(0.9);
+          }
+          100% {
+            opacity: 0;
+            transform: translate3d(-50%, -50%, 0) scale(0.9);
+          }
+        }
+      }
     }
   }
   .page-spy-content {
-    width: 75%;
-    max-width: (350em / @font-size);
+    position: absolute;
+    left: 50%;
+    top: 45%;
+    transform: translate3d(-50%, -50%, 0);
+    width: 90%;
     background-color: #fafafa;
     border-radius: (4em / @font-size);
     text-align: center;
+    @media screen and (min-width: 768px) {
+      max-width: 50%;
+    }
+    @media screen and (min-width: 1024px) {
+      max-width: 40%;
+    }
+    @media screen and (min-width: 1920px) {
+      max-width: 35%;
+    }
     &__info {
       padding: (24em / @font-size) (16em / @font-size);
       font-size: (16em / @font-size);

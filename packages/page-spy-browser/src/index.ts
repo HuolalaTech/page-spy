@@ -15,8 +15,6 @@ import type {
   PluginOrder,
 } from '@huolala-tech/page-spy-types';
 import type { InitConfig } from './config';
-import { Modal } from './component/modal';
-import { Content } from './component/content';
 
 import ConsolePlugin from './plugins/console';
 import ErrorPlugin from './plugins/error';
@@ -188,86 +186,112 @@ class PageSpy {
       secret,
     } = this.config.get();
 
-    const root = document.createElement('div');
-    root.id = Identifier;
-    this.root = root;
+    const userLogoStyle = Object.entries(logoStyle).reduce(
+      (acc, [key, value]) => {
+        acc += `${key}: ${value};`;
+        return acc;
+      },
+      '',
+    );
 
-    const logo = document.createElement('div');
-    logo.className = 'page-spy-logo';
-    const img = document.createElement('img');
-    img.alt = 'PageSpy Logo';
-    img.src = logoUrl;
-    Object.entries(logoStyle).forEach(([key, value]) => {
-      img.style[key as any] = value;
-    });
-    logo.insertAdjacentElement('beforeend', img);
-    root.insertAdjacentElement('beforeend', logo);
+    const dom = new DOMParser().parseFromString(
+      `
+      <div id="${Identifier}">
+        <div class="page-spy-logo">
+          <img src="${logoUrl}" style="${userLogoStyle}" alt="PageSpy Logo" />
+        </div>
+        <div data-testid="modal" class="page-spy-modal">
+          <div data-testid="content" class="page-spy-content">
+            <div class="page-spy-content__info">
+              <p>
+                <b>Device ID:</b>
+                <span style="font-family: 'Monaco'" class="page-spy-device-id">
+                  ${this.address.slice(0, 4) || '--'}
+                </span>
+              </p>
+              <p>
+                <b>Project:</b>
+                <span class="page-spy-project">${project}</span>
+              </p>
+              <p>
+                <b>Title:</b>
+                <span class="page-spy-title">${title}</span>
+              </p>
+            </div>
+            <div data-testid="copy-button" class="page-spy-content__btn" id="page-spy-copy-link">
+              复制在线调试链接
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+      'text/html',
+    );
+
+    const modal: HTMLDivElement = dom.querySelector('.page-spy-modal')!;
+    const logo: UElement = dom.querySelector('.page-spy-logo')!;
+    function showModal(e: any) {
+      /* c8 ignore next 3 */
+      if (logo.isMoveEvent || logo.isHidden) {
+        return;
+      }
+      e.stopPropagation();
+      modal.classList.add('show');
+    }
+    function closeModal() {
+      modal.classList.remove('show');
+      modal.classList.add('leaving');
+      setTimeout(() => {
+        modal.classList.remove('leaving');
+      }, 300);
+    }
+
+    modal.addEventListener('click', closeModal);
+    logo.addEventListener('click', showModal, false);
+    logo.addEventListener('touchend', showModal, false);
     window.addEventListener('sdk-inactive', () => {
       logo.classList.add('inactive');
     });
 
-    const modal = new Modal();
-    const content = new Content({
-      content: `
-      ${
-        useSecret
-          ? `<p><b>Secret:</b> <span class="page-spy-secret">${secret}</span></p>`
-          : ''
-      }
-      <p>
-        <b>Device ID:</b>
-        <span style="font-family: 'Monaco'" class="page-spy-device-id">
-          ${this.address.slice(0, 4) || '--'}
-        </span>
-      </p>
-      <p><b>Project:</b> <span class="page-spy-project">${project}</span></p>
-      <p><b>Title:</b> <span class="page-spy-title">${title}</span></p>
-      `,
-      onOk: () => {
-        let text = `${clientOrigin}/#/devtools?address=${encodeURIComponent(
-          this.address,
-        )}`;
-        if (useSecret) {
-          text += `&secret=${secret}`;
-        }
-        const copyRes = copy(text);
-        let message = '';
-        const langs = navigator.languages;
-        const isCN = ['zh-CN', 'zh-HK', 'zh-TW', 'zh'].some((l) => {
-          return langs.includes(l);
-        });
-        if (isCN) {
-          message = copyRes ? '拷贝成功!' : '拷贝失败!';
-        } else {
-          message = copyRes ? 'Copy successfully!' : 'Copy failed!';
-        }
-        Toast.message(message);
-        modal.close();
-      },
-    });
-    modal.appendNode(content.el!);
-    root.insertAdjacentElement('beforeend', modal.el);
-
-    function showModal(e: any) {
-      const { isMoveEvent, isHidden } = logo as unknown as UElement;
-      /* c8 ignore next 3 */
-      if (isMoveEvent || isHidden) {
-        return;
-      }
+    const content: HTMLDivElement = dom.querySelector('.page-spy-content')!;
+    content.addEventListener('click', (e) => {
       e.stopPropagation();
-      modal.show();
-    }
-    logo.addEventListener('click', showModal, false);
-    logo.addEventListener('touchend', showModal, false);
+    });
+
+    const copyLink: HTMLButtonElement = dom.querySelector(
+      '#page-spy-copy-link',
+    )!;
+    copyLink.addEventListener('click', () => {
+      let text = `${clientOrigin}/#/devtools?address=${encodeURIComponent(
+        this.address,
+      )}`;
+      if (useSecret) {
+        text += `&secret=${secret}`;
+      }
+      const copyRes = copy(text);
+      let message = '';
+      const langs = navigator.languages;
+      const isCN = ['zh-CN', 'zh-HK', 'zh-TW', 'zh'].some((l) => {
+        return langs.includes(l);
+      });
+      if (isCN) {
+        message = copyRes ? '拷贝成功!' : '拷贝失败!';
+      } else {
+        message = copyRes ? 'Copy successfully!' : 'Copy failed!';
+      }
+      closeModal();
+      Toast.message(message);
+    });
+
+    const root = dom.querySelector(`#${Identifier}`) as HTMLDivElement;
     document.documentElement.insertAdjacentElement('beforeend', root);
     moveable(logo as unknown as UElement);
     this.triggerPlugins('onMounted', {
       root,
-      content: content.el,
+      content,
       socketStore,
     });
     this.handleDeviceDPR();
-
     psLog.log('Render success');
   }
 
