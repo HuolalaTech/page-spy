@@ -1,5 +1,5 @@
 import { psLog } from '@huolala-tech/page-spy-base';
-import { UPLOAD_TIPS } from './TIP_CONTENT';
+import { UPLOAD_TIPS } from './locale';
 
 export type UploadArgs = {
   url: string;

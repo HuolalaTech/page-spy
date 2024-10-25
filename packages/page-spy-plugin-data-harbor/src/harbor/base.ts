@@ -1,18 +1,17 @@
-import { SKIP_PUBLIC_IDB_PREFIX } from '../skip-public';
+import type { SpyMessage } from '@huolala-tech/page-spy-types';
 
-export abstract class Container {
-  /**
-   * Returned `boolean` value indicated whether supported or not.
-   */
-  public abstract init(): Promise<boolean>;
-  public abstract add(data: any): Promise<number>;
-  public abstract getAll(): any;
-  public abstract count(): Promise<number>;
-  public abstract clear(): void;
-  public abstract drop(): void;
-}
+export type DataType =
+  | 'console'
+  | 'network'
+  | 'system'
+  | 'storage'
+  | 'rrweb-event';
 
-export const PRIVATE_DB_NAME = `${SKIP_PUBLIC_IDB_PREFIX}page-spy`;
-export const STORE_NAME = 'data-harbor';
-export const INDEXEDDB_SUPPORTED =
-  IDBFactory && IDBObjectStore && window.indexedDB;
+export type Actions = 'download' | 'upload';
+
+export type CacheMessageItem = Pick<
+  SpyMessage.MessageItem<SpyMessage.DataType, any>,
+  'type' | 'data'
+> & {
+  timestamp: number;
+};
