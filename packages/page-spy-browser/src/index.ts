@@ -32,7 +32,8 @@ import { moveable } from './helpers/moveable';
 import './index.less';
 // eslint-disable-next-line import/order
 import { Config } from './config';
-import { Toast } from './component/toast';
+import { Toast } from './helpers/toast';
+import locales from './assets/locales';
 
 const Identifier = '__pageSpy';
 
@@ -219,7 +220,7 @@ class PageSpy {
               </p>
             </div>
             <div data-testid="copy-button" class="page-spy-content__btn" id="page-spy-copy-link">
-              复制在线调试链接
+              ${locales.copyLink}
             </div>
           </div>
         </div>
@@ -268,17 +269,8 @@ class PageSpy {
       if (useSecret) {
         text += `&secret=${secret}`;
       }
-      const copyRes = copy(text);
-      let message = '';
-      const langs = navigator.languages;
-      const isCN = ['zh-CN', 'zh-HK', 'zh-TW', 'zh'].some((l) => {
-        return langs.includes(l);
-      });
-      if (isCN) {
-        message = copyRes ? '拷贝成功!' : '拷贝失败!';
-      } else {
-        message = copyRes ? 'Copy successfully!' : 'Copy failed!';
-      }
+      const copied = copy(text);
+      const message = copied ? locales.copied : locales.copyFailed;
       closeModal();
       Toast.message(message);
     });
