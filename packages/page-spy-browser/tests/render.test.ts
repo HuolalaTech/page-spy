@@ -6,7 +6,7 @@ import {
   waitFor,
 } from '@testing-library/dom';
 import copy from 'copy-to-clipboard';
-import { Toast } from 'page-spy-browser/src/component/toast';
+import { Toast } from 'page-spy-browser/src/helpers/toast';
 jest.mock('copy-to-clipboard', () =>
   jest.fn().mockImplementation((text: string) => true),
 );
