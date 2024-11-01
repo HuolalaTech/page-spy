@@ -14,21 +14,26 @@ import {
   RequestItem,
   SocketStoreBase,
 } from '@huolala-tech/page-spy-base';
-import { BlobHarbor } from './harbor/blob';
+import { BlobHarbor, PERIOD_DIVIDE_IDENTIFIER } from './harbor/blob';
 import {
   buttonBindWithDownload,
   DownloadArgs,
   startDownload,
 } from './utils/download';
 import { UploadArgs, buttonBindWithUpload, startUpload } from './utils/upload';
-import { getDeviceId, jsonToFile, makeData } from './utils';
+import { getDeviceId, isValidPeriod, jsonToFile, makeData } from './utils';
 import { UPLOAD_TIPS } from './utils/locale';
 import { Actions, CacheMessageItem, DataType } from './harbor/base';
 
 interface DataHarborConfig {
   // Specify the maximum bytes of single harbor's container.
-  // Default 10MB.
+  // Default 10 * 1024 * 1024, 10MB.
+  // If a period is specified, it will use the period.
   maximum?: number;
+
+  // Set the duration of each period in milliseconds.
+  // Default is `null`, indicating no period division.
+  period?: number | null;
 
   // Specify which types of data to collect.
   caredData?: Record<DataType, boolean>;
@@ -43,6 +48,7 @@ interface DataHarborConfig {
 
 const defaultConfig: DataHarborConfig = {
   maximum: 10 * 1024 * 1024,
+  period: null,
   caredData: {
     console: true,
     network: true,
@@ -67,6 +73,8 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
   public isPaused = false;
 
+  private periodTimer: ReturnType<typeof setInterval> | null = null;
+
   public $socketStore: SocketStoreBase | null = null;
 
   public $pageSpyConfig: InitConfigBase | null = null;
@@ -83,7 +91,10 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       ...config,
     } as Required<DataHarborConfig>;
 
-    this.harbor = new BlobHarbor({ maximum: this.$harborConfig.maximum });
+    this.harbor = new BlobHarbor({
+      maximum: this.$harborConfig.maximum,
+      period: this.$harborConfig.period,
+    });
   }
 
   public async onInit({ socketStore, config }: OnInitParams<InitConfigBase>) {
@@ -104,6 +115,8 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       this.apiBase = removeEndSlash(`${apiScheme}${api}`);
     }
 
+    this.initPeriodTimer();
+
     this.$socketStore.addListener('public-data', (message) => {
       if (this.isPaused || !this.isCaredPublicData(message)) return;
 
@@ -114,6 +127,19 @@ export default class DataHarborPlugin implements PageSpyPlugin {
         psLog.warn(`[${this.name}] Fail to save data in harbor `, data);
       }
     });
+  }
+
+  private initPeriodTimer() {
+    if (isValidPeriod(this.$harborConfig.period)) {
+      if (this.periodTimer) {
+        clearInterval(this.periodTimer);
+      }
+      this.periodTimer = setInterval(() => {
+        this.harbor.add(PERIOD_DIVIDE_IDENTIFIER);
+        // Notify other plugins to resend a full snapshot.
+        this.$socketStore?.dispatchEvent('harbor-clear', null);
+      }, this.$harborConfig.period);
+    }
   }
 
   public onMounted({ content }: OnMountedParams) {
@@ -166,8 +192,8 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     }
   }
 
-  onOfflineLog(type: 'download', clearCache: boolean): Promise<void>;
-  onOfflineLog(type: 'upload', clearCache: boolean): Promise<string>;
+  onOfflineLog(type: 'download', clearCache?: boolean): Promise<void>;
+  onOfflineLog(type: 'upload', clearCache?: boolean): Promise<string>;
   async onOfflineLog(type: Actions, clearCache = true): Promise<void | string> {
     try {
       let result;
@@ -194,6 +220,10 @@ export default class DataHarborPlugin implements PageSpyPlugin {
   }
 
   onReset() {
+    if (this.periodTimer) {
+      clearInterval(this.periodTimer);
+      this.periodTimer = null;
+    }
     this.harbor.clear();
     DataHarborPlugin.hasInited = false;
     DataHarborPlugin.hasMounted = false;
@@ -213,6 +243,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
   // Drop data in harbor and re-record
   public reharbor() {
+    this.initPeriodTimer();
     this.harbor.clear();
     this.$socketStore?.dispatchEvent('harbor-clear', null);
     if (this.isPaused) {

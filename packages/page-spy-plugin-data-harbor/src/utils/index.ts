@@ -1,4 +1,8 @@
-import { isBrowser, ROOM_SESSION_KEY } from '@huolala-tech/page-spy-base';
+import {
+  isBrowser,
+  isNumber,
+  ROOM_SESSION_KEY,
+} from '@huolala-tech/page-spy-base';
 import type { SpyMessage } from '@huolala-tech/page-spy-types';
 import { strFromU8, zlibSync, strToU8 } from 'fflate';
 
@@ -39,4 +43,13 @@ export const jsonToFile = (data: any, filename: string) => {
     type: 'application/json',
   });
   return file;
+};
+
+// Valid duration of each period is 1 minute ~ 30 minutes.
+export const isValidPeriod = (period: unknown): period is number => {
+  return isNumber(period) && period >= 60 * 1000 && period <= 30 * 60 * 1000;
+};
+
+export const isValidMaximum = (maximum: unknown): maximum is number => {
+  return isNumber(maximum) && maximum >= 0;
 };
