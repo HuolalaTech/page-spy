@@ -172,16 +172,18 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       deviceId: getDeviceId(),
       userAgent: navigator.userAgent,
     };
+    const data = await this.harbor.getAll();
+    // TODO
+    // 需要区分 data ，如果分段了需要有更多操作
     if (type === 'download') {
       return {
-        harbor: this.harbor,
+        data,
         filename,
         customDownload: onDownload,
       } as DownloadArgs;
     }
 
     if (type === 'upload') {
-      const data = await this.harbor.getAll();
       const file = jsonToFile(data, filename());
       const form = new FormData();
       form.append('log', file);
@@ -257,17 +259,10 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     const { caredData } = this.$harborConfig;
     switch (type) {
       case 'console':
-        if (caredData.console) return true;
-        return false;
       case 'storage':
-        if (caredData.storage) return true;
-        return false;
       case 'system':
-        if (caredData.system) return true;
-        return false;
       case 'rrweb-event':
-        if (caredData['rrweb-event']) return true;
-        return false;
+        return caredData[type];
       case 'network':
         const { url } = message.data as RequestItem;
         const isFetchHarborStockUrl = this.harbor.stock.includes(url);

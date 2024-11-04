@@ -1,21 +1,19 @@
 import { psLog } from '@huolala-tech/page-spy-base';
-import { BlobHarbor } from '../harbor/blob';
 import { DOWNLOAD_TIPS } from './locale';
 import { formatFilename } from '.';
 import { CacheMessageItem } from '../harbor/base';
 
 export type DownloadArgs = {
-  harbor: BlobHarbor;
+  data: any;
   customDownload?: (data: CacheMessageItem[]) => void;
   filename: () => string;
 };
 
 export const startDownload = async ({
-  harbor,
+  data,
   filename,
   customDownload,
 }: DownloadArgs) => {
-  const data = await harbor.getAll();
   if (customDownload) {
     await customDownload(data);
     return;

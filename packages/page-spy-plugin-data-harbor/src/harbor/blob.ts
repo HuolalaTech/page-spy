@@ -61,18 +61,22 @@ export class BlobHarbor {
   }
 
   private addByPeriod(data: any) {
-    if (data === PERIOD_DIVIDE_IDENTIFIER && this.container.length) {
-      const data2objectUrl = URL.createObjectURL(
-        new Blob([JSON.stringify(this.container)], {
-          type: 'application/json',
-        }),
-      );
-      this.stock.push(data2objectUrl);
-      this.container = [];
-    } else {
-      this.container.push(data);
+    try {
+      if (data === PERIOD_DIVIDE_IDENTIFIER && this.container.length) {
+        const data2objectUrl = URL.createObjectURL(
+          new Blob([JSON.stringify(this.container)], {
+            type: 'application/json',
+          }),
+        );
+        this.stock.push(data2objectUrl);
+        this.container = [];
+      } else {
+        this.container.push(data);
+      }
+      return true;
+    } catch (e) {
+      return false;
     }
-    return true;
   }
 
   private addByMaximum(data: any) {
