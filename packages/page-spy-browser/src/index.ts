@@ -276,6 +276,7 @@ class PageSpy {
     });
 
     const root = dom.querySelector(`#${Identifier}`) as HTMLDivElement;
+    this.root = root;
     document.documentElement.insertAdjacentElement('beforeend', root);
     moveable(logo as unknown as UElement);
     this.triggerPlugins('onMounted', {
