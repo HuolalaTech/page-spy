@@ -1,6 +1,7 @@
 import { ConfigBase } from '@huolala-tech/page-spy-base';
 import { InitConfigBase } from '@huolala-tech/page-spy-types';
 import logoUrl from './assets/logo.svg';
+import { modal } from './helpers/modal';
 
 type InternalPlugins =
   | 'ConsolePlugin'
@@ -45,13 +46,13 @@ export interface InitConfig extends InitConfigBase {
 }
 
 export class Config extends ConfigBase<InitConfig> {
-  protected privateKeys: (keyof InitConfig)[] = ['secret'];
-
   /**
    * NOTE: the 'scriptLink' must be mark static, for
    * "document.currentScript.src" only valid after <script> load done.
    */
   public static scriptLink = (document.currentScript as HTMLScriptElement)?.src;
+
+  protected privateKeys: (keyof InitConfig)[] = ['secret'];
 
   protected defaultConfig = () => {
     const defaultConfig = {
@@ -89,4 +90,6 @@ export class Config extends ConfigBase<InitConfig> {
       return defaultConfig;
     }
   };
+
+  public modal = modal;
 }

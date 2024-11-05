@@ -113,11 +113,13 @@ interface OnInitParams<T extends InitConfigBase> {
 }
 
 export interface OnMountedParams {
+  /**
+   * Config info which has merged the user passed value.
+   */
+  config: Required<T>;
+
   // The root node which has `id="__pageSpy"` in DOM tree.
   root: HTMLDivElement;
-
-  // The content node which has `class="page-spy-content"` inside modal.
-  content: HTMLDivElement;
 
   // Wrap the origin socket instance, plugin developers can
   // communicate with Web / API by it.

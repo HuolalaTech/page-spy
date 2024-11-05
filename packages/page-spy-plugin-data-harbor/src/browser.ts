@@ -2,27 +2,20 @@
 import type {
   SpyMessage,
   OnInitParams,
-  OnMountedParams,
   PageSpyPlugin,
   PluginOrder,
   InitConfigBase,
 } from '@huolala-tech/page-spy-types';
 import {
-  isBrowser,
   psLog,
   removeEndSlash,
   RequestItem,
   SocketStoreBase,
 } from '@huolala-tech/page-spy-base';
 import { BlobHarbor, PERIOD_DIVIDE_IDENTIFIER } from './harbor/blob';
-import {
-  buttonBindWithDownload,
-  DownloadArgs,
-  startDownload,
-} from './utils/download';
-import { UploadArgs, buttonBindWithUpload, startUpload } from './utils/upload';
+import { DownloadArgs, startDownload } from './utils/download';
+import { UploadArgs, startUpload } from './utils/upload';
 import { getDeviceId, isValidPeriod, jsonToFile, makeData } from './utils';
-import { UPLOAD_TIPS } from './utils/locale';
 import { Actions, CacheMessageItem, DataType } from './harbor/base';
 
 interface DataHarborConfig {
@@ -142,24 +135,24 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     }
   }
 
-  public onMounted({ content }: OnMountedParams) {
-    if (DataHarborPlugin.hasMounted) return;
-    DataHarborPlugin.hasMounted = true;
+  // public onMounted({ config }: OnMountedParams) {
+  //   if (DataHarborPlugin.hasMounted) return;
+  //   DataHarborPlugin.hasMounted = true;
 
-    if (isBrowser()) {
-      const downloadBtn = buttonBindWithDownload(async () => {
-        await this.onOfflineLog('download', false);
-      });
-      const uploadBtn = buttonBindWithUpload(async () => {
-        const debugUrl = await this.onOfflineLog('upload', false);
-        psLog.info(`${UPLOAD_TIPS.success}: ${debugUrl}`);
-        return debugUrl;
-      });
+  //   if (isBrowser()) {
+  //     const downloadBtn = buttonBindWithDownload(async () => {
+  //       await this.onOfflineLog('download', false);
+  //     });
+  //     const uploadBtn = buttonBindWithUpload(async () => {
+  //       const debugUrl = await this.onOfflineLog('upload', false);
+  //       psLog.info(`${UPLOAD_TIPS.success}: ${debugUrl}`);
+  //       return debugUrl;
+  //     });
 
-      content.insertAdjacentElement('beforeend', downloadBtn);
-      content.insertAdjacentElement('beforeend', uploadBtn);
-    }
-  }
+  //     content.insertAdjacentElement('beforeend', downloadBtn);
+  //     content.insertAdjacentElement('beforeend', uploadBtn);
+  //   }
+  // }
 
   getParams(type: 'download'): Promise<DownloadArgs>;
   getParams(type: 'upload'): Promise<UploadArgs>;

@@ -27,6 +27,10 @@ const plugins = [
     preventAssignment: true,
   }),
   postcss({
+    modules: {
+      autoModules: true,
+      generateScopedName: '[local]-[hash:base64:5]'
+    },
     extensions: ['.css', '.less'],
     extract: false,
     plugins: [autoprefixer()],

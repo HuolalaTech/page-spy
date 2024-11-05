@@ -1,3 +1,5 @@
+import classes from '../assets/styles/toast.module.less';
+
 /**
  * Show notification use `Toast.message('Copied')`
  * Clear all notifications use `Toast.destroy()`
@@ -7,7 +9,7 @@ export class Toast {
 
   static message(text: string) {
     const node = document.createElement('div');
-    node.classList.add('page-spy-toast');
+    node.classList.add('page-spy-toast', classes.toast);
     node.innerText = String(text);
     document.documentElement.appendChild(node);
     const timer = setTimeout(() => {

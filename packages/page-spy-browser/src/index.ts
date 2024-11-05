@@ -29,11 +29,12 @@ import Request from './api';
 
 import type { UElement } from './helpers/moveable';
 import { moveable } from './helpers/moveable';
-import './index.less';
+import './assets/styles/index.less';
 // eslint-disable-next-line import/order
 import { Config } from './config';
 import { Toast } from './helpers/toast';
 import locales from './assets/locales';
+import modalLogoSvg from './assets/modal-logo.svg';
 
 const Identifier = '__pageSpy';
 
@@ -46,26 +47,73 @@ Client.info.sdk = 'browser';
 Client.info.ua = navigator.userAgent;
 
 class PageSpy {
-  root: HTMLElement | null = null;
+  public static instance: PageSpy | null = null;
 
-  version = PKG_VERSION;
+  public static plugins: Record<PluginOrder | 'normal', PageSpyPlugin[]> = {
+    pre: [],
+    normal: [],
+    post: [],
+  };
 
-  request: Request | null = null;
+  public static get pluginsWithOrder() {
+    return [
+      ...PageSpy.plugins.pre,
+      ...PageSpy.plugins.normal,
+      ...PageSpy.plugins.post,
+    ];
+  }
+
+  public static registerPlugin(plugin: PageSpyPlugin) {
+    if (!plugin) {
+      return;
+    }
+    if (isClass(plugin)) {
+      psLog.error(
+        'PageSpy.registerPlugin() expect to pass an instance, not a class',
+      );
+      return;
+    }
+    if (!plugin.name) {
+      psLog.error(
+        `The ${plugin.constructor.name} plugin should provide a "name" property`,
+      );
+      return;
+    }
+    const isExist = PageSpy.pluginsWithOrder.some(
+      (i) => i.name === plugin.name,
+    );
+    if (isExist) {
+      psLog.info(
+        `The ${plugin.name} has registered. Consider the following reasons:
+      - Duplicate register one same plugin;
+      - Plugin's "name" conflict with others, you can print all registered plugins by "PageSpy.plugins";`,
+      );
+      return;
+    }
+    const currentPluginSet = PageSpy.plugins[plugin.enforce || 'normal'];
+    currentPluginSet.push(plugin);
+  }
+
+  public root: HTMLElement | null = null;
+
+  public version = PKG_VERSION;
+
+  public request: Request | null = null;
 
   // System info: <os>-<browser>:<browserVersion>
-  name = '';
+  public name = '';
 
   // Room address
-  address = '';
+  public address = '';
 
   // Completed websocket room url
-  roomUrl = '';
+  public roomUrl = '';
 
-  socketStore = socketStore;
+  public socketStore = socketStore;
 
-  config = new Config();
+  public config = new Config();
 
-  cacheTimer: ReturnType<typeof setInterval> | null = null;
+  public cacheTimer: ReturnType<typeof setInterval> | null = null;
 
   constructor(init: InitConfig = {}) {
     if (PageSpy.instance) {
@@ -82,7 +130,7 @@ class PageSpy {
     this.init();
   }
 
-  updateConfiguration() {
+  private updateConfiguration() {
     const { messageCapacity, offline, useSecret } = this.config.get();
     if (useSecret === true) {
       const cache = JSON.parse(
@@ -96,7 +144,7 @@ class PageSpy {
     socketStore.messageCapacity = messageCapacity;
   }
 
-  async init() {
+  private async init() {
     const config = this.config.get();
 
     // Online real-time mode
@@ -135,7 +183,7 @@ class PageSpy {
     }
   }
 
-  async createNewConnection() {
+  private async createNewConnection() {
     if (!this.request) {
       psLog.error('Cannot get the Request');
       return;
@@ -148,12 +196,12 @@ class PageSpy {
     socketStore.init(roomInfo.roomUrl);
   }
 
-  useOldConnection() {
+  private useOldConnection() {
     this.refreshRoomInfo();
     socketStore.init(this.roomUrl);
   }
 
-  refreshRoomInfo() {
+  private refreshRoomInfo() {
     this.saveSession();
     this.cacheTimer = setInterval(() => {
       if (socketStore.getSocket().getState() === SocketState.OPEN) {
@@ -162,7 +210,7 @@ class PageSpy {
     }, 15 * 1000);
   }
 
-  saveSession() {
+  private saveSession() {
     const { name, address, roomUrl, config } = this;
     const { useSecret, secret, project } = config.get();
     const roomInfo = JSON.stringify({
@@ -176,135 +224,7 @@ class PageSpy {
     sessionStorage.setItem(ROOM_SESSION_KEY, roomInfo);
   }
 
-  startRender() {
-    const {
-      project,
-      clientOrigin,
-      title,
-      logo: logoUrl,
-      logoStyle,
-      useSecret,
-      secret,
-    } = this.config.get();
-
-    const userLogoStyle = Object.entries(logoStyle).reduce(
-      (acc, [key, value]) => {
-        acc += `${key}: ${value};`;
-        return acc;
-      },
-      '',
-    );
-
-    const dom = new DOMParser().parseFromString(
-      `
-      <div id="${Identifier}">
-        <div class="page-spy-logo">
-          <img src="${logoUrl}" style="${userLogoStyle}" alt="PageSpy Logo" />
-        </div>
-        <div data-testid="modal" class="page-spy-modal">
-          <div data-testid="content" class="page-spy-content">
-            <div class="page-spy-content__info">
-              <p>
-                <b>Device ID:</b>
-                <span style="font-family: 'Monaco'" class="page-spy-device-id">
-                  ${this.address.slice(0, 4) || '--'}
-                </span>
-              </p>
-              <p>
-                <b>Project:</b>
-                <span class="page-spy-project">${project}</span>
-              </p>
-              <p>
-                <b>Title:</b>
-                <span class="page-spy-title">${title}</span>
-              </p>
-            </div>
-            <div data-testid="copy-button" class="page-spy-content__btn" id="page-spy-copy-link">
-              ${locales.copyLink}
-            </div>
-          </div>
-        </div>
-      </div>
-    `,
-      'text/html',
-    );
-
-    const modal: HTMLDivElement = dom.querySelector('.page-spy-modal')!;
-    const logo: UElement = dom.querySelector('.page-spy-logo')!;
-    function showModal(e: any) {
-      /* c8 ignore next 3 */
-      if (logo.isMoveEvent || logo.isHidden) {
-        return;
-      }
-      e.stopPropagation();
-      modal.classList.add('show');
-    }
-    function closeModal() {
-      modal.classList.remove('show');
-      modal.classList.add('leaving');
-      setTimeout(() => {
-        modal.classList.remove('leaving');
-      }, 300);
-    }
-
-    modal.addEventListener('click', closeModal);
-    logo.addEventListener('click', showModal, false);
-    logo.addEventListener('touchend', showModal, false);
-    window.addEventListener('sdk-inactive', () => {
-      logo.classList.add('inactive');
-    });
-
-    const content: HTMLDivElement = dom.querySelector('.page-spy-content')!;
-    content.addEventListener('click', (e) => {
-      e.stopPropagation();
-    });
-
-    const copyLink: HTMLButtonElement = dom.querySelector(
-      '#page-spy-copy-link',
-    )!;
-    copyLink.addEventListener('click', () => {
-      let text = `${clientOrigin}/#/devtools?address=${encodeURIComponent(
-        this.address,
-      )}`;
-      if (useSecret) {
-        text += `&secret=${secret}`;
-      }
-      const copied = copy(text);
-      const message = copied ? locales.copied : locales.copyFailed;
-      closeModal();
-      Toast.message(message);
-    });
-
-    const root = dom.querySelector(`#${Identifier}`) as HTMLDivElement;
-    this.root = root;
-    document.documentElement.insertAdjacentElement('beforeend', root);
-    moveable(logo as unknown as UElement);
-    this.triggerPlugins('onMounted', {
-      root,
-      content,
-      socketStore,
-    });
-    this.handleDeviceDPR();
-    psLog.log('Render success');
-  }
-
-  handleDeviceDPR() {
-    const dpr = window.devicePixelRatio || 1;
-    const viewportEl = document.querySelector('[name="viewport"]');
-
-    if (viewportEl) {
-      const viewportContent = viewportEl.getAttribute('content') || '';
-      const initialScale = viewportContent.match(/initial-scale=\d+(\.\d+)?/);
-      const scale = initialScale
-        ? parseFloat(initialScale[0].split('=')[1])
-        : 1;
-      if (scale < 1) {
-        this.root!.style.fontSize = `${14 * dpr}px`;
-      }
-    }
-  }
-
-  triggerPlugins<T extends PageSpyPluginLifecycle>(
+  private triggerPlugins<T extends PageSpyPluginLifecycle>(
     lifecycle: T,
     ...args: PageSpyPluginLifecycleArgs<T>
   ) {
@@ -322,22 +242,12 @@ class PageSpy {
     });
   }
 
-  abort() {
-    this.triggerPlugins('onReset');
-    socketStore.close();
-    PageSpy.instance = null;
-    const root = document.querySelector(`#${Identifier}`);
-    if (root) {
-      document.documentElement.removeChild(root);
-    }
-  }
-
   // In FeiShu browser (Android, Chrome/75), due to the premature execution of synchronous render,
   // when execute `document.documentElement.append(root)` in the `render` function,
   // the browser will directly create a `body` element, and the final result is that
   // there will be multiple `body` elements on the page,
   // which leads to strange phenomena such as css style mismatches
-  render() {
+  private render() {
     const root = document.querySelector(`#${Identifier}`);
     /* c8 ignore start */
     if (root) {
@@ -368,7 +278,131 @@ class PageSpy {
     /* c8 ignore stop */
   }
 
-  updateRoomInfo(obj: UpdateConfig) {
+  private startRender() {
+    const {
+      project,
+      clientOrigin,
+      title,
+      logo: logoUrl,
+      logoStyle,
+      useSecret,
+      secret,
+    } = this.config.get();
+
+    const userLogoStyle = Object.entries(logoStyle).reduce(
+      (acc, [key, value]) => {
+        acc += `${key}: ${value};`;
+        return acc;
+      },
+      '',
+    );
+
+    const dom = new DOMParser().parseFromString(
+      `
+      <!-- PageSpy Root Container -->
+      <div id="${Identifier}">
+        <div class="page-spy-logo">
+          <img src="${logoUrl}" style="${userLogoStyle}" alt="PageSpy Logo" />
+        </div>
+      </div>
+
+      <!-- Default content for modal -->
+      <div class="connect-info">
+        <p>
+          <b>Device ID:</b>
+          <span style="font-family: 'Monaco'" class="page-spy-device-id">
+            ${this.address.slice(0, 4) || '--'}
+          </span>
+        </p>
+        <p>
+          <b>Project:</b>
+          <span class="page-spy-project">${project}</span>
+        </p>
+        <p>
+          <b>Title:</b>
+          <span class="page-spy-title">${title}</span>
+        </p>
+      </div>
+
+      <!--  -->
+      <button class="page-spy-btn" data-primary id="page-spy-copy-link">
+        ${locales.copyLink}
+      </button>
+    `,
+      'text/html',
+    );
+
+    const root = dom.querySelector(`#${Identifier}`) as HTMLDivElement;
+    this.root = root;
+    const logo: UElement = dom.querySelector('.page-spy-logo')!;
+
+    logo.addEventListener(
+      'click',
+      () => {
+        this.config.modal.show();
+      },
+      false,
+    );
+    window.addEventListener('sdk-inactive', () => {
+      logo.classList.add('inactive');
+    });
+
+    const content: HTMLDivElement = dom.querySelector('.connect-info')!;
+    const copyLink: HTMLButtonElement = dom.querySelector(
+      '#page-spy-copy-link',
+    )!;
+
+    // 配置 modal 默认显示内容
+    this.config.modal.build({
+      logo: modalLogoSvg,
+      title: 'PageSpy',
+      content,
+      footer: [copyLink],
+      mounted: root,
+    });
+
+    copyLink.addEventListener('click', () => {
+      let text = `${clientOrigin}/#/devtools?address=${encodeURIComponent(
+        this.address,
+      )}`;
+      if (useSecret) {
+        text += `&secret=${secret}`;
+      }
+      const copied = copy(text);
+      const message = copied ? locales.copied : locales.copyFailed;
+      this.config.modal.close();
+      Toast.message(message);
+    });
+
+    document.documentElement.insertAdjacentElement('beforeend', root);
+    moveable(logo as unknown as UElement);
+    this.triggerPlugins('onMounted', {
+      config: this.config,
+      root,
+      socketStore,
+    });
+    this.handleDeviceDPR();
+    psLog.log('Render success');
+  }
+
+  private handleDeviceDPR() {
+    const dpr = window.devicePixelRatio || 1;
+    const viewportEl = document.querySelector('[name="viewport"]');
+
+    if (viewportEl) {
+      const viewportContent = viewportEl.getAttribute('content') || '';
+      const initialScale = viewportContent.match(/initial-scale=\d+(\.\d+)?/);
+      const scale = initialScale
+        ? parseFloat(initialScale[0].split('=')[1])
+        : 1;
+      if (scale < 1) {
+        this.root!.style.fontSize = `${14 * dpr}px`;
+        this.config.modal.root.style.fontSize = `${14 * dpr}px`;
+      }
+    }
+  }
+
+  public updateRoomInfo(obj: UpdateConfig) {
     if (!obj) return;
 
     const { project, title } = obj;
@@ -390,51 +424,14 @@ class PageSpy {
     socketStore.updateRoomInfo();
   }
 
-  static instance: PageSpy | null = null;
-
-  static plugins: Record<PluginOrder | 'normal', PageSpyPlugin[]> = {
-    pre: [],
-    normal: [],
-    post: [],
-  };
-
-  static get pluginsWithOrder() {
-    return [
-      ...PageSpy.plugins.pre,
-      ...PageSpy.plugins.normal,
-      ...PageSpy.plugins.post,
-    ];
-  }
-
-  static registerPlugin(plugin: PageSpyPlugin) {
-    if (!plugin) {
-      return;
+  public abort() {
+    this.triggerPlugins('onReset');
+    socketStore.close();
+    PageSpy.instance = null;
+    const root = document.querySelector(`#${Identifier}`);
+    if (root) {
+      document.documentElement.removeChild(root);
     }
-    if (isClass(plugin)) {
-      psLog.error(
-        'PageSpy.registerPlugin() expect to pass an instance, not a class',
-      );
-      return;
-    }
-    if (!plugin.name) {
-      psLog.error(
-        `The ${plugin.constructor.name} plugin should provide a "name" property`,
-      );
-      return;
-    }
-    const isExist = PageSpy.pluginsWithOrder.some(
-      (i) => i.name === plugin.name,
-    );
-    if (isExist) {
-      psLog.info(
-        `The ${plugin.name} has registered. Consider the following reasons:
-      - Duplicate register one same plugin;
-      - Plugin's "name" conflict with others, you can print all registered plugins by "PageSpy.plugins";`,
-      );
-      return;
-    }
-    const currentPluginSet = PageSpy.plugins[plugin.enforce || 'normal'];
-    currentPluginSet.push(plugin);
   }
 }
 

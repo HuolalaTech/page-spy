@@ -1,0 +1,42 @@
+@primary-color: #8434e9;
+@lighten-color: lighten(@primary-color, 10%);
+@gradient: linear-gradient(45deg, #efdfff, #4e00b1 52%, #3d0c7c);
+@size: 80em;
+@hidden-size: 40em;
+@font-size: 14px;
+
+.common-button() {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: (80em / @font-size);
+  padding: (4em / @font-size);
+  gap: (4em / @font-size);
+  letter-spacing: 0.4px;
+  border: 1px solid #333;
+  border-radius: (4em / @font-size);
+  background-color: white;
+  color: #333;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all ease-in-out 100ms;
+  font-size: (13em / @font-size);
+  &[data-primary] {
+    border-color: @primary-color;
+    background-color: @primary-color;
+    color: white;
+  }
+  &:disabled {
+    border-color: #c8c8c8;
+    background-color: #c8c8c8;
+    color: white;
+    cursor: not-allowed;
+  }
+  &:hover {
+    border-color: @lighten-color;
+    background-color: @lighten-color;
+  }
+  svg {
+    width: (20em / @font-size);
+  }
+}
