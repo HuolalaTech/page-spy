@@ -71,6 +71,17 @@ export class modal {
       modal.root = new DOMParser()
         .parseFromString(modal.template, 'text/html')
         .querySelector('.page-spy-modal') as HTMLDivElement;
+
+      modal.root.addEventListener('click', (e) => {
+        e.stopPropagation();
+        modal.close();
+      });
+
+      modal.root
+        .querySelector(`.${classes.content}`)!
+        .addEventListener('click', (e) => {
+          e.stopPropagation();
+        });
     }
   }
 

@@ -35,6 +35,7 @@ import { Config } from './config';
 import { Toast } from './helpers/toast';
 import locales from './assets/locales';
 import modalLogoSvg from './assets/modal-logo.svg';
+import copySvg from './assets/copy.svg';
 
 const Identifier = '__pageSpy';
 
@@ -309,24 +310,25 @@ class PageSpy {
       <!-- Default content for modal -->
       <div class="connect-info">
         <p>
-          <b>Device ID:</b>
-          <span style="font-family: 'Monaco'" class="page-spy-device-id">
+          <span>Device ID</span>
+          <b style="font-family: 'Monaco'" class="page-spy-device-id">
             ${this.address.slice(0, 4) || '--'}
-          </span>
+          </b>
         </p>
         <p>
-          <b>Project:</b>
-          <span class="page-spy-project">${project}</span>
+          <span>Project</span>
+          <b class="page-spy-project">${project}</b>
         </p>
         <p>
-          <b>Title:</b>
-          <span class="page-spy-title">${title}</span>
+          <span>Title</span>
+          <b class="page-spy-title">${title}</b>
         </p>
       </div>
 
-      <!--  -->
+      <!-- Default button for modal -->
       <button class="page-spy-btn" data-primary id="page-spy-copy-link">
-        ${locales.copyLink}
+        <img src="${copySvg}" alt="Copy" />
+        <span>${locales.copyLink}</span>
       </button>
     `,
       'text/html',
@@ -336,13 +338,15 @@ class PageSpy {
     this.root = root;
     const logo: UElement = dom.querySelector('.page-spy-logo')!;
 
-    logo.addEventListener(
-      'click',
-      () => {
-        this.config.modal.show();
-      },
-      false,
-    );
+    const showModal = (e: MouseEvent | TouchEvent) => {
+      if (logo.isMoveEvent || logo.isHidden) {
+        return;
+      }
+      e.stopPropagation();
+      this.config.modal.show();
+    };
+    logo.addEventListener('click', showModal, false);
+    logo.addEventListener('touchend', showModal, false);
     window.addEventListener('sdk-inactive', () => {
       logo.classList.add('inactive');
     });
@@ -351,16 +355,6 @@ class PageSpy {
     const copyLink: HTMLButtonElement = dom.querySelector(
       '#page-spy-copy-link',
     )!;
-
-    // 配置 modal 默认显示内容
-    this.config.modal.build({
-      logo: modalLogoSvg,
-      title: 'PageSpy',
-      content,
-      footer: [copyLink],
-      mounted: root,
-    });
-
     copyLink.addEventListener('click', () => {
       let text = `${clientOrigin}/#/devtools?address=${encodeURIComponent(
         this.address,
@@ -372,6 +366,14 @@ class PageSpy {
       const message = copied ? locales.copied : locales.copyFailed;
       this.config.modal.close();
       Toast.message(message);
+    });
+    // 配置 modal 默认显示内容
+    this.config.modal.build({
+      logo: modalLogoSvg,
+      title: 'PageSpy',
+      content,
+      footer: [copyLink],
+      mounted: root,
     });
 
     document.documentElement.insertAdjacentElement('beforeend', root);

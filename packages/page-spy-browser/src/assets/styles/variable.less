@@ -10,7 +10,7 @@
   justify-content: center;
   align-items: center;
   min-width: (80em / @font-size);
-  padding: (4em / @font-size);
+  padding: (6em / @font-size) (6em / @font-size);
   gap: (4em / @font-size);
   letter-spacing: 0.4px;
   border: 1px solid #333;
@@ -36,7 +36,14 @@
     border-color: @lighten-color;
     background-color: @lighten-color;
   }
+  img,
   svg {
     width: (20em / @font-size);
   }
+}
+
+.text-ellipse() {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
