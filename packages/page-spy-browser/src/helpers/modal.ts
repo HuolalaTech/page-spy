@@ -1,19 +1,7 @@
-import { isString } from '@huolala-tech/page-spy-base';
+import { isString, psLog } from '@huolala-tech/page-spy-base';
+import { ModalConfig, ShowParams } from '@huolala-tech/page-spy-types';
 import classes from '../assets/styles/modal.module.less';
 import closeSvg from '../assets/close.svg';
-
-interface ModalConfig {
-  logo: string;
-  title: string;
-  content: string | HTMLElement;
-  footer: (string | HTMLElement)[];
-  mounted: HTMLElement;
-}
-
-interface ShowParams {
-  content?: string | HTMLElement;
-  footer?: (string | HTMLElement)[];
-}
 
 const defaultConfig: ModalConfig = {
   logo: '',
@@ -26,13 +14,13 @@ const defaultConfig: ModalConfig = {
 export class modal {
   constructor() {
     if (new.target === modal) {
-      throw new Error('Init not allowed');
+      throw new Error('Cannot call `new modal()`');
     }
   }
 
   public static config = defaultConfig;
 
-  public static root: HTMLDivElement;
+  private static root: HTMLDivElement;
 
   private static template = `
   <div class="page-spy-modal ${classes.modal}">
@@ -97,7 +85,12 @@ export class modal {
     }
   }
 
-  public static show(args?: ShowParams) {
+  public static show(args?: Partial<ShowParams>) {
+    if (!modal.root) {
+      psLog.info('modal has not been ready.');
+      return;
+    }
+
     const { content, footer, mounted } = modal.config;
     const main = args?.content ?? content;
     const footerBtns = args?.footer ?? footer;

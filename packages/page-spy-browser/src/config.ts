@@ -2,7 +2,6 @@ import { ConfigBase } from '@huolala-tech/page-spy-base';
 import { InitConfigBase } from '@huolala-tech/page-spy-types';
 import logoUrl from './assets/logo.svg';
 import modalLogoUrl from './assets/modal-logo.svg';
-import { modal } from './helpers/modal';
 
 export const nodeId = '__pageSpy';
 
@@ -110,6 +109,4 @@ export class Config extends ConfigBase<InitConfig> {
       return defaultConfig;
     }
   };
-
-  public modal = modal;
 }

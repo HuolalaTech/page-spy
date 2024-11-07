@@ -32,10 +32,11 @@ import { moveable } from './helpers/moveable';
 import './assets/styles/index.less';
 // eslint-disable-next-line import/order
 import { Config, nodeId } from './config';
-import { Toast } from './helpers/toast';
+import { toast } from './helpers/toast';
 import locales from './assets/locales';
 import modalLogoSvg from './assets/modal-logo.svg';
 import copySvg from './assets/copy.svg';
+import { modal } from './helpers/modal';
 
 type UpdateConfig = {
   title?: string;
@@ -237,7 +238,10 @@ class PageSpy {
         return;
       }
       // eslint-disable-next-line prefer-spread
-      (plugin[lifecycle] as any)?.apply(plugin, args);
+      (plugin[lifecycle] as any)?.apply(plugin, [
+        { ...args[0], modal, toast },
+        args.slice(1),
+      ]);
     });
   }
 
@@ -278,6 +282,7 @@ class PageSpy {
   }
 
   private startRender() {
+    const config = this.config.get();
     const {
       project,
       clientOrigin,
@@ -287,7 +292,7 @@ class PageSpy {
       secret,
       primaryColor,
       modal: modalConfig,
-    } = this.config.get();
+    } = config;
 
     const dom = new DOMParser().parseFromString(
       `
@@ -329,12 +334,13 @@ class PageSpy {
     root.style.setProperty('--primary-color', primaryColor);
     this.root = root;
     const logo: UElement = dom.querySelector('.page-spy-logo')!;
+    moveable(logo as unknown as UElement);
 
     const showModal = () => {
       if (logo.isMoveEvent || logo.isHidden) {
         return;
       }
-      this.config.modal.show();
+      modal.show();
     };
     logo.addEventListener('click', showModal, false);
     logo.addEventListener('touchend', showModal, false);
@@ -355,23 +361,21 @@ class PageSpy {
       }
       const copied = copy(text);
       const message = copied ? locales.copied : locales.copyFailed;
-      this.config.modal.close();
-      Toast.message(message);
+      modal.close();
+      toast.message(message);
     });
     // 配置 modal 默认显示内容
-    this.config.modal.build({
+    modal.build({
       logo: modalConfig.logo || modalLogoSvg,
       title: modalConfig.title || 'PageSpy',
-      primaryColor,
       content,
       footer: [copyLink],
       mounted: root,
     });
 
     document.documentElement.insertAdjacentElement('beforeend', root);
-    moveable(logo as unknown as UElement);
     this.triggerPlugins('onMounted', {
-      config: this.config,
+      config,
       root,
       socketStore,
     });
@@ -391,7 +395,6 @@ class PageSpy {
         : 1;
       if (scale < 1) {
         this.root!.style.fontSize = `${14 * dpr}px`;
-        this.config.modal.root.style.fontSize = `${14 * dpr}px`;
       }
     }
   }

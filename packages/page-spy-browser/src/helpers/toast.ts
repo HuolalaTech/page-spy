@@ -2,45 +2,51 @@ import classes from '../assets/styles/toast.module.less';
 import { nodeId } from '../config';
 
 /**
- * Show notification use `Toast.message('Copied')`
- * Clear all notifications use `Toast.destroy()`
+ * Show notification use `toast.message('Copied')`
+ * Clear all notifications use `toast.destroy()`
  */
-export class Toast {
-  public static timer: ReturnType<typeof setTimeout> | null = null;
+export class toast {
+  constructor() {
+    if (new.target === toast) {
+      throw new Error('Cannot call `new toast()`');
+    }
+  }
+
+  private static timer: ReturnType<typeof setTimeout> | null = null;
 
   private static get root() {
     return document.querySelector(`#${nodeId}`) ?? document.body;
   }
 
-  static message(text: string) {
+  public static message(text: string) {
     const node = document.createElement('div');
     node.classList.add('page-spy-toast', classes.toast);
     node.innerText = String(text);
-    Toast.root.appendChild(node);
+    toast.root.appendChild(node);
     const timer = setTimeout(() => {
-      if (Toast.root.contains(node)) {
-        Toast.root.removeChild(node);
+      if (toast.root.contains(node)) {
+        toast.root.removeChild(node);
       }
-      if (Toast.timer === timer) {
-        Toast.timer = null;
+      if (toast.timer === timer) {
+        toast.timer = null;
       }
     }, 3000);
-    Toast.timer = timer;
+    toast.timer = timer;
   }
 
-  static destroy() {
-    const nodes = Toast.root.querySelectorAll('.page-spy-toast');
+  public static destroy() {
+    const nodes = toast.root.querySelectorAll('.page-spy-toast');
     if (nodes.length) {
       [...nodes].forEach((n) => {
-        if (Toast.root.contains(n)) {
-          Toast.root.removeChild(n);
+        if (toast.root.contains(n)) {
+          toast.root.removeChild(n);
         }
       });
 
-      if (Toast.timer) {
-        clearTimeout(Toast.timer);
+      if (toast.timer) {
+        clearTimeout(toast.timer);
       }
     }
-    Toast.timer = null;
+    toast.timer = null;
   }
 }

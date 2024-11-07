@@ -5,6 +5,8 @@ import { DataItem as PageData } from './page';
 import { DataItem as DatabaseData } from './database';
 import { DataItem as SystemData } from './system';
 import { RequestInfo } from './network';
+import { Modal } from './modal';
+import { Toast } from './toast';
 
 export interface InitConfigBase {
   /**
@@ -94,7 +96,13 @@ export interface PageSpyBase {
   updateRoomInfo(obj: UpdateConfig): void;
 }
 
-interface OnInitParams<T extends InitConfigBase> {
+interface CommonParams {
+  // Some utils class.
+  modal?: Modal;
+  toast?: Toast;
+}
+
+interface OnInitParams<T extends InitConfigBase> extends CommonParams {
   /**
    * Config info which has merged the user passed value.
    */
@@ -109,10 +117,11 @@ interface OnInitParams<T extends InitConfigBase> {
   /**
    * The atom instance to store js object info.
    */
-  atom: any;
+  atom?: any;
 }
 
-export interface OnMountedParams<T extends InitConfigBase> {
+export interface OnMountedParams<T extends InitConfigBase>
+  extends CommonParams {
   /**
    * Config info which has merged the user passed value.
    */

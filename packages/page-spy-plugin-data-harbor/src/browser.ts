@@ -6,6 +6,7 @@ import type {
   PluginOrder,
   InitConfigBase,
   OnMountedParams,
+  Modal,
 } from '@huolala-tech/page-spy-types';
 import {
   psLog,
@@ -102,7 +103,12 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     });
   }
 
-  public async onInit({ socketStore, config }: OnInitParams<InitConfigBase>) {
+  public async onInit({
+    socketStore,
+    config,
+    modal,
+  }: OnInitParams<InitConfigBase>) {
+    modal?.show({ content: '芜湖～' });
     if (DataHarborPlugin.hasInited) return;
     DataHarborPlugin.hasInited = true;
 
@@ -150,11 +156,14 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     }
   }
 
-  public onMounted({ config }: OnMountedParams<InitConfigBase>) {
+  public onMounted({ config, modal }: OnMountedParams<InitConfigBase>) {
     if (DataHarborPlugin.hasMounted) return;
     DataHarborPlugin.hasMounted = true;
 
-    this.buildModal(config);
+    if (modal) {
+      this.buildModal(modal);
+      modal?.show({ content: '芜湖～' });
+    }
   }
   // public onMounted({ config }: OnMountedParams) {
   //   if (DataHarborPlugin.hasMounted) return;
@@ -175,7 +184,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
   //   }
   // }
 
-  private buildModal(config: any) {
+  private buildModal(modal: Modal) {
     const doc = new DOMParser().parseFromString(
       `
       <!-- Add button for default modal -->
@@ -209,11 +218,11 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       'text/html',
     );
 
-    const openLogAction = doc.querySelector('#open-log-action');
-    const maximumContent = doc.querySelector('.harbor-maximum-info');
-    const periodContent = doc.querySelector('.harbor-period-info');
-    const uploadButton = doc.querySelector('#upload-offline-log');
-    const downloadButton = doc.querySelector('#download-offline-log');
+    const openLogAction = doc.querySelector('#open-log-action')!;
+    const maximumContent = doc.querySelector('.harbor-maximum-info')!;
+    const periodContent = doc.querySelector('.harbor-period-info')!;
+    const uploadButton = doc.querySelector('#upload-offline-log')!;
+    const downloadButton = doc.querySelector('#download-offline-log')!;
 
     let timer: ReturnType<typeof setInterval> | null = null;
     openLogAction?.addEventListener('click', () => {
@@ -230,14 +239,14 @@ export default class DataHarborPlugin implements PageSpyPlugin {
           duration.textContent = formatTime(Date.now() - this.startTimestamp);
         }, 1000);
       }
-      config.modal.show({
+      modal.show({
         content: maximumContent,
         footer: [uploadButton, downloadButton],
       });
     });
 
-    config.modal.build({
-      footer: [...config.modal.config.footer, openLogAction],
+    modal.build({
+      footer: [...modal.config.footer, openLogAction],
     });
   }
 
