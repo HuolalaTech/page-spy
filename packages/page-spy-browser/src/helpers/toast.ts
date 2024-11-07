@@ -1,4 +1,5 @@
 import classes from '../assets/styles/toast.module.less';
+import { nodeId } from '../config';
 
 /**
  * Show notification use `Toast.message('Copied')`
@@ -7,28 +8,32 @@ import classes from '../assets/styles/toast.module.less';
 export class Toast {
   public static timer: ReturnType<typeof setTimeout> | null = null;
 
+  private static get root() {
+    return document.querySelector(`#${nodeId}`) ?? document.body;
+  }
+
   static message(text: string) {
     const node = document.createElement('div');
     node.classList.add('page-spy-toast', classes.toast);
     node.innerText = String(text);
-    document.documentElement.appendChild(node);
+    Toast.root.appendChild(node);
     const timer = setTimeout(() => {
-      if (document.contains(node)) {
-        document.documentElement.removeChild(node);
+      if (Toast.root.contains(node)) {
+        Toast.root.removeChild(node);
       }
       if (Toast.timer === timer) {
         Toast.timer = null;
       }
-    }, 1500);
+    }, 3000);
     Toast.timer = timer;
   }
 
   static destroy() {
-    const nodes = document.querySelectorAll('.page-spy-toast');
+    const nodes = Toast.root.querySelectorAll('.page-spy-toast');
     if (nodes.length) {
       [...nodes].forEach((n) => {
-        if (document.contains(n)) {
-          document.documentElement.removeChild(n);
+        if (Toast.root.contains(n)) {
+          Toast.root.removeChild(n);
         }
       });
 

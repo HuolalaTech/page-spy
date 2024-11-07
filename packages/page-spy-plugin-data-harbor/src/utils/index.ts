@@ -53,3 +53,16 @@ export const isValidPeriod = (period: unknown): period is number => {
 export const isValidMaximum = (maximum: unknown): maximum is number => {
   return isNumber(maximum) && maximum >= 0;
 };
+
+function fillTimeText(v: number) {
+  if (v >= 10) return v.toString();
+  return `0${v}`;
+}
+
+export function formatTime(millsDiff: number) {
+  const seconds = parseInt(String(millsDiff / 1000), 10);
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds - 3600 * h) / 60);
+  const s = Math.floor(seconds - 3600 * h - 60 * m);
+  return `${fillTimeText(h)}:${fillTimeText(m)}:${fillTimeText(s)}`;
+}

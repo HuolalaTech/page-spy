@@ -1,5 +1,5 @@
 import { psLog } from '@huolala-tech/page-spy-base';
-import { UPLOAD_TIPS } from './locale';
+import { t } from '../assets/locale';
 
 export type UploadArgs = {
   url: string;
@@ -34,7 +34,7 @@ export const buttonBindWithUpload = (fn: () => Promise<string | null>) => {
   const uploadBtn = document.createElement('div');
   uploadBtn.id = 'data-harbor-plugin-upload';
   uploadBtn.className = 'page-spy-content__btn';
-  uploadBtn.textContent = UPLOAD_TIPS.normal;
+  uploadBtn.textContent = t.upload;
   let idleWithUpload = true;
 
   uploadBtn.addEventListener('click', async () => {
@@ -42,7 +42,7 @@ export const buttonBindWithUpload = (fn: () => Promise<string | null>) => {
     idleWithUpload = false;
 
     try {
-      uploadBtn.textContent = UPLOAD_TIPS.uploading;
+      uploadBtn.textContent = t.readying;
       const debugUrl = await fn();
       if (!debugUrl) return;
 
@@ -56,7 +56,7 @@ export const buttonBindWithUpload = (fn: () => Promise<string | null>) => {
       root.removeChild(input);
       if (isOk) {
         document.querySelector('#uploaded-log-url')?.remove();
-        uploadBtn.textContent = UPLOAD_TIPS.copied;
+        uploadBtn.textContent = t.copied;
       } else {
         //  If copy failed
         let logUrlElement: HTMLDivElement | null =
@@ -69,16 +69,17 @@ export const buttonBindWithUpload = (fn: () => Promise<string | null>) => {
           logUrlElement.style.borderTop = '1px solid #eee';
           uploadBtn.insertAdjacentElement('afterend', logUrlElement);
         }
-        const tipPrefix = UPLOAD_TIPS.copyTip;
-        logUrlElement.textContent = tipPrefix + debugUrl;
-        uploadBtn.textContent = UPLOAD_TIPS.success;
+        // TODO
+        // const tipPrefix = UPLOAD_TIPS.copyTip;
+        // logUrlElement.textContent = tipPrefix + debugUrl;
+        uploadBtn.textContent = t.success;
       }
     } catch (e: any) {
-      uploadBtn.textContent = UPLOAD_TIPS.fail;
+      uploadBtn.textContent = t.fail;
       psLog.error(e.message);
     } finally {
       setTimeout(() => {
-        uploadBtn.textContent = UPLOAD_TIPS.normal;
+        uploadBtn.textContent = t.upload;
         idleWithUpload = true;
       }, 1500);
     }

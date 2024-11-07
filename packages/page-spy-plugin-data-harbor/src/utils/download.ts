@@ -1,7 +1,7 @@
 import { psLog } from '@huolala-tech/page-spy-base';
-import { DOWNLOAD_TIPS } from './locale';
 import { formatFilename } from '.';
 import { CacheMessageItem } from '../harbor/base';
+import { t } from '../assets/locale';
 
 export type DownloadArgs = {
   data: any;
@@ -39,14 +39,14 @@ export const startDownload = async ({
   root.removeChild(a);
   URL.revokeObjectURL(url);
 
-  psLog.info(`${DOWNLOAD_TIPS.success}`);
+  psLog.info(`${t.success}`);
 };
 
 export const buttonBindWithDownload = (fn: () => Promise<void>) => {
   const downloadBtn = document.createElement('div');
   downloadBtn.id = 'data-harbor-plugin-download';
   downloadBtn.className = 'page-spy-content__btn';
-  downloadBtn.textContent = DOWNLOAD_TIPS.normal;
+  downloadBtn.textContent = t.download;
   let idleWithDownload = true;
 
   downloadBtn.addEventListener('click', async () => {
@@ -54,15 +54,15 @@ export const buttonBindWithDownload = (fn: () => Promise<void>) => {
     idleWithDownload = false;
 
     try {
-      downloadBtn.textContent = DOWNLOAD_TIPS.readying;
+      downloadBtn.textContent = t.readying;
       await fn();
-      downloadBtn.textContent = DOWNLOAD_TIPS.success;
+      downloadBtn.textContent = t.success;
     } catch (e: any) {
-      downloadBtn.textContent = DOWNLOAD_TIPS.fail;
+      downloadBtn.textContent = t.fail;
       psLog.error('Download failed.', e.message);
     } finally {
       setTimeout(() => {
-        downloadBtn.textContent = DOWNLOAD_TIPS.normal;
+        downloadBtn.textContent = t.download;
         idleWithDownload = true;
       }, 1500);
     }

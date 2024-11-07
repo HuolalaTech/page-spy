@@ -39,10 +39,13 @@
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-terser": "^0.4.4",
+    "autoprefixer": "^10.4.20",
     "core-js": "3.30",
+    "less": "^4.2.0",
     "rollup": "^3.10.0",
     "rollup-plugin-delete": "^2.0.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-typescript2": "^0.34.1"
   },
   "prettier": {

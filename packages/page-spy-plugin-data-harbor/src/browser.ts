@@ -5,6 +5,7 @@ import type {
   PageSpyPlugin,
   PluginOrder,
   InitConfigBase,
+  OnMountedParams,
 } from '@huolala-tech/page-spy-types';
 import {
   psLog,
@@ -15,8 +16,17 @@ import {
 import { BlobHarbor, PERIOD_DIVIDE_IDENTIFIER } from './harbor/blob';
 import { DownloadArgs, startDownload } from './utils/download';
 import { UploadArgs, startUpload } from './utils/upload';
-import { getDeviceId, isValidPeriod, jsonToFile, makeData } from './utils';
+import {
+  formatTime,
+  getDeviceId,
+  isValidPeriod,
+  jsonToFile,
+  makeData,
+} from './utils';
 import { Actions, CacheMessageItem, DataType } from './harbor/base';
+import { cropSvg, downloadSvg, uploadSvg } from './assets/svg';
+import './assets/index.less';
+import { t } from './assets/locale';
 
 interface DataHarborConfig {
   // Specify the maximum bytes of single harbor's container.
@@ -66,6 +76,8 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
   public isPaused = false;
 
+  public startTimestamp = 0;
+
   private periodTimer: ReturnType<typeof setInterval> | null = null;
 
   public $socketStore: SocketStoreBase | null = null;
@@ -114,6 +126,9 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       if (this.isPaused || !this.isCaredPublicData(message)) return;
 
       const data = makeData(message.type, message.data);
+      if (!this.startTimestamp) {
+        this.startTimestamp = data.timestamp;
+      }
 
       const ok = this.harbor.add(data);
       if (!ok) {
@@ -135,6 +150,12 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     }
   }
 
+  public onMounted({ config }: OnMountedParams<InitConfigBase>) {
+    if (DataHarborPlugin.hasMounted) return;
+    DataHarborPlugin.hasMounted = true;
+
+    this.buildModal(config);
+  }
   // public onMounted({ config }: OnMountedParams) {
   //   if (DataHarborPlugin.hasMounted) return;
   //   DataHarborPlugin.hasMounted = true;
@@ -153,6 +174,72 @@ export default class DataHarborPlugin implements PageSpyPlugin {
   //     content.insertAdjacentElement('beforeend', uploadBtn);
   //   }
   // }
+
+  private buildModal(config: any) {
+    const doc = new DOMParser().parseFromString(
+      `
+      <!-- Add button for default modal -->
+      <button class="page-spy-btn" data-dashed id="open-log-action">
+        ${cropSvg}
+        <span>${t.title}</span>
+      </button>
+
+      <!-- New modal content when button#offline-log-action clicked -->
+      <div class="harbor-maximum-info">
+        <div class="log-recorder"></div>
+        <b class="log-duration">--</b>
+      </div>
+      <div class="harbor-period-info">
+        <div class="period-time-range">
+          <div class="period-start-time"></div>
+          <div class="period-end-time"></div>
+        </div>
+      </div>
+
+      <!-- Upload / Download log button -->
+      <button class="page-spy-btn" data-primary id="upload-offline-log">
+        ${uploadSvg}
+        <span>${t.upload}</span>
+      </button>
+      <button class="page-spy-btn" data-primary id="download-offline-log">
+        ${downloadSvg}
+        <span>${t.download}</span>
+      </button>
+      `,
+      'text/html',
+    );
+
+    const openLogAction = doc.querySelector('#open-log-action');
+    const maximumContent = doc.querySelector('.harbor-maximum-info');
+    const periodContent = doc.querySelector('.harbor-period-info');
+    const uploadButton = doc.querySelector('#upload-offline-log');
+    const downloadButton = doc.querySelector('#download-offline-log');
+
+    let timer: ReturnType<typeof setInterval> | null = null;
+    openLogAction?.addEventListener('click', () => {
+      if (this.periodTimer) {
+        //
+      } else {
+        if (timer) clearInterval(timer);
+
+        const duration = maximumContent?.querySelector('.log-duration');
+        if (!duration) return;
+
+        duration.textContent = formatTime(Date.now() - this.startTimestamp);
+        timer = setInterval(() => {
+          duration.textContent = formatTime(Date.now() - this.startTimestamp);
+        }, 1000);
+      }
+      config.modal.show({
+        content: maximumContent,
+        footer: [uploadButton, downloadButton],
+      });
+    });
+
+    config.modal.build({
+      footer: [...config.modal.config.footer, openLogAction],
+    });
+  }
 
   getParams(type: 'download'): Promise<DownloadArgs>;
   getParams(type: 'upload'): Promise<UploadArgs>;
@@ -202,8 +289,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       }
 
       if (clearCache) {
-        this.harbor.clear();
-        this.$socketStore?.dispatchEvent('harbor-clear', null);
+        this.clearAndNotify();
       }
 
       if (result) {
@@ -219,7 +305,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       clearInterval(this.periodTimer);
       this.periodTimer = null;
     }
-    this.harbor.clear();
+    this.clearAndNotify(false);
     DataHarborPlugin.hasInited = false;
     DataHarborPlugin.hasMounted = false;
     const node = document.getElementById('data-harbor-plugin-download');
@@ -239,10 +325,17 @@ export default class DataHarborPlugin implements PageSpyPlugin {
   // Drop data in harbor and re-record
   public reharbor() {
     this.initPeriodTimer();
-    this.harbor.clear();
-    this.$socketStore?.dispatchEvent('harbor-clear', null);
+    this.clearAndNotify();
     if (this.isPaused) {
       this.isPaused = false;
+    }
+  }
+
+  public clearAndNotify(notify = true) {
+    this.harbor.clear();
+    this.startTimestamp = 0;
+    if (notify) {
+      this.$socketStore?.dispatchEvent('harbor-clear', null);
     }
   }
 

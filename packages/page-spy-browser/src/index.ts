@@ -31,13 +31,11 @@ import type { UElement } from './helpers/moveable';
 import { moveable } from './helpers/moveable';
 import './assets/styles/index.less';
 // eslint-disable-next-line import/order
-import { Config } from './config';
+import { Config, nodeId } from './config';
 import { Toast } from './helpers/toast';
 import locales from './assets/locales';
 import modalLogoSvg from './assets/modal-logo.svg';
 import copySvg from './assets/copy.svg';
-
-const Identifier = '__pageSpy';
 
 type UpdateConfig = {
   title?: string;
@@ -249,7 +247,7 @@ class PageSpy {
   // there will be multiple `body` elements on the page,
   // which leads to strange phenomena such as css style mismatches
   private render() {
-    const root = document.querySelector(`#${Identifier}`);
+    const root = document.querySelector(`#${nodeId}`);
     /* c8 ignore start */
     if (root) {
       psLog.warn('Cannot render the widget because it has been in the DOM');
@@ -285,25 +283,18 @@ class PageSpy {
       clientOrigin,
       title,
       logo: logoUrl,
-      logoStyle,
       useSecret,
       secret,
+      primaryColor,
+      modal: modalConfig,
     } = this.config.get();
-
-    const userLogoStyle = Object.entries(logoStyle).reduce(
-      (acc, [key, value]) => {
-        acc += `${key}: ${value};`;
-        return acc;
-      },
-      '',
-    );
 
     const dom = new DOMParser().parseFromString(
       `
       <!-- PageSpy Root Container -->
-      <div id="${Identifier}">
+      <div id="${nodeId}" style="--primary-color: #8434e9">
         <div class="page-spy-logo">
-          <img src="${logoUrl}" style="${userLogoStyle}" alt="PageSpy Logo" />
+          <img src="${logoUrl}" alt="Logo" />
         </div>
       </div>
 
@@ -334,15 +325,15 @@ class PageSpy {
       'text/html',
     );
 
-    const root = dom.querySelector(`#${Identifier}`) as HTMLDivElement;
+    const root = dom.querySelector(`#${nodeId}`) as HTMLDivElement;
+    root.style.setProperty('--primary-color', primaryColor);
     this.root = root;
     const logo: UElement = dom.querySelector('.page-spy-logo')!;
 
-    const showModal = (e: MouseEvent | TouchEvent) => {
+    const showModal = () => {
       if (logo.isMoveEvent || logo.isHidden) {
         return;
       }
-      e.stopPropagation();
       this.config.modal.show();
     };
     logo.addEventListener('click', showModal, false);
@@ -369,8 +360,9 @@ class PageSpy {
     });
     // 配置 modal 默认显示内容
     this.config.modal.build({
-      logo: modalLogoSvg,
-      title: 'PageSpy',
+      logo: modalConfig.logo || modalLogoSvg,
+      title: modalConfig.title || 'PageSpy',
+      primaryColor,
       content,
       footer: [copyLink],
       mounted: root,
@@ -430,7 +422,7 @@ class PageSpy {
     this.triggerPlugins('onReset');
     socketStore.close();
     PageSpy.instance = null;
-    const root = document.querySelector(`#${Identifier}`);
+    const root = document.querySelector(`#${nodeId}`);
     if (root) {
       document.documentElement.removeChild(root);
     }

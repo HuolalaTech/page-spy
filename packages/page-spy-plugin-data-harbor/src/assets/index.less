@@ -1,0 +1,30 @@
+@font-size: 14px;
+
+.harbor-maximum-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: (8em / @font-size);
+  padding: (20em / @font-size) 0;
+  .log-recorder {
+    @size: (15em / @font-size);
+    width: @size;
+    height: @size;
+    border-radius: @size;
+    background-color: rgb(255, 15, 15);
+    animation: fade 0.8s ease-in-out infinite alternate;
+    @keyframes fade {
+      from {
+        opacity: 1;
+      }
+      to {
+        opacity: 0.05;
+      }
+    }
+  }
+  .log-duration {
+    font-size: (32em / @font-size);
+    color: #333;
+    font-family: 'Roboto Mono', Menlo, 'Fira Mono', 'Source Code Pro', monospace;
+  }
+}

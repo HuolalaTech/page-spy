@@ -72,31 +72,39 @@ export class modal {
         .parseFromString(modal.template, 'text/html')
         .querySelector('.page-spy-modal') as HTMLDivElement;
 
+      // mask
       modal.root.addEventListener('click', (e) => {
         e.stopPropagation();
         modal.close();
       });
 
-      modal.root
-        .querySelector(`.${classes.content}`)!
-        .addEventListener('click', (e) => {
-          e.stopPropagation();
-        });
+      // content
+      modal.query(classes.content).addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+      });
+
+      // close
+      modal.query(classes.headerRight).addEventListener('click', () => {
+        modal.close();
+      });
+
+      // logo
+      modal.query(classes.logo).setAttribute('src', modal.config.logo);
+
+      // title
+      modal.query(classes.title).textContent = modal.config.title;
     }
   }
 
   public static show(args?: ShowParams) {
-    const { logo, title, content, footer, mounted } = modal.config;
+    const { content, footer, mounted } = modal.config;
     const main = args?.content ?? content;
     const footerBtns = args?.footer ?? footer;
 
-    const logoEl = modal.query(classes.logo) as HTMLImageElement;
-    const titleEl = modal.query(classes.title);
     const mainEl = modal.query(classes.main);
     const footerEl = modal.query(classes.footer);
 
-    logoEl.setAttribute('src', logo);
-    titleEl.textContent = title;
     mainEl.innerHTML = '';
     if (isString(main)) {
       mainEl.insertAdjacentHTML('afterbegin', main);

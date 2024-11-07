@@ -112,7 +112,7 @@ interface OnInitParams<T extends InitConfigBase> {
   atom: any;
 }
 
-export interface OnMountedParams {
+export interface OnMountedParams<T extends InitConfigBase> {
   /**
    * Config info which has merged the user passed value.
    */
