@@ -11,6 +11,11 @@ const source = {
     fail: '处理失败',
     invalid: '无法上传',
     copied: '已复制调试连接',
+    selectPeriod: '选择时间段',
+    remark: '备注',
+    remarkPlaceholder: '上传后，可以看到备注信息',
+    periodFrom: '从',
+    periodTo: '到',
   },
   en: {
     title: 'Offline log',
@@ -22,6 +27,11 @@ const source = {
     fail: 'Failed',
     invalid: 'Cannot upload',
     copied: 'Copied',
+    selectPeriod: 'Select period',
+    remark: 'Remark',
+    remarkPlaceholder: 'After uploading, you can view the remark information.',
+    periodFrom: 'From',
+    periodTo: 'To',
   },
 };
 
