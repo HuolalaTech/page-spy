@@ -19,7 +19,6 @@ const plugins = [
     useTsconfigDeclarationDir: true,
   }),
   replace({
-    PKG_VERSION: `"${pkg.version}"`,
     preventAssignment: true,
   }),
   terser(),
@@ -37,8 +36,12 @@ export default {
       sourcemap: true,
     },
   ],
+  external: [
+    '@huolala-tech/page-spy-base'
+  ],
   plugins: [
     ...plugins,
+    // Even is miniprogram, we should consider the devtools' chrome version...
     babel({
       exclude: ['node_modules/**'],
       babelHelpers: 'runtime',
@@ -56,10 +59,5 @@ export default {
       ],
     }),
     del({ targets: ['dist/*'] }),
-  ],
-  external: [
-    '@tarojs/taro',
-    '@huolala-tech/page-spy-base',
-    '@huolala-tech/page-spy-mp-base'
   ],
 };

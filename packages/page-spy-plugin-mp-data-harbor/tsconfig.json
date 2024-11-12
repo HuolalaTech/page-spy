@@ -2,11 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "rootDir": "./src",
-    "target": "ES2018",
-    "module": "ESNext",
-    "noEmit": false,
     "outDir": "dist",
-    "declaration": true,
     "declarationDir": "dist/types"
   },
   "include": ["src"]

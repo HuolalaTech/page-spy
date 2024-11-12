@@ -14,11 +14,14 @@ export default class SystemPlugin implements PageSpyPlugin {
 
   public $pageSpyConfig: SpyMP.MPInitConfig | null = null;
 
-  public onInit({ config }: OnInitParams<SpyMP.MPInitConfig>) {
+  public client: Client | null = null;
+
+  public onInit({ config, client }: OnInitParams<SpyMP.MPInitConfig>) {
     if (SystemPlugin.hasInitd) return;
     SystemPlugin.hasInitd = true;
 
     this.$pageSpyConfig = config;
+    this.client = client;
     this.onceInitPublicData();
 
     socketStore.addListener('refresh', ({ source }, reply) => {
@@ -46,7 +49,7 @@ export default class SystemPlugin implements PageSpyPlugin {
   public getSystemInfo() {
     const info = {
       system: {
-        ua: Client.getName(),
+        ua: this.client?.getName(),
       },
       features: {},
     } as SpySystem.DataItem;

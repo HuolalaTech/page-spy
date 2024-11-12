@@ -10,26 +10,6 @@ import fs from 'fs';
 import { dirname } from 'path';
 
 const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
-const getBabel = (mode) => {
-  return babel({
-    /**
-     * Why exclude core-js?
-     * See: https://github.com/rollup/rollup-plugin-babel/issues/254
-     */
-    exclude: ['node_modules/**', /\/core-js\//],
-    babelHelpers: 'bundled',
-    extensions: [...DEFAULT_EXTENSIONS, '.ts'],
-    presets: [
-      [
-        '@babel/env',
-        {
-          useBuiltIns: false,
-        },
-      ],
-      '@babel/preset-typescript',
-    ],
-  });
-};
 
 const plugins = [
   nodeResolve(),
@@ -50,19 +30,42 @@ const plugins = [
 export default [
   {
     input: 'src/index.ts',
-    output: {
-      file: pkg.module,
-      format: 'esm',
-      sourcemap: true,
-    },
+    output: [
+      {
+        file: pkg.module,
+        format: 'esm',
+        sourcemap: true,
+      },
+      {
+        file: pkg.main,
+        format: 'cjs',
+        sourcemap: true,
+      },
+    ],
     plugins: [
       ...plugins,
-      getBabel('esm'),
-      del({ targets: [dirname(pkg.module)] }),
+      babel({
+        exclude: ['node_modules/**'],
+        babelHelpers: 'runtime',
+        extensions: [...DEFAULT_EXTENSIONS, '.ts', '.tsx'],
+        plugins: ['@babel/plugin-transform-runtime'],
+        presets: [
+          [
+            '@babel/env',
+            {
+              // useBuiltIns: false,
+              corejs: '3.30',
+            },
+          ],
+          '@babel/preset-typescript',
+        ],
+      }),
+      del({ targets: [dirname(pkg.main)] }),
     ],
     external: [
       '@huolala-tech/page-spy-base',
       '@huolala-tech/page-spy-mp-base'
-    ]
+    ],
+
   },
 ];

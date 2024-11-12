@@ -1,6 +1,5 @@
 import copy from 'copy-to-clipboard';
 import {
-  Client,
   getAuthSecret,
   isArray,
   isClass,
@@ -42,9 +41,6 @@ type UpdateConfig = {
   title?: string;
   project?: string;
 };
-
-Client.info.sdk = 'browser';
-Client.info.ua = navigator.userAgent;
 
 class PageSpy {
   root: HTMLElement | null = null;

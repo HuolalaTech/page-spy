@@ -110,6 +110,11 @@ interface OnInitParams<T extends InitConfigBase> {
    * The atom instance to store js object info.
    */
   atom: any;
+
+  /**
+   * The client info object.
+   */
+  client: Client;
 }
 
 export interface OnMountedParams {
@@ -153,6 +158,15 @@ export abstract class PageSpyPlugin {
    * plugins should reset to the origin function.
    */
   public abstract onReset?: () => any;
+
+  /**
+   * @description Register action buttons in client popup panel, define the
+   * button text and callback.
+   */
+  public abstract onActionSheet?: () => {
+    text: string;
+    action: () => void | Promise<void>;
+  }[];
 }
 
 // prettier-ignore

@@ -1,11 +1,9 @@
-/// <reference types="@huolala-tech/page-spy-mp-base/global" />
-
-import PageSpy, {
+import PageSpyMPBase, {
   setMPSDK,
   MPSocketWrapper,
 } from '@huolala-tech/page-spy-mp-base';
 import { psLog, Client, SocketStoreBase } from '@huolala-tech/page-spy-base';
-import { SpyClient } from '@huolala-tech/page-spy-types';
+import { SpyClient, SpyMP } from '@huolala-tech/page-spy-types';
 
 declare const uni: MPSDK;
 
@@ -42,15 +40,6 @@ if (info.uniPlatform === 'web') {
   browserType = HOST_MAP[info.uniPlatform] || info.uniPlatform;
 }
 
-Client.info = {
-  framework: 'uniapp',
-  osType: info.osName.toLowerCase() as SpyClient.OS,
-  osVersion: info.osVersion,
-  browserType,
-  browserVersion: info.appVersion,
-  sdk: 'uniapp',
-};
-
 // Some ali apps have to use single socket instance
 // For below 2 platforms, this option is always true for others, user can also set it manually on config option "singletonSocket".
 
@@ -68,5 +57,19 @@ SocketStoreBase.messageFilters.push((data) => {
   }
   return data;
 });
+
+class PageSpy extends PageSpyMPBase {
+  constructor(init: SpyMP.MPInitConfig) {
+    super(init, {
+      framework: 'uniapp',
+      osType: info.osName.toLowerCase() as SpyClient.OS,
+      osVersion: info.osVersion,
+      browserType,
+      browserVersion: info.appVersion,
+      sdk: 'uniapp',
+      sdkVersion: PKG_VERSION,
+    });
+  }
+}
 
 export default PageSpy;

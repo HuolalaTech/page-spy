@@ -1,11 +1,9 @@
 import typescript from 'rollup-plugin-typescript2';
-import del from 'rollup-plugin-delete';
 import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import json from '@rollup/plugin-json';
 import replace from '@rollup/plugin-replace';
-import terser from '@rollup/plugin-terser';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
 import fs from 'fs';
 
@@ -19,10 +17,8 @@ const plugins = [
     useTsconfigDeclarationDir: true,
   }),
   replace({
-    PKG_VERSION: `"${pkg.version}"`,
     preventAssignment: true,
   }),
-  terser(),
 ];
 
 /**
@@ -32,13 +28,20 @@ export default {
   input: 'src/index.ts',
   output: [
     {
+      file: pkg.main,
+      format: 'cjs',
+      sourcemap: true,
+    },
+    {
       file: pkg.module,
       format: 'esm',
       sourcemap: true,
     },
   ],
   plugins: [
+
     ...plugins,
+    // Even is miniprogram, we should consider the devtools' chrome version...
     babel({
       exclude: ['node_modules/**'],
       babelHelpers: 'runtime',
@@ -55,11 +58,5 @@ export default {
         '@babel/preset-typescript',
       ],
     }),
-    del({ targets: ['dist/*'] }),
-  ],
-  external: [
-    '@tarojs/taro',
-    '@huolala-tech/page-spy-base',
-    '@huolala-tech/page-spy-mp-base'
   ],
 };

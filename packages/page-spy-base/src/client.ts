@@ -2,39 +2,41 @@
 import { SpyClient } from '@huolala-tech/page-spy-types';
 
 export class Client {
-  static info: SpyClient.ClientInfo = {
-    // browserName and framework should be overwritten by package implementation\
-    osType: 'unknown',
-    osVersion: 'unknown',
-    browserType: 'unknown',
-    browserVersion: 'unknown',
-    framework: 'unknown',
-    isDevTools: false,
-    sdk: 'browser',
-  };
+  constructor(
+    public info: SpyClient.ClientInfo = {
+      // browserName and framework should be overwritten by package implementation\
+      osType: 'unknown',
+      osVersion: 'unknown',
+      browserType: 'unknown',
+      browserVersion: 'unknown',
+      framework: 'unknown',
+      isDevTools: false,
+      sdk: 'unknown',
+      sdkVersion: '0.0.0',
+    },
+  ) {}
 
-  static plugins: string[] = [];
+  plugins: string[] = [];
 
-  static makeClientInfoMsg() {
+  makeClientInfoMsg() {
     const msg: SpyClient.DataItem = {
-      sdk: Client.info.sdk,
-      isDevTools: Client.info.isDevTools,
-      ua: Client.getName(),
-      plugins: Client.plugins,
+      sdk: this.info.sdk,
+      isDevTools: this.info.isDevTools,
+      ua: this.getName(),
+      plugins: this.plugins,
     };
     return msg;
   }
 
-  private static _name: string;
+  private _name: string = '';
 
-  static getName() {
-    if (!Client._name) {
-      const { ua, osType, osVersion, browserType, browserVersion } =
-        Client.info;
+  getName() {
+    if (!this._name) {
+      const { ua, osType, osVersion, browserType, browserVersion } = this.info;
 
-      Client._name =
+      this._name =
         ua || `${osType}/${osVersion} ${browserType}/${browserVersion}`;
     }
-    return Client._name;
+    return this._name;
   }
 }

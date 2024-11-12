@@ -14,6 +14,7 @@ import type {
   PageSpyPluginLifecycle,
   PluginOrder,
   PageSpyPluginLifecycleArgs,
+  SpyClient,
 } from '@huolala-tech/page-spy-types';
 
 import ConsolePlugin from './plugins/console';
@@ -35,10 +36,8 @@ type UpdateConfig = {
   project?: string;
 };
 
-class PageSpy {
+class PageSpyMPBase {
   root: HTMLElement | null = null;
-
-  version = PKG_VERSION;
 
   request: Request | null = null;
 
@@ -57,13 +56,15 @@ class PageSpy {
 
   cacheTimer: ReturnType<typeof setInterval> | null = null;
 
-  constructor(init: SpyMP.MPInitConfig) {
-    if (PageSpy.instance) {
+  client: Client = new Client();
+  constructor(init: SpyMP.MPInitConfig, client: SpyClient.ClientInfo) {
+    if (PageSpyMPBase.instance) {
       psLog.warn('Cannot initialize PageSpy multiple times');
       // eslint-disable-next-line no-constructor-return
-      return PageSpy.instance;
+      return PageSpyMPBase.instance;
     }
 
+    this.client = new Client(client);
     const config = this.config.mergeConfig(init);
 
     if (config.singletonSocket) {
@@ -85,14 +86,20 @@ class PageSpy {
       }
     }
 
-    PageSpy.instance = this;
+    PageSpyMPBase.instance = this;
 
     // Here will check the config api
-    this.request = new Request(this.config);
+    this.request = new Request(this.config, this.client);
     this.updateConfiguration();
-    this.triggerPlugins('onInit', { socketStore, config, atom });
-
-    Client.plugins = PageSpy.pluginsWithOrder.map((plugin) => plugin.name);
+    this.client.plugins = PageSpyMPBase.pluginsWithOrder.map(
+      (plugin) => plugin.name,
+    );
+    this.triggerPlugins('onInit', {
+      socketStore,
+      config,
+      atom,
+      client: this.client,
+    });
 
     this.init();
   }
@@ -108,6 +115,7 @@ class PageSpy {
 
     socketStore.connectable = true;
     socketStore.getPageSpyConfig = () => this.config.get();
+    socketStore.getClient = () => this.client;
     socketStore.messageCapacity = messageCapacity;
   }
 
@@ -194,7 +202,7 @@ class PageSpy {
     ...args: PageSpyPluginLifecycleArgs<T>
   ) {
     const { disabledPlugins } = this.config.get();
-    PageSpy.pluginsWithOrder.forEach((plugin) => {
+    PageSpyMPBase.pluginsWithOrder.forEach((plugin) => {
       if (
         isArray(disabledPlugins) &&
         disabledPlugins.length &&
@@ -209,7 +217,7 @@ class PageSpy {
   abort() {
     this.triggerPlugins('onReset');
     socketStore.close();
-    PageSpy.instance = null;
+    PageSpyMPBase.instance = null;
   }
 
   updateRoomInfo(obj: UpdateConfig) {
@@ -226,7 +234,63 @@ class PageSpy {
     socketStore.updateRoomInfo();
   }
 
-  static instance: PageSpy | null = null;
+  getDebugLink() {
+    const config = this.config.get();
+    let link = `${config.enableSSL === false ? 'http://' : 'https://'}${config.api}/#/devtools?address=${encodeURIComponent(
+      this.address,
+    )}`;
+    if (config.useSecret) {
+      link += `&secret=${config.secret}`;
+    }
+    return link;
+  }
+
+  // open actions panal
+  async showPanel() {
+    const mp = getMPSDK();
+    const that = this;
+    const options: {
+      text: string;
+      action: () => void;
+    }[] = [
+      {
+        text: '复制在线调试链接',
+        action() {
+          mp.setClipboardData({
+            data: that.getDebugLink(),
+            success() {
+              mp.showToast({
+                title: '复制成功',
+                icon: 'success',
+              });
+            },
+          });
+        },
+      },
+    ];
+    PageSpyMPBase.pluginsWithOrder.forEach((plugin) => {
+      if (plugin.onActionSheet) {
+        const actions = plugin.onActionSheet();
+        if (actions?.length) {
+          options.push(...actions);
+        }
+      }
+    });
+
+    mp.showActionSheet({
+      title: 'PageSpy Device ID:' + (this.address.slice(0, 4) || '--'),
+      itemColor: '#b67cff',
+      itemList: options.map((o) => o.text),
+      success(res) {
+        const option = options[res.tapIndex];
+        if (option.action) {
+          option.action();
+        }
+      },
+    });
+  }
+
+  static instance: PageSpyMPBase | null = null;
 
   static plugins: Record<PluginOrder | 'normal', PageSpyPlugin[]> = {
     pre: [],
@@ -236,9 +300,9 @@ class PageSpy {
 
   static get pluginsWithOrder() {
     return [
-      ...PageSpy.plugins.pre,
-      ...PageSpy.plugins.normal,
-      ...PageSpy.plugins.post,
+      ...PageSpyMPBase.plugins.pre,
+      ...PageSpyMPBase.plugins.normal,
+      ...PageSpyMPBase.plugins.post,
     ];
   }
 
@@ -258,7 +322,7 @@ class PageSpy {
       );
       return;
     }
-    const isExist = PageSpy.pluginsWithOrder.some(
+    const isExist = PageSpyMPBase.pluginsWithOrder.some(
       (i) => i.name === plugin.name,
     );
     if (isExist) {
@@ -269,7 +333,7 @@ class PageSpy {
       );
       return;
     }
-    const currentPluginSet = PageSpy.plugins[plugin.enforce || 'normal'];
+    const currentPluginSet = PageSpyMPBase.plugins[plugin.enforce || 'normal'];
     currentPluginSet.push(plugin);
   }
 }
@@ -283,9 +347,10 @@ const INTERNAL_PLUGINS = [
 ];
 
 INTERNAL_PLUGINS.forEach((p) => {
-  PageSpy.registerPlugin(p);
+  PageSpyMPBase.registerPlugin(p);
 });
 
-export default PageSpy;
+export default PageSpyMPBase;
+import './types';
 export * from './utils';
 export * from './helpers/socket';

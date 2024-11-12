@@ -1,6 +1,9 @@
-import PageSpy, { setMPSDK, utilAPI } from '@huolala-tech/page-spy-mp-base';
+import PageSpyMPBase, {
+  setMPSDK,
+  utilAPI,
+} from '@huolala-tech/page-spy-mp-base';
 import { Client, SocketStoreBase } from '@huolala-tech/page-spy-base';
-import { SpyClient } from '@huolala-tech/page-spy-types';
+import { SpyClient, SpyMP } from '@huolala-tech/page-spy-types';
 
 // reassign the global.mp to uni
 
@@ -26,11 +29,19 @@ utilAPI.removeStorage = (key) => {
 };
 
 const info = my.getSystemInfoSync();
-Client.info.sdk = 'mp-alipay';
-Client.info.osType = info.platform.toLowerCase() as SpyClient.OS;
-Client.info.browserType = 'mp-alipay';
-Client.info.osVersion = info.system;
-Client.info.browserVersion = info.version;
+
+class PageSpy extends PageSpyMPBase {
+  constructor(init: SpyMP.MPInitConfig) {
+    super(init, {
+      sdk: 'mp-alipay',
+      osType: info.platform.toLowerCase() as SpyClient.OS,
+      browserType: 'mp-alipay',
+      osVersion: info.system,
+      browserVersion: info.version,
+      sdkVersion: PKG_VERSION,
+    });
+  }
+}
 
 SocketStoreBase.messageFilters.push((data) => {
   return data.data;

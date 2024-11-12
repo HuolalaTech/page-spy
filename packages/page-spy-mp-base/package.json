@@ -3,20 +3,11 @@
   "version": "1.0.8",
   "description": "The base of PageSpy for miniprogram.",
   "license": "MIT",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./global": {
-      "types": "./global.d.ts"
-    }
-  },
+  "main": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
   "scripts": {
-    "build": "yarn clean && tsc",
-    "watch": "tsc -w",
+    "build": "rollup -c",
+    "watch": "rollup -c -w",
     "clean": "rm -rf dist"
   },
   "dependencies": {
@@ -35,8 +26,7 @@
     "url": "https://github.com/HuolalaTech/page-spy/issues"
   },
   "files": [
-    "dist",
-    "global.d.ts"
+    "dist"
   ],
   "keywords": [
     "pagespy",
@@ -44,6 +34,13 @@
     "remote",
     "inspect",
     "devtools"
+  ],
+  "browserslist": [
+    "chrome > 75",
+    "safari > 12",
+    "> 0.1%",
+    "not dead",
+    "not op_mini all"
   ],
   "devDependencies": {
     "typescript": "^5.5.3"

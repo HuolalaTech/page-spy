@@ -1,8 +1,8 @@
 declare const PKG_VERSION: string;
 
 type AsyncCallback<R = any, E = any> = {
-  success?: (res?: R) => void;
-  fail?: (error?: E) => void;
+  success?: (res: R) => void;
+  fail?: (error: E) => void;
   complete?: (res?: R | E) => void;
 };
 
@@ -30,11 +30,36 @@ declare type MPSocket = {
   onMessage(fun: SocketOnMessageHandler): void;
 };
 
-type StorageParams = {
-  key: string;
-  data: any;
-  encrypt?: boolean;
-  succe;
+declare type FileSystemManager = {
+  writeFileSync(
+    filePath: string,
+    data: string | ArrayBuffer,
+    encoding?: string,
+  ): void;
+  writeFile(
+    options: {
+      filePath: string;
+      data: string;
+      encoding?: string;
+    } & AsyncCallback,
+  ): void;
+
+  // alipay has different return type.. will be handled other where.
+  readFileSync(filePath: string, encoding?: string): string | ArrayBuffer;
+  readFile(
+    options: {
+      filePath: string;
+      encoding?: string;
+    } & AsyncCallback<string | ArrayBuffer>,
+  ): void;
+
+  unlink(
+    options: {
+      filePath: string;
+    } & AsyncCallback,
+  ): void;
+
+  unlinkSync(filePath: string): void;
 };
 
 declare type MPStorageAPI = {
@@ -57,37 +82,41 @@ declare type MPStorageAPI = {
     params: {
       kvList: KVList;
     } & AsyncCallback,
-  );
+  ): void;
 
-  batchSetStorageSync(kvList);
+  batchSetStorageSync(kvList: KVList): void;
 
   getStorage(
     params: {
       key: string;
-    } & AsyncCallback,
-  );
+    } & AsyncCallback<any>,
+  ): void;
 
-  getStorageSync(key: string);
+  getStorageSync(key: string): any;
 
   batchGetStorage(
     params: {
       keyList: string[];
     } & AsyncCallback,
-  );
+  ): void;
 
-  batchGetStorageSync(keyList: string[]);
+  batchGetStorageSync(keyList: string[]): any[];
 
   removeStorage(
     params: {
       key: string;
     } & AsyncCallback,
-  );
+  ): void;
 
-  removeStorageSync(key: string);
+  removeStorageSync(key: string): void;
 
-  clearStorage(params: AsyncCallback);
+  clearStorage(params: AsyncCallback): void;
 
-  clearStorageSync();
+  clearStorageSync(): void;
+};
+
+declare type MPFileAPI = {
+  getFileSystemManager(): FileSystemManager;
 };
 
 type MPNetworkAPI = {
@@ -121,6 +150,23 @@ type MPNetworkAPI = {
     }>,
   ): any;
 
+  uploadFile(
+    params: {
+      url: string;
+      filePath: string;
+      name: string;
+      header?: Record<string, string>;
+      formData?: Record<string, any>;
+      timeout?: number;
+
+      responseType?: 'text' | 'arraybuffer';
+      enableHttp2?: boolean;
+    } & AsyncCallback<{
+      data: any;
+      statusCode: number;
+    }>,
+  ): void;
+
   connectSocket(
     params: {
       url: string;
@@ -141,6 +187,9 @@ type MPNetworkAPI = {
 
 type MPSystemAPI = {
   // for test purpose
+  env: {
+    USER_DATA_PATH: string;
+  };
   trigger(name: string, data?: any): void;
   canIUse(schema: string): boolean;
   getSystemInfoSync(): {
@@ -160,10 +209,10 @@ type MPSystemAPI = {
     SDKVersion?: string;
     [others: string]: any;
   };
-  onError(listener: (res: { message: string; stack: string }) => void);
-  offError(listener: (res: { message: string; stack: string }) => void);
-  onUnhandledRejection(listener: (res: { reason: string }) => void);
-  offUnhandledRejection(listener: (res: { reason: string }) => void);
+  onError(listener: (res: { message: string; stack: string }) => void): void;
+  offError(listener: (res: { message: string; stack: string }) => void): void;
+  onUnhandledRejection(listener: (res: { reason: string }) => void): void;
+  offUnhandledRejection(listener: (res: { reason: string }) => void): void;
   onAppShow(
     listener: (res: {
       path: string;
@@ -212,17 +261,70 @@ type MPSystemAPI = {
       version: string;
     };
   };
+
+  setClipboardData(
+    options: {
+      data: string;
+    } & AsyncCallback,
+  ): void;
+};
+
+type MPUIAPI = {
+  showActionSheet(
+    options: {
+      alertText?: string; // for wx
+      title?: string;
+      itemList: string[];
+      itemColor?: string;
+    } & AsyncCallback<{
+      tapIndex: number;
+    }>,
+  ): void;
+  showToast(
+    options: {
+      title: string;
+      icon?: 'none' | 'success' | 'loading' | 'error';
+      duration?: number;
+    } & AsyncCallback,
+  ): void;
+  hideToast(): void;
+  showLoading(
+    options: {
+      title: string;
+      duration?: number;
+    } & AsyncCallback,
+  ): void;
+  hideLoading(): void;
+  showModal(
+    options: {
+      title?: string;
+      content?: string;
+      showCancel?: boolean;
+      confirmText?: string;
+      confirmColor?: string;
+      cancelText?: string;
+      cancelColor?: string;
+    } & AsyncCallback<{
+      confirm?: boolean;
+      cancel?: boolean;
+    }>,
+  ): void;
 };
 
 type MPRouterAPI = {
-  switchTab(params: { url: string } & AsyncCallback);
-  reLaunch(params: { url: string } & AsyncCallback);
-  redirectTo(params: { url: string } & AsyncCallback);
-  navigateTo(params: { url: string } & AsyncCallback);
-  navigateBack(params: { delta?: number } & AsyncCallback);
+  switchTab(params: { url: string } & AsyncCallback): void;
+  reLaunch(params: { url: string } & AsyncCallback): void;
+  redirectTo(params: { url: string } & AsyncCallback): void;
+  navigateTo(params: { url: string } & AsyncCallback): void;
+  navigateBack(params: { delta?: number } & AsyncCallback): void;
 };
 
-declare type MPSDK = MPStorageAPI & MPNetworkAPI & MPSystemAPI & MPRouterAPI;
+declare type MPSDK = MPUIAPI &
+  MPStorageAPI &
+  MPFileAPI &
+  MPNetworkAPI &
+  MPSystemAPI &
+  MPRouterAPI;
 
 declare interface PageInfo {
   route: string;

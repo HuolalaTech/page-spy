@@ -59,6 +59,7 @@ export default {
   plugins: [...plugins, del({ targets: ['dist/*'] })],
   external: [
     'react-native',
+    '@huolala-tech/page-spy-base',
     'promise/setimmediate/rejection-tracking',
     'promise/setimmediate/es6-extensions',
   ],

@@ -65,6 +65,7 @@ export interface ClientInfo {
   framework?: Framework; // Currently only for miniprogram
   isDevTools?: boolean;
   sdk?: SDKType;
+  sdkVersion?: string;
 }
 
 // The message type that will be sent over socket

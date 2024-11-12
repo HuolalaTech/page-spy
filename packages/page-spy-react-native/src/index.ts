@@ -40,15 +40,6 @@ type UpdateConfig = {
 
 const rnv = Platform.constants.reactNativeVersion;
 
-Client.info.osType = osMap[Platform.OS] || 'unknown';
-Client.info.osVersion = String(Platform.Version);
-Client.info.browserType = 'react-native';
-Client.info.browserVersion = `${rnv.major}.${rnv.minor}.${rnv.patch}${
-  rnv.prerelease ? '-' + rnv.prerelease : ''
-}`;
-Client.info.framework = 'react-native';
-Client.info.sdk = 'rn';
-
 class PageSpy {
   version = PKG_VERSION;
 
@@ -65,6 +56,17 @@ class PageSpy {
       ...PageSpy.plugins.post,
     ];
   }
+
+  static client: Client = new Client({
+    osType: osMap[Platform.OS] || 'unknown',
+    osVersion: String(Platform.Version),
+    browserType: 'react-native',
+    browserVersion: `${rnv.major}.${rnv.minor}.${rnv.patch}${
+      rnv.prerelease ? '-' + rnv.prerelease : ''
+    }`,
+    framework: 'react-native',
+    sdk: 'rn',
+  });
 
   request: Request | null = null;
 
@@ -124,7 +126,7 @@ class PageSpy {
     const config = this.config.mergeConfig(init);
 
     // Here will check the config api
-    this.request = new Request(this.config);
+    this.request = new Request(this.config, PageSpy.client);
     this.updateConfiguration();
     PageSpy.instance = this;
 

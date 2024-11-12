@@ -1,6 +1,4 @@
-/// <reference types="@huolala-tech/page-spy-mp-base/global" />
-
-import PageSpy, {
+import PageSpyMPBase, {
   MPSocketWrapper,
   setCustomGlobal,
   setMPSDK,
@@ -10,7 +8,7 @@ import { Client, psLog } from '@huolala-tech/page-spy-base';
 
 declare const tt: any;
 
-class PageSpyTaro extends PageSpy {
+class PageSpyTaro extends PageSpyMPBase {
   constructor(
     init: SpyMP.MPInitConfig & {
       taro: any;
@@ -76,15 +74,6 @@ class PageSpyTaro extends PageSpy {
       browserVersion = info.version!;
     }
 
-    Client.info = {
-      sdk: 'taro',
-      osType,
-      osVersion,
-      browserType,
-      browserVersion,
-      isDevTools: info.platform === 'devtools', // alipay cannot detect devtools, so here is always false for alipay.
-    };
-
     // Some ali apps have to use single socket instance
     // For below 2 platforms, this option is always true for others, user can also set it manually on config option "singletonSocket".
     if (info.app === 'DingTalk' || info.app === 'mPaaS') {
@@ -101,7 +90,15 @@ class PageSpyTaro extends PageSpy {
       });
     }
 
-    super(init);
+    super(init, {
+      sdk: 'taro',
+      osType,
+      osVersion,
+      browserType,
+      browserVersion,
+      isDevTools: info.platform === 'devtools', // alipay cannot detect devtools, so here is always false for alipay.
+      sdkVersion: PKG_VERSION,
+    });
   }
 }
 

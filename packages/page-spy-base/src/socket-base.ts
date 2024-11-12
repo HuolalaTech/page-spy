@@ -153,10 +153,12 @@ export abstract class SocketStoreBase {
 
   public getPageSpyConfig: (() => Required<InitConfigBase>) | null = null;
 
+  public getClient: (() => Client) | null = null;
+
   updateRoomInfo() {
     if (this.getPageSpyConfig) {
       const { project, title } = this.getPageSpyConfig();
-      const name = Client.getName();
+      const name = this.getClient?.().getName();
       this.send(
         {
           type: SERVER_MESSAGE_TYPE.UPDATE_ROOM_INFO,
@@ -563,7 +565,7 @@ export abstract class SocketStoreBase {
   }
 
   public sendClientInfo() {
-    const clientInfo = Client.makeClientInfoMsg();
+    const clientInfo = this.getClient?.().makeClientInfoMsg();
     this.broadcastMessage(
       {
         role: 'client',
