@@ -34,7 +34,7 @@ export const buttonBindWithUpload = (fn: () => Promise<string | null>) => {
   const uploadBtn = document.createElement('div');
   uploadBtn.id = 'data-harbor-plugin-upload';
   uploadBtn.className = 'page-spy-content__btn';
-  uploadBtn.textContent = t.upload;
+  uploadBtn.textContent = t.uploadAll;
   let idleWithUpload = true;
 
   uploadBtn.addEventListener('click', async () => {
@@ -79,7 +79,7 @@ export const buttonBindWithUpload = (fn: () => Promise<string | null>) => {
       psLog.error(e.message);
     } finally {
       setTimeout(() => {
-        uploadBtn.textContent = t.upload;
+        uploadBtn.textContent = t.uploadAll;
         idleWithUpload = true;
       }, 1500);
     }

@@ -46,7 +46,7 @@ export const buttonBindWithDownload = (fn: () => Promise<void>) => {
   const downloadBtn = document.createElement('div');
   downloadBtn.id = 'data-harbor-plugin-download';
   downloadBtn.className = 'page-spy-content__btn';
-  downloadBtn.textContent = t.download;
+  downloadBtn.textContent = t.downloadAll;
   let idleWithDownload = true;
 
   downloadBtn.addEventListener('click', async () => {
@@ -62,7 +62,7 @@ export const buttonBindWithDownload = (fn: () => Promise<void>) => {
       psLog.error('Download failed.', e.message);
     } finally {
       setTimeout(() => {
-        downloadBtn.textContent = t.download;
+        downloadBtn.textContent = t.downloadAll;
         idleWithDownload = true;
       }, 1500);
     }

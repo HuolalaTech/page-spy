@@ -14,18 +14,30 @@ import {
   RequestItem,
   SocketStoreBase,
 } from '@huolala-tech/page-spy-base';
-import { BlobHarbor, PERIOD_DIVIDE_IDENTIFIER } from './harbor/blob';
+import {
+  BlobHarbor,
+  DEFAULT_MAXIMUM,
+  DEFAULT_PERIOD_DURATION,
+  PERIOD_DIVIDE_IDENTIFIER,
+  PeriodItem,
+} from './harbor/blob';
 import { DownloadArgs, startDownload } from './utils/download';
 import { UploadArgs, startUpload } from './utils/upload';
 import {
-  formatTime,
+  formatTimeDuration,
   getDeviceId,
   isValidPeriod,
   jsonToFile,
   makeData,
 } from './utils';
 import { Actions, CacheMessageItem, DataType } from './harbor/base';
-import { cropSvg, downloadSvg, uploadSvg } from './assets/svg';
+import {
+  cropSvg,
+  downloadAllSvg,
+  uploadAllSvg,
+  uploadPeriodsSvg,
+  downloadPeriodsSvg,
+} from './assets/svg';
 import classes from './assets/index.module.less';
 import { t } from './assets/locale';
 
@@ -37,6 +49,7 @@ interface DataHarborConfig {
 
   // Set the duration of each period in milliseconds.
   // Default is 5 * 60 * 1000, 5 minutes.
+  // Valid time range is 1 minute to 30 minutes.
   period?: number;
 
   // Specify which types of data to collect.
@@ -51,8 +64,8 @@ interface DataHarborConfig {
 }
 
 const defaultConfig: Required<DataHarborConfig> = {
-  maximum: 10 * 1024 * 1024,
-  period: 5 * 60 * 1000,
+  maximum: DEFAULT_MAXIMUM,
+  period: 10 * 1000,
   caredData: {
     console: true,
     network: true,
@@ -104,7 +117,6 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
     this.harbor = new BlobHarbor({
       maximum: this.$harborConfig.maximum,
-      period: this.$harborConfig.period,
     });
   }
 
@@ -208,8 +220,8 @@ export default class DataHarborPlugin implements PageSpyPlugin {
             <div class="${classes.track}">
               <div class="${classes.range}"></div>
             </div>
-            <input type="range" id="harbor-period-min" class="${classes.minVal}" value="0" min="0" max="100" />
-            <input type="range" id="harbor-period-max" class="${classes.maxVal}" value="100" min="0" max="100" />
+            <input type="range" id="period-min" min="0" step="1" />
+            <input type="range" id="period-max" min="0" step="1" />
           </div>
         </div>
         <div class="${classes.remarkInfo}">
@@ -219,13 +231,21 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       </div>
 
       <!-- Upload / Download log button -->
-      <button class="page-spy-btn" data-primary id="upload-log">
-        ${uploadSvg}
-        <span>${t.upload}</span>
+      <button class="page-spy-btn" data-primary id="upload-all">
+        ${uploadAllSvg}
+        <span>${t.uploadAll}</span>
       </button>
-      <button class="page-spy-btn" data-primary id="download-log">
-        ${downloadSvg}
-        <span>${t.download}</span>
+      <button class="page-spy-btn" data-primary id="download-all">
+        ${downloadAllSvg}
+        <span>${t.downloadAll}</span>
+      </button>
+      <button class="page-spy-btn" data-dashed id="upload-periods">
+        ${uploadPeriodsSvg}
+        <span>${t.uploadPeriods}</span>
+      </button>
+      <button class="page-spy-btn" data-dashed id="download-periods">
+        ${downloadPeriodsSvg}
+        <span>${t.downloadPeriods}</span>
       </button>
       `,
       'text/html',
@@ -238,55 +258,106 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
     const openLogAction = $('#open-log-action') as HTMLButtonElement;
     const modalContent = $c(classes.content) as HTMLDivElement;
+    const selectPeriod = $c(classes.selectPeriod) as HTMLDivElement;
     const range = $c(classes.range) as HTMLDivElement;
-    const minThumb = $c(classes.minVal) as HTMLInputElement;
-    const maxThumb = $c(classes.maxVal) as HTMLInputElement;
-    const uploadButton = $('#upload-log') as HTMLButtonElement;
-    const downloadButton = $('#download-log') as HTMLButtonElement;
+    const minThumb = $('#period-min') as HTMLInputElement;
+    const maxThumb = $('#period-max') as HTMLInputElement;
+    const uploadAllButton = $('#upload-all') as HTMLButtonElement;
+    const downloadAllButton = $('#download-all') as HTMLButtonElement;
+    const uploadPeriodsButton = $('#upload-periods') as HTMLButtonElement;
+    const downloadPeriodsButton = $('#download-periods') as HTMLButtonElement;
 
+    const periodInfoRef: {
+      max: number;
+      periods: PeriodItem[];
+    } = {
+      max: 0,
+      periods: [],
+    };
     function updateRangeInTrack() {
-      const total = +maxThumb.max;
-      const left = +minThumb.value / total;
-      const right = 1 - +maxThumb.value / total;
+      const { max, periods } = periodInfoRef;
+      const left = +minThumb.value / max;
+      const right = 1 - +maxThumb.value / max;
       range.style.setProperty('--left', `${(left * 100).toFixed(3)}%`);
       range.style.setProperty('--right', `${(right * 100).toFixed(3)}%`);
-      range.style.setProperty('--min-text', `"${left}"`);
-      range.style.setProperty('--max-text', `"${right}"`);
+
+      const minText = periods[+minThumb.value]?.time.toLocaleTimeString();
+      const maxText = periods[+maxThumb.value]?.time.toLocaleTimeString();
+      range.style.setProperty('--min-text', `"${minText}"`);
+      range.style.setProperty('--max-text', `"${maxText}"`);
     }
 
     minThumb.addEventListener('input', function () {
-      const max = +maxThumb.value - 5;
+      const max = +maxThumb.value - 1;
       const current = +this.value;
-      if (current >= max) {
+      if (current > max) {
         minThumb.value = String(max);
         return;
       }
       updateRangeInTrack();
     });
     maxThumb.addEventListener('input', function () {
-      const min = +minThumb.value + 5;
+      const min = +minThumb.value + 1;
       const current = +this.value;
-      if (current <= min) {
+      if (current < min) {
         maxThumb.value = String(min);
         return;
       }
       updateRangeInTrack();
     });
+    // uploadAllButton.addEventListener('click', () => {});
 
-    let timer: ReturnType<typeof setInterval> | null = null;
+    let durationTimer: ReturnType<typeof setInterval> | null = null;
     openLogAction?.addEventListener('click', () => {
-      if (timer) clearInterval(timer);
+      if (durationTimer) clearInterval(durationTimer);
 
       const duration = modalContent?.querySelector(`.${classes.duration}`);
       if (duration) {
-        duration.textContent = formatTime(Date.now() - this.startTimestamp);
-        timer = setInterval(() => {
-          duration.textContent = formatTime(Date.now() - this.startTimestamp);
+        duration.textContent = formatTimeDuration(
+          Date.now() - this.startTimestamp,
+        );
+        durationTimer = setInterval(() => {
+          duration.textContent = formatTimeDuration(
+            Date.now() - this.startTimestamp,
+          );
         }, 1000);
       }
+
+      const periods = this.harbor.getPeriodList();
+
+      const len = periods.length;
+      const max = String(len - 1);
+      minThumb.max = max;
+      minThumb.value = '0';
+
+      maxThumb.max = max;
+      maxThumb.value = max;
+      if (len >= 3) {
+        selectPeriod.classList.remove(classes.disabled);
+        minThumb.disabled = false;
+        maxThumb.disabled = false;
+        uploadPeriodsButton.disabled = false;
+        downloadPeriodsButton.disabled = false;
+
+        periodInfoRef.max = len - 1;
+        periodInfoRef.periods = periods;
+        updateRangeInTrack();
+      } else {
+        selectPeriod.classList.add(classes.disabled);
+        minThumb.disabled = true;
+        maxThumb.disabled = true;
+        uploadPeriodsButton.disabled = true;
+        downloadPeriodsButton.disabled = true;
+      }
+
       modal.show({
         content: modalContent,
-        footer: [uploadButton, downloadButton],
+        footer: [
+          uploadAllButton,
+          uploadPeriodsButton,
+          downloadAllButton,
+          downloadPeriodsButton,
+        ],
       });
     });
 

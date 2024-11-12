@@ -59,7 +59,7 @@ function fillTimeText(v: number) {
   return `0${v}`;
 }
 
-export function formatTime(millsDiff: number) {
+export function formatTimeDuration(millsDiff: number) {
   const seconds = parseInt(String(millsDiff / 1000), 10);
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds - 3600 * h) / 60);

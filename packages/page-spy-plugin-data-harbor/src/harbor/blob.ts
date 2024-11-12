@@ -1,14 +1,27 @@
-import { isBrowser } from '@huolala-tech/page-spy-base';
-import { isValidMaximum, isValidPeriod } from '../utils';
+import { isBrowser, isNumber } from '@huolala-tech/page-spy-base';
+import { isValidMaximum } from '../utils';
 
 interface HarborConfig {
   maximum: number;
-  period: number | null;
+}
+
+interface PeriodList {
+  stable: PeriodItem[];
+  active: PeriodItem[];
+}
+
+export interface PeriodItem {
+  time: Date;
+  stockIndex: number | null;
+  // Divide from which index in a stock/container.
+  dataIndex: number;
 }
 
 let currentContainerSize = 0;
 
 export const PERIOD_DIVIDE_IDENTIFIER = 'PERIOD_DIVIDE_IDENTIFIER';
+export const DEFAULT_MAXIMUM = 10 * 1024 * 1024;
+export const DEFAULT_PERIOD_DURATION = 5 * 60 * 1000;
 
 export class BlobHarbor {
   // Object URL list
@@ -32,20 +45,16 @@ export class BlobHarbor {
 
   // Specify the maximum bytes of single harbor's container.
   // 0 means no limitation.
-  maximum = 0;
+  maximum = DEFAULT_MAXIMUM;
 
-  // Specify the duration of one period, unit is millisecond.
-  // Minimum period is 60 * 1000, 1 minute.
-  // Maximum period is 30 * 60 * 1000, 30 minutes.
-  // Default null, indicates no period division.
-  period: number | null = null;
+  periodList: PeriodList = {
+    stable: [],
+    active: [],
+  };
 
   constructor(config?: HarborConfig) {
     if (isValidMaximum(config?.maximum)) {
       this.maximum = config.maximum;
-    }
-    if (isValidPeriod(config?.period)) {
-      this.period = config.period;
     }
     if (isBrowser()) {
       window.addEventListener('beforeunload', () => {
@@ -57,30 +66,17 @@ export class BlobHarbor {
   }
 
   public add(data: any) {
-    return this.period ? this.addByPeriod(data) : this.addByMaximum(data);
-  }
+    const harborIsEmpty =
+      this.stock.length === 0 && this.container.length === 0;
 
-  private addByPeriod(data: any) {
     try {
-      if (data === PERIOD_DIVIDE_IDENTIFIER && this.container.length) {
-        const data2objectUrl = URL.createObjectURL(
-          new Blob([JSON.stringify(this.container)], {
-            type: 'application/json',
-          }),
-        );
-        this.stock.push(data2objectUrl);
-        this.container = [];
-      } else {
-        this.container.push(data);
+      if (harborIsEmpty || data === PERIOD_DIVIDE_IDENTIFIER) {
+        this.periodList.active.push({
+          time: new Date(),
+          stockIndex: null,
+          dataIndex: this.container.length,
+        });
       }
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  private addByMaximum(data: any) {
-    try {
       if (this.maximum === 0) {
         this.container.push(data);
         return true;
@@ -97,6 +93,7 @@ export class BlobHarbor {
           }),
         );
         this.stock.push(data2objectUrl);
+        this.flushActivePeriod();
         this.container = [data];
         currentContainerSize = 0;
       } else {
@@ -107,6 +104,83 @@ export class BlobHarbor {
     } catch (e) {
       return false;
     }
+  }
+
+  private flushActivePeriod() {
+    const activeToStable = this.periodList.active.map((i) => ({
+      ...i,
+      stockIndex: this.stock.length - 1,
+    }));
+    this.periodList.stable.push(...activeToStable);
+    this.periodList.active = [];
+  }
+
+  // Periods can only be made if the length >= 3
+  // Because the head and tail will be filled with one each
+  getPeriodList() {
+    const temp: PeriodItem = {
+      time: new Date(),
+      stockIndex: null,
+      dataIndex: this.container.length,
+    };
+    return [...this.periodList.stable, ...this.periodList.active, temp];
+  }
+
+  async getPeriodData(from: PeriodItem, to: PeriodItem) {
+    const { stockIndex: fStock, dataIndex: fData } = from;
+    const { stockIndex: tStock, dataIndex: tData } = to;
+
+    // all data in container
+    if (fStock === null && tStock === null) {
+      return this.container.slice(fData, tData);
+    }
+    if (fStock === null || !isNumber(fStock)) {
+      throw new Error('The start of selected period is invalid');
+    }
+    // <stock> [
+    //   <blob>, <- fStock,
+    //   ...,
+    //   <blob> <- tStock, maybe null
+    // ]
+    // both fStock and tStock are in stock
+    const stockData = (
+      await Promise.all(
+        this.stock.map(async (url, index) => {
+          try {
+            if (index < fStock || (isNumber(tStock) && index > tStock)) {
+              return null;
+            }
+
+            const res = await fetch(url);
+            if (!res.ok) return null;
+
+            const data = await res.json();
+            if (index === fStock) {
+              if (index === tStock) {
+                return data.slice(fData, tData);
+              }
+              return data.slice(fData);
+            }
+            if (index === tStock) {
+              return data.slice(0, tData);
+            }
+            return data;
+          } catch (e) {
+            return null;
+          }
+        }),
+      )
+    ).reduce((acc, cur) => {
+      if (!cur) return acc;
+      return acc.concat(cur);
+    }, []);
+
+    // tStock in container
+    if (!isNumber(tStock)) {
+      return stockData.concat(this.container.slice(0, tData));
+    }
+
+    return stockData;
   }
 
   async getAll() {
@@ -122,25 +196,20 @@ export class BlobHarbor {
       }),
     );
     const validStockData = stockData.filter(Boolean);
-    if (this.period) {
-      return {
-        type: 'period',
-        data: validStockData.concat(this.container),
-      };
-    }
     const combinedData = validStockData.reduce(
       (acc, cur) => acc.concat(cur),
       [],
     );
-    return {
-      type: 'maximum',
-      data: combinedData.concat(this.container),
-    };
+    return combinedData.concat(this.container);
   }
 
   clear() {
     this.stock.forEach((i) => URL.revokeObjectURL(i));
     this.stock = [];
     this.container = [];
+    this.periodList = {
+      stable: [],
+      active: [],
+    };
   }
 }
