@@ -17,6 +17,13 @@ export interface PeriodItem {
   dataIndex: number;
 }
 
+export const isPeriodItem = (data: unknown): data is PeriodItem => {
+  if (!data) return false;
+  return ['time', 'stockIndex', 'dataIndex'].every((key) => {
+    return Object.prototype.hasOwnProperty.call(data, key);
+  });
+};
+
 let currentContainerSize = 0;
 
 export const PERIOD_DIVIDE_IDENTIFIER = 'PERIOD_DIVIDE_IDENTIFIER';
@@ -67,7 +74,9 @@ export class BlobHarbor {
 
   public add(data: any) {
     const harborIsEmpty =
-      this.stock.length === 0 && this.container.length === 0;
+      this.periodList.active.length === 0 &&
+      this.stock.length === 0 &&
+      this.container.length === 0;
 
     try {
       if (harborIsEmpty || data === PERIOD_DIVIDE_IDENTIFIER) {
@@ -76,6 +85,7 @@ export class BlobHarbor {
           stockIndex: null,
           dataIndex: this.container.length,
         });
+        return true;
       }
       if (this.maximum === 0) {
         this.container.push(data);

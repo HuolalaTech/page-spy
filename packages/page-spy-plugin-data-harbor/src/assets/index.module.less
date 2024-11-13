@@ -39,10 +39,40 @@
 .periodInfo {
   margin-top: (20em / @font-size);
   .label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: (32em / @font-size);
-    font-size: 1em;
-    font-weight: 700;
-    color: #333;
+    .periodTips {
+      display: flex;
+      align-items: center;
+      gap: (4em / @font-size);
+      b {
+        font-size: 1em;
+        color: #333;
+      }
+      span {
+        color: #888;
+        font-size: (12em / @font-size);
+      }
+    }
+    .refreshButton {
+      background: none;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      &:disabled {
+        cursor: not-allowed;
+        svg {
+          color: #888;
+        }
+      }
+      svg {
+        width: (24em / @font-size);
+        height: (24em / @font-size);
+        color: var(--primary-color);
+      }
+    }
   }
   .selectPeriod {
     position: relative;
@@ -164,10 +194,11 @@
   }
   textarea {
     width: 100%;
-    padding: (4em / @font-size) (8em / @font-size);
+    padding: (6em / @font-size) (8em / @font-size);
     background-color: #fcfcfc;
     border-radius: (4em / @font-size);
     box-sizing: border-box;
+    border: 1px solid #999;
     outline: none;
     &:focus,
     &:active {
