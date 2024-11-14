@@ -15,10 +15,17 @@ import { copyInBrowser, formatTimeDuration } from '../utils';
 import type DataHarborPlugin from '.';
 
 function formatPeriodDuration(period: number) {
-  const invalid = !period || !isNumber(+period);
-  const value = invalid ? 0 : (period / 60 / 1000).toFixed(2);
+  let result: string;
 
-  return `${value} ${t.minutes}`;
+  const invalid = !period || !isNumber(+period);
+  if (invalid) {
+    result = '--';
+  } else {
+    const value = period / 60 / 1000;
+    result = Number.isInteger(value) ? String(value) : value.toFixed(2);
+  }
+
+  return `${result} ${t.minutes}`;
 }
 
 interface Params {
