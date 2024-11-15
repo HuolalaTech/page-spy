@@ -21,7 +21,13 @@ import {
 } from '../harbor/blob';
 import { DownloadArgs, startDownload } from '../utils/download';
 import { UploadArgs, startUpload } from '../utils/upload';
-import { getDeviceId, isValidPeriod, jsonToFile, makeData } from '../utils';
+import {
+  getDeviceId,
+  isValidPeriod,
+  jsonToFile,
+  makeData,
+  minifyData,
+} from '../utils';
 import {
   Actions,
   CacheMessageItem,
@@ -186,15 +192,17 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     let data: CacheMessageItem[];
     if (isPeriods && isPeriodActionParams(params)) {
       data = await this.harbor.getPeriodData(params);
-      data.push(
-        makeData('meta', {
+      data.push({
+        type: 'meta',
+        timestamp: params.endTime,
+        data: minifyData({
           title: document.title,
           url: window.location.href,
           startTime: params.startTime,
           endTime: params.endTime,
           remark: params.remark,
         }),
-      );
+      });
     } else {
       data = await this.harbor.getAll();
     }

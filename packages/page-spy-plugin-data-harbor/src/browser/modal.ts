@@ -1,5 +1,5 @@
 import type { Modal, Toast } from '@huolala-tech/page-spy-types';
-import { isNumber, psLog } from '@huolala-tech/page-spy-base';
+import { psLog } from '@huolala-tech/page-spy-base';
 import classes from '../assets/index.module.less';
 import {
   cropSvg,
@@ -13,20 +13,6 @@ import { t } from '../assets/locale';
 import { PeriodItem } from '../harbor/base';
 import { copyInBrowser, formatTimeDuration } from '../utils';
 import type DataHarborPlugin from '.';
-
-function formatPeriodDuration(period: number) {
-  let result: string;
-
-  const invalid = !period || !isNumber(+period);
-  if (invalid) {
-    result = '--';
-  } else {
-    const value = period / 60 / 1000;
-    result = Number.isInteger(value) ? String(value) : value.toFixed(2);
-  }
-
-  return `${result} ${t.minutes}`;
-}
 
 function getLocaleTime(v: number) {
   return new Date(v).toLocaleTimeString('en', { hour12: false });
@@ -63,9 +49,6 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
         <div class="${classes.label}">
           <div class="${classes.periodTips}">
             <b>${t.selectPeriod}</b>
-            <span class="${classes.periodDuration}">
-              (${t.periodDuration}: ${formatPeriodDuration(plugin.$harborConfig.period)})
-            </span>
           </div>
           <button class="${classes.refreshButton}">${refreshSvg}</button>
         </div>
