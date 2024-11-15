@@ -28,7 +28,7 @@ let currentContainerSize = 0;
 
 export const PERIOD_DIVIDE_IDENTIFIER = 'PERIOD_DIVIDE_IDENTIFIER';
 export const DEFAULT_MAXIMUM = 10 * 1024 * 1024;
-export const DEFAULT_PERIOD_DURATION = 5 * 60 * 1000;
+export const DEFAULT_PERIOD_DURATION = 1 * 60 * 1000;
 
 export class BlobHarbor {
   // Object URL list

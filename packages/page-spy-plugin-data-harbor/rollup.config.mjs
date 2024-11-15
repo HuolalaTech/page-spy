@@ -9,7 +9,7 @@ import { DEFAULT_EXTENSIONS } from '@babel/core';
 import fs from 'fs';
 import { dirname } from 'path';
 import postcss from 'rollup-plugin-postcss';
-import autoprefixer from 'autoprefixer';
+import postcssPresetEnv from 'postcss-preset-env';
 
 const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 const getBabel = (mode) => {
@@ -56,7 +56,7 @@ const plugins = [
     },
     extensions: ['.css', '.less'],
     extract: false,
-    plugins: [autoprefixer()],
+    plugins: [postcssPresetEnv()],
   }),
 ];
 
