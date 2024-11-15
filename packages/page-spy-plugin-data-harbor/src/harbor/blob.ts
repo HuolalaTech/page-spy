@@ -1,5 +1,6 @@
 import { isBrowser, isNumber } from '@huolala-tech/page-spy-base';
 import { isValidMaximum } from '../utils';
+import { CacheMessageItem, PeriodActionParams, PeriodItem } from './base';
 
 interface HarborConfig {
   maximum: number;
@@ -10,45 +11,17 @@ interface PeriodList {
   active: PeriodItem[];
 }
 
-export interface PeriodItem {
-  time: Date;
-  stockIndex: number | null;
-  // Divide from which index in a stock/container.
-  dataIndex: number;
-}
-
-export const isPeriodItem = (data: unknown): data is PeriodItem => {
-  if (!data) return false;
-  return ['time', 'stockIndex', 'dataIndex'].every((key) => {
-    return Object.prototype.hasOwnProperty.call(data, key);
-  });
-};
-
 let currentContainerSize = 0;
 
 export const PERIOD_DIVIDE_IDENTIFIER = 'PERIOD_DIVIDE_IDENTIFIER';
 export const DEFAULT_MAXIMUM = 10 * 1024 * 1024;
-export const DEFAULT_PERIOD_DURATION = 1 * 60 * 1000;
+export const DEFAULT_PERIOD_DURATION = 5 * 60 * 1000;
 
 export class BlobHarbor {
   // Object URL list
-  //
-  // If add with 'maximum':
-  // <stock>[
-  //   <blob 0>, // the total size of each blob has been to the maximum
-  //   <blob 1>,
-  //   ...
-  // ]
-  //
-  // If add with 'period':
-  // <stock>[
-  //   <blob 0>, // the duration of each blob equals to the period
-  //   <blob 1>,
-  //   ...,
-  // ]
   stock: string[] = [];
 
-  container: any[] = [];
+  container: CacheMessageItem[] = [];
 
   // Specify the maximum bytes of single harbor's container.
   // 0 means no limitation.
@@ -125,8 +98,7 @@ export class BlobHarbor {
     this.periodList.active = [];
   }
 
-  // Periods can only be made if the length >= 3
-  // Because the head and tail will be filled with one each
+  // There are at least two periods since we manually inserted them both at the head and at the tail
   getPeriodList() {
     const temp: PeriodItem = {
       time: new Date(),
@@ -136,61 +108,67 @@ export class BlobHarbor {
     return [...this.periodList.stable, ...this.periodList.active, temp];
   }
 
-  async getPeriodData(from: PeriodItem, to: PeriodItem) {
-    const { stockIndex: fStock, dataIndex: fData } = from;
-    const { stockIndex: tStock, dataIndex: tData } = to;
+  async getPeriodData(params: PeriodActionParams) {
+    const { fromPeriod, toPeriod, endTime } = params;
+
+    const { stockIndex: fStock, dataIndex: fData } = fromPeriod;
+    const { stockIndex: tStock, dataIndex: tData } = toPeriod;
+
+    let result: CacheMessageItem[] = [];
 
     // all data in container
     if (fStock === null && tStock === null) {
-      return this.container.slice(fData, tData);
-    }
-    if (fStock === null || !isNumber(fStock)) {
-      throw new Error('The start of selected period is invalid');
-    }
-    // <stock> [
-    //   <blob>, <- fStock,
-    //   ...,
-    //   <blob> <- tStock, maybe null
-    // ]
-    // both fStock and tStock are in stock
-    const stockData = (
-      await Promise.all(
-        this.stock.map(async (url, index) => {
-          try {
-            if (index < fStock || (isNumber(tStock) && index > tStock)) {
+      result = this.container.slice(fData, tData);
+    } else {
+      if (fStock === null || !isNumber(fStock)) {
+        throw new Error('The start of selected period is invalid');
+      }
+
+      // <stock> [
+      //   <blob>, <- fStock,
+      //   ...,
+      //   <blob> <- tStock, maybe null
+      // ]
+      // both fStock and tStock are in stock
+      result = (
+        await Promise.all(
+          this.stock.map(async (url, index) => {
+            try {
+              if (index < fStock || (isNumber(tStock) && index > tStock)) {
+                return null;
+              }
+
+              const res = await fetch(url);
+              if (!res.ok) return null;
+
+              const data = await res.json();
+              if (index === fStock) {
+                if (index === tStock) {
+                  return data.slice(fData, tData);
+                }
+                return data.slice(fData);
+              }
+              if (index === tStock) {
+                return data.slice(0, tData);
+              }
+              return data;
+            } catch (e) {
               return null;
             }
+          }),
+        )
+      ).reduce((acc, cur) => {
+        if (!cur) return acc;
+        return acc.concat(cur);
+      }, []);
 
-            const res = await fetch(url);
-            if (!res.ok) return null;
-
-            const data = await res.json();
-            if (index === fStock) {
-              if (index === tStock) {
-                return data.slice(fData, tData);
-              }
-              return data.slice(fData);
-            }
-            if (index === tStock) {
-              return data.slice(0, tData);
-            }
-            return data;
-          } catch (e) {
-            return null;
-          }
-        }),
-      )
-    ).reduce((acc, cur) => {
-      if (!cur) return acc;
-      return acc.concat(cur);
-    }, []);
-
-    // tStock in container
-    if (!isNumber(tStock)) {
-      return stockData.concat(this.container.slice(0, tData));
+      // tStock in container, its value is null
+      if (!isNumber(tStock)) {
+        result = result.concat(this.container.slice(0, tData));
+      }
     }
 
-    return stockData;
+    return result.filter((i) => i.timestamp <= endTime);
   }
 
   async getAll() {
@@ -205,10 +183,12 @@ export class BlobHarbor {
         }
       }),
     );
-    const validStockData = stockData.filter(Boolean);
+    const validStockData = stockData.filter(
+      Boolean,
+    ) as NonNullable<CacheMessageItem>[];
     const combinedData = validStockData.reduce(
       (acc, cur) => acc.concat(cur),
-      [],
+      [] as CacheMessageItem[],
     );
     return combinedData.concat(this.container);
   }

@@ -3,8 +3,8 @@ import {
   isNumber,
   ROOM_SESSION_KEY,
 } from '@huolala-tech/page-spy-base';
-import type { SpyMessage } from '@huolala-tech/page-spy-types';
 import { strFromU8, zlibSync, strToU8 } from 'fflate';
+import { DataType } from '../harbor/base';
 
 export const getDeviceId = () => {
   if (isBrowser()) {
@@ -27,7 +27,7 @@ export const minifyData = (d: any) => {
   return strFromU8(zlibSync(strToU8(JSON.stringify(d)), { level: 9 }), true);
 };
 
-export const makeData = <T extends SpyMessage.DataType>(type: T, data: any) => {
+export const makeData = <T extends DataType>(type: T, data: any) => {
   return {
     type,
     timestamp: Date.now(),

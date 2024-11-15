@@ -123,10 +123,21 @@
         height: 100%;
         background-color: var(--primary-color);
         border-radius: var(--track-size);
+        &[data-min-text-position='bottom'] {
+          &::before {
+            top: calc(var(--thumb-size));
+          }
+        }
+        &[data-max-text-position='bottom'] {
+          &::after {
+            top: calc(var(--thumb-size));
+          }
+        }
         &::before,
         &::after {
           position: absolute;
           top: calc(var(--thumb-size) * -1);
+          transition: top 0.15s ease-in-out;
           font-size: 1em;
           font-weight: 500;
           font-family: var(--mono-font);

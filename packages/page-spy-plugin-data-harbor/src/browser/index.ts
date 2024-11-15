@@ -16,7 +16,7 @@ import {
 import {
   BlobHarbor,
   DEFAULT_MAXIMUM,
-  isPeriodItem,
+  DEFAULT_PERIOD_DURATION,
   PERIOD_DIVIDE_IDENTIFIER,
 } from '../harbor/blob';
 import { DownloadArgs, startDownload } from '../utils/download';
@@ -26,6 +26,8 @@ import {
   Actions,
   CacheMessageItem,
   DataType,
+  isPeriodActionParams,
+  isPeriodItem,
   PeriodActionParams,
   WholeActionParams,
 } from '../harbor/base';
@@ -43,7 +45,7 @@ interface DataHarborConfig {
   period?: number;
 
   // Specify which types of data to collect.
-  caredData?: Record<DataType, boolean>;
+  caredData?: Record<Exclude<DataType, 'meta'>, boolean>;
 
   // Custom uploaded filename by this.
   // Default value is `new Date().toLocaleString()`.
@@ -55,7 +57,7 @@ interface DataHarborConfig {
 
 const defaultConfig: Required<DataHarborConfig> = {
   maximum: DEFAULT_MAXIMUM,
-  period: 10 * 1000,
+  period: DEFAULT_PERIOD_DURATION,
   caredData: {
     console: true,
     network: true,
@@ -133,7 +135,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     this.$socketStore.addListener('public-data', (message) => {
       if (this.isPaused || !this.isCaredPublicData(message)) return;
 
-      const data = makeData(message.type, message.data);
+      const data = makeData(message.type as DataType, message.data);
       if (!this.startTimestamp) {
         this.startTimestamp = data.timestamp;
       }
@@ -181,10 +183,18 @@ export default class DataHarborPlugin implements PageSpyPlugin {
   ) {
     const isPeriods = ['upload-periods', 'download-periods'].includes(type);
 
-    let data: any;
-    if (isPeriods) {
-      const { from, to } = params as PeriodActionParams;
-      data = await this.harbor.getPeriodData(from, to);
+    let data: CacheMessageItem[];
+    if (isPeriods && isPeriodActionParams(params)) {
+      data = await this.harbor.getPeriodData(params);
+      data.push(
+        makeData('meta', {
+          title: document.title,
+          url: window.location.href,
+          startTime: params.startTime,
+          endTime: params.endTime,
+          remark: params.remark,
+        }),
+      );
     } else {
       data = await this.harbor.getAll();
     }
@@ -230,41 +240,35 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       remark: '',
     },
   ): Promise<void | string> {
-    try {
-      const validatePeriodParams = (p: PeriodActionParams) => {
-        if (!p || ![p.from, p.to].every(isPeriodItem)) {
-          throw new Error(
-            `Incorrect params when you call onOfflineLog('${type}')`,
-          );
-        }
-      };
-
-      let result;
-      if (type === 'upload' || type === 'download') {
-        const args: any = await this.getParams(type as any, params);
-        result =
-          type === 'upload'
-            ? await startUpload(args)
-            : await startDownload(args);
-
-        if ((params as WholeActionParams).clearCache === true) {
-          this.clearAndNotify();
-        }
+    const validatePeriodParams = (p: PeriodActionParams) => {
+      if (!p || ![p.fromPeriod, p.toPeriod].every(isPeriodItem)) {
+        throw new Error(
+          `Incorrect params when you call onOfflineLog('${type}')`,
+        );
       }
-      if (type === 'upload-periods' || type === 'download-periods') {
-        validatePeriodParams(params as PeriodActionParams);
-        const args: any = await this.getParams(type as any, params);
-        result =
-          type === 'upload-periods'
-            ? await startUpload(args)
-            : await startDownload(args);
-      }
+    };
 
-      if (result) {
-        return this.getDebugUrl(result);
+    let result;
+    if (type === 'upload' || type === 'download') {
+      const args: any = await this.getParams(type as any, params);
+      result =
+        type === 'upload' ? await startUpload(args) : await startDownload(args);
+
+      if ((params as WholeActionParams).clearCache === true) {
+        this.clearAndNotify();
       }
-    } catch (e: any) {
-      psLog.error(e.message);
+    }
+    if (type === 'upload-periods' || type === 'download-periods') {
+      validatePeriodParams(params as PeriodActionParams);
+      const args: any = await this.getParams(type as any, params);
+      result =
+        type === 'upload-periods'
+          ? await startUpload(args)
+          : await startDownload(args);
+    }
+
+    if (result) {
+      return this.getDebugUrl(result);
     }
   }
 

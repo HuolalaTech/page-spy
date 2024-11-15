@@ -1,12 +1,16 @@
-import type { SpyMessage } from '@huolala-tech/page-spy-types';
-import { PeriodItem } from './blob';
-
 export type DataType =
   | 'console'
   | 'network'
   | 'system'
   | 'storage'
-  | 'rrweb-event';
+  | 'rrweb-event'
+  | 'meta';
+
+export interface CacheMessageItem {
+  type: DataType;
+  timestamp: number;
+  data: string;
+}
 
 export type Actions =
   | 'upload'
@@ -19,14 +23,31 @@ export interface WholeActionParams {
   remark?: string;
 }
 export interface PeriodActionParams {
-  from: PeriodItem;
-  to: PeriodItem;
+  fromPeriod: PeriodItem;
+  toPeriod: PeriodItem;
+  startTime: number;
+  endTime: number;
   remark?: string;
 }
 
-export type CacheMessageItem = Pick<
-  SpyMessage.MessageItem<SpyMessage.DataType, any>,
-  'type' | 'data'
-> & {
-  timestamp: number;
+export const isPeriodActionParams = (
+  params: unknown,
+): params is PeriodActionParams => {
+  if (!params) return false;
+  return ['fromPeriod', 'toPeriod', 'startTime', 'endTime'].every((key) => {
+    return Object.prototype.hasOwnProperty.call(params, key);
+  });
+};
+
+export interface PeriodItem {
+  time: Date;
+  stockIndex: number | null;
+  dataIndex: number;
+}
+
+export const isPeriodItem = (data: unknown): data is PeriodItem => {
+  if (!data) return false;
+  return ['time', 'stockIndex', 'dataIndex'].every((key) => {
+    return Object.prototype.hasOwnProperty.call(data, key);
+  });
 };

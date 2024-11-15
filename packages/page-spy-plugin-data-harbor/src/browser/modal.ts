@@ -10,7 +10,7 @@ import {
   refreshSvg,
 } from '../assets/svg';
 import { t } from '../assets/locale';
-import { PeriodItem } from '../harbor/blob';
+import { PeriodItem } from '../harbor/base';
 import { copyInBrowser, formatTimeDuration } from '../utils';
 import type DataHarborPlugin from '.';
 
@@ -26,6 +26,16 @@ function formatPeriodDuration(period: number) {
   }
 
   return `${result} ${t.minutes}`;
+}
+
+function getLocaleTime(v: number) {
+  return new Date(v).toLocaleTimeString('en', { hour12: false });
+}
+
+function gapBetweenTextOnThumb(max: number) {
+  if (max < 10) return 0.2;
+  if (max < 30) return 0.16;
+  return 0.135;
 }
 
 interface Params {
@@ -101,7 +111,6 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
 
   const openLogAction = $('#open-log-action') as HTMLButtonElement;
   const modalContent = $c(classes.content) as HTMLDivElement;
-  const selectPeriod = $c(classes.selectPeriod) as HTMLDivElement;
   const refreshButton = $c(classes.refreshButton) as HTMLButtonElement;
   const range = $c(classes.range) as HTMLDivElement;
   const minThumb = $('#period-min') as HTMLInputElement;
@@ -115,50 +124,72 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
   const periodInfoRef: {
     max: number;
     periods: PeriodItem[];
+    firstTime: number;
+    lastTime: number;
   } = {
     max: 0,
     periods: [],
+    firstTime: 0,
+    lastTime: 0,
   };
   const updateRangeInTrack = () => {
-    const { max, periods } = periodInfoRef;
-    const left = +minThumb.value / max;
-    const right = 1 - +maxThumb.value / max;
+    const { max, firstTime } = periodInfoRef;
+    const minValue = +minThumb.value;
+    const maxValue = +maxThumb.value;
+
+    const left = minValue / max;
+    const right = 1 - maxValue / max;
     range.style.setProperty('--left', `${(left * 100).toFixed(3)}%`);
     range.style.setProperty('--right', `${(right * 100).toFixed(3)}%`);
 
-    const minText = periods[+minThumb.value]?.time.toLocaleTimeString();
-    const maxText = periods[+maxThumb.value]?.time.toLocaleTimeString();
-    range.style.setProperty('--min-text', `"${minText}"`);
-    range.style.setProperty('--max-text', `"${maxText}"`);
+    const leftTime = firstTime + minValue * 1000;
+    const rightTime = firstTime + maxValue * 1000;
+    range.style.setProperty('--min-text', `"${getLocaleTime(leftTime)}"`);
+    range.style.setProperty('--max-text', `"${getLocaleTime(rightTime)}"`);
   };
 
   const refreshPeriods = () => {
     const periods = plugin.harbor.getPeriodList();
+    const firstTime = periods[0].time.getTime();
+    const lastTime = periods[periods.length - 1].time.getTime();
 
-    const len = periods.length;
-    const max = String(len - 1);
+    const seconds = Math.floor((lastTime - firstTime) / 1000);
+    const max = seconds.toString();
+
     minThumb.max = max;
     minThumb.value = '0';
 
     maxThumb.max = max;
     maxThumb.value = max;
-    if (len >= 3) {
-      selectPeriod.classList.remove(classes.disabled);
-      minThumb.disabled = false;
-      maxThumb.disabled = false;
-      uploadPeriodsButton.disabled = false;
-      downloadPeriodsButton.disabled = false;
 
-      periodInfoRef.max = len - 1;
-      periodInfoRef.periods = periods;
-      updateRangeInTrack();
-    } else {
-      selectPeriod.classList.add(classes.disabled);
-      minThumb.disabled = true;
-      maxThumb.disabled = true;
-      uploadPeriodsButton.disabled = true;
-      downloadPeriodsButton.disabled = true;
-    }
+    periodInfoRef.max = seconds;
+    periodInfoRef.periods = periods;
+    periodInfoRef.firstTime = firstTime;
+    periodInfoRef.lastTime = lastTime;
+
+    updateRangeInTrack();
+  };
+  const getSelectedPeriod = () => {
+    const { firstTime } = periodInfoRef;
+    const minValue = +minThumb.value;
+    const maxValue = +maxThumb.value;
+
+    const startTime = firstTime + minValue * 1000;
+    const endTime = firstTime + maxValue * 1000;
+
+    const fromPeriod = periodInfoRef.periods.findLast(
+      (i) => i.time.getTime() <= startTime,
+    )!;
+    const toPeriod = periodInfoRef.periods.find(
+      (i) => i.time.getTime() >= endTime,
+    )!;
+
+    return {
+      fromPeriod,
+      toPeriod,
+      startTime,
+      endTime,
+    };
   };
 
   refreshButton.addEventListener('click', () => {
@@ -168,21 +199,35 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
     refreshButton.disabled = false;
   });
   minThumb.addEventListener('input', function () {
-    const max = +maxThumb.value - 1;
+    const max = +maxThumb.value;
     const current = +this.value;
-    if (current > max) {
-      minThumb.value = String(max);
+    if (current > max - 1) {
+      minThumb.value = String(max - 1);
       return;
     }
+    const percent = (max - current) / periodInfoRef.max;
+    if (percent <= gapBetweenTextOnThumb(periodInfoRef.max)) {
+      range.dataset.maxTextPosition = 'bottom';
+    } else {
+      range.dataset.maxTextPosition = 'top';
+    }
+    range.dataset.minTextPosition = 'top';
     updateRangeInTrack();
   });
   maxThumb.addEventListener('input', function () {
-    const min = +minThumb.value + 1;
+    const min = +minThumb.value;
     const current = +this.value;
-    if (current < min) {
-      maxThumb.value = String(min);
+    if (current < min + 1) {
+      maxThumb.value = String(min + 1);
       return;
     }
+    const percent = (current - min) / periodInfoRef.max;
+    if (percent <= gapBetweenTextOnThumb(periodInfoRef.max)) {
+      range.dataset.minTextPosition = 'bottom';
+    } else {
+      range.dataset.minTextPosition = 'top';
+    }
+    range.dataset.maxTextPosition = 'top';
     updateRangeInTrack();
   });
   uploadAllButton.addEventListener('click', async () => {
@@ -218,11 +263,8 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
   uploadPeriodsButton.addEventListener('click', async () => {
     try {
       uploadPeriodsButton.disabled = true;
-      const from = periodInfoRef.periods[+minThumb.value];
-      const to = periodInfoRef.periods[+maxThumb.value];
       const debugUrl = await plugin.onOfflineLog('upload-periods', {
-        from,
-        to,
+        ...getSelectedPeriod(),
         remark: remark.value,
       });
 
@@ -239,12 +281,7 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
   downloadPeriodsButton.addEventListener('click', async () => {
     try {
       downloadPeriodsButton.disabled = true;
-      const from = periodInfoRef.periods[+minThumb.value];
-      const to = periodInfoRef.periods[+maxThumb.value];
-      await plugin.onOfflineLog('download-periods', {
-        from,
-        to,
-      });
+      await plugin.onOfflineLog('download-periods', getSelectedPeriod());
       toast.message(t.success);
     } catch (e) {
       psLog.error(e);
