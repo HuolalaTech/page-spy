@@ -1,13 +1,6 @@
-export const mockRequest = (
-  params: {
-    url: string;
-    method?: string;
-    header?: Record<string, string>;
-    timeout?: number;
-    dataType?: 'json';
-    responseType?: 'text' | 'arraybuffer';
-  } & AsyncCallback,
-) => {
+import { MPNetworkAPI } from 'page-spy-mp-base/src/types';
+
+export const mockRequest = (params: Parameters<MPNetworkAPI['request']>[0]) => {
   let res: any = {};
   switch (params.url) {
     case '/plain-text':

@@ -1,11 +1,11 @@
-[npm-image]: https://img.shields.io/npm/v/@huolala-tech/page-spy-plugin-data-harbor?logo=npm&label=version
-[npm-url]: https://www.npmjs.com/package/@huolala-tech/page-spy-plugin-data-harbor
-[minified-image]: https://img.shields.io/bundlephobia/min/@huolala-tech/page-spy-plugin-data-harbor
-[minified-url]: https://unpkg.com/browse/@huolala-tech/page-spy-plugin-data-harbor/dist/iife/index.min.js
+[npm-image]: https://img.shields.io/npm/v/@huolala-tech/page-spy-plugin-mp-data-harbor?logo=npm&label=version
+[npm-url]: https://www.npmjs.com/package/@huolala-tech/page-spy-plugin-mp-data-harbor
+[minified-image]: https://img.shields.io/bundlephobia/min/@huolala-tech/page-spy-plugin-mp-data-harbor
+[minified-url]: https://unpkg.com/browse/@huolala-tech/page-spy-plugin-data-harbor/dist/esm/index.min.js
 
 English | [中文](./README_ZH.md)
 
-# `@huolala-tech/page-spy-plugin-data-harbor`
+# `@huolala-tech/page-spy-plugin-mp-data-harbor`
 
 [![SDK version][npm-image]][npm-url]
 [![SDK size][minified-image]][minified-url]
@@ -35,7 +35,7 @@ interface DataHarborConfig {
   filename?: () => string;
 
   // Customize the "Download Log Data"
-  // (Version required: @huolala-tech/page-spy-plugin-data-harbor^1.0.6)
+  // (Version required: @huolala-tech/page-spy-plugin-mp-data-harbor^1.0.6)
   onDownload?: (data: CacheMessageItem[]) => void;
 }
 
@@ -75,14 +75,14 @@ export default DataHarborPlugin;
 
   ```ts
   // In your entry file like "main.ts"
-  import PageSpy from '@huolala-tech/page-spy-browser';
-  import DataHarborPlugin from '@huolala-tech/page-spy-plugin-data-harbor';
+  import PageSpy from '@huolala-tech/page-spy-wechat';
+  import DataHarborPlugin from '@huolala-tech/page-spy-mp-plugin-data-harbor';
 
   // Register plugin
-  window.$harbor = new DataHarborPlugin(config: DataHarborConfig);
+  const harbor = new DataHarborPlugin(config: DataHarborConfig);
   PageSpy.registerPlugin(window.$harbor);
   // Init PageSpy
-  window.$pageSpy = new PageSpy();
+  new PageSpy();
   ```
 
 ### Upload / download data

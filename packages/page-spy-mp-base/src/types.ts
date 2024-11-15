@@ -1,27 +1,25 @@
-declare const PKG_VERSION: string;
-
-type AsyncCallback<R = any, E = any> = {
+export type AsyncCallback<R = void, E = any> = {
   success?: (res: R) => void;
   fail?: (error: E) => void;
   complete?: (res?: R | E) => void;
 };
 
-type KVList = {
+export type KVList = {
   key: string;
   value: any;
 }[];
 
-declare type SocketOnOpenHandler = (res: {
+export type SocketOnOpenHandler = (res: {
   header?: Record<string, string>;
 }) => void;
-declare type SocketOnCloseHandler = (res: {
+export type SocketOnCloseHandler = (res: {
   code: number;
   reason: string;
 }) => void;
-declare type SocketOnErrorHandler = (msg: string) => void;
-declare type SocketOnMessageHandler = (data: string | ArrayBuffer) => void;
+export type SocketOnErrorHandler = (msg: string) => void;
+export type SocketOnMessageHandler = (data: string | ArrayBuffer) => void;
 
-declare type MPSocket = {
+export type MPSocket = {
   send(data: object): void;
   close(data: {}): void;
   onOpen(fun: SocketOnOpenHandler): void;
@@ -30,7 +28,7 @@ declare type MPSocket = {
   onMessage(fun: SocketOnMessageHandler): void;
 };
 
-declare type FileSystemManager = {
+export type FileSystemManager = {
   writeFileSync(
     filePath: string,
     data: string | ArrayBuffer,
@@ -62,7 +60,7 @@ declare type FileSystemManager = {
   unlinkSync(filePath: string): void;
 };
 
-declare type MPStorageAPI = {
+export type MPStorageAPI = {
   getStorageInfoSync(): {
     keys: string[];
     currentSize: number;
@@ -115,11 +113,11 @@ declare type MPStorageAPI = {
   clearStorageSync(): void;
 };
 
-declare type MPFileAPI = {
+export type MPFileAPI = {
   getFileSystemManager(): FileSystemManager;
 };
 
-type MPNetworkAPI = {
+export type MPNetworkAPI = {
   request(
     params: {
       url: string;
@@ -185,7 +183,7 @@ type MPNetworkAPI = {
   closeSocket(params: AsyncCallback): void;
 };
 
-type MPSystemAPI = {
+export type MPSystemAPI = {
   // for test purpose
   env: {
     USER_DATA_PATH: string;
@@ -269,7 +267,7 @@ type MPSystemAPI = {
   ): void;
 };
 
-type MPUIAPI = {
+export type MPUIAPI = {
   showActionSheet(
     options: {
       alertText?: string; // for wx
@@ -311,7 +309,7 @@ type MPUIAPI = {
   ): void;
 };
 
-type MPRouterAPI = {
+export type MPRouterAPI = {
   switchTab(params: { url: string } & AsyncCallback): void;
   reLaunch(params: { url: string } & AsyncCallback): void;
   redirectTo(params: { url: string } & AsyncCallback): void;
@@ -319,32 +317,9 @@ type MPRouterAPI = {
   navigateBack(params: { delta?: number } & AsyncCallback): void;
 };
 
-declare type MPSDK = MPUIAPI &
+export type MPSDK = MPUIAPI &
   MPStorageAPI &
   MPFileAPI &
   MPNetworkAPI &
   MPSystemAPI &
   MPRouterAPI;
-
-declare interface PageInfo {
-  route: string;
-  // page state data
-  data: Record<string, any>;
-  // page query string params
-  options: Record<string, any>;
-
-  setData: (data: Record<string, any>) => void;
-
-  __proto__: Object;
-
-  [other: string]: any;
-}
-
-type AppData = {
-  globalData: Record<string, any>;
-  __proto__: Object;
-};
-declare function getCurrentPages<T extends PageInfo = PageInfo>(): T[];
-declare function getApp(): AppData;
-
-declare function Page(config: any): void; // TODO 补完

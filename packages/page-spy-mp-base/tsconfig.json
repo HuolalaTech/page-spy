@@ -7,7 +7,8 @@
     "noEmit": false,
     "outDir": "dist",
     "declaration": true,
-    "declarationDir": "dist/types"
+    "declarationDir": "dist/types",
+    "isolatedModules": false
   },
-  "include": ["src"]
+  "include": ["src", "global.d.ts"]
 }

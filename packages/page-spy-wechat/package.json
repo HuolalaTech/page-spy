@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@huolala-tech/page-spy-base": "^1.0.6",
-    "@huolala-tech/page-spy-mp-base": "^1.0.8",
+    "@huolala-tech/page-spy-mp-base": "^1.0.9",
     "@huolala-tech/page-spy-types": "^1.9.6"
   },
   "devDependencies": {

@@ -1,3 +1,4 @@
+import { KVList } from './../types';
 import { makeMessage, Client, psLog } from '@huolala-tech/page-spy-base';
 import type {
   SpyStorage,
@@ -7,6 +8,7 @@ import type {
 } from '@huolala-tech/page-spy-types';
 import socketStore from '../helpers/socket';
 import { getMPSDK, utilAPI } from '../utils';
+import type { MPStorageAPI } from '../types';
 
 export function mpDataStringify(data: any) {
   const typeOfValue = typeof data;

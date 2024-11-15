@@ -26,7 +26,8 @@
     "url": "https://github.com/HuolalaTech/page-spy/issues"
   },
   "files": [
-    "dist"
+    "dist",
+    "global.d.ts"
   ],
   "keywords": [
     "pagespy",

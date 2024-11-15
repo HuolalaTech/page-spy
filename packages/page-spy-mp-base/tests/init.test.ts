@@ -1,5 +1,5 @@
 import { atom, isBrowser } from 'page-spy-base/src';
-import SDK from 'page-spy-mp-base/src/index';
+import PageSpy from 'page-spy-mp-base/src/index';
 
 import ConsolePlugin from 'page-spy-mp-base/src/plugins/console';
 import StoragePlugin from 'page-spy-mp-base/src/plugins/storage';
@@ -17,6 +17,8 @@ import { initStorageMock } from './mock/storage';
 import { mp } from './setup';
 import { Config } from 'page-spy-mp-base/src/config';
 import socket from 'page-spy-mp-base/src/helpers/socket';
+import { MPStorageAPI } from 'page-spy-mp-base/src/types';
+import { Client } from 'page-spy-base/src';
 
 const initParams = {
   config: new Config().mergeConfig({ api: 'example.com' }),
@@ -24,15 +26,17 @@ const initParams = {
   atom,
 } as OnInitParams<SpyMP.MPInitConfig>;
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
-let sdk: SDK | null;
+let sdk: PageSpy | null;
+
+PageSpy.client = new Client({}) as any;
 
 beforeEach(() => {
   initStorageMock();
 });
 afterEach(() => {
   jest.restoreAllMocks();
-  SDK.instance?.abort();
-  SDK.instance = null;
+  PageSpy.instance?.abort();
+  PageSpy.instance = null;
 });
 
 describe('Im in the right env', () => {
@@ -43,17 +47,17 @@ describe('Im in the right env', () => {
 
 describe('new PageSpy([config])', () => {
   it('Must offer api', () => {
-    expect(() => new SDK({ api: '' })).toThrow(
+    expect(() => new PageSpy({ api: '' })).toThrow(
       'The api base url cannot be empty',
     );
   });
 
   it('Can not init twice', () => {
-    new SDK({ api: 'example' });
-    const instance = SDK.instance;
-    new SDK({ api: 'example' });
+    new PageSpy({ api: 'example' });
+    const instance = PageSpy.instance;
+    new PageSpy({ api: 'example' });
 
-    expect(SDK.instance).toEqual(instance);
+    expect(PageSpy.instance).toEqual(instance);
   });
 
   it('Load plugins will run `<plugin>.onInit()`', () => {
@@ -72,7 +76,7 @@ describe('new PageSpy([config])', () => {
       jest.spyOn(i.prototype, 'onInit').mockImplementation(onInitFn);
     });
 
-    sdk = new SDK({ api: 'test-api.com' });
+    sdk = new PageSpy({ api: 'test-api.com' });
     expect(onInitFn).toHaveBeenCalledTimes(INTERNAL_PLUGINS.length);
   });
 
@@ -165,7 +169,7 @@ describe('new PageSpy([config])', () => {
   it('Init connection', async () => {
     expect(mp.getStorageSync(ROOM_SESSION_KEY)).toBeFalsy();
 
-    const sdk = new SDK({ api: 'test-api.com' });
+    const sdk = new PageSpy({ api: 'test-api.com' });
     await sleep();
 
     expect(mp.getStorageSync(ROOM_SESSION_KEY)).toEqual({
@@ -189,21 +193,21 @@ describe('new PageSpy([config])', () => {
       project: 'default',
     });
 
-    const spy = jest.spyOn(SDK.prototype, 'useOldConnection');
+    const spy = jest.spyOn(PageSpy.prototype, 'useOldConnection');
 
-    new SDK({ api: 'test-api.com' });
+    new PageSpy({ api: 'test-api.com' });
 
     await sleep();
     expect(spy).toBeCalled();
   });
 
   it('Will get the same instance with duplicate init', () => {
-    expect(SDK.instance).toBe(null);
+    expect(PageSpy.instance).toBe(null);
 
     // 1st init
-    const ins1 = new SDK({ api: 'sss' });
+    const ins1 = new PageSpy({ api: 'sss' });
     // 2nd init
-    const ins2 = new SDK({ api: 'bbb' });
+    const ins2 = new PageSpy({ api: 'bbb' });
 
     expect(ins1).toBe(ins2);
   });

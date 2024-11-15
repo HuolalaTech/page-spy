@@ -1,3 +1,5 @@
+import { MPSDK } from './types';
+
 // PENDING: 这里补泛型
 export const promisifyMPApi = <R = any>(api: (params: any) => any) => {
   return (params: Record<string, any>) => {

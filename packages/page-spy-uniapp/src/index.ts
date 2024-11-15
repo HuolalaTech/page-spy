@@ -1,9 +1,10 @@
-import PageSpyMPBase, {
+import PageSpy, {
   setMPSDK,
   MPSocketWrapper,
+  MPSDK,
 } from '@huolala-tech/page-spy-mp-base';
-import { psLog, Client, SocketStoreBase } from '@huolala-tech/page-spy-base';
-import { SpyClient, SpyMP } from '@huolala-tech/page-spy-types';
+import { Client, psLog, SocketStoreBase } from '@huolala-tech/page-spy-base';
+import { SpyClient } from '@huolala-tech/page-spy-types';
 
 declare const uni: MPSDK;
 
@@ -58,18 +59,14 @@ SocketStoreBase.messageFilters.push((data) => {
   return data;
 });
 
-class PageSpy extends PageSpyMPBase {
-  constructor(init: SpyMP.MPInitConfig) {
-    super(init, {
-      framework: 'uniapp',
-      osType: info.osName.toLowerCase() as SpyClient.OS,
-      osVersion: info.osVersion,
-      browserType,
-      browserVersion: info.appVersion,
-      sdk: 'uniapp',
-      sdkVersion: PKG_VERSION,
-    });
-  }
-}
+PageSpy.client = new Client({
+  framework: 'uniapp',
+  osType: info.osName.toLowerCase() as SpyClient.OS,
+  osVersion: info.osVersion,
+  browserType,
+  browserVersion: info.appVersion,
+  sdk: 'uniapp',
+  sdkVersion: PKG_VERSION,
+});
 
 export default PageSpy;

@@ -89,8 +89,7 @@ class PageSpyTaro extends PageSpyMPBase {
         console,
       });
     }
-
-    super(init, {
+    PageSpyMPBase.client = new Client({
       sdk: 'taro',
       osType,
       osVersion,
@@ -99,6 +98,7 @@ class PageSpyTaro extends PageSpyMPBase {
       isDevTools: info.platform === 'devtools', // alipay cannot detect devtools, so here is always false for alipay.
       sdkVersion: PKG_VERSION,
     });
+    super(init);
   }
 }
 

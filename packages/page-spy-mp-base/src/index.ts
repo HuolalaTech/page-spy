@@ -14,7 +14,6 @@ import type {
   PageSpyPluginLifecycle,
   PluginOrder,
   PageSpyPluginLifecycleArgs,
-  SpyClient,
 } from '@huolala-tech/page-spy-types';
 
 import ConsolePlugin from './plugins/console';
@@ -36,7 +35,7 @@ type UpdateConfig = {
   project?: string;
 };
 
-class PageSpyMPBase {
+class PageSpy {
   root: HTMLElement | null = null;
 
   request: Request | null = null;
@@ -56,15 +55,15 @@ class PageSpyMPBase {
 
   cacheTimer: ReturnType<typeof setInterval> | null = null;
 
-  client: Client = new Client();
-  constructor(init: SpyMP.MPInitConfig, client: SpyClient.ClientInfo) {
-    if (PageSpyMPBase.instance) {
+  static client: Client;
+
+  constructor(init: SpyMP.MPInitConfig) {
+    if (PageSpy.instance) {
       psLog.warn('Cannot initialize PageSpy multiple times');
       // eslint-disable-next-line no-constructor-return
-      return PageSpyMPBase.instance;
+      return PageSpy.instance;
     }
 
-    this.client = new Client(client);
     const config = this.config.mergeConfig(init);
 
     if (config.singletonSocket) {
@@ -86,19 +85,19 @@ class PageSpyMPBase {
       }
     }
 
-    PageSpyMPBase.instance = this;
+    PageSpy.instance = this;
 
     // Here will check the config api
-    this.request = new Request(this.config, this.client);
+    this.request = new Request(this.config, PageSpy.client);
     this.updateConfiguration();
-    this.client.plugins = PageSpyMPBase.pluginsWithOrder.map(
+    PageSpy.client.plugins = PageSpy.pluginsWithOrder.map(
       (plugin) => plugin.name,
     );
     this.triggerPlugins('onInit', {
       socketStore,
       config,
       atom,
-      client: this.client,
+      client: PageSpy.client,
     });
 
     this.init();
@@ -115,7 +114,7 @@ class PageSpyMPBase {
 
     socketStore.connectable = true;
     socketStore.getPageSpyConfig = () => this.config.get();
-    socketStore.getClient = () => this.client;
+    socketStore.getClient = () => PageSpy.client;
     socketStore.messageCapacity = messageCapacity;
   }
 
@@ -202,7 +201,7 @@ class PageSpyMPBase {
     ...args: PageSpyPluginLifecycleArgs<T>
   ) {
     const { disabledPlugins } = this.config.get();
-    PageSpyMPBase.pluginsWithOrder.forEach((plugin) => {
+    PageSpy.pluginsWithOrder.forEach((plugin) => {
       if (
         isArray(disabledPlugins) &&
         disabledPlugins.length &&
@@ -217,7 +216,7 @@ class PageSpyMPBase {
   abort() {
     this.triggerPlugins('onReset');
     socketStore.close();
-    PageSpyMPBase.instance = null;
+    PageSpy.instance = null;
   }
 
   updateRoomInfo(obj: UpdateConfig) {
@@ -268,7 +267,7 @@ class PageSpyMPBase {
         },
       },
     ];
-    PageSpyMPBase.pluginsWithOrder.forEach((plugin) => {
+    PageSpy.pluginsWithOrder.forEach((plugin) => {
       if (plugin.onActionSheet) {
         const actions = plugin.onActionSheet();
         if (actions?.length) {
@@ -290,7 +289,7 @@ class PageSpyMPBase {
     });
   }
 
-  static instance: PageSpyMPBase | null = null;
+  static instance: PageSpy | null = null;
 
   static plugins: Record<PluginOrder | 'normal', PageSpyPlugin[]> = {
     pre: [],
@@ -300,9 +299,9 @@ class PageSpyMPBase {
 
   static get pluginsWithOrder() {
     return [
-      ...PageSpyMPBase.plugins.pre,
-      ...PageSpyMPBase.plugins.normal,
-      ...PageSpyMPBase.plugins.post,
+      ...PageSpy.plugins.pre,
+      ...PageSpy.plugins.normal,
+      ...PageSpy.plugins.post,
     ];
   }
 
@@ -322,7 +321,7 @@ class PageSpyMPBase {
       );
       return;
     }
-    const isExist = PageSpyMPBase.pluginsWithOrder.some(
+    const isExist = PageSpy.pluginsWithOrder.some(
       (i) => i.name === plugin.name,
     );
     if (isExist) {
@@ -333,7 +332,7 @@ class PageSpyMPBase {
       );
       return;
     }
-    const currentPluginSet = PageSpyMPBase.plugins[plugin.enforce || 'normal'];
+    const currentPluginSet = PageSpy.plugins[plugin.enforce || 'normal'];
     currentPluginSet.push(plugin);
   }
 }
@@ -347,10 +346,10 @@ const INTERNAL_PLUGINS = [
 ];
 
 INTERNAL_PLUGINS.forEach((p) => {
-  PageSpyMPBase.registerPlugin(p);
+  PageSpy.registerPlugin(p);
 });
 
-export default PageSpyMPBase;
-import './types';
+export default PageSpy;
+export * from './types';
 export * from './utils';
 export * from './helpers/socket';

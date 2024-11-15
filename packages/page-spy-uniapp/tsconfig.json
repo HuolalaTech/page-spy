@@ -5,5 +5,5 @@
     "outDir": "dist",
     "declarationDir": "dist/types"
   },
-  "include": ["src"]
+  "include": ["src", "node_modules/@huolala-tech/page-spy-mp-base/global.d.ts"]
 }

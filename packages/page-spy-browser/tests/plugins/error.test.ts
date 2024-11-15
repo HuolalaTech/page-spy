@@ -1,5 +1,5 @@
 import { OnInitParams } from 'packages/page-spy-types';
-import { atom } from 'page-spy-base/dist';
+import { atom } from 'page-spy-base/dist/esm';
 import { Config, InitConfig } from 'page-spy-browser/src/config';
 import socket from 'page-spy-browser/src/helpers/socket';
 import ErrorPlugin from 'page-spy-browser/src/plugins/error';

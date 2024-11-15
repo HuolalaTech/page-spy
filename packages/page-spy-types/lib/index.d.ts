@@ -114,7 +114,7 @@ interface OnInitParams<T extends InitConfigBase> {
   /**
    * The client info object.
    */
-  client: Client;
+  client?: Client;
 }
 
 export interface OnMountedParams {

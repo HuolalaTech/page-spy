@@ -1,3 +1,3 @@
-import DataHarborPlugin from './plugin';
+import MPDataHarborPlugin from './plugin';
 
-export default DataHarborPlugin;
+export default MPDataHarborPlugin;

@@ -1629,6 +1629,28 @@
   dependencies:
     "@babel/runtime" "^7.8.4"
 
+"@huolala-tech/page-spy-base@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry-npm-next.huolala.work/@huolala-tech/page-spy-base/-/page-spy-base-1.0.7.tgz#8fdabfd24a05607192c94cc36bdff6b92c1e389f"
+  integrity sha1-j9q/0koFYHGSyUzDa9/2uSweOJ8=
+  dependencies:
+    "@huolala-tech/page-spy-types" "^1.9.7"
+
+"@huolala-tech/page-spy-mp-base@^1.0.9":
+  version "1.0.9"
+  resolved "https://registry-npm-next.huolala.work/@huolala-tech/page-spy-mp-base/-/page-spy-mp-base-1.0.9.tgz#d7abc655e052ee7c03d3a11732a725f5439ebb60"
+  integrity sha1-16vGVeBS7nwD06EXMqcl9UOeu2A=
+  dependencies:
+    "@huolala-tech/page-spy-base" "^1.0.7"
+    "@huolala-tech/page-spy-types" "^1.9.7"
+
+"@huolala-tech/page-spy-types@^1.9.7":
+  version "1.9.7"
+  resolved "https://registry-npm-next.huolala.work/@huolala-tech/page-spy-types/-/page-spy-types-1.9.7.tgz#7d8eb3d76497088de814396c3cf6a77260c73514"
+  integrity sha1-fY6z12SXCI3oFDlsPPancmDHNRQ=
+  dependencies:
+    "@huolala-tech/page-spy-base" "^1.0.7"
+
 "@hutson/parse-repository-url@^3.0.0":
   version "3.0.2"
   resolved "https://registry.npmjs.org/@hutson/parse-repository-url/-/parse-repository-url-3.0.2.tgz#98c23c950a3d9b6c8f0daed06da6c3af06981340"
