@@ -18,8 +18,7 @@ import {
   DEFAULT_MAXIMUM,
   PERIOD_DIVIDE_IDENTIFIER,
 } from '../harbor/blob';
-import { DownloadArgs, startDownload } from '../utils/download';
-import { UploadArgs, startUpload } from '../utils/upload';
+import { DownloadArgs, startDownload, UploadArgs, startUpload } from './log';
 import { getDeviceId, jsonToFile, makeData, minifyData } from '../utils';
 import {
   Actions,

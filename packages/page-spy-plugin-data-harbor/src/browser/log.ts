@@ -1,12 +1,41 @@
 import { psLog } from '@huolala-tech/page-spy-base';
-import { formatFilename } from '.';
 import { CacheMessageItem } from '../harbor/base';
 import { t } from '../assets/locale';
+import { formatFilename } from '../utils';
+
+export type UploadArgs = {
+  url: string;
+  body?: FormData;
+};
 
 export type DownloadArgs = {
   data: any;
   customDownload?: (data: CacheMessageItem[]) => void;
   filename: () => string;
+};
+
+export const startUpload = async ({ url, body }: UploadArgs) => {
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      body,
+    });
+    if (!response.ok) {
+      psLog.warn('Upload failed');
+      return null;
+    }
+
+    const result: H.UploadResult = await response.json();
+    if (!result.success) {
+      psLog.warn(result.message);
+      return null;
+    }
+
+    return result;
+  } catch (e: any) {
+    psLog.error(e.message);
+    return null;
+  }
 };
 
 export const startDownload = async ({
@@ -40,33 +69,4 @@ export const startDownload = async ({
   URL.revokeObjectURL(url);
 
   psLog.info(`${t.success}`);
-};
-
-export const buttonBindWithDownload = (fn: () => Promise<void>) => {
-  const downloadBtn = document.createElement('div');
-  downloadBtn.id = 'data-harbor-plugin-download';
-  downloadBtn.className = 'page-spy-content__btn';
-  downloadBtn.textContent = t.downloadAll;
-  let idleWithDownload = true;
-
-  downloadBtn.addEventListener('click', async () => {
-    if (!idleWithDownload) return;
-    idleWithDownload = false;
-
-    try {
-      downloadBtn.textContent = t.readying;
-      await fn();
-      downloadBtn.textContent = t.success;
-    } catch (e: any) {
-      downloadBtn.textContent = t.fail;
-      psLog.error('Download failed.', e.message);
-    } finally {
-      setTimeout(() => {
-        downloadBtn.textContent = t.downloadAll;
-        idleWithDownload = true;
-      }, 1500);
-    }
-  });
-
-  return downloadBtn;
 };
