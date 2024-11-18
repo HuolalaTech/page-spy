@@ -426,8 +426,11 @@ class PageSpy {
 
   public abort() {
     this.triggerPlugins('onReset');
-    socketStore.close();
     PageSpy.instance = null;
+
+    socketStore.close();
+    modal.reset();
+
     const root = document.querySelector(`#${nodeId}`);
     if (root) {
       document.documentElement.removeChild(root);

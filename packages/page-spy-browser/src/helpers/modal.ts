@@ -20,7 +20,7 @@ export class modal {
 
   public static config = defaultConfig;
 
-  private static root: HTMLDivElement;
+  private static root: HTMLDivElement | null;
 
   private static template = `
   <div class="${classes.modal}">
@@ -46,11 +46,11 @@ export class modal {
   `;
 
   private static get rendered() {
-    return modal.root && modal.config.mounted.contains(modal.root);
+    return modal.config.mounted.contains(modal.root);
   }
 
   private static query(className: string) {
-    return modal.root.querySelector(`.${className}`) as HTMLElement;
+    return modal.root?.querySelector(`.${className}`) as HTMLElement;
   }
 
   public static build(cfg: Partial<ModalConfig>) {
@@ -120,12 +120,17 @@ export class modal {
   }
 
   public static close() {
-    if (!modal.rendered) return;
+    if (!modal.root || !modal.rendered) return;
 
     modal.root.classList.remove('show');
     modal.root.classList.add('leaving');
     setTimeout(() => {
-      modal.root.classList.remove('leaving');
+      modal.root?.classList.remove('leaving');
     }, 300);
+  }
+
+  public static reset() {
+    modal.config = defaultConfig;
+    modal.root = null;
   }
 }
