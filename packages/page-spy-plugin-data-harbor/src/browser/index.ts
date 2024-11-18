@@ -33,11 +33,11 @@ import {
   CacheMessageItem,
   DataType,
   isPeriodActionParams,
-  isPeriodItem,
   PeriodActionParams,
   WholeActionParams,
 } from '../harbor/base';
 import { buildModal } from './modal';
+import { t } from '../assets/locale';
 
 interface DataHarborConfig {
   // Specify the maximum bytes of single harbor's container.
@@ -192,19 +192,40 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     let data: CacheMessageItem[];
     if (isPeriods && isPeriodActionParams(params)) {
       data = await this.harbor.getPeriodData(params);
+
+      // If the amount of event data is too small, it will be meaningless.
+      const validEventCount = data.filter(
+        (i) => i.timestamp >= params.startTime && i.timestamp <= params.endTime,
+      ).length;
+      if (validEventCount < 5) {
+        throw new Error(t.eventCountNotEnough);
+      }
+
       data.push({
         type: 'meta',
         timestamp: params.endTime,
         data: minifyData({
           title: document.title,
           url: window.location.href,
-          startTime: params.startTime,
-          endTime: params.endTime,
-          remark: params.remark,
+          ...params,
         }),
       });
     } else {
       data = await this.harbor.getAll();
+      const startTime = data[0].timestamp;
+      const endTime = data[data.length - 1].timestamp;
+      data.push({
+        type: 'meta',
+        timestamp: endTime,
+        data: minifyData({
+          ua: navigator.userAgent,
+          title: document.title,
+          url: window.location.href,
+          startTime,
+          endTime,
+          remark: params?.remark ?? '',
+        }),
+      });
     }
 
     const { onDownload, filename } = this.$harborConfig;
@@ -248,14 +269,6 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       remark: '',
     },
   ): Promise<void | string> {
-    const validatePeriodParams = (p: PeriodActionParams) => {
-      if (!p || ![p.fromPeriod, p.toPeriod].every(isPeriodItem)) {
-        throw new Error(
-          `Incorrect params when you call onOfflineLog('${type}')`,
-        );
-      }
-    };
-
     let result;
     if (type === 'upload' || type === 'download') {
       const args: any = await this.getParams(type as any, params);
@@ -267,7 +280,11 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       }
     }
     if (type === 'upload-periods' || type === 'download-periods') {
-      validatePeriodParams(params as PeriodActionParams);
+      if (!isPeriodActionParams(params)) {
+        throw new Error(
+          `Incorrect params when you call onOfflineLog('${type}')`,
+        );
+      }
       const args: any = await this.getParams(type as any, params);
       result =
         type === 'upload-periods'

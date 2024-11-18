@@ -23,8 +23,6 @@ export interface WholeActionParams {
   remark?: string;
 }
 export interface PeriodActionParams {
-  fromPeriod: PeriodItem;
-  toPeriod: PeriodItem;
   startTime: number;
   endTime: number;
   remark?: string;
@@ -34,7 +32,7 @@ export const isPeriodActionParams = (
   params: unknown,
 ): params is PeriodActionParams => {
   if (!params) return false;
-  return ['fromPeriod', 'toPeriod', 'startTime', 'endTime'].every((key) => {
+  return ['startTime', 'endTime'].every((key) => {
     return Object.prototype.hasOwnProperty.call(params, key);
   });
 };

@@ -21,6 +21,7 @@ const source = {
     to: '到',
     refreshed: '已刷新',
     minutes: '分钟',
+    eventCountNotEnough: '时间段内的数据量不足以回放',
   },
   en: {
     title: 'Offline log',
@@ -42,6 +43,8 @@ const source = {
     to: 'To',
     refreshed: 'Refreshed',
     minutes: 'minutes',
+    eventCountNotEnough:
+      'The data within the time period is insufficient for playback',
   },
 };
 

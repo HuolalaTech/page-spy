@@ -109,10 +109,11 @@ export class BlobHarbor {
   }
 
   async getPeriodData(params: PeriodActionParams) {
-    const { fromPeriod, toPeriod, endTime } = params;
+    const { head, tail } = this.getHeadAndTailPeriods(params);
+    const { endTime } = params;
 
-    const { stockIndex: fStock, dataIndex: fData } = fromPeriod;
-    const { stockIndex: tStock, dataIndex: tData } = toPeriod;
+    const { stockIndex: fStock, dataIndex: fData } = head;
+    const { stockIndex: tStock, dataIndex: tData } = tail;
 
     let result: CacheMessageItem[] = [];
 
@@ -169,6 +170,20 @@ export class BlobHarbor {
     }
 
     return result.filter((i) => i.timestamp <= endTime);
+  }
+
+  private getHeadAndTailPeriods({
+    startTime,
+    endTime,
+  }: {
+    startTime: number;
+    endTime: number;
+  }) {
+    const periods = this.getPeriodList();
+    const head = periods.findLast((i) => i.time.getTime() <= startTime)!;
+    const tail = periods.find((i) => i.time.getTime() >= endTime)!;
+
+    return { head, tail };
   }
 
   async getAll() {

@@ -160,18 +160,10 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
     const startTime = firstTime + minValue * 1000;
     const endTime = firstTime + maxValue * 1000;
 
-    const fromPeriod = periodInfoRef.periods.findLast(
-      (i) => i.time.getTime() <= startTime,
-    )!;
-    const toPeriod = periodInfoRef.periods.find(
-      (i) => i.time.getTime() >= endTime,
-    )!;
-
     return {
-      fromPeriod,
-      toPeriod,
       startTime,
       endTime,
+      remark: remark.value,
     };
   };
 
@@ -223,9 +215,9 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
       const ok = copyInBrowser(debugUrl);
       psLog.info(`${t.success}: ${debugUrl}`);
       toast.message(ok ? t.copied : t.success);
-    } catch (e) {
+    } catch (e: any) {
       psLog.error(e);
-      toast.message(t.fail);
+      toast.message(e.message);
     } finally {
       uploadAllButton.disabled = false;
     }
@@ -234,11 +226,14 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
     try {
       downloadAllButton.disabled = true;
       // await plugin.onOfflineLog('download', false);
-      await plugin.onOfflineLog('download', { clearCache: false });
+      await plugin.onOfflineLog('download', {
+        clearCache: false,
+        remark: remark.value,
+      });
       toast.message(t.success);
-    } catch (e) {
+    } catch (e: any) {
       psLog.error(e);
-      toast.message(t.fail);
+      toast.message(e.message);
     } finally {
       downloadAllButton.disabled = false;
     }
@@ -246,17 +241,17 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
   uploadPeriodsButton.addEventListener('click', async () => {
     try {
       uploadPeriodsButton.disabled = true;
-      const debugUrl = await plugin.onOfflineLog('upload-periods', {
-        ...getSelectedPeriod(),
-        remark: remark.value,
-      });
+      const debugUrl = await plugin.onOfflineLog(
+        'upload-periods',
+        getSelectedPeriod(),
+      );
 
       const ok = copyInBrowser(debugUrl);
       psLog.info(`${t.success}: ${debugUrl}`);
       toast.message(ok ? t.copied : t.success);
-    } catch (e) {
+    } catch (e: any) {
       psLog.error(e);
-      toast.message(t.fail);
+      toast.message(e.message);
     } finally {
       uploadPeriodsButton.disabled = false;
     }
@@ -266,9 +261,9 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
       downloadPeriodsButton.disabled = true;
       await plugin.onOfflineLog('download-periods', getSelectedPeriod());
       toast.message(t.success);
-    } catch (e) {
+    } catch (e: any) {
       psLog.error(e);
-      toast.message(t.fail);
+      toast.message(e.message);
     } finally {
       downloadPeriodsButton.disabled = false;
     }
