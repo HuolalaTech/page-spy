@@ -265,10 +265,8 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       }
     }
     if (type === 'upload-periods' || type === 'download-periods') {
-      if (!isPeriodActionParams(params)) {
-        throw new Error(
-          `Incorrect params when you call onOfflineLog('${type}')`,
-        );
+      if (!isPeriodActionParams(params) || params.startTime > params.endTime) {
+        throw new Error(t.invalidParams);
       }
       const args: any = await this.getParams(type as any, params);
       result =

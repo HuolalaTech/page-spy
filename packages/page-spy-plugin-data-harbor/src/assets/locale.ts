@@ -22,6 +22,8 @@ const source = {
     refreshed: '已刷新',
     minutes: '分钟',
     eventCountNotEnough: '时间段内的数据量不足以回放',
+    invalidPeriods: '选择的开始时间无效',
+    invalidParams: '调用 onOfflineLog() 的参数不正确',
   },
   en: {
     title: 'Offline log',
@@ -45,6 +47,8 @@ const source = {
     minutes: 'minutes',
     eventCountNotEnough:
       'The data within the time period is insufficient for playback',
+    invalidPeriods: 'The start of selected period is invalid',
+    invalidParams: 'Incorrect params which you call onOfflineLog()',
   },
 };
 

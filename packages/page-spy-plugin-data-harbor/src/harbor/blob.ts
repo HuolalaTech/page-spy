@@ -1,6 +1,7 @@
 import { isBrowser, isNumber } from '@huolala-tech/page-spy-base';
 import { isValidMaximum } from '../utils';
 import { CacheMessageItem, PeriodActionParams, PeriodItem } from './base';
+import { t } from '../assets/locale';
 
 interface HarborConfig {
   maximum: number;
@@ -111,17 +112,17 @@ export class BlobHarbor {
     const { head, tail } = this.getHeadAndTailPeriods(params);
     const { endTime } = params;
 
-    const { stockIndex: fStock, dataIndex: fData } = head;
-    const { stockIndex: tStock, dataIndex: tData } = tail;
+    const { stockIndex: fStock, dataIndex: fData } = head || {};
+    const { stockIndex: tStock, dataIndex: tData } = tail || {};
 
     let result: CacheMessageItem[] = [];
 
     // all data in container
-    if (fStock === null && tStock === null) {
+    if (!fStock && !tStock) {
       result = this.container.slice(fData, tData);
     } else {
-      if (fStock === null || !isNumber(fStock)) {
-        throw new Error('The start of selected period is invalid');
+      if (!fStock || !isNumber(fStock)) {
+        throw new Error(t.invalidPeriods);
       }
 
       // <stock> [
@@ -179,8 +180,8 @@ export class BlobHarbor {
     endTime: number;
   }) {
     const periods = this.getPeriodList();
-    const head = periods.findLast((i) => i.time.getTime() <= startTime)!;
-    const tail = periods.find((i) => i.time.getTime() >= endTime)!;
+    const head = periods.findLast((i) => i.time.getTime() <= startTime);
+    const tail = periods.find((i) => i.time.getTime() >= endTime);
 
     return { head, tail };
   }
