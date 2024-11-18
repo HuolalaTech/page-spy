@@ -29,14 +29,13 @@ import Request from './api';
 
 import type { UElement } from './helpers/moveable';
 import { moveable } from './helpers/moveable';
-import './assets/styles/index.less';
-// eslint-disable-next-line import/order
 import { Config, nodeId } from './config';
 import { toast } from './helpers/toast';
 import locales from './assets/locales';
 import modalLogoSvg from './assets/modal-logo.svg';
 import copySvg from './assets/copy.svg';
 import { modal } from './helpers/modal';
+import classes from './assets/styles/index.module.less';
 
 type UpdateConfig = {
   title?: string;
@@ -304,7 +303,7 @@ class PageSpy {
       </div>
 
       <!-- Default content for modal -->
-      <div class="connect-info">
+      <div class="${classes.modal}">
         <p>
           <span>Device ID</span>
           <b style="font-family: 'Monaco'" class="page-spy-device-id">
@@ -348,7 +347,9 @@ class PageSpy {
       logo.classList.add('inactive');
     });
 
-    const content: HTMLDivElement = dom.querySelector('.connect-info')!;
+    const modalContent: HTMLDivElement = dom.querySelector(
+      `.${classes.modal}`,
+    )!;
     const copyLink: HTMLButtonElement = dom.querySelector(
       '#page-spy-copy-link',
     )!;
@@ -368,7 +369,7 @@ class PageSpy {
     modal.build({
       logo: modalConfig.logo || modalLogoSvg,
       title: modalConfig.title || 'PageSpy',
-      content,
+      content: modalContent,
       footer: [copyLink],
       mounted: root,
     });

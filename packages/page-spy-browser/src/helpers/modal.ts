@@ -23,10 +23,10 @@ export class modal {
   private static root: HTMLDivElement;
 
   private static template = `
-  <div class="page-spy-modal ${classes.modal}">
+  <div class="${classes.modal}">
     <div class="${classes.content}">
       <!-- Header -->
-      <div class="page-spy-header ${classes.header}">
+      <div class="${classes.header}">
         <div class="${classes.headerLeft}">
           <img class="${classes.logo}" />
           <b class="${classes.title}"></b>
@@ -37,10 +37,10 @@ export class modal {
       </div>
 
       <!-- Main content -->
-      <div class="page-spy-content ${classes.main}"></div>
+      <div class="${classes.main}"></div>
 
       <!-- Footer -->
-      <div class="page-spy-footer ${classes.footer}"></div>
+      <div class="${classes.footer}"></div>
     </div>
   </div>
   `;
@@ -58,7 +58,7 @@ export class modal {
     if (!modal.root) {
       modal.root = new DOMParser()
         .parseFromString(modal.template, 'text/html')
-        .querySelector('.page-spy-modal') as HTMLDivElement;
+        .querySelector(`.${classes.modal}`) as HTMLDivElement;
 
       // mask
       modal.root.addEventListener('click', (e) => {
