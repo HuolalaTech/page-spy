@@ -16,18 +16,11 @@ import {
 import {
   BlobHarbor,
   DEFAULT_MAXIMUM,
-  DEFAULT_PERIOD_DURATION,
   PERIOD_DIVIDE_IDENTIFIER,
 } from '../harbor/blob';
 import { DownloadArgs, startDownload } from '../utils/download';
 import { UploadArgs, startUpload } from '../utils/upload';
-import {
-  getDeviceId,
-  isValidPeriod,
-  jsonToFile,
-  makeData,
-  minifyData,
-} from '../utils';
+import { getDeviceId, jsonToFile, makeData, minifyData } from '../utils';
 import {
   Actions,
   CacheMessageItem,
@@ -45,11 +38,6 @@ interface DataHarborConfig {
   // If a period is specified, it will use the period.
   maximum?: number;
 
-  // Set the duration of each period in milliseconds.
-  // Default is 5 * 60 * 1000, 5 minutes.
-  // Valid time range is 1 minute to 30 minutes.
-  period?: number;
-
   // Specify which types of data to collect.
   caredData?: Record<Exclude<DataType, 'meta'>, boolean>;
 
@@ -63,7 +51,6 @@ interface DataHarborConfig {
 
 const defaultConfig: Required<DataHarborConfig> = {
   maximum: DEFAULT_MAXIMUM,
-  period: DEFAULT_PERIOD_DURATION,
   caredData: {
     console: true,
     network: true,
@@ -109,10 +96,6 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       ...config,
     } as Required<DataHarborConfig>;
 
-    if (!isValidPeriod(this.$harborConfig.period)) {
-      this.$harborConfig.period = defaultConfig.period;
-    }
-
     this.harbor = new BlobHarbor({
       maximum: this.$harborConfig.maximum,
     });
@@ -157,11 +140,14 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     if (this.periodTimer) {
       clearInterval(this.periodTimer);
     }
-    this.periodTimer = setInterval(() => {
-      this.harbor.add(PERIOD_DIVIDE_IDENTIFIER);
-      // Notify other plugins to resend a full snapshot.
-      this.$socketStore?.dispatchEvent('harbor-clear', null);
-    }, this.$harborConfig.period);
+    this.periodTimer = setInterval(
+      () => {
+        this.harbor.add(PERIOD_DIVIDE_IDENTIFIER);
+        // Notify other plugins to resend a full snapshot.
+        this.$socketStore?.dispatchEvent('harbor-clear', null);
+      },
+      5 * 60 * 1000,
+    );
   }
 
   public onMounted({ modal, toast }: OnMountedParams<InitConfigBase>) {

@@ -45,11 +45,6 @@ export const jsonToFile = (data: any, filename: string) => {
   return file;
 };
 
-// Valid duration of each period is 1 minute ~ 30 minutes.
-export const isValidPeriod = (period: unknown): period is number => {
-  return isNumber(period) && period >= 60 * 1000 && period <= 30 * 60 * 1000;
-};
-
 export const isValidMaximum = (maximum: unknown): maximum is number => {
   return isNumber(maximum) && maximum >= 0;
 };
