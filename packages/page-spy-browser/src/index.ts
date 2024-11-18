@@ -293,7 +293,7 @@ class PageSpy {
       modal: modalConfig,
     } = config;
 
-    const dom = new DOMParser().parseFromString(
+    const doc = new DOMParser().parseFromString(
       `
       <!-- PageSpy Root Container -->
       <div id="${nodeId}" style="--primary-color: #8434e9">
@@ -329,11 +329,17 @@ class PageSpy {
       'text/html',
     );
 
-    const root = dom.querySelector(`#${nodeId}`) as HTMLDivElement;
+    const $ = (selector: string) => {
+      return doc.querySelector.call(doc, selector);
+    };
+    const $c = (c: string) => $(`.${c}`);
+
+    const root = $(`#${nodeId}`) as HTMLDivElement;
     root.style.setProperty('--primary-color', primaryColor);
     this.root = root;
-    const logo: UElement = dom.querySelector('.page-spy-logo')!;
-    moveable(logo as unknown as UElement);
+
+    const logo = $('.page-spy-logo') as UElement;
+    moveable(logo);
 
     const showModal = () => {
       if (logo.isMoveEvent || logo.isHidden) {
@@ -347,12 +353,8 @@ class PageSpy {
       logo.classList.add('inactive');
     });
 
-    const modalContent: HTMLDivElement = dom.querySelector(
-      `.${classes.modal}`,
-    )!;
-    const copyLink: HTMLButtonElement = dom.querySelector(
-      '#page-spy-copy-link',
-    )!;
+    const modalContent = $c(classes.modal) as HTMLDivElement;
+    const copyLink = $('#page-spy-copy-link') as HTMLButtonElement;
     copyLink.addEventListener('click', () => {
       let text = `${clientOrigin}/#/devtools?address=${encodeURIComponent(
         this.address,
