@@ -178,9 +178,15 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     if (isPeriods && isPeriodActionParams(params)) {
       data = await this.harbor.getPeriodData(params);
 
+      const startTimeFromUser = params.startTime;
+      const startTimeFromEvent = data[0].timestamp;
+      const validStartTime =
+        startTimeFromUser < startTimeFromEvent
+          ? startTimeFromEvent
+          : startTimeFromUser;
       // If the amount of event data is too small, it will be meaningless.
       const validEventCount = data.filter(
-        (i) => i.timestamp >= params.startTime && i.timestamp <= params.endTime,
+        (i) => i.timestamp >= validStartTime && i.timestamp <= params.endTime,
       ).length;
       if (validEventCount < 5) {
         throw new Error(t.eventCountNotEnough);
@@ -193,6 +199,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
           title: document.title,
           url: window.location.href,
           ...params,
+          startTime: validStartTime,
         }),
       });
     } else {
