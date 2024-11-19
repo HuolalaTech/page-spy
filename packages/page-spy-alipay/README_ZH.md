@@ -10,7 +10,7 @@
 [![SDK version][npm-image]][npm-url]
 [![SDK size][minified-image]][minified-url]
 
-> 这个 SDK 用于调试支付宝小程序.
+用于调试支付宝小程序的 [PageSpy](https://www.pagespy.org) 客户端 SDK.
 
 > [!CAUTION]
 > 小程序提交审核时请务必删除代码中的 SDK，否则会导致审核失败。

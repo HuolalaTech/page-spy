@@ -253,7 +253,7 @@ class PageSpy {
       action: () => void;
     }[] = [
       {
-        text: '复制在线调试链接',
+        text: 'PageSpy 房间号：' + this.address.slice(0, 4),
         action() {
           mp.setClipboardData({
             data: that.getDebugLink(),
