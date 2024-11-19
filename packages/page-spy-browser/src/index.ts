@@ -303,7 +303,7 @@ class PageSpy {
       </div>
 
       <!-- Default content for modal -->
-      <div class="${classes.modal}">
+      <div class="${classes.connectInfo}">
         <p>
           <span>Device ID</span>
           <b style="font-family: 'Monaco'" class="page-spy-device-id">
@@ -353,7 +353,7 @@ class PageSpy {
       logo.classList.add('inactive');
     });
 
-    const modalContent = $c(classes.modal) as HTMLDivElement;
+    const connectInfo = $c(classes.connectInfo) as HTMLDivElement;
     const copyLink = $('#page-spy-copy-link') as HTMLButtonElement;
     copyLink.addEventListener('click', () => {
       let text = `${clientOrigin}/#/devtools?address=${encodeURIComponent(
@@ -371,7 +371,7 @@ class PageSpy {
     modal.build({
       logo: modalConfig.logo || modalLogoSvg,
       title: modalConfig.title || 'PageSpy',
-      content: modalContent,
+      content: connectInfo,
       footer: [copyLink],
       mounted: root,
     });
