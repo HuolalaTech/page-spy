@@ -13,6 +13,10 @@ declare global {
     const content: string;
     export default content;
   }
+  declare module '*.module.less' {
+    const content: any;
+    export default content;
+  }
   interface CookieChangeEvent extends Event {
     changed: CookieStoreValue[];
     deleted: CookieStoreValue[];

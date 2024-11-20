@@ -46,6 +46,9 @@ export class RequestItem implements SpyNetwork.RequestInfo {
 
   withCredentials: boolean = false;
 
+  // For EventSource
+  lastEventId: string = '';
+
   constructor(id: string) {
     this.id = id;
   }

@@ -14,8 +14,6 @@ import type {
   PluginOrder,
 } from '@huolala-tech/page-spy-types';
 import type { InitConfig } from './config';
-import { Modal } from './component/modal';
-import { Content } from './component/content';
 
 import ConsolePlugin from './plugins/console';
 import ErrorPlugin from './plugins/error';
@@ -30,12 +28,13 @@ import Request from './api';
 
 import type { UElement } from './helpers/moveable';
 import { moveable } from './helpers/moveable';
-import './index.less';
-// eslint-disable-next-line import/order
-import { Config } from './config';
-import { Toast } from './component/toast';
-
-const Identifier = '__pageSpy';
+import { Config, nodeId } from './config';
+import { toast } from './helpers/toast';
+import locales from './assets/locales';
+import modalLogoSvg from './assets/modal-logo.svg';
+import copySvg from './assets/copy.svg';
+import { modal } from './helpers/modal';
+import classes from './assets/styles/index.module.less';
 
 type UpdateConfig = {
   title?: string;
@@ -43,26 +42,73 @@ type UpdateConfig = {
 };
 
 class PageSpy {
-  root: HTMLElement | null = null;
+  public static instance: PageSpy | null = null;
 
-  version = PKG_VERSION;
+  public static plugins: Record<PluginOrder | 'normal', PageSpyPlugin[]> = {
+    pre: [],
+    normal: [],
+    post: [],
+  };
 
-  request: Request | null = null;
+  public static get pluginsWithOrder() {
+    return [
+      ...PageSpy.plugins.pre,
+      ...PageSpy.plugins.normal,
+      ...PageSpy.plugins.post,
+    ];
+  }
+
+  public static registerPlugin(plugin: PageSpyPlugin) {
+    if (!plugin) {
+      return;
+    }
+    if (isClass(plugin)) {
+      psLog.error(
+        'PageSpy.registerPlugin() expect to pass an instance, not a class',
+      );
+      return;
+    }
+    if (!plugin.name) {
+      psLog.error(
+        `The ${plugin.constructor.name} plugin should provide a "name" property`,
+      );
+      return;
+    }
+    const isExist = PageSpy.pluginsWithOrder.some(
+      (i) => i.name === plugin.name,
+    );
+    if (isExist) {
+      psLog.info(
+        `The ${plugin.name} has registered. Consider the following reasons:
+      - Duplicate register one same plugin;
+      - Plugin's "name" conflict with others, you can print all registered plugins by "PageSpy.plugins";`,
+      );
+      return;
+    }
+    const currentPluginSet = PageSpy.plugins[plugin.enforce || 'normal'];
+    currentPluginSet.push(plugin);
+  }
+
+  public root: HTMLElement | null = null;
+
+  public version = PKG_VERSION;
+
+  public request: Request | null = null;
 
   // System info: <os>-<browser>:<browserVersion>
-  name = '';
+  public name = '';
 
   // Room address
-  address = '';
+  public address = '';
 
   // Completed websocket room url
-  roomUrl = '';
+  public roomUrl = '';
 
-  socketStore = socketStore;
+  public socketStore = socketStore;
 
-  config = new Config();
+  public config = new Config();
 
-  cacheTimer: ReturnType<typeof setInterval> | null = null;
+  public cacheTimer: ReturnType<typeof setInterval> | null = null;
 
   constructor(init: InitConfig = {}) {
     if (PageSpy.instance) {
@@ -79,7 +125,7 @@ class PageSpy {
     this.init();
   }
 
-  updateConfiguration() {
+  private updateConfiguration() {
     const { messageCapacity, offline, useSecret } = this.config.get();
     if (useSecret === true) {
       const cache = JSON.parse(
@@ -93,7 +139,7 @@ class PageSpy {
     socketStore.messageCapacity = messageCapacity;
   }
 
-  async init() {
+  private async init() {
     const config = this.config.get();
 
     // Online real-time mode
@@ -132,7 +178,7 @@ class PageSpy {
     }
   }
 
-  async createNewConnection() {
+  private async createNewConnection() {
     if (!this.request) {
       psLog.error('Cannot get the Request');
       return;
@@ -145,12 +191,12 @@ class PageSpy {
     socketStore.init(roomInfo.roomUrl);
   }
 
-  useOldConnection() {
+  private useOldConnection() {
     this.refreshRoomInfo();
     socketStore.init(this.roomUrl);
   }
 
-  refreshRoomInfo() {
+  private refreshRoomInfo() {
     this.saveSession();
     this.cacheTimer = setInterval(() => {
       if (socketStore.getSocket().getState() === SocketState.OPEN) {
@@ -159,7 +205,7 @@ class PageSpy {
     }, 15 * 1000);
   }
 
-  saveSession() {
+  private saveSession() {
     const { name, address, roomUrl, config } = this;
     const { useSecret, secret, project } = config.get();
     const roomInfo = JSON.stringify({
@@ -173,117 +219,7 @@ class PageSpy {
     sessionStorage.setItem(ROOM_SESSION_KEY, roomInfo);
   }
 
-  startRender() {
-    const {
-      project,
-      clientOrigin,
-      title,
-      logo: logoUrl,
-      logoStyle,
-      useSecret,
-      secret,
-    } = this.config.get();
-
-    const root = document.createElement('div');
-    root.id = Identifier;
-    this.root = root;
-
-    const logo = document.createElement('div');
-    logo.className = 'page-spy-logo';
-    const img = document.createElement('img');
-    img.alt = 'PageSpy Logo';
-    img.src = logoUrl;
-    Object.entries(logoStyle).forEach(([key, value]) => {
-      img.style[key as any] = value;
-    });
-    logo.insertAdjacentElement('beforeend', img);
-    root.insertAdjacentElement('beforeend', logo);
-    window.addEventListener('sdk-inactive', () => {
-      logo.classList.add('inactive');
-    });
-
-    const modal = new Modal();
-    const content = new Content({
-      content: `
-      ${
-        useSecret
-          ? `<p><b>Secret:</b> <span class="page-spy-secret">${secret}</span></p>`
-          : ''
-      }
-      <p>
-        <b>Device ID:</b>
-        <span style="font-family: 'Monaco'" class="page-spy-device-id">
-          ${this.address.slice(0, 4) || '--'}
-        </span>
-      </p>
-      <p><b>Project:</b> <span class="page-spy-project">${project}</span></p>
-      <p><b>Title:</b> <span class="page-spy-title">${title}</span></p>
-      `,
-      onOk: () => {
-        let text = `${clientOrigin}/#/devtools?address=${encodeURIComponent(
-          this.address,
-        )}`;
-        if (useSecret) {
-          text += `&secret=${secret}`;
-        }
-        const copyRes = copy(text);
-        let message = '';
-        const langs = navigator.languages;
-        const isCN = ['zh-CN', 'zh-HK', 'zh-TW', 'zh'].some((l) => {
-          return langs.includes(l);
-        });
-        if (isCN) {
-          message = copyRes ? '拷贝成功!' : '拷贝失败!';
-        } else {
-          message = copyRes ? 'Copy successfully!' : 'Copy failed!';
-        }
-        Toast.message(message);
-        modal.close();
-      },
-    });
-    modal.appendNode(content.el!);
-    root.insertAdjacentElement('beforeend', modal.el);
-
-    function showModal(e: any) {
-      const { isMoveEvent, isHidden } = logo as unknown as UElement;
-      /* c8 ignore next 3 */
-      if (isMoveEvent || isHidden) {
-        return;
-      }
-      e.stopPropagation();
-      modal.show();
-    }
-    logo.addEventListener('click', showModal, false);
-    logo.addEventListener('touchend', showModal, false);
-    document.documentElement.insertAdjacentElement('beforeend', root);
-    moveable(logo as unknown as UElement);
-    this.triggerPlugins('onMounted', {
-      root,
-      content: content.el,
-      socketStore,
-    });
-    this.handleDeviceDPR();
-
-    psLog.log('Render success');
-  }
-
-  handleDeviceDPR() {
-    const dpr = window.devicePixelRatio || 1;
-    const viewportEl = document.querySelector('[name="viewport"]');
-
-    if (viewportEl) {
-      const viewportContent = viewportEl.getAttribute('content') || '';
-      const initialScale = viewportContent.match(/initial-scale=\d+(\.\d+)?/);
-      const scale = initialScale
-        ? parseFloat(initialScale[0].split('=')[1])
-        : 1;
-      if (scale < 1) {
-        this.root!.style.fontSize = `${14 * dpr}px`;
-      }
-    }
-  }
-
-  triggerPlugins<T extends PageSpyPluginLifecycle>(
+  private triggerPlugins<T extends PageSpyPluginLifecycle>(
     lifecycle: T,
     ...args: PageSpyPluginLifecycleArgs<T>
   ) {
@@ -297,18 +233,11 @@ class PageSpy {
         return;
       }
       // eslint-disable-next-line prefer-spread
-      (plugin[lifecycle] as any)?.apply(plugin, args);
+      (plugin[lifecycle] as any)?.apply(plugin, [
+        { ...args[0], modal, toast },
+        args.slice(1),
+      ]);
     });
-  }
-
-  abort() {
-    this.triggerPlugins('onReset');
-    socketStore.close();
-    PageSpy.instance = null;
-    const root = document.querySelector(`#${Identifier}`);
-    if (root) {
-      document.documentElement.removeChild(root);
-    }
   }
 
   // In FeiShu browser (Android, Chrome/75), due to the premature execution of synchronous render,
@@ -316,8 +245,8 @@ class PageSpy {
   // the browser will directly create a `body` element, and the final result is that
   // there will be multiple `body` elements on the page,
   // which leads to strange phenomena such as css style mismatches
-  render() {
-    const root = document.querySelector(`#${Identifier}`);
+  private render() {
+    const root = document.querySelector(`#${nodeId}`);
     /* c8 ignore start */
     if (root) {
       psLog.warn('Cannot render the widget because it has been in the DOM');
@@ -347,7 +276,129 @@ class PageSpy {
     /* c8 ignore stop */
   }
 
-  updateRoomInfo(obj: UpdateConfig) {
+  private startRender() {
+    const config = this.config.get();
+    const {
+      project,
+      clientOrigin,
+      title,
+      logo: logoUrl,
+      useSecret,
+      secret,
+      primaryColor,
+      modal: modalConfig,
+    } = config;
+
+    const doc = new DOMParser().parseFromString(
+      `
+      <!-- PageSpy Root Container -->
+      <div id="${nodeId}" style="--primary-color: #8434e9">
+        <div class="page-spy-logo">
+          <img src="${logoUrl}" alt="Logo" />
+        </div>
+      </div>
+
+      <!-- Default content for modal -->
+      <div class="${classes.connectInfo}">
+        <p>
+          <span>Device ID</span>
+          <b style="font-family: 'Monaco'" class="page-spy-device-id">
+            ${this.address.slice(0, 4) || '--'}
+          </b>
+        </p>
+        <p>
+          <span>Project</span>
+          <b class="page-spy-project">${project}</b>
+        </p>
+        <p>
+          <span>Title</span>
+          <b class="page-spy-title">${title}</b>
+        </p>
+      </div>
+
+      <!-- Default button for modal -->
+      <button class="page-spy-btn" data-primary id="page-spy-copy-link">
+        <img src="${copySvg}" alt="Copy" />
+        <span>${locales.copyLink}</span>
+      </button>
+    `,
+      'text/html',
+    );
+
+    const $ = (selector: string) => {
+      return doc.querySelector.call(doc, selector);
+    };
+    const $c = (c: string) => $(`.${c}`);
+
+    const root = $(`#${nodeId}`) as HTMLDivElement;
+    root.style.setProperty('--primary-color', primaryColor);
+    this.root = root;
+
+    const logo = $('.page-spy-logo') as UElement;
+    moveable(logo);
+
+    const showModal = () => {
+      if (logo.isMoveEvent || logo.isHidden) {
+        return;
+      }
+      modal.show();
+    };
+    logo.addEventListener('click', showModal, false);
+    logo.addEventListener('touchend', showModal, false);
+    window.addEventListener('sdk-inactive', () => {
+      logo.classList.add('inactive');
+    });
+
+    const connectInfo = $c(classes.connectInfo) as HTMLDivElement;
+    const copyLink = $('#page-spy-copy-link') as HTMLButtonElement;
+    copyLink.addEventListener('click', () => {
+      let text = `${clientOrigin}/#/devtools?address=${encodeURIComponent(
+        this.address,
+      )}`;
+      if (useSecret) {
+        text += `&secret=${secret}`;
+      }
+      const copied = copy(text);
+      const message = copied ? locales.copied : locales.copyFailed;
+      modal.close();
+      toast.message(message);
+    });
+    // 配置 modal 默认显示内容
+    modal.build({
+      logo: modalConfig.logo || modalLogoSvg,
+      title: modalConfig.title || 'PageSpy',
+      content: connectInfo,
+      footer: [copyLink],
+      mounted: root,
+    });
+
+    document.documentElement.insertAdjacentElement('beforeend', root);
+    this.triggerPlugins('onMounted', {
+      config,
+      root,
+      socketStore,
+    });
+    this.handleDeviceDPR();
+    psLog.log('Render success');
+  }
+
+  private handleDeviceDPR() {
+    const dpr = window.devicePixelRatio || 1;
+    const viewportEl = document.querySelector('[name="viewport"]');
+
+    if (viewportEl) {
+      const viewportContent = viewportEl.getAttribute('content') || '';
+      const initialScale = viewportContent.match(/initial-scale=\d+(\.\d+)?/);
+      const scale = initialScale
+        ? parseFloat(initialScale[0].split('=')[1])
+        : 1;
+      if (scale < 1) {
+        this.root!.style.fontSize = `${14 * dpr}px`;
+      }
+    }
+  }
+
+  public updateRoomInfo(obj: UpdateConfig) {
     if (!obj) return;
 
     const { project, title } = obj;
@@ -369,51 +420,17 @@ class PageSpy {
     socketStore.updateRoomInfo();
   }
 
-  static instance: PageSpy | null = null;
+  public abort() {
+    this.triggerPlugins('onReset');
+    PageSpy.instance = null;
 
-  static plugins: Record<PluginOrder | 'normal', PageSpyPlugin[]> = {
-    pre: [],
-    normal: [],
-    post: [],
-  };
+    socketStore.close();
+    modal.reset();
 
-  static get pluginsWithOrder() {
-    return [
-      ...PageSpy.plugins.pre,
-      ...PageSpy.plugins.normal,
-      ...PageSpy.plugins.post,
-    ];
-  }
-
-  static registerPlugin(plugin: PageSpyPlugin) {
-    if (!plugin) {
-      return;
+    const root = document.querySelector(`#${nodeId}`);
+    if (root) {
+      document.documentElement.removeChild(root);
     }
-    if (isClass(plugin)) {
-      psLog.error(
-        'PageSpy.registerPlugin() expect to pass an instance, not a class',
-      );
-      return;
-    }
-    if (!plugin.name) {
-      psLog.error(
-        `The ${plugin.constructor.name} plugin should provide a "name" property`,
-      );
-      return;
-    }
-    const isExist = PageSpy.pluginsWithOrder.some(
-      (i) => i.name === plugin.name,
-    );
-    if (isExist) {
-      psLog.info(
-        `The ${plugin.name} has registered. Consider the following reasons:
-      - Duplicate register one same plugin;
-      - Plugin's "name" conflict with others, you can print all registered plugins by "PageSpy.plugins";`,
-      );
-      return;
-    }
-    const currentPluginSet = PageSpy.plugins[plugin.enforce || 'normal'];
-    currentPluginSet.push(plugin);
   }
 }
 

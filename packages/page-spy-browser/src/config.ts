@@ -1,6 +1,9 @@
 import { ConfigBase } from '@huolala-tech/page-spy-base';
 import { InitConfigBase } from '@huolala-tech/page-spy-types';
 import logoUrl from './assets/logo.svg';
+import modalLogoUrl from './assets/modal-logo.svg';
+
+export const nodeId = '__pageSpy';
 
 type InternalPlugins =
   | 'ConsolePlugin'
@@ -35,41 +38,58 @@ export interface InitConfig extends InitConfigBase {
    */
   offline?: boolean;
   /**
-   * Customize logo source url.
+   * Customize logo source url in float-ball.
    */
   logo?: string;
   /**
-   * Customize logo style.
+   * Customize brand primary color.
    */
-  logoStyle?: Object;
+  primaryColor?: string;
+  /**
+   * Customize modal.
+   */
+  modal?: {
+    /**
+     * Customize logo source url in modal.
+     */
+    logo?: string;
+    /**
+     * Customize modal title.
+     */
+    title?: string;
+  };
 }
 
 export class Config extends ConfigBase<InitConfig> {
-  protected privateKeys: (keyof InitConfig)[] = ['secret'];
-
   /**
    * NOTE: the 'scriptLink' must be mark static, for
    * "document.currentScript.src" only valid after <script> load done.
    */
   public static scriptLink = (document.currentScript as HTMLScriptElement)?.src;
 
+  protected privateKeys: (keyof InitConfig)[] = ['secret'];
+
   protected defaultConfig = () => {
     const defaultConfig = {
       api: '',
-      clientOrigin: '',
       project: 'default',
-      autoRender: true,
       title: '--',
       enableSSL: null,
       disabledPlugins: [],
       offline: false,
-      logo: logoUrl,
-      logoStyle: {},
       messageCapacity: 1000,
       useSecret: false,
       secret: '',
       serializeData: false,
       dataProcessor: {},
+      clientOrigin: '',
+      autoRender: true,
+      logo: logoUrl,
+      primaryColor: '#8434e9',
+      modal: {
+        logo: modalLogoUrl,
+        title: 'PageSpy',
+      },
     };
 
     if (!Config.scriptLink) {

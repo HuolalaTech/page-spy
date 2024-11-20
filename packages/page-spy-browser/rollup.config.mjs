@@ -2,7 +2,7 @@ import typescript from 'rollup-plugin-typescript2';
 import del from 'rollup-plugin-delete';
 import babel from '@rollup/plugin-babel';
 import postcss from 'rollup-plugin-postcss';
-import autoprefixer from 'autoprefixer';
+import postcssPresetEnv from 'postcss-preset-env';
 import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import json from '@rollup/plugin-json';
@@ -27,9 +27,13 @@ const plugins = [
     preventAssignment: true,
   }),
   postcss({
+    modules: {
+      autoModules: true,
+      generateScopedName: '[local]-[hash:base64:5]',
+    },
     extensions: ['.css', '.less'],
     extract: false,
-    plugins: [autoprefixer()],
+    plugins: [postcssPresetEnv()],
   }),
   terser(),
 ];

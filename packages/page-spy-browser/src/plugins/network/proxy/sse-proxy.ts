@@ -31,11 +31,6 @@ export default class SSEProxy extends WebNetworkProxyBase {
 
     const _sseProxy = this;
     window.EventSource = class EventSourceProxy {
-      public content =
-        'The "window.EventSource" is being proxied by PageSpy\'s NetworkPlugin.';
-
-      public es: EventSource;
-
       constructor(url: string | URL, eventSourceInitDict?: EventSourceInit) {
         const id = getRandomId();
         const req = new RequestItem(id);
@@ -52,23 +47,24 @@ export default class SSEProxy extends WebNetworkProxyBase {
         req.responseType = 'text';
         req.startTime = Date.now();
 
-        this.es = new OriginEventSource(url, eventSourceInitDict);
-        this.es.addEventListener('open', () => {
+        const es = new OriginEventSource(url, eventSourceInitDict);
+        es.addEventListener('open', () => {
           req.readyState = ReqReadyState.OPENED;
           req.endTime = Date.now();
           req.costTime = req.endTime - req.startTime;
           _sseProxy.sendRequestItem(id, req);
         });
-        this.es.addEventListener('message', ({ data }) => {
+        es.addEventListener('message', ({ data, lastEventId }) => {
           req.status = 200;
           req.statusText = 'Done';
           req.readyState = ReqReadyState.DONE;
           req.response = data;
+          req.lastEventId = lastEventId;
           req.endTime = Date.now();
           req.costTime = req.endTime - req.startTime;
           _sseProxy.sendRequestItem(id, req);
         });
-        this.es.addEventListener('error', () => {
+        es.addEventListener('error', () => {
           req.status = 400;
           req.readyState = ReqReadyState.DONE;
           req.endTime = Date.now();
@@ -76,19 +72,21 @@ export default class SSEProxy extends WebNetworkProxyBase {
           _sseProxy.sendRequestItem(id, req);
         });
 
-        const _esProxy = this;
         // eslint-disable-next-line no-constructor-return
-        return new Proxy(_esProxy, {
-          get(target, prop) {
-            if (prop in target) {
-              return target[prop as keyof EventSourceProxy];
-            }
-            const value = target.es[prop as keyof EventSource];
-            return typeof value === 'function'
-              ? value.bind(_esProxy.es)
-              : value;
-          },
-        });
+        return es;
+
+        // const _esProxy = this;
+        // return new Proxy(_esProxy, {
+        //   get(target, prop) {
+        //     if (prop in target) {
+        //       return target[prop as keyof EventSourceProxy];
+        //     }
+        //     const value = target.es[prop as keyof EventSource];
+        //     return typeof value === 'function'
+        //       ? value.bind(_esProxy.es)
+        //       : value;
+        //   },
+        // });
       }
     } as any;
   }

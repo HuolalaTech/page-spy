@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-browser",
-  "version": "1.9.13",
+  "version": "1.9.16",
   "description": "A developer tool for debugging remote web page.",
   "license": "MIT",
   "main": "dist/iife/index.min.js",
@@ -31,8 +31,8 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.0",
-    "@huolala-tech/page-spy-base": "^1.0.6",
-    "@huolala-tech/page-spy-types": "^1.9.6",
+    "@huolala-tech/page-spy-base": "^1.0.7",
+    "@huolala-tech/page-spy-types": "^1.9.7",
     "copy-to-clipboard": "^3.3.1"
   },
   "devDependencies": {
@@ -47,10 +47,10 @@
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-terser": "^0.4.4",
-    "autoprefixer": "^10.3.4",
     "core-js": "3.30",
     "less": "^4.1.1",
     "postcss": "^8.4.21",
+    "postcss-preset-env": "^10.1.0",
     "rollup": "^3.10.0",
     "rollup-plugin-delete": "^2.0.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
@@ -64,7 +64,7 @@
   },
   "browserslist": [
     "chrome > 75",
-    "safari > 12",
+    "safari > 11",
     "> 0.1%",
     "not dead",
     "not op_mini all"

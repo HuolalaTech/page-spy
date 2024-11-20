@@ -37,6 +37,7 @@ const defaultConfig: DataHarborConfig = {
     network: true,
     storage: true,
     system: false,
+    meta: true,
   },
   filename: () => {
     return new Date().toLocaleString();
@@ -137,7 +138,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     };
 
     const data = [...this.harbor.container];
-    data.push(this.makeClientInfo());
+    data.push(this.makeMetaInfo());
 
     const path = makeFile(data, filename());
     const url = `${this.apiBase}/api/v1/log/upload?${buildSearchParams(tags)}`;
@@ -219,10 +220,10 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
   // To make sure the replay panel can properly display, we must put a client info
   // message to the data.
-  protected makeClientInfo() {
+  protected makeMetaInfo() {
     const clientInfo = this.client?.makeClientInfoMsg();
     return {
-      type: 'client-info',
+      type: 'meta',
       timestamp: Date.now(),
       data: clientInfo,
     };
