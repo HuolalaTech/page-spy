@@ -1,7 +1,7 @@
 import { psLog } from '@huolala-tech/page-spy-base';
 import { CacheMessageItem } from '../harbor/base';
 import { t } from '../assets/locale';
-import { formatFilename } from '../utils';
+import { formatFilename } from './index';
 
 export type UploadArgs = {
   url: string;

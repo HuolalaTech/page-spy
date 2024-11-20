@@ -11,8 +11,8 @@ import {
 } from '../assets/svg';
 import { t } from '../assets/locale';
 import { PeriodItem } from '../harbor/base';
-import { copyInBrowser, formatTimeDuration } from '../utils';
-import type DataHarborPlugin from '.';
+import { copyInBrowser, formatTimeDuration } from './index';
+import type DataHarborPlugin from '../index';
 
 function getLocaleTime(v: number) {
   return new Date(v).toLocaleTimeString('en', { hour12: false });
