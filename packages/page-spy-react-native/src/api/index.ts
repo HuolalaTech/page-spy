@@ -22,7 +22,10 @@ const getScheme = (enableSSL: InitConfig['enableSSL']) => {
 };
 
 export default class Request {
-  constructor(public config: Config) {
+  constructor(
+    public config: Config,
+    public client: Client,
+  ) {
     if (!config.get().api) {
       throw Error('The api base url cannot be empty');
     }
@@ -41,7 +44,7 @@ export default class Request {
   createRoom() {
     const config = this.config.get();
     const scheme = getScheme(config.enableSSL);
-    const name = Client.getName();
+    const name = this.client.getName();
     const query = joinQuery({
       name: encodeURIComponent(name),
       group: config.project,

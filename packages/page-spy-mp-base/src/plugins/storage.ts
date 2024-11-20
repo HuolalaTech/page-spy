@@ -1,3 +1,4 @@
+import { KVList } from './../types';
 import { makeMessage, Client, psLog } from '@huolala-tech/page-spy-base';
 import type {
   SpyStorage,
@@ -7,6 +8,7 @@ import type {
 } from '@huolala-tech/page-spy-types';
 import socketStore from '../helpers/socket';
 import { getMPSDK, utilAPI } from '../utils';
+import type { MPStorageAPI } from '../types';
 
 export function mpDataStringify(data: any) {
   const typeOfValue = typeof data;
@@ -36,11 +38,14 @@ export default class StoragePlugin implements PageSpyPlugin {
 
   public $pageSpyConfig: SpyMP.MPInitConfig | null = null;
 
-  public onInit({ config }: OnInitParams<SpyMP.MPInitConfig>) {
+  public client: Client | null = null;
+
+  public onInit({ config, client }: OnInitParams<SpyMP.MPInitConfig>) {
     if (StoragePlugin.hasInitd) return;
     StoragePlugin.hasInitd = true;
 
     this.$pageSpyConfig = config;
+    this.client = client;
     this.initStorageProxy();
     this.listenRefreshEvent();
   }
@@ -128,8 +133,9 @@ export default class StoragePlugin implements PageSpyPlugin {
           try {
             let res: any;
             if (
-              Client.info.browserType === 'mp-alipay' &&
-              (!Client.info.framework || Client.info.framework === 'unknown')
+              that.client?.info.browserType === 'mp-alipay' &&
+              (!that.client.info.framework ||
+                that.client.info.framework === 'unknown')
             ) {
               // alipay is so disgusting, here the input is an object
               const obj = keyOrObj as { key: string; data: any };
@@ -164,11 +170,12 @@ export default class StoragePlugin implements PageSpyPlugin {
 
       removeStorageSync: {
         // in alipay, the param is an object actually, but it works.
+        // TODO: really?
         value(keyOrObj: string) {
           try {
             const res =
               StoragePlugin.originFunctions!.removeStorageSync(keyOrObj);
-            that.sendRemoveItem(res);
+            that.sendRemoveItem(keyOrObj);
             return res;
             /* c8 ignore next 4 */
           } catch (e) {

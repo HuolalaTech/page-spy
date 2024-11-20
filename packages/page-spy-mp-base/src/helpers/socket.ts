@@ -5,6 +5,13 @@ import {
   ROOM_SESSION_KEY,
 } from '@huolala-tech/page-spy-base';
 import { getMPSDK, utilAPI } from '../utils';
+import {
+  MPSocket,
+  SocketOnCloseHandler,
+  SocketOnErrorHandler,
+  SocketOnMessageHandler,
+  SocketOnOpenHandler,
+} from '../types';
 
 export class MPSocketWrapper extends SocketWrapper {
   public socketInstance: MPSocket | null = null;

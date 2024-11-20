@@ -10,7 +10,7 @@ English | [中文](./README_ZH.md)
 [![SDK version][npm-image]][npm-url]
 [![SDK size][minified-image]][minified-url]
 
-> The SDK used in wechat miniprogram environment.
+The client SDK of [PageSpy](https://www.pagespy.org) used in wechat miniprogram environment.
 
 > [!CAUTION]
 > When submitting the mini program for review, be sure to delete the SDK in the code, otherwise the review will fail.

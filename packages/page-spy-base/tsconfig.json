@@ -2,10 +2,11 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "rootDir": "./src",
-    "target": "ES2015",
+    "target": "ESNext",
     "module": "ESNext",
     "noEmit": false,
-    "outDir": "dist"
+    "declarationDir": "dist/types"
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["dist", "node_modules"]
 }

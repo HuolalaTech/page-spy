@@ -1,12 +1,27 @@
 import { SocketState } from 'page-spy-base/src';
 import { mockRequest } from './request';
 import EventEmitter from 'events';
+import {
+  AsyncCallback,
+  FileSystemManager,
+  KVList,
+  MPFileAPI,
+  MPNetworkAPI,
+  MPRouterAPI,
+  MPStorageAPI,
+  MPSystemAPI,
+  MPUIAPI,
+  SocketOnCloseHandler,
+  SocketOnErrorHandler,
+  SocketOnMessageHandler,
+  SocketOnOpenHandler,
+} from 'page-spy-mp-base/src/types';
 type CBType = (event?: any) => any;
 
 export class MockSocket {
   private ee = new EventEmitter();
   status: SocketState = SocketState.CONNECTING;
-  send(params: { data: string | Buffer }) {}
+  send(params: { data: string | ArrayBuffer }) {}
   onOpen(handler: (res: any) => void) {
     this.status = SocketState.OPEN;
     this.ee.addListener('open', handler);
@@ -17,7 +32,7 @@ export class MockSocket {
   onError(handler: (msg: string) => void) {
     this.ee.addListener('error', handler);
   }
-  onMessage(handler: (data: string | Buffer) => void) {
+  onMessage(handler: (data: string | ArrayBuffer) => void) {
     this.ee.addListener('message', handler);
   }
   close() {
@@ -30,7 +45,14 @@ export class MockSocket {
 }
 
 export class MockMP
-  implements MPSystemAPI, MPNetworkAPI, MPStorageAPI, MPSystemAPI
+  implements
+    MPSystemAPI,
+    MPNetworkAPI,
+    MPStorageAPI,
+    MPSystemAPI,
+    MPRouterAPI,
+    MPUIAPI,
+    MPFileAPI
 {
   private store: Record<string, any> = {};
   private listeners = new Map<string, CBType[]>();
@@ -41,6 +63,8 @@ export class MockMP
     this.listeners.set('onAppShow', []);
   }
 
+  env = { USER_DATA_PATH: '' };
+
   trigger(name: string, data?: any) {
     this.listeners.get(name)?.forEach((cb) => cb(data));
   }
@@ -50,24 +74,43 @@ export class MockMP
       ?.splice(this.listeners.get(name)?.indexOf(cb) || 0, 1);
   }
 
-  setStorage(params: { key: string; data: any } & AsyncCallback<any, any>) {
+  setClipboardData(options: { data: string } & AsyncCallback): void {
+    options.success?.();
+    options.complete?.();
+  }
+
+  showActionSheet(params: any) {}
+
+  showToast(params: any) {}
+
+  hideToast() {}
+
+  showLoading(params: any) {}
+
+  hideLoading() {}
+
+  showModal(params: Parameters<MPUIAPI['showModal']>[0]) {
+    params.success?.({ confirm: true, cancel: false });
+  }
+
+  setStorage(params: { key: string; data: any } & AsyncCallback) {
     this.store[params.key] = params.data;
     params.success && params.success();
   }
-  getStorage(params: { key: string } & AsyncCallback<any, any>) {
+  getStorage(params: { key: string } & AsyncCallback) {
     params.success && params.success(this.store[params.key]);
   }
-  removeStorage(params: { key: string } & AsyncCallback<any, any>) {
+  removeStorage(params: { key: string } & AsyncCallback) {
     delete this.store[params.key];
     params.success && params.success();
   }
 
-  clearStorage(params: {} & AsyncCallback<any, any>) {
+  clearStorage(params: {} & AsyncCallback) {
     this.store = {};
     params.success?.();
   }
 
-  // getStorageInfo(params: { } & AsyncCallback<any, any>) {
+  // getStorageInfo(params: { } & AsyncCallback) {
   //   params.success && params.success({
   //     keys: Object.keys(store),
   //     currentSize: 0,
@@ -107,7 +150,7 @@ export class MockMP
   batchGetStorageSync(keyList: string[]) {
     return keyList.map((key) => this.store[key]);
   }
-  batchSetStorage(params: { kvList: KVList } & AsyncCallback<any, any>) {
+  batchSetStorage(params: { kvList: KVList } & AsyncCallback) {
     params.kvList.forEach((kv) => {
       this.store[kv.key] = kv.value;
     });
@@ -121,7 +164,7 @@ export class MockMP
 
   request = mockRequest;
 
-  connectSocket(params: { url: string }) {
+  connectSocket(params: Parameters<MPNetworkAPI['connectSocket']>[0]) {
     // let closeHandler: (res: any) => void;
     // let openHandler: (res: any) => void;
     // let messageHandler: (data: object) => void;
@@ -169,12 +212,46 @@ export class MockMP
     this.socketInstance?.onOpen(handler);
   }
   sendSocketMessage(
-    params: { data: string | Buffer } & AsyncCallback<any, any>,
+    params: { data: string | ArrayBuffer } & AsyncCallback<any, any>,
   ): void {
     this.socketInstance?.send(params);
   }
   closeSocket(params: AsyncCallback<any, any>): void {
     this.socketInstance?.close();
+  }
+
+  uploadFile(params: Parameters<MPNetworkAPI['uploadFile']>[0]) {
+    const res = {
+      statusCode: 200,
+      header: {
+        'content-type': 'application/json',
+      },
+      data: { text: 'Hello PageSpy' },
+    };
+    params.success?.(res);
+    params.complete?.(res);
+  }
+
+  getFileSystemManager(): FileSystemManager {
+    return {
+      writeFile(params: Parameters<FileSystemManager['writeFile']>[0]) {
+        params.success?.();
+      },
+
+      writeFileSync(params: Parameters<FileSystemManager['writeFileSync']>[0]) {
+        return '';
+      },
+      readFile(params: Parameters<FileSystemManager['readFile']>[0]) {
+        params.success?.('');
+      },
+      readFileSync(filePath: string, encoding?: string) {
+        return '';
+      },
+      unlink(params: Parameters<FileSystemManager['unlink']>[0]) {
+        params.success?.();
+      },
+      unlinkSync(filePath: string) {},
+    };
   }
 
   canIUse(api: string) {
@@ -224,19 +301,19 @@ export class MockMP
   }
 
   // router
-  switchTab(params: { url: string } & AsyncCallback<any, any>) {
+  switchTab(params: { url: string } & AsyncCallback) {
     params.success && params.success();
   }
-  redirectTo(params: { url: string } & AsyncCallback<any, any>) {
+  redirectTo(params: { url: string } & AsyncCallback) {
     params.success && params.success();
   }
-  navigateTo(params: { url: string } & AsyncCallback<any, any>) {
+  navigateTo(params: { url: string } & AsyncCallback) {
     params.success && params.success();
   }
-  navigateBack(params: { delta?: number } & AsyncCallback<any, any>) {
+  navigateBack(params: { delta?: number } & AsyncCallback) {
     params.success && params.success();
   }
-  reLaunch(params: { url: string } & AsyncCallback<any, any>) {
+  reLaunch(params: { url: string } & AsyncCallback) {
     params.success && params.success();
   }
 }

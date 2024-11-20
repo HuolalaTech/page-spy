@@ -8,6 +8,7 @@ import {
 } from '@huolala-tech/page-spy-base';
 import { getMPSDK } from '../../../utils';
 import MPNetworkProxyBase from './base';
+import { MPNetworkAPI } from '../../../types';
 
 export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
   public request: MPNetworkAPI['request'] | null = null;

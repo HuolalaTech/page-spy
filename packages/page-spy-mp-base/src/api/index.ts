@@ -23,7 +23,10 @@ const getScheme = (enableSSL: SpyMP.MPInitConfig['enableSSL']) => {
 };
 
 export default class Request {
-  constructor(public config: Config) {
+  constructor(
+    public config: Config,
+    public client: Client,
+  ) {
     if (!config.get().api) {
       throw Error('The api base url cannot be empty');
     }
@@ -36,7 +39,7 @@ export default class Request {
   createRoom() {
     const { enableSSL, project, title, useSecret, secret } = this.config.get();
     const scheme = getScheme(enableSSL);
-    const device = Client.getName();
+    const device = this.client.getName();
 
     const query = joinQuery({
       group: project,

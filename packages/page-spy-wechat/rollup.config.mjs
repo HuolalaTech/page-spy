@@ -33,14 +33,13 @@ export default {
   output: [
     {
       file: pkg.main,
-      format: 'cjs',
-      sourcemap: true,
-    },
-    {
-      file: pkg.module,
       format: 'esm',
       sourcemap: true,
     },
+  ],
+  external: [
+    '@huolala-tech/page-spy-base',
+    '@huolala-tech/page-spy-mp-base'
   ],
   plugins: [
     ...plugins,

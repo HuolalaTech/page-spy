@@ -33,11 +33,6 @@ export default {
   output: [
     {
       file: pkg.main,
-      format: 'cjs',
-      sourcemap: true,
-    },
-    {
-      file: pkg.module,
       format: 'esm',
       sourcemap: true,
     },
@@ -62,5 +57,9 @@ export default {
     }),
     del({ targets: ['dist/*'] }),
   ],
-  external: ['@tarojs/taro'],
+  external: [
+    '@tarojs/taro',
+    '@huolala-tech/page-spy-base',
+    '@huolala-tech/page-spy-mp-base'
+  ],
 };

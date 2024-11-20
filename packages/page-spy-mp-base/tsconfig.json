@@ -2,11 +2,13 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "rootDir": "./src",
-    "target": "ES2015",
+    "target": "ES2018",
     "module": "ESNext",
     "noEmit": false,
     "outDir": "dist",
-    "declaration": true
+    "declaration": true,
+    "declarationDir": "dist/types",
+    "isolatedModules": false
   },
   "include": ["src", "global.d.ts"]
 }

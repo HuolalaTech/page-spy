@@ -60,5 +60,9 @@ export default [
       getBabel('esm'),
       del({ targets: [dirname(pkg.module)] }),
     ],
+    external: [
+      '@huolala-tech/page-spy-base',
+      '@huolala-tech/page-spy-mp-base'
+    ]
   },
 ];

@@ -1,21 +1,23 @@
+import { KVList } from './../../src/types';
+import { AsyncCallback, MPStorageAPI } from 'page-spy-mp-base/src/types';
 import { getMPSDK } from 'page-spy-mp-base/src/utils';
 
 export function mockWXStorage(): MPStorageAPI {
   let store: Record<string, any> = {};
   return {
-    setStorage(params: { key: string; data: any } & AsyncCallback<any, any>) {
+    setStorage(params: { key: string; data: any } & AsyncCallback) {
       store[params.key] = params.data;
       params.success && params.success();
     },
     getStorage(params: { key: string } & AsyncCallback<any, any>) {
       params.success && params.success(store[params.key]);
     },
-    removeStorage(params: { key: string } & AsyncCallback<any, any>) {
+    removeStorage(params: { key: string } & AsyncCallback) {
       delete store[params.key];
       params.success && params.success();
     },
 
-    clearStorage(params: {} & AsyncCallback<any, any>) {
+    clearStorage(params: {} & AsyncCallback) {
       store = {};
       params.success?.();
     },
@@ -59,7 +61,7 @@ export function mockWXStorage(): MPStorageAPI {
     batchGetStorageSync(keyList: string[]) {
       return keyList.map((key) => store[key]);
     },
-    batchSetStorage(params: { kvList: KVList } & AsyncCallback<any, any>) {
+    batchSetStorage(params: { kvList: KVList } & AsyncCallback) {
       params.kvList.forEach((kv) => {
         store[kv.key] = kv.value;
       });

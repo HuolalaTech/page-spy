@@ -38,8 +38,6 @@ type UpdateConfig = {
 class PageSpy {
   root: HTMLElement | null = null;
 
-  version = PKG_VERSION;
-
   request: Request | null = null;
 
   // System info: <os>-<browser>:<browserVersion>
@@ -56,6 +54,8 @@ class PageSpy {
   config = new Config();
 
   cacheTimer: ReturnType<typeof setInterval> | null = null;
+
+  static client: Client;
 
   constructor(init: SpyMP.MPInitConfig) {
     if (PageSpy.instance) {
@@ -88,11 +88,17 @@ class PageSpy {
     PageSpy.instance = this;
 
     // Here will check the config api
-    this.request = new Request(this.config);
+    this.request = new Request(this.config, PageSpy.client);
     this.updateConfiguration();
-    this.triggerPlugins('onInit', { socketStore, config, atom });
-
-    Client.plugins = PageSpy.pluginsWithOrder.map((plugin) => plugin.name);
+    PageSpy.client.plugins = PageSpy.pluginsWithOrder.map(
+      (plugin) => plugin.name,
+    );
+    this.triggerPlugins('onInit', {
+      socketStore,
+      config,
+      atom,
+      client: PageSpy.client,
+    });
 
     this.init();
   }
@@ -108,6 +114,7 @@ class PageSpy {
 
     socketStore.connectable = true;
     socketStore.getPageSpyConfig = () => this.config.get();
+    socketStore.getClient = () => PageSpy.client;
     socketStore.messageCapacity = messageCapacity;
   }
 
@@ -226,6 +233,62 @@ class PageSpy {
     socketStore.updateRoomInfo();
   }
 
+  getDebugLink() {
+    const config = this.config.get();
+    let link = `${config.enableSSL === false ? 'http://' : 'https://'}${config.api}/#/devtools?address=${encodeURIComponent(
+      this.address,
+    )}`;
+    if (config.useSecret) {
+      link += `&secret=${config.secret}`;
+    }
+    return link;
+  }
+
+  // open actions panal
+  async showPanel() {
+    const mp = getMPSDK();
+    const that = this;
+    const options: {
+      text: string;
+      action: () => void;
+    }[] = [
+      {
+        text: 'PageSpy 房间号：' + this.address.slice(0, 4),
+        action() {
+          mp.setClipboardData({
+            data: that.getDebugLink(),
+            success() {
+              mp.showToast({
+                title: '复制成功',
+                icon: 'success',
+              });
+            },
+          });
+        },
+      },
+    ];
+    PageSpy.pluginsWithOrder.forEach((plugin) => {
+      if (plugin.onActionSheet) {
+        const actions = plugin.onActionSheet();
+        if (actions?.length) {
+          options.push(...actions);
+        }
+      }
+    });
+
+    mp.showActionSheet({
+      title: 'PageSpy Device ID:' + (this.address.slice(0, 4) || '--'),
+      itemColor: '#b67cff',
+      itemList: options.map((o) => o.text),
+      success(res) {
+        const option = options[res.tapIndex];
+        if (option.action) {
+          option.action();
+        }
+      },
+    });
+  }
+
   static instance: PageSpy | null = null;
 
   static plugins: Record<PluginOrder | 'normal', PageSpyPlugin[]> = {
@@ -287,5 +350,6 @@ INTERNAL_PLUGINS.forEach((p) => {
 });
 
 export default PageSpy;
+export * from './types';
 export * from './utils';
 export * from './helpers/socket';

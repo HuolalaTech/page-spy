@@ -33,11 +33,6 @@ export default {
   output: [
     {
       file: pkg.main,
-      format: 'cjs',
-      sourcemap: true,
-    },
-    {
-      file: pkg.module,
       format: 'esm',
       sourcemap: true,
     },

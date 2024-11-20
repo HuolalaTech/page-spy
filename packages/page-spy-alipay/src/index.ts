@@ -26,11 +26,15 @@ utilAPI.removeStorage = (key) => {
 };
 
 const info = my.getSystemInfoSync();
-Client.info.sdk = 'mp-alipay';
-Client.info.osType = info.platform.toLowerCase() as SpyClient.OS;
-Client.info.browserType = 'mp-alipay';
-Client.info.osVersion = info.system;
-Client.info.browserVersion = info.version;
+
+PageSpy.client = new Client({
+  sdk: 'mp-alipay',
+  osType: info.platform.toLowerCase() as SpyClient.OS,
+  browserType: 'mp-alipay',
+  osVersion: info.system,
+  browserVersion: info.version,
+  sdkVersion: PKG_VERSION,
+});
 
 SocketStoreBase.messageFilters.push((data) => {
   return data.data;
