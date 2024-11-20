@@ -15,23 +15,15 @@ import { CacheMessageItem, DataType } from './harbor/base';
 import { getMPSDK } from '@huolala-tech/page-spy-mp-base';
 
 interface DataHarborConfig {
-  // Specify the maximum bytes of single harbor's container.
-  // Default 10MB.
-  maximum?: number;
-
   // Specify which types of data to collect.
   caredData?: Record<DataType, boolean>;
 
   // Custom uploaded filename by this.
   // Default value is `new Date().toLocaleString()`.
   filename?: () => string;
-
-  // Custom download behavior.
-  onDownload?: (data: CacheMessageItem[]) => void;
 }
 
 const defaultConfig: DataHarborConfig = {
-  maximum: 10 * 1024 * 1024,
   caredData: {
     console: true,
     network: true,
@@ -72,7 +64,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       ...config,
     } as Required<DataHarborConfig>;
 
-    this.harbor = new MemoryHarbor({ maximum: this.$harborConfig.maximum });
+    this.harbor = new MemoryHarbor();
   }
 
   public async onInit({
