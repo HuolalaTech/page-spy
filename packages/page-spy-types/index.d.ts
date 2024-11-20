@@ -12,4 +12,7 @@ export * as SpyStorage from './lib/storage';
 export * as SpyDatabase from './lib/database';
 export * as SpyPage from './lib/page';
 
+export * from './lib/modal';
+export * from './lib/toast';
+
 export * from './lib';

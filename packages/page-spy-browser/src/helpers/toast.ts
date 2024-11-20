@@ -1,39 +1,52 @@
-/**
- * Show notification use `Toast.message('Copied')`
- * Clear all notifications use `Toast.destroy()`
- */
-export class Toast {
-  public static timer: ReturnType<typeof setTimeout> | null = null;
+import classes from '../assets/styles/toast.module.less';
+import { nodeId } from '../config';
 
-  static message(text: string) {
-    const node = document.createElement('div');
-    node.classList.add('page-spy-toast');
-    node.innerText = String(text);
-    document.documentElement.appendChild(node);
-    const timer = setTimeout(() => {
-      if (document.contains(node)) {
-        document.documentElement.removeChild(node);
-      }
-      if (Toast.timer === timer) {
-        Toast.timer = null;
-      }
-    }, 1500);
-    Toast.timer = timer;
+/**
+ * Show notification use `toast.message('Copied')`
+ * Clear all notifications use `toast.destroy()`
+ */
+export class toast {
+  constructor() {
+    if (new.target === toast) {
+      throw new Error('Cannot call `new toast()`');
+    }
   }
 
-  static destroy() {
-    const nodes = document.querySelectorAll('.page-spy-toast');
+  private static timer: ReturnType<typeof setTimeout> | null = null;
+
+  private static get root() {
+    return document.querySelector(`#${nodeId}`) ?? document.body;
+  }
+
+  public static message(text: string) {
+    const node = document.createElement('div');
+    node.classList.add('page-spy-toast', classes.toast);
+    node.innerText = String(text);
+    toast.root.appendChild(node);
+    const timer = setTimeout(() => {
+      if (toast.root.contains(node)) {
+        toast.root.removeChild(node);
+      }
+      if (toast.timer === timer) {
+        toast.timer = null;
+      }
+    }, 3000);
+    toast.timer = timer;
+  }
+
+  public static destroy() {
+    const nodes = toast.root.querySelectorAll('.page-spy-toast');
     if (nodes.length) {
       [...nodes].forEach((n) => {
-        if (document.contains(n)) {
-          document.documentElement.removeChild(n);
+        if (toast.root.contains(n)) {
+          toast.root.removeChild(n);
         }
       });
 
-      if (Toast.timer) {
-        clearTimeout(Toast.timer);
+      if (toast.timer) {
+        clearTimeout(toast.timer);
       }
     }
-    Toast.timer = null;
+    toast.timer = null;
   }
 }

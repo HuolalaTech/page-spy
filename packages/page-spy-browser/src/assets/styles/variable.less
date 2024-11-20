@@ -1,0 +1,50 @@
+@gradient: linear-gradient(45deg, #efdfff, #4e00b1 52%, #3d0c7c);
+@size: 80em;
+@hidden-size: 40em;
+@font-size: 14px;
+
+.common-button() {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: (60em / @font-size);
+  padding: (6em / @font-size) (6em / @font-size);
+  gap: (4em / @font-size);
+  letter-spacing: 0.4px;
+  border: 1px solid #333;
+  border-radius: (4em / @font-size);
+  background-color: white;
+  color: #333;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all ease-in-out 100ms;
+  font-size: (13em / @font-size);
+  &[data-primary] {
+    border-color: var(--primary-color);
+    background-color: var(--primary-color);
+    color: white;
+  }
+  &[data-dashed] {
+    border-style: dashed;
+  }
+  &:disabled {
+    border-color: #c8c8c8;
+    background-color: #c8c8c8;
+    color: white;
+    cursor: not-allowed;
+  }
+  &:active {
+    opacity: 0.7;
+  }
+  img,
+  svg {
+    width: (20em / @font-size);
+    height: (20em / @font-size);
+  }
+}
+
+.text-ellipse() {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

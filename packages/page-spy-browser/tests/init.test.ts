@@ -148,8 +148,7 @@ describe('new PageSpy([config])', () => {
   });
 
   it('Content load', async () => {
-    const init = jest.spyOn(SDK.prototype, 'init');
-    const close = jest.spyOn(socketStore, 'close');
+    const init = jest.spyOn(SDK.prototype as any, 'init');
 
     new SDK();
 
@@ -200,7 +199,7 @@ describe('new PageSpy([config])', () => {
       }),
     );
 
-    const spy = jest.spyOn(SDK.prototype, 'useOldConnection');
+    const spy = jest.spyOn(SDK.prototype as any, 'useOldConnection');
 
     new SDK();
     window.dispatchEvent(new Event('DOMContentLoaded'));

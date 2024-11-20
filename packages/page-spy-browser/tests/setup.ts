@@ -15,7 +15,7 @@ const script = new JSDOM(
   <html>
     <head>
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <script src="https://example.com/sdk/index.min.js"></script>
+      <script src="https://example.com/page-spy/index.min.js"></script>
     </head>
   </html>
 `,

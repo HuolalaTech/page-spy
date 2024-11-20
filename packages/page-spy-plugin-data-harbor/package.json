@@ -40,9 +40,12 @@
     "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-terser": "^0.4.4",
     "core-js": "3.30",
+    "less": "^4.2.0",
+    "postcss-preset-env": "^10.1.0",
     "rollup": "^3.10.0",
     "rollup-plugin-delete": "^2.0.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-typescript2": "^0.34.1"
   },
   "prettier": {

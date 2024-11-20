@@ -1,23 +1,39 @@
 import { isBrowser, isNumber } from '@huolala-tech/page-spy-base';
+import { isValidMaximum } from '../utils';
+import { CacheMessageItem, PeriodActionParams, PeriodItem } from './base';
+import { t } from '../assets/locale';
 
 interface HarborConfig {
-  maximum?: number;
+  maximum: number;
+}
+
+interface PeriodList {
+  stable: PeriodItem[];
+  active: PeriodItem[];
 }
 
 let currentContainerSize = 0;
+
+export const PERIOD_DIVIDE_IDENTIFIER = 'PERIOD_DIVIDE_IDENTIFIER';
+export const DEFAULT_MAXIMUM = 10 * 1024 * 1024;
 
 export class BlobHarbor {
   // Object URL list
   stock: string[] = [];
 
-  container: any[] = [];
+  container: CacheMessageItem[] = [];
 
   // Specify the maximum bytes of single harbor's container.
   // 0 means no limitation.
-  maximum = 0;
+  maximum = DEFAULT_MAXIMUM;
+
+  periodList: PeriodList = {
+    stable: [],
+    active: [],
+  };
 
   constructor(config?: HarborConfig) {
-    if (config && isNumber(config.maximum) && config.maximum >= 0) {
+    if (isValidMaximum(config?.maximum)) {
       this.maximum = config.maximum;
     }
     if (isBrowser()) {
@@ -30,7 +46,20 @@ export class BlobHarbor {
   }
 
   public add(data: any) {
+    const harborIsEmpty =
+      this.periodList.active.length === 0 &&
+      this.stock.length === 0 &&
+      this.container.length === 0;
+
     try {
+      if (harborIsEmpty || data === PERIOD_DIVIDE_IDENTIFIER) {
+        this.periodList.active.push({
+          time: new Date(),
+          stockIndex: null,
+          dataIndex: this.container.length,
+        });
+        return true;
+      }
       if (this.maximum === 0) {
         this.container.push(data);
         return true;
@@ -47,6 +76,7 @@ export class BlobHarbor {
           }),
         );
         this.stock.push(data2objectUrl);
+        this.flushActivePeriod();
         this.container = [data];
         currentContainerSize = 0;
       } else {
@@ -57,6 +87,103 @@ export class BlobHarbor {
     } catch (e) {
       return false;
     }
+  }
+
+  private flushActivePeriod() {
+    const activeToStable = this.periodList.active.map((i) => ({
+      ...i,
+      stockIndex: this.stock.length - 1,
+    }));
+    this.periodList.stable.push(...activeToStable);
+    this.periodList.active = [];
+  }
+
+  // There are at least two periods since we manually inserted them both at the head and at the tail
+  getPeriodList() {
+    const temp: PeriodItem = {
+      time: new Date(),
+      stockIndex: null,
+      dataIndex: this.container.length,
+    };
+    return [...this.periodList.stable, ...this.periodList.active, temp];
+  }
+
+  async getPeriodData(params: PeriodActionParams) {
+    const { head, tail } = this.getHeadAndTailPeriods(params);
+    const { endTime } = params;
+
+    const { stockIndex: fStock, dataIndex: fData } = head || {};
+    const { stockIndex: tStock, dataIndex: tData } = tail || {};
+
+    let result: CacheMessageItem[] = [];
+
+    // all data in container
+    if (!fStock && !tStock) {
+      result = this.container.slice(fData, tData);
+    } else {
+      if (!fStock || !isNumber(fStock)) {
+        throw new Error(t.invalidPeriods);
+      }
+
+      // <stock> [
+      //   <blob>, <- fStock,
+      //   ...,
+      //   <blob> <- tStock, maybe null
+      // ]
+      // both fStock and tStock are in stock
+      result = (
+        await Promise.all(
+          this.stock.map(async (url, index) => {
+            try {
+              if (index < fStock || (isNumber(tStock) && index > tStock)) {
+                return null;
+              }
+
+              const res = await fetch(url);
+              if (!res.ok) return null;
+
+              const data = await res.json();
+              if (index === fStock) {
+                if (index === tStock) {
+                  return data.slice(fData, tData);
+                }
+                return data.slice(fData);
+              }
+              if (index === tStock) {
+                return data.slice(0, tData);
+              }
+              return data;
+            } catch (e) {
+              return null;
+            }
+          }),
+        )
+      ).reduce((acc, cur) => {
+        if (!cur) return acc;
+        return acc.concat(cur);
+      }, []);
+
+      // tStock in container, its value is null
+      if (!isNumber(tStock)) {
+        result = result.concat(this.container.slice(0, tData));
+      }
+    }
+
+    return result.filter((i) => i.timestamp <= endTime);
+  }
+
+  private getHeadAndTailPeriods({
+    startTime,
+    endTime,
+  }: {
+    startTime: number;
+    endTime: number;
+  }) {
+    const periods = this.getPeriodList();
+    const head = periods.findLast((i) => i.time.getTime() <= startTime);
+    const tail = periods.find((i) => i.time.getTime() >= endTime);
+
+    return { head, tail };
   }
 
   async getAll() {
@@ -71,10 +198,12 @@ export class BlobHarbor {
         }
       }),
     );
-    const validStockData = stockData.filter(Boolean);
+    const validStockData = stockData.filter(
+      Boolean,
+    ) as NonNullable<CacheMessageItem>[];
     const combinedData = validStockData.reduce(
       (acc, cur) => acc.concat(cur),
-      [],
+      [] as CacheMessageItem[],
     );
     return combinedData.concat(this.container);
   }
@@ -83,5 +212,9 @@ export class BlobHarbor {
     this.stock.forEach((i) => URL.revokeObjectURL(i));
     this.stock = [];
     this.container = [];
+    this.periodList = {
+      stable: [],
+      active: [],
+    };
   }
 }

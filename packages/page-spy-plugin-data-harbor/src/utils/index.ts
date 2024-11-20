@@ -1,6 +1,10 @@
-import { isBrowser, ROOM_SESSION_KEY } from '@huolala-tech/page-spy-base';
-import type { SpyMessage } from '@huolala-tech/page-spy-types';
+import {
+  isBrowser,
+  isNumber,
+  ROOM_SESSION_KEY,
+} from '@huolala-tech/page-spy-base';
 import { strFromU8, zlibSync, strToU8 } from 'fflate';
+import { DataType } from '../harbor/base';
 
 export const getDeviceId = () => {
   if (isBrowser()) {
@@ -23,7 +27,7 @@ export const minifyData = (d: any) => {
   return strFromU8(zlibSync(strToU8(JSON.stringify(d)), { level: 9 }), true);
 };
 
-export const makeData = <T extends SpyMessage.DataType>(type: T, data: any) => {
+export const makeData = <T extends DataType>(type: T, data: any) => {
   return {
     type,
     timestamp: Date.now(),
@@ -40,3 +44,34 @@ export const jsonToFile = (data: any, filename: string) => {
   });
   return file;
 };
+
+export const isValidMaximum = (maximum: unknown): maximum is number => {
+  return isNumber(maximum) && maximum >= 0;
+};
+
+function fillTimeText(v: number) {
+  if (v >= 10) return v.toString();
+  return `0${v}`;
+}
+
+export function formatTimeDuration(millsDiff: number) {
+  const seconds = parseInt(String(millsDiff / 1000), 10);
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds - 3600 * h) / 60);
+  const s = Math.floor(seconds - 3600 * h - 60 * m);
+  return `${fillTimeText(h)}:${fillTimeText(m)}:${fillTimeText(s)}`;
+}
+
+export function copyInBrowser(text: string) {
+  try {
+    const input = document.createElement('input');
+    input.value = text.toString();
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}

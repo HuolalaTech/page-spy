@@ -22,7 +22,8 @@ const moduleNameMapper = {
   ...pathsToModuleNameMapper(tsconfigPath.compilerOptions.paths, {
     prefix: '<rootDir>/',
   }),
-  '\\.(css|less|svg|png|jpg)$':
+  '\\.(css|less)$': '<rootDir>/node_modules/jest-css-modules',
+  '\\.(svg|png|jpg)$':
     '<rootDir>/packages/page-spy-browser/tests/__mocks__/assets.js',
 };
 

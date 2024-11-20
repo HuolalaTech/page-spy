@@ -6,7 +6,7 @@ import {
   waitFor,
 } from '@testing-library/dom';
 import copy from 'copy-to-clipboard';
-import { Toast } from 'page-spy-browser/src/helpers/toast';
+import { toast } from 'page-spy-browser/src/helpers/toast';
 jest.mock('copy-to-clipboard', () =>
   jest.fn().mockImplementation((text: string) => true),
 );
@@ -27,16 +27,17 @@ afterEach(() => {
 describe('Render PageSpy', () => {
   it('Root element and logo', () => {
     const sdk = new SDK();
-    sdk.render();
+    sdk['render']();
 
     const root = document.querySelector(rootId) as HTMLDivElement;
+    const logo = document.querySelector('.page-spy-logo') as HTMLDivElement;
 
     expect(root).not.toBe(null);
-    expect(getByAltText(root!, /pagespy logo/i)).toBeInTheDocument();
+    expect(logo).toBeInTheDocument();
   });
 
   it('Logo is moveable', () => {
-    new SDK().render();
+    new SDK()['render']();
     const logo = document.querySelector('.page-spy-logo') as HTMLDivElement;
     expect(logo).not.toBe(null);
 
@@ -59,19 +60,17 @@ describe('Render PageSpy', () => {
   });
 
   it('Click logo to popup modal and content', async () => {
-    new SDK().render();
+    new SDK()['render']();
     const logo = document.querySelector('.page-spy-logo') as HTMLDivElement;
     expect(logo).not.toBe(null);
 
     fireEvent.click(logo);
     await waitFor(
       () => {
-        const html = document.documentElement;
-        const modal = getByTestId(html, 'modal');
-        const content = getByTestId(html, 'content');
+        const modal = document.querySelector('.modal');
         return Promise.all([
           expect(modal).not.toBe(null),
-          expect(content).not.toBe(null),
+          expect(modal?.classList).toContain('show'),
         ]);
       },
       { timeout: 100, interval: 50 },
@@ -84,46 +83,47 @@ describe('Render PageSpy', () => {
       clientOrigin: 'https://debug-ui.com',
     };
     const sdk = new SDK(config);
+
     sdk.name = 'NAME';
     sdk.address = 'ADDRESS';
-    sdk.render();
+    sdk['render']();
 
     const logo = document.querySelector('.page-spy-logo') as HTMLDivElement;
     expect(logo).not.toBe(null);
     fireEvent.click(logo);
 
     await waitFor(() => {
-      const html = document.documentElement;
-      const toast = jest.spyOn(Toast, 'message');
+      const toastFn = jest.spyOn(toast, 'message');
 
-      const copyButton = getByTestId(html, 'copy-button');
-      fireEvent.click(copyButton);
-
+      const copyButton = document.querySelector('#page-spy-copy-link');
       const isVisible = expect(copyButton).not.toBe(null);
+
+      fireEvent.click(copyButton!);
+
       const copied = expect(copy).toHaveBeenCalledWith(
         `${config.clientOrigin}/#/devtools?address=${sdk.address}`,
       );
-      const toasted = expect(toast).toHaveBeenCalledTimes(1);
+      const toasted = expect(toastFn).toHaveBeenCalledTimes(1);
       return Promise.all([isVisible, copied, toasted]);
     });
   });
 
-  it('Toast static method', () => {
+  it('toast static method', () => {
     jest.useFakeTimers();
 
     expect(document.querySelector('.page-spy-toast')).toBe(null);
 
-    Toast.message('Hello PageSpy');
+    toast.message('Hello PageSpy');
     expect(document.querySelectorAll('.page-spy-toast').length).toBe(1);
-    jest.advanceTimersByTime(1500);
+    jest.advanceTimersByTime(3000);
     expect(document.querySelectorAll('.page-spy-toast').length).toBe(0);
 
-    Toast.message('The 1st message');
-    Toast.message('The 2nd message');
-    Toast.message('The 3rd message');
+    toast.message('The 1st message');
+    toast.message('The 2nd message');
+    toast.message('The 3rd message');
     expect(document.querySelectorAll('.page-spy-toast').length).toBe(3);
 
-    Toast.destroy();
+    toast.destroy();
     expect(document.querySelectorAll('.page-spy-toast').length).toBe(0);
   });
 });

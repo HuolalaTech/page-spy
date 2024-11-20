@@ -8,6 +8,8 @@ import terser from '@rollup/plugin-terser';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
 import fs from 'fs';
 import { dirname } from 'path';
+import postcss from 'rollup-plugin-postcss';
+import postcssPresetEnv from 'postcss-preset-env';
 
 const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 const getBabel = (mode) => {
@@ -47,6 +49,15 @@ const plugins = [
     preventAssignment: true,
   }),
   terser(),
+  postcss({
+    modules: {
+      autoModules: true,
+      generateScopedName: '[local]-[hash:base64:5]',
+    },
+    extensions: ['.css', '.less'],
+    extract: false,
+    plugins: [postcssPresetEnv()],
+  }),
 ];
 
 /**
