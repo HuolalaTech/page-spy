@@ -196,6 +196,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
         type: 'meta',
         timestamp: params.endTime,
         data: minifyData({
+          ua: navigator.userAgent,
           title: document.title,
           url: window.location.href,
           ...params,
