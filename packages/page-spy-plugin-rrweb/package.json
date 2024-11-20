@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-plugin-rrweb",
-  "version": "1.2.8",
+  "version": "2.0.0-beta.0",
   "description": "Record the DOM mutation within PageSpy.",
   "homepage": "https://github.com/HuolalaTech/page-spy/tree/main/packages/page-spy-plugin-rrweb",
   "license": "MIT",
@@ -26,8 +26,8 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.0",
-    "@huolala-tech/page-spy-base": "^1.0.7",
-    "@huolala-tech/page-spy-types": "^1.9.7",
+    "@huolala-tech/page-spy-base": "^2.0.0-beta.0",
+    "@huolala-tech/page-spy-types": "^2.0.0-beta.0",
     "rrweb": "^2.0.0-alpha.4"
   },
   "devDependencies": {
