@@ -50,15 +50,16 @@ export class BlobHarbor {
       this.periodList.active.length === 0 &&
       this.stock.length === 0 &&
       this.container.length === 0;
+    const dataIsPeriod = data === PERIOD_DIVIDE_IDENTIFIER;
 
     try {
-      if (harborIsEmpty || data === PERIOD_DIVIDE_IDENTIFIER) {
+      if (harborIsEmpty || dataIsPeriod) {
         this.periodList.active.push({
           time: new Date(),
           stockIndex: null,
           dataIndex: this.container.length,
         });
-        return true;
+        if (dataIsPeriod) return true;
       }
       if (this.maximum === 0) {
         this.container.push(data);

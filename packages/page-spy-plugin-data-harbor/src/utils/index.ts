@@ -1,6 +1,7 @@
 import {
   isBrowser,
   isNumber,
+  psLog,
   ROOM_SESSION_KEY,
 } from '@huolala-tech/page-spy-base';
 import { strFromU8, zlibSync, strToU8 } from 'fflate';
@@ -28,6 +29,9 @@ export const minifyData = (d: any) => {
 };
 
 export const makeData = <T extends DataType>(type: T, data: any) => {
+  if (sessionStorage.getItem('harbor-debug')) {
+    psLog.unproxy.debug('harbor-debug', data);
+  }
   return {
     type,
     timestamp: Date.now(),
