@@ -1,5 +1,6 @@
 import copy from 'copy-to-clipboard';
 import {
+  Client,
   getAuthSecret,
   isArray,
   isClass,
@@ -89,6 +90,12 @@ class PageSpy {
     currentPluginSet.push(plugin);
   }
 
+  public static client = new Client({
+    ua: navigator.userAgent,
+    sdk: 'browser',
+    sdkVersion: PKG_VERSION,
+  });
+
   public root: HTMLElement | null = null;
 
   public version = PKG_VERSION;
@@ -135,6 +142,7 @@ class PageSpy {
     }
     socketStore.connectable = true;
     socketStore.getPageSpyConfig = () => this.config.get();
+    socketStore.getClient = () => PageSpy.client;
     socketStore.isOffline = offline;
     socketStore.messageCapacity = messageCapacity;
   }
