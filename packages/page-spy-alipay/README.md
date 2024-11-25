@@ -12,59 +12,21 @@ English | [中文](./README_ZH.md)
 
 The client SDK of [PageSpy](https://www.pagespy.org) used in alipay miniprogram environment.
 
-> [!CAUTION]
-> When submitting the mini program for review, be sure to delete the SDK in the code, otherwise the review will fail.
-
 ## Usage
 
 ```ts
-import PageSpy from '@huolala-tech/page-spy-alipay'
+import PageSpy from '@huolala-tech/page-spy-alipay';
 
-const pageSpy = new PageSpy(config?: InitConfig)
+const pageSpy = new PageSpy({
+  api: 'example.com',
+});
 ```
 
-## `InitConfig` definition
+Please refer to the official documentation for more details [PageSpy API](https://www.pagespy.org/#/docs/api)。
 
-Except for the `api` parameter is required, all others parameters are optional:
+## Other SDKs
 
-```ts
-interface InitConfig {
-  // Server domain, must be provided。
-  // Example："example.com"
-  api: string;
+If you are using UniAPP or Taro, we recommend using below SDKs respectively:
 
-  // "project" is an aggregation of information that can be searched in the room list on the debug side.
-  // default: 'default'
-  project?: string;
-
-  // "title" is a user-defined parameter that can be used to distinguish the current debugging client,
-  // and the corresponding information is displayed under the "device id" in each debugging connection panel.
-  // default: '--'
-  title?: string;
-
-  // Manually specify the scheme of the PageSpy service.
-  // Note that except for development environment, mini-program requires the scheme to be set to "https", so:
-  //  - By default, pass the value undefined or null, the SDK will parse it to TRUE;
-  //  - true: the SDK will access the PageSpy service via ["https://", "wss://"];
-  //  - false: the SDK will access the PageSpy service via ["http://", "wss://"].
-  enableSSL?: boolean | null;
-
-  // Disable pagespy on release environment.
-  // - true (Default): only allow pagespy init on develop and trail environment.
-  // - false: allow using in release environment
-  disabledOnProd?: boolean | null;
-
-  // All internal plugins are carried with PageSpy by default out of the box.
-  // You can disable some plugins as needed.
-  disabledPlugins?: (InternalPlugins | string)[];
-}
-
-type InternalPlugins =
-  | 'ConsolePlugin'
-  | 'ErrorPlugin'
-  | 'NetworkPlugin'
-  | 'StoragePlugin'
-  | 'SystemPlugin';
-```
-
-For more details of mini-program usage, please refer to [Mini-Program Usage](https://github.com/HuolalaTech/page-spy/wiki/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E)
+- [@huolala-tech/page-spy-uniapp](https://www.npmjs.com/package/@huolala-tech/page-spy-uniapp)
+- [@huolala-tech/page-spy-taro](https://www.npmjs.com/package/@huolala-tech/page-spy-taro)

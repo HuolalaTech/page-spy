@@ -248,6 +248,7 @@ class PageSpy {
   async showPanel() {
     const mp = getMPSDK();
     const that = this;
+    const config = this.config.get();
     const options: {
       text: string;
       action: () => void;
@@ -267,6 +268,22 @@ class PageSpy {
         },
       },
     ];
+    if (config.useSecret) {
+      options.push({
+        text: `Secret：${config.secret}`,
+        action() {
+          mp.setClipboardData({
+            data: config.secret,
+            success() {
+              mp.showToast({
+                title: '复制成功',
+                icon: 'success',
+              });
+            },
+          });
+        },
+      });
+    }
     PageSpy.pluginsWithOrder.forEach((plugin) => {
       if (plugin.onActionSheet) {
         const actions = plugin.onActionSheet();

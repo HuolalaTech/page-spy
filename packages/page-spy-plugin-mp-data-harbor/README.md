@@ -21,13 +21,9 @@ In the past, remote debugging had a prerequisite that "both the client and debug
 ```ts
 import { PageSpyPlugin } from '@huolala-tech/page-spy-types';
 
-type DataType = 'console' | 'network' | 'system' | 'storage' | 'rrweb-event';
+type DataType = 'console' | 'network' | 'system' | 'storage';
 
 interface DataHarborConfig {
-  // Specify the maximum bytes of single harbor's container.
-  // Default 10 * 1024 * 1024.
-  maximum?: number;
-
   // Specify which types of data should be collected
   caredData?: Record<DataType, boolean>;
 

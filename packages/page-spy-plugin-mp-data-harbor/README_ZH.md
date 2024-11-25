@@ -21,13 +21,9 @@
 ```ts
 import { PageSpyPlugin } from '@huolala-tech/page-spy-types';
 
-type DataType = 'console' | 'network' | 'system' | 'storage' | 'rrweb-event';
+type DataType = 'console' | 'network' | 'system' | 'storage';
 
 interface DataHarborConfig {
-  // 指定单个 “集装箱” 中可存储的最大字节数
-  // 默认值 10 * 1024 * 1024
-  maximum?: number;
-
   // 指定应该收集哪些类型的数据
   caredData?: Record<DataType, boolean>;
 
