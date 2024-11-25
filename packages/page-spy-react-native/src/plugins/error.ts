@@ -52,8 +52,8 @@ export default class ErrorPlugin implements PageSpyPlugin {
       return;
     }
     // @ts-ignore
-    this.originPromise = global.Promise;
-    global.Promise = LocalPromise;
+    this.originPromise = globalThis.Promise;
+    globalThis.Promise = LocalPromise;
     RejectTracking.enable({
       allRejections: true,
       onUnhandled: (id: any, error: any) => {

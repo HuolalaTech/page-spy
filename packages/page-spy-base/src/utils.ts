@@ -106,7 +106,7 @@ export function isHeaders(value: unknown): value is Headers {
 }
 
 export function isDocument(value: unknown): value is Document {
-  return value instanceof Document;
+  return typeof globalThis.Document !== 'undefined' && value instanceof globalThis.Document;
 }
 
 export function isURL(value: unknown): value is URL {

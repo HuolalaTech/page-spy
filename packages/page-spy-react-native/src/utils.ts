@@ -20,8 +20,8 @@ export const getGlobal = () => {
     foundGlobal = globalThis;
   } else if (typeof window !== 'undefined') {
     foundGlobal = window;
-  } else if (typeof global === 'object' && Object.keys(global).length > 1) {
-    foundGlobal = global;
+  } else if (typeof globalThis === 'object' && Object.keys(globalThis).length > 1) {
+    foundGlobal = globalThis;
   }
   if (customGlobal) {
     Object.assign(foundGlobal, customGlobal);
