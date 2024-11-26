@@ -4,7 +4,8 @@ import type {
   SpyMP,
   OnInitParams,
 } from '@huolala-tech/page-spy-types';
-import { Client, makeMessage } from '@huolala-tech/page-spy-base';
+import { makeMessage } from '@huolala-tech/page-spy-base/dist/message';
+import type { Client } from '@huolala-tech/page-spy-base/dist/client';
 import socketStore from '../helpers/socket';
 
 export default class SystemPlugin implements PageSpyPlugin {

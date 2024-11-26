@@ -36,9 +36,6 @@ export default {
       sourcemap: false,
     },
   ],
-  external: [
-    '@huolala-tech/page-spy-base'
-  ],
   plugins: [
     ...plugins,
     // Even is miniprogram, we should consider the devtools' chrome version...

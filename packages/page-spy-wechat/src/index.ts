@@ -1,4 +1,4 @@
-import { Client } from '@huolala-tech/page-spy-base';
+import { Client } from '@huolala-tech/page-spy-base/dist/client';
 import PageSpy, { setMPSDK, type MPSDK } from '@huolala-tech/page-spy-mp-base';
 import { SpyClient } from '@huolala-tech/page-spy-types';
 

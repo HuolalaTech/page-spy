@@ -10,10 +10,9 @@ import {
   RequestItem,
   MAX_SIZE,
   Reason,
-  addContentTypeHeader,
-  getFormattedBody,
 } from '@huolala-tech/page-spy-base';
 import RNNetworkProxyBase from './base';
+import { addContentTypeHeader, getFormattedBody } from '../common';
 
 /**
  * React native use whatwg-fetch to polyfill fetch API based on xhr, so it's

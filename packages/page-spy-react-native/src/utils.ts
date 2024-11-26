@@ -12,8 +12,7 @@ export const setCustomGlobal = (global: Record<string, any>) => {
   customGlobal = global;
 };
 
-// get the global context, and we assume the window is better than global, even in
-// mini program environment, mostly because of alipay...
+// get the global context.
 export const getGlobal = () => {
   let foundGlobal: Record<string, any> = {};
   if (typeof globalThis !== 'undefined') {

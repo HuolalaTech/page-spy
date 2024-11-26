@@ -1,13 +1,13 @@
 import {
-  Client,
-  atom,
   getAuthSecret,
   isArray,
   isClass,
   psLog,
-  SocketState,
-  ROOM_SESSION_KEY,
-} from '@huolala-tech/page-spy-base';
+} from '@huolala-tech/page-spy-base/dist/utils';
+import { SocketState } from '@huolala-tech/page-spy-base/dist/socket-base';
+import { atom } from '@huolala-tech/page-spy-base/dist/atom';
+import type { Client } from '@huolala-tech/page-spy-base/dist/client';
+import { ROOM_SESSION_KEY } from '@huolala-tech/page-spy-base/dist/constants';
 import type {
   SpyMP,
   PageSpyPlugin,

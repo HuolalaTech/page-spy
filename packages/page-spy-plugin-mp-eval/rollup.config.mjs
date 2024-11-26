@@ -4,7 +4,6 @@ import babel from '@rollup/plugin-babel';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
-import terser from '@rollup/plugin-terser';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
 import fs from 'fs';
 import { dirname } from 'path';
@@ -41,7 +40,6 @@ const plugins = [
     PKG_VERSION: `"${pkg.version}"`,
     preventAssignment: true,
   }),
-  terser(),
 ];
 
 /**
@@ -61,7 +59,6 @@ export default [
       del({ targets: [dirname(pkg.module)] }),
     ],
     external: [
-      '@huolala-tech/page-spy-base',
       '@huolala-tech/page-spy-mp-base'
     ]
   },

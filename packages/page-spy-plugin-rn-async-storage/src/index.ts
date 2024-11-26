@@ -1,4 +1,5 @@
-import { makeMessage, SocketStoreBase } from '@huolala-tech/page-spy-base';
+import type { SocketStoreBase } from '@huolala-tech/page-spy-base/dist/socket-base';
+import { makeMessage } from '@huolala-tech/page-spy-base/dist/message';
 import type {
   SpyStorage,
   PageSpyPlugin,

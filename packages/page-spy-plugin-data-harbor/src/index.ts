@@ -7,12 +7,8 @@ import type {
   InitConfigBase,
   OnMountedParams,
 } from '@huolala-tech/page-spy-types';
-import {
-  psLog,
-  removeEndSlash,
-  RequestItem,
-  SocketStoreBase,
-} from '@huolala-tech/page-spy-base';
+import { psLog, removeEndSlash } from '@huolala-tech/page-spy-base/dist/utils';
+import type { SocketStoreBase, RequestItem } from '@huolala-tech/page-spy-base';
 import {
   BlobHarbor,
   DEFAULT_MAXIMUM,

@@ -22,7 +22,7 @@ const plugins = [
     PKG_VERSION: `"${pkg.version}"`,
     preventAssignment: true,
   }),
-  terser(),
+  // terser(),
 ];
 
 /**
@@ -38,7 +38,6 @@ export default {
     },
   ],
   external: [
-    '@huolala-tech/page-spy-base',
     '@huolala-tech/page-spy-mp-base'
   ],
   plugins: [

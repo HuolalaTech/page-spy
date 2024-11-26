@@ -6,8 +6,9 @@ import type {
   PluginOrder,
   InitConfigBase,
 } from '@huolala-tech/page-spy-types';
-import { Client, psLog, removeEndSlash } from '@huolala-tech/page-spy-base';
-import type { RequestItem, SocketStoreBase } from '@huolala-tech/page-spy-base';
+import { psLog, removeEndSlash } from '@huolala-tech/page-spy-base/dist/utils';
+import type { Client } from '@huolala-tech/page-spy-base/dist/client';
+import type { SocketStoreBase } from '@huolala-tech/page-spy-base/dist/socket-base';
 import { MemoryHarbor } from './harbor/memoryHarbor';
 import { UploadArgs, startUpload } from './utils/upload';
 import { buildSearchParams, getDeviceId, makeData, makeFile } from './utils';
@@ -220,13 +221,4 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       data: clientInfo,
     };
   }
-
-  // NOTE don't need debug url because we are not sure where it is.
-  // getDebugUrl(result: H.UploadResult | null) {
-  //   if (!result || !result.success) return '';
-
-  //   const debugOrigin = `${removeEndSlash(this.$pageSpyConfig?.clientOrigin!)}/#/replay`;
-  //   const logUrl = `${this.apiBase}/api/v1/log/download?fileId=${result.data.fileId}`;
-  //   return `${debugOrigin}?url=${logUrl}`;
-  // }
 }

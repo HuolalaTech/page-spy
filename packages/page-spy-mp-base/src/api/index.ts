@@ -1,5 +1,7 @@
 import type { SpyMP } from '@huolala-tech/page-spy-types';
-import { Client, getRandomId } from '@huolala-tech/page-spy-base';
+import { getRandomId } from '@huolala-tech/page-spy-base/dist/utils';
+import type { Client } from '@huolala-tech/page-spy-base/dist/client';
+
 import { getMPSDK, joinQuery, promisifyMPApi } from '../utils';
 import { Config } from '../config';
 

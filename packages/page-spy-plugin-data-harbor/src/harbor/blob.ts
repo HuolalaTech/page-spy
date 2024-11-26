@@ -1,4 +1,4 @@
-import { isBrowser, isNumber } from '@huolala-tech/page-spy-base';
+import { isBrowser, isNumber } from '@huolala-tech/page-spy-base/dist/utils';
 import { isValidMaximum } from '../utils';
 import { CacheMessageItem, PeriodActionParams, PeriodItem } from './base';
 import { t } from '../assets/locale';

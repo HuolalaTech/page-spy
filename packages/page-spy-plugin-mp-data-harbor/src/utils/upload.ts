@@ -1,4 +1,4 @@
-import { psLog } from '@huolala-tech/page-spy-base';
+import { psLog } from '@huolala-tech/page-spy-base/dist/utils';
 import { getMPSDK } from '@huolala-tech/page-spy-mp-base';
 
 export type UploadArgs = {
@@ -34,26 +34,4 @@ export const startUpload = async ({ url, path }: UploadArgs) => {
       },
     });
   });
-  // try {
-  //   const res = mp.uploadFile
-  //   const response = await fetch(url, {
-  //     method: 'POST',
-  //     body,
-  //   });
-  //   if (!response.ok) {
-  //     psLog.warn('Upload failed');
-  //     return null;
-  //   }
-
-  //   const result: H.UploadResult = await response.json();
-  //   if (!result.success) {
-  //     psLog.warn(result.message);
-  //     return null;
-  //   }
-
-  //   return result;
-  // } catch (e: any) {
-  //   psLog.error(e.message);
-  //   return null;
-  // }
 };
