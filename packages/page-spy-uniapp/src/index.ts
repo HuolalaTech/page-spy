@@ -2,8 +2,10 @@ import PageSpy, {
   setMPSDK,
   MPSocketWrapper,
   MPSDK,
+  Client,
+  psLog,
+  SocketStoreBase,
 } from '@huolala-tech/page-spy-mp-base';
-import { Client, psLog, SocketStoreBase } from '@huolala-tech/page-spy-base';
 import { SpyClient } from '@huolala-tech/page-spy-types';
 
 declare const uni: MPSDK;

@@ -6,14 +6,17 @@ import type {
   PluginOrder,
   InitConfigBase,
 } from '@huolala-tech/page-spy-types';
-import { psLog, removeEndSlash } from '@huolala-tech/page-spy-base/dist/utils';
-import type { Client } from '@huolala-tech/page-spy-base/dist/client';
-import type { SocketStoreBase } from '@huolala-tech/page-spy-base/dist/socket-base';
+import { removeEndSlash } from '@huolala-tech/page-spy-base/dist/utils';
 import { MemoryHarbor } from './harbor/memoryHarbor';
-import { UploadArgs, startUpload } from './utils/upload';
+import { startUpload } from './utils/upload';
 import { buildSearchParams, getDeviceId, makeData, makeFile } from './utils';
-import { CacheMessageItem, DataType } from './harbor/base';
-import { getMPSDK } from '@huolala-tech/page-spy-mp-base';
+import { DataType } from './harbor/base';
+import {
+  getMPSDK,
+  type Client,
+  type SocketStoreBase,
+  psLog,
+} from '@huolala-tech/page-spy-mp-base';
 
 interface DataHarborConfig {
   // Specify which types of data to collect.

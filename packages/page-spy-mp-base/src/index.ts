@@ -1,3 +1,15 @@
+/**
+ * This is the general implementation of PageSpy SDK for mini-program.
+ * Mini-programs are similar, so they only need one base implementation, and
+ * some minor customization each.
+ *
+ * For specific mp platform, it should only modify the code based on this repo,
+ * NOT the @huolala-tech/page-spy-base, to avoid multi-packing. So this repo must
+ * export all necessary items they need, like SocketStoreBase, Client.
+ *
+ * This pkg could be an external dependency.
+ */
+
 import {
   getAuthSecret,
   isArray,
@@ -6,8 +18,9 @@ import {
 } from '@huolala-tech/page-spy-base/dist/utils';
 import { SocketState } from '@huolala-tech/page-spy-base/dist/socket-base';
 import { atom } from '@huolala-tech/page-spy-base/dist/atom';
-import type { Client } from '@huolala-tech/page-spy-base/dist/client';
+import { Client } from '@huolala-tech/page-spy-base/dist/client';
 import { ROOM_SESSION_KEY } from '@huolala-tech/page-spy-base/dist/constants';
+import { SocketStoreBase } from '@huolala-tech/page-spy-base/dist/socket-base';
 import type {
   SpyMP,
   PageSpyPlugin,
@@ -367,6 +380,7 @@ INTERNAL_PLUGINS.forEach((p) => {
 });
 
 export default PageSpy;
+export { SocketStoreBase, Client, psLog };
 export * from './types';
 export * from './utils';
 export * from './helpers/socket';

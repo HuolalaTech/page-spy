@@ -2,9 +2,10 @@ import PageSpyMPBase, {
   MPSocketWrapper,
   setCustomGlobal,
   setMPSDK,
+  Client,
+  psLog,
 } from '@huolala-tech/page-spy-mp-base';
 import { SpyClient, SpyMP } from '@huolala-tech/page-spy-types';
-import { Client, psLog } from '@huolala-tech/page-spy-base';
 
 declare const tt: any;
 
