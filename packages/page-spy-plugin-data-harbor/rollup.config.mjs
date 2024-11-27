@@ -48,7 +48,7 @@ const plugins = [
     PKG_VERSION: `"${pkg.version}"`,
     preventAssignment: true,
   }),
-  terser(),
+  // terser(),
   postcss({
     modules: {
       autoModules: true,

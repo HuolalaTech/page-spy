@@ -6,13 +6,12 @@ import {
   isString,
   isURL,
   psLog,
-  addContentTypeHeader,
-  getFormattedBody,
   MAX_SIZE,
   Reason,
 } from '@huolala-tech/page-spy-base';
 import RNNetworkProxyBase from './base';
 import { IS_FETCH_HEADER } from './xhr-proxy';
+import { addContentTypeHeader, getFormattedBody } from '../common';
 
 export default class FetchProxy extends RNNetworkProxyBase {
   public fetch: WindowOrWorkerGlobalScope['fetch'] | null = null;

@@ -11,6 +11,7 @@ import LocalPromise from 'promise/setimmediate/es6-extensions';
 import RejectTracking from 'promise/setimmediate/rejection-tracking';
 import socketStore from '../helpers/socket';
 import { InitConfig } from '../config';
+import { getGlobal } from '../utils';
 
 // TODO this plugin should test on multiple platforms
 export default class ErrorPlugin implements PageSpyPlugin {
@@ -51,9 +52,10 @@ export default class ErrorPlugin implements PageSpyPlugin {
     if (!ErrorPlugin.hasInitd) {
       return;
     }
+    const g = getGlobal();
     // @ts-ignore
-    this.originPromise = global.Promise;
-    global.Promise = LocalPromise;
+    this.originPromise = g.Promise;
+    g.Promise = LocalPromise;
     RejectTracking.enable({
       allRejections: true,
       onUnhandled: (id: any, error: any) => {

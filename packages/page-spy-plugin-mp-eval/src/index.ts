@@ -1,5 +1,6 @@
 import { Interpreter } from '@huolala-tech/eval5';
-import { makeMessage, getRandomId, psLog } from '@huolala-tech/page-spy-base';
+import { makeMessage } from '@huolala-tech/page-spy-base/dist/message';
+import { getRandomId, psLog } from '@huolala-tech/page-spy-base/dist/utils';
 import { getGlobal } from '@huolala-tech/page-spy-mp-base';
 import type {
   OnInitParams,

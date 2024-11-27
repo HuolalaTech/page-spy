@@ -1,5 +1,7 @@
 import { KVList } from './../types';
-import { makeMessage, Client, psLog } from '@huolala-tech/page-spy-base';
+import { psLog } from '@huolala-tech/page-spy-base/dist/utils';
+import type { Client } from '@huolala-tech/page-spy-base/dist/client';
+import { makeMessage } from '@huolala-tech/page-spy-base/dist/message';
 import type {
   SpyStorage,
   PageSpyPlugin,

@@ -1,10 +1,10 @@
 import {
-  stringifyData,
   SocketStoreBase,
   SocketState,
   SocketWrapper,
   WebSocketEvents,
-} from '@huolala-tech/page-spy-base';
+} from '@huolala-tech/page-spy-base/dist/socket-base';
+import { stringifyData } from '@huolala-tech/page-spy-base/dist/utils';
 
 export class RNWebSocketWrapper extends SocketWrapper {
   public socketInstance: WebSocket | null = null;

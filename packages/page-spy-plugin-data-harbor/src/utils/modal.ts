@@ -1,5 +1,5 @@
 import type { Modal, Toast } from '@huolala-tech/page-spy-types';
-import { psLog } from '@huolala-tech/page-spy-base';
+import { psLog } from '@huolala-tech/page-spy-base/dist/utils';
 import classes from '../assets/index.module.less';
 import {
   cropSvg,

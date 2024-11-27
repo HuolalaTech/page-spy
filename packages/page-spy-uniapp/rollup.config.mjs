@@ -58,7 +58,6 @@ export default {
     del({ targets: ['dist/*'] }),
   ],
   external: [
-    '@huolala-tech/page-spy-base',
     '@huolala-tech/page-spy-mp-base'
   ]
 };

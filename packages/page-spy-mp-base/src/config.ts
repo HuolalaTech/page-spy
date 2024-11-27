@@ -1,4 +1,4 @@
-import { ConfigBase } from '@huolala-tech/page-spy-base';
+import { ConfigBase } from '@huolala-tech/page-spy-base/dist/config';
 import type { SpyMP } from '@huolala-tech/page-spy-types';
 
 export class Config extends ConfigBase<SpyMP.MPInitConfig> {

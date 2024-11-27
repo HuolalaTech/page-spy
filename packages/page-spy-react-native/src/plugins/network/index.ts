@@ -1,6 +1,6 @@
 // eslint-disable no-case-declarations
 import type { OnInitParams, PageSpyPlugin } from '@huolala-tech/page-spy-types';
-import { NetworkProxyBase } from '@huolala-tech/page-spy-base';
+import { NetworkProxyBase } from '@huolala-tech/page-spy-base/dist/network/base';
 import XhrProxy from './proxy/xhr-proxy';
 import FetchProxy from './proxy/fetch-proxy';
 import { InitConfig } from '../../config';

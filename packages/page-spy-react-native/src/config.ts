@@ -1,4 +1,4 @@
-import { ConfigBase } from '@huolala-tech/page-spy-base';
+import { ConfigBase } from '@huolala-tech/page-spy-base/dist/config';
 import { InitConfigBase } from '@huolala-tech/page-spy-types';
 
 type InternalPlugins =

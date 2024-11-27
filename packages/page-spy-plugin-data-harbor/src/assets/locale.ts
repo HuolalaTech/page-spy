@@ -1,4 +1,4 @@
-import { isCN } from '@huolala-tech/page-spy-base';
+import { isCN } from '@huolala-tech/page-spy-base/dist/utils';
 
 const source = {
   zh: {

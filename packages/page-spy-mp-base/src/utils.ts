@@ -73,4 +73,7 @@ export const utilAPI = {
   removeStorage(key: string) {
     return mpSDK?.getStorageSync(key);
   },
+  showActionSheet(params: Parameters<MPSDK['showActionSheet']>[0]) {
+    return mpSDK.showActionSheet(params);
+  },
 };

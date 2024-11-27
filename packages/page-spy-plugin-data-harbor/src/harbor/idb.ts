@@ -1,4 +1,4 @@
-import { psLog } from '@huolala-tech/page-spy-base';
+import { psLog } from '@huolala-tech/page-spy-base/dist/utils';
 
 /**
  * Why do we need to skip "public-data" events? This is because it may lead to a cyclic event loop.

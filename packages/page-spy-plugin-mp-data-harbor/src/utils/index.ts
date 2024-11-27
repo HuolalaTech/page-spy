@@ -1,4 +1,4 @@
-import { ROOM_SESSION_KEY } from '@huolala-tech/page-spy-base';
+import { ROOM_SESSION_KEY } from '@huolala-tech/page-spy-base/dist/constants';
 import { getMPSDK, utilAPI } from '@huolala-tech/page-spy-mp-base';
 import type { SpyMessage } from '@huolala-tech/page-spy-types';
 

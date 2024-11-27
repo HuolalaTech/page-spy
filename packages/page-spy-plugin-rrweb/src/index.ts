@@ -6,7 +6,8 @@ import {
 import { record } from 'rrweb';
 import type { recordOptions } from 'rrweb/typings/types';
 import type { eventWithTime, listenerHandler } from '@rrweb/types';
-import { makeMessage, isBrowser, psLog } from '@huolala-tech/page-spy-base';
+import { isBrowser, psLog } from '@huolala-tech/page-spy-base/dist/utils';
+import { makeMessage } from '@huolala-tech/page-spy-base/dist/message';
 
 interface Options extends recordOptions<eventWithTime> {
   // The data from 'rrweb-event' is typically larger (more interactions and complex

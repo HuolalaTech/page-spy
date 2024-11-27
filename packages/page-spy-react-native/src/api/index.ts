@@ -1,4 +1,5 @@
-import { Client, getRandomId } from '@huolala-tech/page-spy-base';
+import type { Client } from '@huolala-tech/page-spy-base';
+import { getRandomId } from '@huolala-tech/page-spy-base/dist/utils';
 import { Config, InitConfig } from '../config';
 import { joinQuery } from '../utils';
 

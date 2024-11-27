@@ -1,11 +1,13 @@
 import {
-  ReqReadyState,
-  toLowerKeys,
   getRandomId,
   isPlainObject,
   psLog,
   toStringTag,
-} from '@huolala-tech/page-spy-base';
+} from '@huolala-tech/page-spy-base/dist/utils';
+import {
+  ReqReadyState,
+  toLowerKeys,
+} from '@huolala-tech/page-spy-base/dist/network/common';
 import { getMPSDK } from '../../../utils';
 import MPNetworkProxyBase from './base';
 import { MPNetworkAPI } from '../../../types';

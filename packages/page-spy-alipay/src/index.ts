@@ -1,5 +1,9 @@
-import PageSpy, { setMPSDK, utilAPI } from '@huolala-tech/page-spy-mp-base';
-import { Client, SocketStoreBase } from '@huolala-tech/page-spy-base';
+import PageSpy, {
+  setMPSDK,
+  utilAPI,
+  Client,
+  SocketStoreBase,
+} from '@huolala-tech/page-spy-mp-base';
 import { SpyClient } from '@huolala-tech/page-spy-types';
 
 // reassign the global.mp to uni
@@ -23,6 +27,18 @@ utilAPI.setStorage = (key: string, value: any) => {
 
 utilAPI.removeStorage = (key) => {
   return my.removeStorageSync({ key });
+};
+
+utilAPI.showActionSheet = (params) => {
+  return my.showActionSheet({
+    ...params,
+    items: params.itemList,
+    success: (res: { index: number }) => {
+      params.success?.({
+        tapIndex: res.index,
+      });
+    },
+  });
 };
 
 const info = my.getSystemInfoSync();

@@ -57,7 +57,7 @@ export default {
         '@babel/preset-typescript',
       ],
     }),
-    del({ targets: [dirname(pkg.module)] }),
+    del({targets: ['dist/*']}),
   ],
   external: ['@react-native-async-storage/async-storage'],
 };
