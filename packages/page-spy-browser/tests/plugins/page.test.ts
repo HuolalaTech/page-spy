@@ -2,7 +2,7 @@ import PagePlugin from 'page-spy-browser/src/plugins/page';
 import socket from 'page-spy-browser/src/helpers/socket';
 import { OnInitParams } from 'packages/page-spy-types';
 import { Config, InitConfig } from 'page-spy-browser/src/config';
-import { atom } from 'page-spy-base/dist/esm';
+import { atom } from 'page-spy-base/dist/atom';
 
 const initParams = {
   config: new Config().mergeConfig({}),
