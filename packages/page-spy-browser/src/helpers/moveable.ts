@@ -57,10 +57,12 @@ export function moveable(el: UElement) {
   }
   function move(evt: TouchEvent | MouseEvent) {
     evt.preventDefault();
-    (el as UElement).isMoveEvent = true;
     const { clientX, clientY } = getPosition(evt);
     const diffX = clientX - touch.x;
     const diffY = clientY - touch.y;
+    if ([diffX, diffY].some((i) => Math.abs(i) > 5)) {
+      (el as UElement).isMoveEvent = true;
+    }
     let resultX = rect.x + diffX;
     /* c8 ignore start */
     if (resultX <= 0) {
@@ -100,7 +102,7 @@ export function moveable(el: UElement) {
     document.removeEventListener('touchend', end);
   }
   function start(evt: TouchEvent | MouseEvent) {
-    evt.preventDefault();
+    evt.stopPropagation();
     if (hiddenTimer) {
       clearTimeout(hiddenTimer);
     }

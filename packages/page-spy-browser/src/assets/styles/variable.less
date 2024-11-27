@@ -41,6 +41,12 @@
     width: (20em / @font-size);
     height: (20em / @font-size);
   }
+  @media screen and (max-width: 440px) {
+    img,
+    svg {
+      display: none;
+    }
+  }
 }
 
 .text-ellipse() {

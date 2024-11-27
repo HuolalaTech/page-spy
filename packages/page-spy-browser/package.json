@@ -45,7 +45,6 @@
     "@rollup/plugin-image": "^2.1.1",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
-    "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-terser": "^0.4.4",
     "core-js": "3.30",
     "less": "^4.1.1",

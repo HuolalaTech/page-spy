@@ -36,6 +36,7 @@ import modalLogoSvg from './assets/modal-logo.svg';
 import copySvg from './assets/copy.svg';
 import { modal } from './helpers/modal';
 import classes from './assets/styles/index.module.less';
+import { version } from '../package.json';
 
 type UpdateConfig = {
   title?: string;
@@ -93,12 +94,12 @@ class PageSpy {
   public static client = new Client({
     ua: navigator.userAgent,
     sdk: 'browser',
-    sdkVersion: PKG_VERSION,
+    sdkVersion: version,
   });
 
   public root: HTMLElement | null = null;
 
-  public version = PKG_VERSION;
+  public version = version;
 
   public request: Request | null = null;
 
@@ -352,7 +353,6 @@ class PageSpy {
       modal.show();
     };
     logo.addEventListener('click', showModal, false);
-    logo.addEventListener('touchend', showModal, false);
     window.addEventListener('sdk-inactive', () => {
       logo.classList.add('inactive');
     });

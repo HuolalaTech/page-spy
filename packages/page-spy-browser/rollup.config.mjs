@@ -6,7 +6,6 @@ import postcssPresetEnv from 'postcss-preset-env';
 import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import json from '@rollup/plugin-json';
-import replace from '@rollup/plugin-replace';
 import terser from '@rollup/plugin-terser';
 import image from '@rollup/plugin-image';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
@@ -21,10 +20,6 @@ const plugins = [
   commonjs(),
   typescript({
     useTsconfigDeclarationDir: true,
-  }),
-  replace({
-    PKG_VERSION: `"${pkg.version}"`,
-    preventAssignment: true,
   }),
   postcss({
     modules: {
