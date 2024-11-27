@@ -29,6 +29,18 @@ utilAPI.removeStorage = (key) => {
   return my.removeStorageSync({ key });
 };
 
+utilAPI.showActionSheet = (params) => {
+  return my.showActionSheet({
+    ...params,
+    items: params.itemList,
+    success: (res: { index: number }) => {
+      params.success?.({
+        tapIndex: res.index,
+      });
+    },
+  });
+};
+
 const info = my.getSystemInfoSync();
 
 PageSpy.client = new Client({

@@ -28,7 +28,6 @@
     "watch": "rollup -c -w"
   },
   "dependencies": {
-    "@huolala-tech/page-spy-base": "^2.0.0-beta.0",
     "@huolala-tech/page-spy-mp-base": "^2.0.0-beta.0",
     "@huolala-tech/page-spy-types": "^2.0.0-beta.0"
   },

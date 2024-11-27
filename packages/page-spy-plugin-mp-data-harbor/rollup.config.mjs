@@ -30,13 +30,8 @@ export default [
     input: 'src/index.ts',
     output: [
       {
-        file: pkg.module,
-        format: 'esm',
-        sourcemap: true,
-      },
-      {
         file: pkg.main,
-        format: 'cjs',
+        format: 'esm',
         sourcemap: true,
       },
     ],

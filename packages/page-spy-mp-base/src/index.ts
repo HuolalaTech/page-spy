@@ -306,8 +306,7 @@ class PageSpy {
       }
     });
 
-    mp.showActionSheet({
-      title: 'PageSpy Device ID:' + (this.address.slice(0, 4) || '--'),
+    utilAPI.showActionSheet({
       itemColor: '#b67cff',
       itemList: options.map((o) => o.text),
       success(res) {

@@ -49,14 +49,14 @@ export default [
   {
     input: 'src/index.ts',
     output: {
-      file: pkg.module,
+      file: pkg.main,
       format: 'esm',
       sourcemap: true,
     },
     plugins: [
       ...plugins,
       getBabel('esm'),
-      del({ targets: [dirname(pkg.module)] }),
+      del({ targets: [dirname(pkg.main)] }),
     ],
     external: [
       '@huolala-tech/page-spy-mp-base'
