@@ -8,3 +8,8 @@ export type CacheMessageItem = Pick<
 > & {
   timestamp: number;
 };
+
+export interface WholeActionParams {
+  clearCache?: boolean;
+  remark?: string;
+}
