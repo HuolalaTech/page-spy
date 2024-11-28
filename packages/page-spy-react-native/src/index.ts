@@ -3,7 +3,7 @@ import {
   isArray,
   isClass,
   psLog,
-} from '@huolala-tech/page-spy-base';
+} from '@huolala-tech/page-spy-base/dist/utils';
 import { Client } from '@huolala-tech/page-spy-base/dist/client';
 import type {
   PageSpyPlugin,
@@ -57,16 +57,7 @@ class PageSpy {
     ];
   }
 
-  static client: Client = new Client({
-    osType: osMap[Platform.OS] || 'unknown',
-    osVersion: String(Platform.Version),
-    browserType: 'react-native',
-    browserVersion: `${rnv.major}.${rnv.minor}.${rnv.patch}${
-      rnv.prerelease ? '-' + rnv.prerelease : ''
-    }`,
-    framework: 'react-native',
-    sdk: 'rn',
-  });
+  static client: Client;
 
   request: Request | null = null;
 
@@ -145,6 +136,7 @@ class PageSpy {
 
     socketStore.connectable = true;
     socketStore.getPageSpyConfig = () => this.config.get();
+    socketStore.getClient = () => PageSpy.client;
     socketStore.messageCapacity = messageCapacity;
   }
 
@@ -202,6 +194,17 @@ class PageSpy {
     socketStore.updateRoomInfo();
   }
 }
+
+PageSpy.client = new Client({
+  osType: osMap[Platform.OS] || 'unknown',
+  osVersion: String(Platform.Version),
+  browserType: 'react-native',
+  browserVersion: `${rnv.major}.${rnv.minor}.${rnv.patch}${
+    rnv.prerelease ? '-' + rnv.prerelease : ''
+  }`,
+  framework: 'react-native',
+  sdk: 'rn',
+});
 
 const INTERNAL_PLUGINS = [
   new ConsolePlugin(),

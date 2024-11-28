@@ -1,11 +1,11 @@
 import {
-  formatEntries,
   isBlob,
   isFormData,
   isString,
   isTypedArray,
   toStringTag,
-} from '@huolala-tech/page-spy-base';
+} from '@huolala-tech/page-spy-base/dist/utils';
+import { formatEntries } from '@huolala-tech/page-spy-base/dist/network/common';
 import { SpyNetwork } from '@huolala-tech/page-spy-types';
 
 export async function getFormattedBody(body?: Document | BodyInit | null) {

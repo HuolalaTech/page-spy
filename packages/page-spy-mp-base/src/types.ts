@@ -1,3 +1,5 @@
+import { InitConfigBase, OnInitParams } from '@huolala-tech/page-spy-types';
+
 export type AsyncCallback<R = void, E = any> = {
   success?: (res: R) => void;
   fail?: (error: E) => void;
@@ -323,3 +325,8 @@ export type MPSDK = MPUIAPI &
   MPNetworkAPI &
   MPSystemAPI &
   MPRouterAPI;
+
+export interface MPPluginInitParams<T extends InitConfigBase>
+  extends OnInitParams<T> {
+  mp: MPSDK;
+}

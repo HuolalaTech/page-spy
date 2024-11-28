@@ -16,6 +16,8 @@ import {
   type Client,
   type SocketStoreBase,
   psLog,
+  MPPluginInitParams,
+  setMPSDK,
 } from '@huolala-tech/page-spy-mp-base';
 
 interface DataHarborConfig {
@@ -75,10 +77,11 @@ export default class MPDataHarborPlugin implements PageSpyPlugin {
     socketStore,
     config,
     client,
-  }: OnInitParams<InitConfigBase>) {
+    mp,
+  }: MPPluginInitParams<InitConfigBase>) {
     if (MPDataHarborPlugin.hasInited) return;
     MPDataHarborPlugin.hasInited = true;
-
+    setMPSDK(mp);
     this.$pageSpyConfig = config;
     this.$socketStore = socketStore;
     this.client = client;

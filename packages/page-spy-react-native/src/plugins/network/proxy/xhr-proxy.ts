@@ -1,16 +1,18 @@
+import { RequestItem } from '@huolala-tech/page-spy-base/dist/request-item';
 import {
-  getRandomId,
-  isString,
+  blob2base64Async,
   toStringTag,
   isArrayBuffer,
   isBlob,
   getObjectKeys,
+  getRandomId,
+  isString,
   psLog,
-  blob2base64Async,
-  RequestItem,
-  MAX_SIZE,
+} from '@huolala-tech/page-spy-base/dist/utils';
+import {
   Reason,
-} from '@huolala-tech/page-spy-base';
+  MAX_SIZE,
+} from '@huolala-tech/page-spy-base/dist/network/common';
 import RNNetworkProxyBase from './base';
 import { addContentTypeHeader, getFormattedBody } from '../common';
 

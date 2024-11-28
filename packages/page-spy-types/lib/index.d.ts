@@ -102,7 +102,7 @@ interface CommonParams {
   toast?: Toast;
 }
 
-interface OnInitParams<T extends InitConfigBase> extends CommonParams {
+export interface OnInitParams<T extends InitConfigBase> extends CommonParams {
   /**
    * Config info which has merged the user passed value.
    */

@@ -111,6 +111,7 @@ class PageSpy {
       config,
       atom,
       client: PageSpy.client,
+      mp,
     });
 
     this.init();

@@ -6,9 +6,11 @@ import {
   isString,
   isURL,
   psLog,
-  MAX_SIZE,
+} from '@huolala-tech/page-spy-base/dist/utils';
+import {
   Reason,
-} from '@huolala-tech/page-spy-base';
+  MAX_SIZE,
+} from '@huolala-tech/page-spy-base/dist/network/common';
 import RNNetworkProxyBase from './base';
 import { IS_FETCH_HEADER } from './xhr-proxy';
 import { addContentTypeHeader, getFormattedBody } from '../common';

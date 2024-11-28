@@ -5,7 +5,6 @@ import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import json from '@rollup/plugin-json';
 import replace from '@rollup/plugin-replace';
-import terser from '@rollup/plugin-terser';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
 import fs from 'fs';
 
@@ -21,7 +20,6 @@ const plugins = [
   replace({
     preventAssignment: true,
   }),
-  terser(),
 ];
 
 /**
