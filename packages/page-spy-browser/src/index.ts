@@ -315,6 +315,15 @@ class PageSpy {
             ${this.address.slice(0, 4) || '--'}
           </b>
         </p>
+        ${
+          useSecret && secret
+            ? `
+        <p>
+          <span>Secret</span>
+          <b class="page-spy-secret">${secret}</b>
+        </p>`
+            : ''
+        }
         <p>
           <span>Project</span>
           <b class="page-spy-project">${project}</b>

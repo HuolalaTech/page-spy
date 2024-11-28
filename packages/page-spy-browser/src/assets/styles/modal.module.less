@@ -1,7 +1,5 @@
 @import url(./variable.less);
 
-@padding: (8em / @font-size) (14em / @font-size);
-
 .modal {
   display: none;
   position: fixed;
@@ -109,7 +107,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: @padding;
+    padding: (8em / @font-size) (14em / @font-size);
     color: white;
     background-color: var(--primary-color);
     .headerLeft {
@@ -133,14 +131,14 @@
     }
   }
   .main {
-    padding: @padding;
+    padding: (14em / @font-size);
   }
   .footer {
     display: flex;
     justify-content: flex-end;
     align-items: center;
     gap: (8em / @font-size);
-    padding: @padding;
+    padding: (8em / @font-size) (14em / @font-size);
     border-top: 1px solid #dedede;
     button {
       .common-button();
