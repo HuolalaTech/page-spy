@@ -93,7 +93,8 @@ export default class MPDataHarborPlugin implements PageSpyPlugin {
         config,
       );
     } else {
-      const apiScheme = !enableSSL ? 'http://' : 'https://';
+      // because this plugin is mainly used in mp, so align with mp sdk, default to https
+      const apiScheme = enableSSL === false ? 'http://' : 'https://';
       this.apiBase = removeEndSlash(`${apiScheme}${api}`);
     }
 
