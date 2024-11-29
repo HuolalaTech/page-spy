@@ -10,7 +10,7 @@ import { removeEndSlash } from '@huolala-tech/page-spy-base/dist/utils';
 import { MemoryHarbor } from './harbor/memoryHarbor';
 import { startUpload } from './utils/upload';
 import { buildSearchParams, getDeviceId, makeData, makeFile } from './utils';
-import { DataType } from './harbor/base';
+import { DataType, WholeActionParams } from './harbor/base';
 import {
   getMPSDK,
   type Client,
@@ -115,17 +115,50 @@ export default class MPDataHarborPlugin implements PageSpyPlugin {
       {
         text: '上传离线日志',
         action: async () => {
-          const result = await this.upload();
+          const mp = getMPSDK();
+          mp.showLoading({ title: '正在上传离线日志...' });
+          try {
+            const result = await this.upload();
+            mp.hideLoading();
+            if (result) {
+              if (mp.setClipboardData) {
+                mp.showModal({
+                  title: '上传成功',
+                  confirmText: '复制链接',
+                  showCancel: false,
+                  success(res) {
+                    if (res.confirm) {
+                      mp.setClipboardData({
+                        data: result,
+                      });
+                    }
+                  },
+                });
+              } else {
+                mp.showModal({
+                  title: '上传成功',
+                  content: result,
+                  showCancel: false,
+                });
+              }
+            } else {
+              mp.showToast({
+                title: '上传失败',
+              });
+            }
+          } catch (e) {
+            mp.hideLoading();
+            mp.showToast({
+              title: '上传失败',
+            });
+          }
         },
       },
     ];
   }
 
-  async upload(clearCache = true) {
+  async upload(params?: WholeActionParams) {
     const mp = getMPSDK();
-    mp.showLoading({
-      title: '正在上传离线日志...',
-    });
     const { filename } = this.$harborConfig;
     const { project = '', title = '' } = this.$pageSpyConfig || {};
     const tags = {
@@ -134,8 +167,8 @@ export default class MPDataHarborPlugin implements PageSpyPlugin {
       deviceId: getDeviceId(),
       // userAgent: navigator.userAgent,
       userAgent: this.client?.getName(),
+      remark: params?.remark || '',
     };
-
     const data = [...this.harbor.container];
     data.push(this.makeMetaInfo());
 
@@ -147,26 +180,18 @@ export default class MPDataHarborPlugin implements PageSpyPlugin {
         url,
       });
 
-      if (clearCache) {
+      if (params?.clearCache !== false) {
         this.harbor.clear();
         this.$socketStore?.dispatchEvent('harbor-clear', null);
       }
-      mp.hideLoading();
-      mp.showToast({
-        title: '离线日志上传成功',
-        icon: 'success',
-      });
     } catch (e: any) {
       psLog.error(e);
-      mp.hideLoading();
-      mp.showToast({
-        icon: 'error',
-        title: '离线日志上传失败',
-      });
+      return '';
     }
     // remove the local file
     const fs = mp.getFileSystemManager();
     fs.unlinkSync(path);
+    return url;
   }
 
   onReset() {

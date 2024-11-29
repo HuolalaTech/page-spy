@@ -289,6 +289,24 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     }
   }
 
+  async upload(params?: WholeActionParams) {
+    const result = await this.onOfflineLog('upload', params);
+    return result;
+  }
+
+  async uploadPeriods(params: PeriodActionParams) {
+    const result = await this.onOfflineLog('upload-periods', params);
+    return result;
+  }
+
+  async download(params?: WholeActionParams) {
+    await this.onOfflineLog('download', params);
+  }
+
+  async downloadPeriods(params: PeriodActionParams) {
+    await this.onOfflineLog('download-periods', params);
+  }
+
   onReset() {
     if (this.periodTimer) {
       clearInterval(this.periodTimer);
