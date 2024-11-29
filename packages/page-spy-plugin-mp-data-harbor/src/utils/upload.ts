@@ -9,7 +9,7 @@ export type UploadArgs = {
 declare var uni: any;
 
 export const startUpload = async ({ url, path }: UploadArgs) => {
-  return new Promise((resolve, reject) => {
+  return new Promise<H.UploadResult>((resolve, reject) => {
     const mp = getMPSDK();
     mp.uploadFile({
       filePath: path,

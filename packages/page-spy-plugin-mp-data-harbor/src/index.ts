@@ -174,11 +174,13 @@ export default class MPDataHarborPlugin implements PageSpyPlugin {
 
     const path = makeFile(data, filename());
     const url = `${this.apiBase}/api/v1/log/upload?${buildSearchParams(tags)}`;
+    let debugUrl = '';
     try {
-      await startUpload({
+      const res = await startUpload({
         path,
         url,
       });
+      debugUrl = this.getDebugUrl(res);
 
       if (params?.clearCache !== false) {
         this.harbor.clear();
@@ -186,12 +188,11 @@ export default class MPDataHarborPlugin implements PageSpyPlugin {
       }
     } catch (e: any) {
       psLog.error(e);
-      return '';
     }
     // remove the local file
     const fs = mp.getFileSystemManager();
     fs.unlinkSync(path);
-    return url;
+    return debugUrl;
   }
 
   onReset() {
@@ -251,5 +252,13 @@ export default class MPDataHarborPlugin implements PageSpyPlugin {
       timestamp: Date.now(),
       data: clientInfo,
     };
+  }
+
+  getDebugUrl(result: H.UploadResult | null) {
+    if (!result || !result.success) return '';
+
+    const debugOrigin = `${this.apiBase}/#/replay`;
+    const logUrl = `${this.apiBase}/api/v1/log/download?fileId=${result.data.fileId}`;
+    return `${debugOrigin}?url=${logUrl}`;
   }
 }
