@@ -270,15 +270,17 @@ class PageSpy {
       {
         text: 'PageSpy 房间号：' + this.address.slice(0, 4),
         action() {
-          mp.setClipboardData({
-            data: that.getDebugLink(),
-            success() {
-              mp.showToast({
-                title: '复制成功',
-                icon: 'success',
-              });
-            },
-          });
+          if (mp.setClipboardData) {
+            mp.setClipboardData({
+              data: that.getDebugLink(),
+              success() {
+                mp.showToast({
+                  title: '复制成功',
+                  icon: 'success',
+                });
+              },
+            });
+          }
         },
       },
     ];
