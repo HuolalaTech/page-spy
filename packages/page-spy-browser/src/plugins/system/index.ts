@@ -72,17 +72,24 @@ export default class SystemPlugin implements PageSpyPlugin {
     SystemPlugin.hasInitd = false;
   }
 
+  private _cache: SpySystem.DataItem | null = null;
+
   public async getSystemInfo() {
-    const features = await computeResult();
-    const info = {
-      system: {
-        ua: navigator.userAgent,
-      },
-      features,
-    } as SpySystem.DataItem;
-    const processedByUser = this.$pageSpyConfig?.dataProcessor?.system?.(info);
+    if (!this._cache) {
+      const features = await computeResult();
+      this._cache = {
+        system: {
+          ua: navigator.userAgent,
+        },
+        features,
+      } as SpySystem.DataItem;
+    }
+
+    const processedByUser = this.$pageSpyConfig?.dataProcessor?.system?.(
+      this._cache,
+    );
 
     if (processedByUser === false) return null;
-    return makeMessage('system', info);
+    return makeMessage('system', this._cache);
   }
 }
