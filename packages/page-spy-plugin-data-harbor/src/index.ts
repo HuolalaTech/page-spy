@@ -46,7 +46,10 @@ interface DataHarborConfig {
   filename?: () => string;
 
   // Custom download behavior.
-  onDownload?: ((data: CacheMessageItem[]) => void) | null;
+  onDownload?: (data: CacheMessageItem[]) => void;
+
+  // Custom behavior after upload.
+  onAfterUpload?: (replayUrl: string, remark: string) => void;
 }
 
 const defaultConfig: Required<DataHarborConfig> = {
@@ -61,7 +64,8 @@ const defaultConfig: Required<DataHarborConfig> = {
   filename: () => {
     return new Date().toLocaleString();
   },
-  onDownload: null,
+  onDownload: () => {},
+  onAfterUpload: () => {},
 };
 
 export default class DataHarborPlugin implements PageSpyPlugin {
@@ -263,29 +267,24 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       remark: '',
     },
   ): Promise<void | string> {
-    let result;
-    if (type === 'upload' || type === 'download') {
-      const args: any = await this.getParams(type as any, params);
-      result =
-        type === 'upload' ? await startUpload(args) : await startDownload(args);
-
-      if ((params as WholeActionParams).clearCache === true) {
-        this.clearAndNotify();
-      }
+    if (!isPeriodActionParams(params) || params.startTime > params.endTime) {
+      throw new Error(t.invalidParams);
     }
-    if (type === 'upload-periods' || type === 'download-periods') {
-      if (!isPeriodActionParams(params) || params.startTime > params.endTime) {
-        throw new Error(t.invalidParams);
-      }
-      const args: any = await this.getParams(type as any, params);
-      result =
-        type === 'upload-periods'
-          ? await startUpload(args)
-          : await startDownload(args);
+
+    const args: any = await this.getParams(type as any, params);
+    const isUpload = ['upload', 'upload-periods'].includes(type);
+    const result = isUpload
+      ? await startUpload(args)
+      : await startDownload(args);
+
+    if ((params as WholeActionParams).clearCache === true) {
+      this.clearAndNotify();
     }
 
     if (result) {
-      return this.getDebugUrl(result);
+      const url = this.getDebugUrl(result);
+      this.$harborConfig.onAfterUpload(url, args.remark);
+      return url;
     }
   }
 

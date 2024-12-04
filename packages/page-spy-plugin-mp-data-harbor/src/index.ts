@@ -1,16 +1,11 @@
 /* eslint-disable consistent-return */
 import type {
   SpyMessage,
-  OnInitParams,
   PageSpyPlugin,
   PluginOrder,
   InitConfigBase,
 } from '@huolala-tech/page-spy-types';
 import { removeEndSlash } from '@huolala-tech/page-spy-base/dist/utils';
-import { MemoryHarbor } from './harbor/memoryHarbor';
-import { startUpload } from './utils/upload';
-import { buildSearchParams, getDeviceId, makeData, makeFile } from './utils';
-import { DataType, WholeActionParams } from './harbor/base';
 import {
   getMPSDK,
   type Client,
@@ -19,6 +14,10 @@ import {
   MPPluginInitParams,
   setMPSDK,
 } from '@huolala-tech/page-spy-mp-base';
+import { MemoryHarbor } from './harbor/memoryHarbor';
+import { startUpload } from './utils/upload';
+import { buildSearchParams, getDeviceId, makeData, makeFile } from './utils';
+import { DataType, WholeActionParams } from './harbor/base';
 
 interface DataHarborConfig {
   // Specify which types of data to collect.
@@ -27,6 +26,9 @@ interface DataHarborConfig {
   // Custom uploaded filename by this.
   // Default value is `new Date().toLocaleString()`.
   filename?: () => string;
+
+  // Custom behavior after upload
+  onAfterUpload?: (replayUrl: string) => void;
 }
 
 const defaultConfig: DataHarborConfig = {
@@ -40,6 +42,7 @@ const defaultConfig: DataHarborConfig = {
   filename: () => {
     return new Date().toLocaleString();
   },
+  onAfterUpload: () => {},
 };
 
 export default class MPDataHarborPlugin implements PageSpyPlugin {
@@ -120,6 +123,8 @@ export default class MPDataHarborPlugin implements PageSpyPlugin {
             const result = await this.upload();
             mp.hideLoading();
             if (result) {
+              this.$harborConfig.onAfterUpload(result);
+
               if (mp.setClipboardData) {
                 mp.showModal({
                   title: '上传成功',
