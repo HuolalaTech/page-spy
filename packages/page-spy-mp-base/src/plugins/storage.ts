@@ -12,6 +12,12 @@ import socketStore from '../helpers/socket';
 import { getMPSDK, utilAPI } from '../utils';
 import type { MPStorageAPI } from '../types';
 
+const descriptor = {
+  configurable: true,
+  writable: true,
+  enumerable: true,
+};
+
 export function mpDataStringify(data: any) {
   const typeOfValue = typeof data;
   let vStr: string = data;
@@ -57,6 +63,7 @@ export default class StoragePlugin implements PageSpyPlugin {
     Object.entries(StoragePlugin.originFunctions).forEach(([key, fn]) => {
       Object.defineProperty(mp, key, {
         value: fn,
+        ...descriptor,
       });
     });
     StoragePlugin.hasInitd = false;
@@ -129,6 +136,7 @@ export default class StoragePlugin implements PageSpyPlugin {
             },
           });
         },
+        ...descriptor,
       },
       setStorageSync: {
         value(keyOrObj: string | { key: string; data: any }, data: any) {
@@ -156,6 +164,7 @@ export default class StoragePlugin implements PageSpyPlugin {
             throw e;
           }
         },
+        ...descriptor,
       },
 
       removeStorage: {
@@ -168,6 +177,7 @@ export default class StoragePlugin implements PageSpyPlugin {
             },
           });
         },
+        ...descriptor,
       },
 
       removeStorageSync: {
@@ -185,6 +195,7 @@ export default class StoragePlugin implements PageSpyPlugin {
             throw e;
           }
         },
+        ...descriptor,
       },
 
       clearStorage: {
@@ -197,6 +208,7 @@ export default class StoragePlugin implements PageSpyPlugin {
             },
           });
         },
+        ...descriptor,
       },
 
       clearStorageSync: {
@@ -211,6 +223,7 @@ export default class StoragePlugin implements PageSpyPlugin {
             throw e;
           }
         },
+        ...descriptor,
       },
     });
 
@@ -235,6 +248,7 @@ export default class StoragePlugin implements PageSpyPlugin {
             throw e;
           }
         },
+        ...descriptor,
       });
     }
     if (mp.canIUse('batchSetStorage')) {
@@ -250,6 +264,7 @@ export default class StoragePlugin implements PageSpyPlugin {
             },
           });
         },
+        ...descriptor,
       });
     }
   }

@@ -12,6 +12,12 @@ import type {
   MultiCallback,
 } from '@react-native-async-storage/async-storage/lib/typescript/types';
 
+const descriptor = {
+  configurable: true,
+  writable: true,
+  enumerable: true,
+};
+
 export default class RNAsyncStoragePlugin implements PageSpyPlugin {
   public name = 'RNAsyncStoragePlugin';
 
@@ -39,6 +45,7 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
       ([key, fn]) => {
         Object.defineProperty(AsyncStorage, key, {
           value: fn,
+          ...descriptor,
         });
       },
     );
@@ -108,6 +115,7 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
             that.sendSetItem(key, value);
           });
         },
+        ...descriptor,
       },
       mergeItem: {
         value(key: string, value: string, callback?: Callback) {
@@ -126,6 +134,7 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
             return res;
           });
         },
+        ...descriptor,
       },
 
       multiSet: {
@@ -139,6 +148,7 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
             });
           });
         },
+        ...descriptor,
       },
       multiMerge: {
         value(kvPairs: [string, string][], callback?: MultiCallback) {
@@ -158,6 +168,7 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
             });
           });
         },
+        ...descriptor,
       },
 
       removeItem: {
@@ -169,6 +180,7 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
             that.sendRemoveItem(key);
           });
         },
+        ...descriptor,
       },
 
       multiRemove: {
@@ -182,6 +194,7 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
             });
           });
         },
+        ...descriptor,
       },
 
       clear: {
@@ -192,6 +205,7 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
             },
           );
         },
+        ...descriptor,
       },
     });
   }

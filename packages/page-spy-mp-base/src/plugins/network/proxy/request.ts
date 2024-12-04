@@ -25,6 +25,9 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
       const mp = getMPSDK();
       Object.defineProperty(mp, 'request', {
         value: this.request,
+        configurable: true,
+        writable: true,
+        enumerable: true,
       });
     }
   }
@@ -165,6 +168,9 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
         psLog.warn('The request object is not found on request event');
         return null;
       },
+      configurable: true,
+      writable: true,
+      enumerable: true,
     });
   }
 }
