@@ -46,7 +46,10 @@ interface DataHarborConfig {
   filename?: () => string;
 
   // Custom download behavior.
-  onDownload?: ((data: CacheMessageItem[]) => void) | null;
+  onDownload?: (data: CacheMessageItem[]) => void;
+
+  // Custom behavior after upload.
+  onAfterUpload?: (replayUrl: string) => void;
 }
 
 const defaultConfig: Required<DataHarborConfig> = {
@@ -61,7 +64,8 @@ const defaultConfig: Required<DataHarborConfig> = {
   filename: () => {
     return new Date().toLocaleString();
   },
-  onDownload: null,
+  onDownload: () => {},
+  onAfterUpload: () => {},
 };
 
 export default class DataHarborPlugin implements PageSpyPlugin {
@@ -285,7 +289,9 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     }
 
     if (result) {
-      return this.getDebugUrl(result);
+      const url = this.getDebugUrl(result);
+      this.$harborConfig.onAfterUpload(url);
+      return url;
     }
   }
 
