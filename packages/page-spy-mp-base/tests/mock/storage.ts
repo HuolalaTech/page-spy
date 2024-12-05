@@ -81,6 +81,8 @@ export function initStorageMock() {
     Object.defineProperty(getMPSDK(), key, {
       value,
       writable: true,
+      configurable: true,
+      enumerable: true,
     });
   });
 }
