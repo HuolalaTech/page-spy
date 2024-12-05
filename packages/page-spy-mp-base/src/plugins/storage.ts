@@ -1,4 +1,3 @@
-import { KVList } from './../types';
 import { psLog } from '@huolala-tech/page-spy-base/dist/utils';
 import type { Client } from '@huolala-tech/page-spy-base/dist/client';
 import { makeMessage } from '@huolala-tech/page-spy-base/dist/message';
@@ -10,7 +9,7 @@ import type {
 } from '@huolala-tech/page-spy-types';
 import socketStore from '../helpers/socket';
 import { getMPSDK, utilAPI } from '../utils';
-import type { MPStorageAPI } from '../types';
+import type { MPStorageAPI, KVList } from '../types';
 
 const descriptor = {
   configurable: true,
