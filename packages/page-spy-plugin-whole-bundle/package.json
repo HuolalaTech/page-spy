@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-plugin-whole-bundle",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Packed 3 packages: page-spy-browser / page-spy-plugin-data-harbor / page-spy-plugin-rrweb. Only available in browser.",
   "license": "MIT",
   "main": "dist/iife/index.min.js",
@@ -29,7 +29,7 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@huolala-tech/page-spy-browser": "^2.0.1",
+    "@huolala-tech/page-spy-browser": "^2.0.2",
     "@huolala-tech/page-spy-plugin-data-harbor": "^2.0.2",
     "@huolala-tech/page-spy-plugin-rrweb": "^2.0.0"
   },
