@@ -176,10 +176,9 @@ describe('new PageSpy([config])', () => {
     await sleep();
 
     expect(JSON.parse(sessionStorage.getItem(ROOM_SESSION_KEY)!)).toEqual({
-      name: sdk.name,
       address: sdk.address,
-      roomUrl: sdk.roomUrl,
       project: 'default',
+      title: '--',
       secret: '',
       useSecret: false,
     });
@@ -190,10 +189,9 @@ describe('new PageSpy([config])', () => {
     sessionStorage.setItem(
       ROOM_SESSION_KEY,
       JSON.stringify({
-        name: '',
-        address: '',
-        roomUrl: '',
+        address: 'xxx',
         project: 'default',
+        title: '--',
         secret: '',
         useSecret: false,
       }),
