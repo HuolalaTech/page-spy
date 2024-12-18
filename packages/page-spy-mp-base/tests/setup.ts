@@ -1,6 +1,5 @@
-import { initStorageMock } from './mock/storage';
-import { MockMP } from './mock/mp';
-import { getMPSDK, setMPSDK } from 'page-spy-mp-base/src/utils';
+import { mockMP } from './mock/mp';
+import { getOriginMPSDK, setMPSDK } from 'page-spy-mp-base/src/helpers/mp-api';
 
 Object.defineProperty(globalThis, 'name', {
   value: '小程序单元测试',
@@ -11,9 +10,7 @@ Object.defineProperty(globalThis, 'PKG_VERSION', {
   value: '1.0.0',
 });
 
-setMPSDK(new MockMP());
-
-initStorageMock();
+setMPSDK(mockMP());
 
 Object.defineProperty(globalThis, 'getCurrentPages', {
   value: function () {
@@ -28,6 +25,6 @@ Object.defineProperty(globalThis, 'getCurrentPages', {
   },
 });
 
-const mp = getMPSDK();
+const mp = getOriginMPSDK();
 
 export { mp };

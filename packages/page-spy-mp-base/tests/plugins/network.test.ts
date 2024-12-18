@@ -1,10 +1,10 @@
 import NetworkPlugin from 'page-spy-mp-base/src/plugins/network';
 import { computeRequestMapInfo } from './util';
-import { mp } from '../setup';
 import { OnInitParams, SpyMP } from 'packages/page-spy-types';
 import { atom } from 'page-spy-base/src';
 import { Config } from 'page-spy-mp-base/src/config';
 import socket from 'page-spy-mp-base/src/helpers/socket';
+import { mp } from '../setup';
 
 const initParams = {
   config: new Config().mergeConfig({ api: 'example.com' }),
@@ -39,7 +39,6 @@ describe('mp.request proxy', () => {
   it('Wrap mp request', () => {
     const reqSpy = jest.spyOn(mp, 'request');
     expect(mp.request).toBe(reqSpy);
-
     plugin.onInit(initParams);
     expect(mp.request).not.toBe(reqSpy);
   });

@@ -4,7 +4,6 @@ import {
   SocketWrapper,
 } from '@huolala-tech/page-spy-base/dist/socket-base';
 import { ROOM_SESSION_KEY } from '@huolala-tech/page-spy-base/dist/constants';
-import { getMPSDK, utilAPI } from '../utils';
 import {
   MPSocket,
   SocketOnCloseHandler,
@@ -12,6 +11,7 @@ import {
   SocketOnMessageHandler,
   SocketOnOpenHandler,
 } from '../types';
+import { getMPSDK } from './mp-api';
 
 export class MPSocketWrapper extends SocketWrapper {
   public socketInstance: MPSocket | null = null;
@@ -94,7 +94,8 @@ export class MPSocketStore extends SocketStoreBase {
   // this is an abstract method of parent class, cannot be static
   /* eslint-disable-next-line */
   onOffline() {
-    utilAPI.removeStorage(ROOM_SESSION_KEY);
+    const mp = getMPSDK();
+    mp.removeStorageSync(ROOM_SESSION_KEY);
   }
 }
 

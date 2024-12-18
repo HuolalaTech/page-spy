@@ -13,7 +13,6 @@ import {
   SpyMP,
 } from '@huolala-tech/page-spy-types/index';
 import { ROOM_SESSION_KEY } from 'page-spy-base/src';
-import { initStorageMock } from './mock/storage';
 import { mp } from './setup';
 import { Config } from 'page-spy-mp-base/src/config';
 import socket from 'page-spy-mp-base/src/helpers/socket';
@@ -31,7 +30,7 @@ let sdk: PageSpy | null;
 PageSpy.client = new Client({}) as any;
 
 beforeEach(() => {
-  initStorageMock();
+  mp.clearStorageSync();
 });
 afterEach(() => {
   jest.restoreAllMocks();

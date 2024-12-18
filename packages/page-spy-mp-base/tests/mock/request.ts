@@ -82,3 +82,5 @@ export const mockRequest = (params: Parameters<MPNetworkAPI['request']>[0]) => {
       params.complete?.(res);
   }
 };
+
+mockRequest.isOrigin = true;
