@@ -1,8 +1,8 @@
 import PageSpy, {
   setMPSDK,
-  utilAPI,
   Client,
   SocketStoreBase,
+  platformAPI,
 } from '@huolala-tech/page-spy-mp-base';
 import { SpyClient } from '@huolala-tech/page-spy-types';
 
@@ -13,7 +13,7 @@ declare const my: any;
 setMPSDK(my);
 
 // alipay toxic storage api...
-utilAPI.getStorage = (key: string) => {
+platformAPI.getStorageSync = (key: string) => {
   const res = my.getStorageSync({ key });
   if (res.success) {
     return res.data;
@@ -21,15 +21,15 @@ utilAPI.getStorage = (key: string) => {
   return undefined;
 };
 
-utilAPI.setStorage = (key: string, value: any) => {
+platformAPI.setStorageSync = (key: string, value: any) => {
   return my.setStorageSync({ key, data: value });
 };
 
-utilAPI.removeStorage = (key) => {
+platformAPI.removeStorageSync = (key) => {
   return my.removeStorageSync({ key });
 };
 
-utilAPI.showActionSheet = (params) => {
+platformAPI.showActionSheet = (params) => {
   return my.showActionSheet({
     ...params,
     items: params.itemList,
@@ -38,6 +38,14 @@ utilAPI.showActionSheet = (params) => {
         tapIndex: res.index,
       });
     },
+  });
+};
+
+// TODO 个人小程序不支持该 api.. 先不管
+platformAPI.setClipboardData = (params) => {
+  return my.setClipboard({
+    text: params.data,
+    ...params,
   });
 };
 

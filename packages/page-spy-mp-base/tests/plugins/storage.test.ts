@@ -1,7 +1,6 @@
 import StoragePlugin, {
   mpDataStringify,
 } from 'page-spy-mp-base/src/plugins/storage';
-import { initStorageMock } from '../mock/storage';
 import { mp } from '../setup';
 import { OnInitParams, SpyMP } from 'packages/page-spy-types';
 import { atom } from 'page-spy-base/src';
@@ -19,9 +18,6 @@ const trigger = jest.spyOn(StoragePlugin.prototype, 'sendStorageItem');
 
 const plugin = new StoragePlugin();
 
-beforeAll(() => {
-  initStorageMock();
-});
 beforeEach(() => {
   plugin.onInit(initParams);
 });

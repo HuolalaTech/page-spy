@@ -108,7 +108,7 @@ export type MPStorageAPI = {
     } & AsyncCallback,
   ): void;
 
-  removeStorageSync(key: string): void;
+  removeStorageSync(key: string | { key: string }): void;
 
   clearStorage(params: AsyncCallback): void;
 
