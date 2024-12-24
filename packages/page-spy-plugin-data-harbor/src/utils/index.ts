@@ -66,17 +66,3 @@ export function formatTimeDuration(millsDiff: number) {
   const s = Math.floor(seconds - 3600 * h - 60 * m);
   return `${fillTimeText(h)}:${fillTimeText(m)}:${fillTimeText(s)}`;
 }
-
-export function copyInBrowser(text: string) {
-  try {
-    const input = document.createElement('input');
-    input.value = text.toString();
-    document.body.appendChild(input);
-    input.select();
-    document.execCommand('copy');
-    document.body.removeChild(input);
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
