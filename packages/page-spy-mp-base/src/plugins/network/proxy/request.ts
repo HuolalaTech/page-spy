@@ -8,9 +8,9 @@ import {
   ReqReadyState,
   toLowerKeys,
 } from '@huolala-tech/page-spy-base/dist/network/common';
-import { getMPSDK } from '../../../utils';
 import MPNetworkProxyBase from './base';
 import { MPNetworkAPI } from '../../../types';
+import { getOriginMPSDK } from '../../../helpers/mp-api';
 
 export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
   public request: MPNetworkAPI['request'] | null = null;
@@ -22,7 +22,7 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
 
   public reset() {
     if (this.request) {
-      const mp = getMPSDK();
+      const mp = getOriginMPSDK();
       Object.defineProperty(mp, 'request', {
         value: this.request,
         configurable: true,
@@ -34,7 +34,7 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
 
   public initProxyHandler() {
     const that = this;
-    const mp = getMPSDK();
+    const mp = getOriginMPSDK();
     const originRequest = mp.request;
 
     if (!originRequest) {

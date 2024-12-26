@@ -2,8 +2,9 @@ import type { SpyMP } from '@huolala-tech/page-spy-types';
 import { getRandomId } from '@huolala-tech/page-spy-base/dist/utils';
 import type { Client } from '@huolala-tech/page-spy-base/dist/client';
 
-import { getMPSDK, joinQuery, promisifyMPApi } from '../utils';
+import { joinQuery, promisifyMPApi } from '../utils';
 import { Config } from '../config';
+import { getMPSDK } from '../helpers/mp-api';
 
 interface TResponse<T> {
   code: string;
@@ -56,6 +57,8 @@ export default class Request {
       {
         url: `${scheme[0]}${this.base}/api/v1/room/create?${query}`,
         method: 'POST',
+        // uniapp building android native need this option.
+        sslVerify: enableSSL !== false,
         data: JSON.stringify({
           useSecret,
           secret,
@@ -73,7 +76,7 @@ export default class Request {
       },
       (err) => {
         /* c8 ignore next */
-        throw Error(`Request create room failed: ${err.message}`);
+        throw Error(`Request create room failed: ${err.message || err}`);
       },
     );
   }

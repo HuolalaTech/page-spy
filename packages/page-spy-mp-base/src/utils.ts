@@ -25,19 +25,6 @@ export const joinQuery = (args: Record<string, unknown>) => {
   return arr.join('&');
 };
 
-let mpSDK: MPSDK;
-
-export const getMPSDK = () => {
-  if (!mpSDK) {
-    throw Error('the mp sdk is not set');
-  }
-  return mpSDK;
-};
-
-export const setMPSDK = (SDK: MPSDK) => {
-  mpSDK = SDK;
-};
-
 // Some platform has no global object, we provide this function to manually create your own global object.
 let customGlobal: Record<string, any> = {};
 export const setCustomGlobal = (global: Record<string, any>) => {
@@ -59,21 +46,4 @@ export const getGlobal = () => {
     Object.assign(foundGlobal, customGlobal);
   }
   return foundGlobal;
-};
-
-// wrap the mp api to smooth the platform differences, for internal usage only.
-// this api can be modified by mp sdk implementor.
-export const utilAPI = {
-  setStorage(key: string, data: any) {
-    return mpSDK?.setStorageSync(key, data);
-  },
-  getStorage(key: string) {
-    return mpSDK?.getStorageSync(key);
-  },
-  removeStorage(key: string) {
-    return mpSDK?.getStorageSync(key);
-  },
-  showActionSheet(params: Parameters<MPSDK['showActionSheet']>[0]) {
-    return mpSDK.showActionSheet(params);
-  },
 };
