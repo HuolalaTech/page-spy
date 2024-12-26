@@ -57,6 +57,8 @@ export default class Request {
       {
         url: `${scheme[0]}${this.base}/api/v1/room/create?${query}`,
         method: 'POST',
+        // uniapp building android native need this option.
+        sslVerify: enableSSL !== false,
         data: JSON.stringify({
           useSecret,
           secret,
