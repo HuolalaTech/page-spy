@@ -43,14 +43,19 @@ utilAPI.showActionSheet = (params) => {
 
 const info = my.getSystemInfoSync();
 
-PageSpy.client = new Client({
-  sdk: 'mp-alipay',
-  osType: info.platform.toLowerCase() as SpyClient.OS,
-  browserType: 'mp-alipay',
-  osVersion: info.system,
-  browserVersion: info.version,
-  sdkVersion: PKG_VERSION,
-});
+PageSpy.client = new Client(
+  {
+    sdk: 'mp-alipay',
+    osType: info.platform.toLowerCase() as SpyClient.OS,
+    browserType: 'mp-alipay',
+    osVersion: info.system,
+    browserVersion: info.version,
+    sdkVersion: PKG_VERSION,
+    brand: info.brand,
+    model: info.model,
+  },
+  info,
+);
 
 SocketStoreBase.messageFilters.push((data) => {
   return data.data;

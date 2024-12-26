@@ -61,14 +61,17 @@ SocketStoreBase.messageFilters.push((data) => {
   return data;
 });
 
-PageSpy.client = new Client({
-  framework: 'uniapp',
-  osType: info.osName.toLowerCase() as SpyClient.OS,
-  osVersion: info.osVersion,
-  browserType,
-  browserVersion: info.appVersion,
-  sdk: 'uniapp',
-  sdkVersion: PKG_VERSION,
-});
+PageSpy.client = new Client(
+  {
+    framework: 'uniapp',
+    osType: info.osName.toLowerCase() as SpyClient.OS,
+    osVersion: info.osVersion,
+    browserType,
+    browserVersion: info.appVersion,
+    sdk: 'uniapp',
+    sdkVersion: PKG_VERSION,
+  },
+  info,
+);
 
 export default PageSpy;

@@ -7,6 +7,7 @@ import type {
 import { makeMessage } from '@huolala-tech/page-spy-base/dist/message';
 import type { Client } from '@huolala-tech/page-spy-base/dist/client';
 import socketStore from '../helpers/socket';
+import { getMPSDK, promisifyMPApi } from '../utils';
 
 export default class SystemPlugin implements PageSpyPlugin {
   public name = 'SystemPlugin';
@@ -28,15 +29,15 @@ export default class SystemPlugin implements PageSpyPlugin {
     socketStore.addListener('refresh', ({ source }, reply) => {
       const { data } = source;
       if (data === 'system') {
-        const info = this.getSystemInfo();
-        if (info === null) return;
-
-        reply(info);
+        this.getSystemInfo().then((info) => {
+          if (info === null) return;
+          reply(info);
+        });
       }
     });
   }
 
-  public onceInitPublicData() {
+  public async onceInitPublicData() {
     const info = this.getSystemInfo();
     if (info === null) return;
 
@@ -47,13 +48,18 @@ export default class SystemPlugin implements PageSpyPlugin {
     SystemPlugin.hasInitd = false;
   }
 
-  public getSystemInfo() {
+  public async getSystemInfo() {
     const info = {
       system: {
         ua: this.client?.getName(),
       },
       features: {},
+      mp: this.client?.rawInfo,
     } as SpySystem.DataItem;
+
+    const settings = await promisifyMPApi(getMPSDK().getSetting)({});
+    info.mp = Object.assign(info.mp || {}, settings.authSetting);
+
     const processedByUser = this.$pageSpyConfig?.dataProcessor?.system?.(info);
 
     if (processedByUser === false) return null;

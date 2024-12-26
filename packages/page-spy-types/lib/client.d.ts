@@ -66,6 +66,9 @@ export interface ClientInfo {
   isDevTools?: boolean;
   sdk?: SDKType;
   sdkVersion?: string;
+  // below for mp
+  brand?: string;
+  model?: string;
 }
 
 // The message type that will be sent over socket
