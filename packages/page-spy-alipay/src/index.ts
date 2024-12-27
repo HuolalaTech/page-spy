@@ -59,8 +59,6 @@ PageSpy.client = new Client(
     osVersion: info.system,
     browserVersion: info.version,
     sdkVersion: PKG_VERSION,
-    brand: info.brand,
-    model: info.model,
   },
   info,
 );

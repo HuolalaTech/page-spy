@@ -6,7 +6,7 @@ import PageSpy, {
 } from '@huolala-tech/page-spy-mp-base';
 import { SpyClient } from '@huolala-tech/page-spy-types';
 
-declare const wx: MPSDK;
+declare const wx: any;
 
 setMPSDK(wx);
 
@@ -23,8 +23,6 @@ PageSpy.client = new Client(
     browserVersion: info.version,
     isDevTools: info.platform === 'devtools',
     sdkVersion: PKG_VERSION,
-    brand: info.brand,
-    model: info.model,
   },
   info,
 );

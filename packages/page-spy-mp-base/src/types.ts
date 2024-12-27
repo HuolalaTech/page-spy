@@ -262,8 +262,18 @@ export type MPSystemAPI = {
     };
   };
 
-  getSetting(params: AsyncCallback<AuthSetting>): void;
-  getSettingSync(): Record<string, unknown>;
+  // getSetting(params:  AsyncCallback<AuthSetting>): void
+
+  // available in high version, need to check before using
+  getAppAuthorizeSetting(): Record<string, string>;
+
+  // available in high version, need to check before using
+  getSystemSetting(): Record<string, unknown>;
+
+  getSetting(
+    options: AsyncCallback<{ authSetting: Record<string, boolean> }>,
+  ): void;
+
   setClipboardData(
     options: {
       data: string;

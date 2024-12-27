@@ -1,12 +1,14 @@
-import { MPSDK } from './types';
+import { AsyncCallback, MPSDK } from './types';
 
 // PENDING: 这里补泛型
-export const promisifyMPApi = <R = any>(api: (params?: any) => any) => {
-  return (params: Record<string, any>) => {
+export const promisifyMPApi = <R = any>(
+  api: (params: AsyncCallback<R>) => any,
+) => {
+  return (params?: Record<string, any>) => {
     return new Promise<R>((resolve, reject) => {
       api({
         ...params,
-        success(res: any) {
+        success(res: R) {
           resolve(res);
         },
         fail(err: any) {

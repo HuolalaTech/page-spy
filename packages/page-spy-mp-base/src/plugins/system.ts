@@ -7,7 +7,8 @@ import type {
 import { makeMessage } from '@huolala-tech/page-spy-base/dist/message';
 import type { Client } from '@huolala-tech/page-spy-base/dist/client';
 import socketStore from '../helpers/socket';
-import { getMPSDK, promisifyMPApi } from '../utils';
+import { getMPSDK } from '../helpers/mp-api';
+import { promisifyMPApi } from '../utils';
 
 export default class SystemPlugin implements PageSpyPlugin {
   public name = 'SystemPlugin';
@@ -57,8 +58,10 @@ export default class SystemPlugin implements PageSpyPlugin {
       mp: this.client?.rawInfo,
     } as SpySystem.DataItem;
 
-    const settings = await promisifyMPApi(getMPSDK().getSetting)({});
-    info.mp = Object.assign(info.mp || {}, settings.authSetting);
+    const mp = getMPSDK();
+    const sysInfo = mp.getSystemInfoSync();
+    const settings = await promisifyMPApi(mp.getSetting)();
+    info.mp = Object.assign(sysInfo, settings.authSetting);
 
     const processedByUser = this.$pageSpyConfig?.dataProcessor?.system?.(info);
 
