@@ -55,13 +55,12 @@ export default class SystemPlugin implements PageSpyPlugin {
         ua: this.client?.getName(),
       },
       features: {},
-      mp: this.client?.rawInfo,
     } as SpySystem.DataItem;
 
     const mp = getMPSDK();
     const sysInfo = mp.getSystemInfoSync();
     const settings = await promisifyMPApi(mp.getSetting)();
-    info.mp = Object.assign(sysInfo, settings.authSetting);
+    info.mp = JSON.stringify(Object.assign(sysInfo, settings.authSetting));
 
     const processedByUser = this.$pageSpyConfig?.dataProcessor?.system?.(info);
 

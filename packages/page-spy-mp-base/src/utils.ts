@@ -33,16 +33,19 @@ export const setCustomGlobal = (global: Record<string, any>) => {
   customGlobal = global;
 };
 
-// get the global context, and we assume the window is better than global, even in
-// mini program environment, mostly because of alipay...
+const mockGlobal: Record<string, unknown> = {};
+
+// get the global context, if not found, use the mock global var.
+// in tt mp, the global object is not accessible.
 export const getGlobal = () => {
-  let foundGlobal: Record<string, any> = {};
+  let foundGlobal: Record<string, any> | undefined = undefined;
   if (typeof globalThis !== 'undefined') {
     foundGlobal = globalThis;
-  } else if (typeof window !== 'undefined') {
-    foundGlobal = window;
-  } else if (typeof global === 'object' && Object.keys(global).length > 1) {
+  } else if (typeof global === 'object') {
     foundGlobal = global;
+  }
+  if (foundGlobal === undefined) {
+    foundGlobal = mockGlobal;
   }
   if (customGlobal) {
     Object.assign(foundGlobal, customGlobal);

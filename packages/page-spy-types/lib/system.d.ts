@@ -18,6 +18,6 @@ export interface DataItem {
     ua?: string;
     [other: string]: string;
   };
-  mp?: Record<string, any>;
+  mp?: string; // this should be a stringified json, or the object will
   features: Record<Category, FeatureDescriptor[]>;
 }
