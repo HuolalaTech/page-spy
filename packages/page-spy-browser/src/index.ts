@@ -103,14 +103,8 @@ class PageSpy {
 
   public request: Request | null = null;
 
-  // System info: <os>-<browser>:<browserVersion>
-  public name = '';
-
   // Room address
   public address = '';
-
-  // Completed websocket room url
-  public roomUrl = '';
 
   public socketStore = socketStore;
 
@@ -155,19 +149,10 @@ class PageSpy {
     if (config.offline === false) {
       this.request = new Request(config);
 
-      const roomCache = sessionStorage.getItem(ROOM_SESSION_KEY);
-      if (roomCache === null) {
+      if (this.cacheIsInvalid()) {
         await this.createNewConnection();
       } else {
-        const { name, address, roomUrl, project: prev } = JSON.parse(roomCache);
-        if (config.project !== prev) {
-          await this.createNewConnection();
-        } else {
-          this.name = name;
-          this.address = address;
-          this.roomUrl = roomUrl;
-          this.useOldConnection();
-        }
+        this.useOldConnection();
       }
       // reconnect when page switch to front-ground.
       document.addEventListener('visibilitychange', () => {
@@ -187,22 +172,51 @@ class PageSpy {
     }
   }
 
+  private cacheIsInvalid() {
+    try {
+      const roomCache = sessionStorage.getItem(ROOM_SESSION_KEY);
+      if (!roomCache) return true;
+
+      const cache = JSON.parse(roomCache);
+      if (!cache.address) return true;
+
+      const config = this.config.get();
+
+      return ['project', 'title', 'useSecret'].some(
+        (key) => cache[key] !== config[key],
+      );
+    } catch (e) {
+      return true;
+    }
+  }
+
   private async createNewConnection() {
     if (!this.request) {
       psLog.error('Cannot get the Request');
       return;
     }
+
     const roomInfo = await this.request.createRoom();
-    this.name = roomInfo.name;
     this.address = roomInfo.address;
-    this.roomUrl = roomInfo.roomUrl;
-    this.refreshRoomInfo();
     socketStore.init(roomInfo.roomUrl);
+
+    sessionStorage.removeItem(ROOM_SESSION_KEY);
+    this.refreshRoomInfo();
   }
 
   private useOldConnection() {
+    const cache = sessionStorage.getItem(ROOM_SESSION_KEY);
+    if (!cache) {
+      throw new Error('The cache info is invalid when useOldConnection');
+    }
+
+    const { address } = JSON.parse(cache);
+    this.address = address;
     this.refreshRoomInfo();
-    socketStore.init(this.roomUrl);
+
+    const url = this.request?.getRoomUrl(this.address);
+    if (!url) return;
+    socketStore.init(url);
   }
 
   private refreshRoomInfo() {
@@ -215,13 +229,11 @@ class PageSpy {
   }
 
   private saveSession() {
-    const { name, address, roomUrl, config } = this;
-    const { useSecret, secret, project } = config.get();
+    const { project, title, useSecret, secret } = this.config.get();
     const roomInfo = JSON.stringify({
-      name,
-      address,
-      roomUrl,
+      address: this.address,
       project,
+      title,
       useSecret,
       secret,
     });

@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-plugin-data-harbor",
-  "version": "2.0.0",
+  "version": "2.0.2",
   "description": "Used for caching data and downloading.",
   "homepage": "https://github.com/HuolalaTech/page-spy/tree/main/packages/page-spy-plugin-data-harbor",
   "license": "MIT",

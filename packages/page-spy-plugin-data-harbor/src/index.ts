@@ -25,6 +25,7 @@ import {
   Actions,
   CacheMessageItem,
   DataType,
+  isPeriodAction,
   isPeriodActionParams,
   PeriodActionParams,
   WholeActionParams,
@@ -46,10 +47,10 @@ interface DataHarborConfig {
   filename?: () => string;
 
   // Custom download behavior.
-  onDownload?: (data: CacheMessageItem[]) => void;
+  onDownload?: ((data: CacheMessageItem[]) => void) | null;
 
   // Custom behavior after upload.
-  onAfterUpload?: (replayUrl: string, remark: string) => void;
+  onAfterUpload?: ((replayUrl: string, remark: string) => void) | null;
 }
 
 const defaultConfig: Required<DataHarborConfig> = {
@@ -64,8 +65,8 @@ const defaultConfig: Required<DataHarborConfig> = {
   filename: () => {
     return new Date().toLocaleString();
   },
-  onDownload: () => {},
-  onAfterUpload: () => {},
+  onDownload: null,
+  onAfterUpload: null,
 };
 
 export default class DataHarborPlugin implements PageSpyPlugin {
@@ -177,10 +178,11 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     type: Actions,
     params?: WholeActionParams | PeriodActionParams,
   ) {
-    const isPeriods = ['upload-periods', 'download-periods'].includes(type);
-
     let data: CacheMessageItem[];
-    if (isPeriods && isPeriodActionParams(params)) {
+    if (isPeriodAction(type)) {
+      if (!isPeriodActionParams(params) || params.startTime > params.endTime) {
+        throw new Error(t.invalidParams);
+      }
       data = await this.harbor.getPeriodData(params);
 
       const startTimeFromUser = params.startTime;
@@ -267,10 +269,6 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       remark: '',
     },
   ): Promise<void | string> {
-    if (!isPeriodActionParams(params) || params.startTime > params.endTime) {
-      throw new Error(t.invalidParams);
-    }
-
     const args: any = await this.getParams(type as any, params);
     const isUpload = ['upload', 'upload-periods'].includes(type);
     const result = isUpload
@@ -283,7 +281,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
     if (result) {
       const url = this.getDebugUrl(result);
-      this.$harborConfig.onAfterUpload(url, args.remark);
+      this.$harborConfig.onAfterUpload?.(url, args.remark);
       return url;
     }
   }
