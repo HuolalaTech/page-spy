@@ -90,15 +90,18 @@ class PageSpyTaro extends PageSpyMPBase {
         console,
       });
     }
-    PageSpyMPBase.client = new Client({
-      sdk: 'taro',
-      osType,
-      osVersion,
-      browserType,
-      browserVersion,
-      isDevTools: info.platform === 'devtools', // alipay cannot detect devtools, so here is always false for alipay.
-      sdkVersion: PKG_VERSION,
-    });
+    PageSpyMPBase.client = new Client(
+      {
+        sdk: 'taro',
+        osType,
+        osVersion,
+        browserType,
+        browserVersion,
+        isDevTools: info.platform === 'devtools', // alipay cannot detect devtools, so here is always false for alipay.
+        sdkVersion: PKG_VERSION,
+      },
+      info,
+    );
     super(init);
   }
 }

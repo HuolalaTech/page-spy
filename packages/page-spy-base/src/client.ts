@@ -14,6 +14,8 @@ export class Client {
       sdk: 'unknown',
       sdkVersion: '0.0.0',
     },
+    // the raw info from getSystemInfoSync or similar api, will be sent by system plugin
+    public rawInfo?: Record<string, any>,
   ) {}
 
   plugins: string[] = [];
