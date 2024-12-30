@@ -37,7 +37,7 @@ export const getMPSDK = () => {
   return mpSDK as MPSDK;
 };
 
-export const getOriginMPSDK = () => originMPSDK;
+export const getOriginMPSDK = () => originMPSDK as MPSDK;
 
 export const setMPSDK = (SDK: MPSDK) => {
   originMPSDK = SDK;

@@ -2,17 +2,19 @@ import { AsyncCallback, MPSDK } from './types';
 
 // PENDING: 这里补泛型
 export const promisifyMPApi = <R = any>(
-  api: (params: AsyncCallback<R>) => any,
+  api: (params: any) => any, // we use params:any, because here the params has a obstacle, which is not compatible with AsyncCallback..., try mp.request to see.
 ) => {
-  return (params?: Record<string, any>) => {
+  return (params?: AsyncCallback<R>) => {
     return new Promise<R>((resolve, reject) => {
       api({
         ...params,
         success(res: R) {
           resolve(res);
+          params?.success?.(res);
         },
         fail(err: any) {
           reject(err);
+          params?.fail?.(err);
         },
       });
     });

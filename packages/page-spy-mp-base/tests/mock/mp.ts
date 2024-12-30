@@ -47,7 +47,6 @@ export class MockSocket {
 export const mockMP: () => MPSystemAPI &
   MPNetworkAPI &
   MPStorageAPI &
-  MPSystemAPI &
   MPRouterAPI &
   MPUIAPI &
   MPFileAPI = () => {
@@ -259,6 +258,15 @@ export const mockMP: () => MPSystemAPI &
         system: 'iOS 14.0.1',
       } as ReturnType<MPSystemAPI['getSystemInfoSync']>;
     },
+
+    getAppAuthorizeSetting() {
+      return {};
+    },
+
+    getSystemSetting() {
+      return {};
+    },
+    getSetting() {},
 
     onError(cb: CBType) {
       listeners.get('onError')?.push(cb);

@@ -53,18 +53,16 @@ export default class Request {
       name: encodeURIComponent(device),
     });
 
-    return promisifyMPApi<{ data: TResponse<TCreateRoom> }>(getMPSDK().request)(
-      {
-        url: `${scheme[0]}${this.base}/api/v1/room/create?${query}`,
-        method: 'POST',
-        // uniapp building android native need this option.
-        sslVerify: enableSSL !== false,
-        data: JSON.stringify({
-          useSecret,
-          secret,
-        }),
-      },
-    ).then(
+    return promisifyMPApi(getMPSDK().request<TResponse<TCreateRoom>>)({
+      url: `${scheme[0]}${this.base}/api/v1/room/create?${query}`,
+      method: 'POST',
+      // uniapp building android native need this option.
+      sslVerify: enableSSL !== false,
+      data: JSON.stringify({
+        useSecret,
+        secret,
+      }),
+    }).then(
       (res) => {
         const { name, address } = res.data?.data || {};
         const roomUrl = this.getRoomUrl(address);
