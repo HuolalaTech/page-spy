@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-mp-base",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "The base of PageSpy for miniprogram.",
   "license": "MIT",
   "main": "./dist/esm/index.js",
