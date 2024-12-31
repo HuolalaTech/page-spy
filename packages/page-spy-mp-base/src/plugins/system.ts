@@ -39,7 +39,7 @@ export default class SystemPlugin implements PageSpyPlugin {
   }
 
   public async onceInitPublicData() {
-    const info = this.getSystemInfo();
+    const info = await this.getSystemInfo();
     if (info === null) return;
 
     socketStore.dispatchEvent('public-data', info);

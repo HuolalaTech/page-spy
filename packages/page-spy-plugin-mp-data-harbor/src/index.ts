@@ -41,7 +41,7 @@ const defaultConfig: DataHarborConfig = {
     console: true,
     network: true,
     storage: true,
-    system: false,
+    system: true,
     meta: true,
   },
   filename: () => {
