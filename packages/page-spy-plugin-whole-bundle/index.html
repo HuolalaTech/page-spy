@@ -6,7 +6,10 @@
     <title>Document</title>
   </head>
   <body>
-    <!-- <script type="module" src="./src/index.ts"></script> -->
-    <script src="./dist/iife/index.min.js#manual"></script>
+    <script type="module">
+      import Feedback from './src';
+      const feedback = new Feedback();
+    </script>
+    <!-- <script src="./dist/iife/index.min.js"></script> -->
   </body>
 </html>
