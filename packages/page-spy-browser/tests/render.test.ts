@@ -84,7 +84,6 @@ describe('Render PageSpy', () => {
     };
     const sdk = new SDK(config);
 
-    sdk.name = 'NAME';
     sdk.address = 'ADDRESS';
     sdk['render']();
 

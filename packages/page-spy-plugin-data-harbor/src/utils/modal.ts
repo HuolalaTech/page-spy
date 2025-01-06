@@ -1,5 +1,6 @@
 import type { Modal, Toast } from '@huolala-tech/page-spy-types';
 import { psLog } from '@huolala-tech/page-spy-base/dist/utils';
+import copy from 'copy-to-clipboard';
 import classes from '../assets/index.module.less';
 import {
   cropSvg,
@@ -11,7 +12,7 @@ import {
 } from '../assets/svg';
 import { t } from '../assets/locale';
 import { PeriodItem } from '../harbor/base';
-import { copyInBrowser, formatTimeDuration } from './index';
+import { formatTimeDuration } from './index';
 import type DataHarborPlugin from '../index';
 
 function getLocaleTime(v: number) {
@@ -212,7 +213,7 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
         clearCache: false,
         remark: remark.value,
       });
-      const ok = copyInBrowser(debugUrl);
+      const ok = copy(debugUrl);
       psLog.info(`${t.success}: ${debugUrl}`);
       toast.message(ok ? t.copied : t.success);
     } catch (e: any) {
@@ -246,7 +247,7 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
         getSelectedPeriod(),
       );
 
-      const ok = copyInBrowser(debugUrl);
+      const ok = copy(debugUrl);
       psLog.info(`${t.success}: ${debugUrl}`);
       toast.message(ok ? t.copied : t.success);
     } catch (e: any) {

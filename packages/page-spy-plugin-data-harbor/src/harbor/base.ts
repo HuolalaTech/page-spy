@@ -28,6 +28,12 @@ export interface PeriodActionParams {
   remark?: string;
 }
 
+export const isPeriodAction = (
+  action: string,
+): action is 'download-periods' | 'upload-periods' => {
+  return ['download-periods', 'upload-periods'].includes(action);
+};
+
 export const isPeriodActionParams = (
   params: unknown,
 ): params is PeriodActionParams => {

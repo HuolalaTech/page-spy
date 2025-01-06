@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-plugin-mp-eval",
-  "version": "2.0.0",
+  "version": "2.0.2",
   "description": "Used for code evaluation in mini program.",
   "homepage": "https://github.com/HuolalaTech/page-spy/tree/main/packages/page-spy-plugin-mp-eval",
   "license": "MIT",
@@ -27,7 +27,7 @@
   "dependencies": {
     "@huolala-tech/eval5": "^0.0.2",
     "@huolala-tech/page-spy-base": "^2.0.0",
-    "@huolala-tech/page-spy-mp-base": "^2.0.0"
+    "@huolala-tech/page-spy-mp-base": "^2.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
