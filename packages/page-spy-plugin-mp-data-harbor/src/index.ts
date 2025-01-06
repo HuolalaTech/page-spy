@@ -7,16 +7,21 @@ import type {
 } from '@huolala-tech/page-spy-types';
 import { removeEndSlash } from '@huolala-tech/page-spy-base/dist/utils';
 import {
-  getMPSDK,
   type Client,
   type SocketStoreBase,
   psLog,
-  MPPluginInitParams,
-  setMPSDK,
+  type MPPluginInitParams,
 } from '@huolala-tech/page-spy-mp-base';
 import { MemoryHarbor } from './harbor/memoryHarbor';
 import { startUpload } from './utils/upload';
-import { buildSearchParams, getDeviceId, makeData, makeFile } from './utils';
+import {
+  buildSearchParams,
+  getDeviceId,
+  getMPSDK,
+  makeData,
+  makeFile,
+  setMPSDK,
+} from './utils';
 import { DataType, WholeActionParams } from './harbor/base';
 
 interface DataHarborConfig {
@@ -36,7 +41,7 @@ const defaultConfig: DataHarborConfig = {
     console: true,
     network: true,
     storage: true,
-    system: false,
+    system: true,
     meta: true,
   },
   filename: () => {
@@ -126,26 +131,18 @@ export default class MPDataHarborPlugin implements PageSpyPlugin {
             if (result) {
               this.$harborConfig.onAfterUpload(result);
 
-              if (mp.setClipboardData) {
-                mp.showModal({
-                  title: '上传成功',
-                  confirmText: '复制链接',
-                  showCancel: false,
-                  success(res) {
-                    if (res.confirm) {
-                      mp.setClipboardData({
-                        data: result,
-                      });
-                    }
-                  },
-                });
-              } else {
-                mp.showModal({
-                  title: '上传成功',
-                  content: result,
-                  showCancel: false,
-                });
-              }
+              mp.showModal({
+                title: '上传成功',
+                confirmText: '复制链接',
+                showCancel: false,
+                success(res) {
+                  if (res.confirm) {
+                    mp.setClipboardData({
+                      data: result,
+                    });
+                  }
+                },
+              });
             } else {
               mp.showToast({
                 title: '上传失败',

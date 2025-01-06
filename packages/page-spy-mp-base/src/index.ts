@@ -41,7 +41,7 @@ import Request from './api';
 // import './index.less';
 // eslint-disable-next-line import/order
 import { Config } from './config';
-import { getMPSDK, utilAPI } from './utils';
+import { getMPSDK } from './helpers/mp-api';
 
 type UpdateConfig = {
   title?: string;
@@ -120,7 +120,8 @@ class PageSpy {
   updateConfiguration() {
     const { messageCapacity, useSecret } = this.config.get();
     if (useSecret === true) {
-      const cache = utilAPI.getStorage(ROOM_SESSION_KEY);
+      const mp = getMPSDK();
+      const cache = mp.getStorageSync(ROOM_SESSION_KEY);
       const secret = cache?.secret || getAuthSecret();
       this.config.set('secret', secret);
       psLog.log(`Room Secret: ${secret}`);
@@ -135,7 +136,7 @@ class PageSpy {
   async init() {
     const mp = getMPSDK();
     const config = this.config.get();
-    const roomCache = utilAPI.getStorage(ROOM_SESSION_KEY);
+    const roomCache = mp.getStorageSync(ROOM_SESSION_KEY);
     if (!roomCache || typeof roomCache !== 'object') {
       await this.createNewConnection();
     } else {
@@ -207,7 +208,7 @@ class PageSpy {
       useSecret,
       secret,
     };
-    utilAPI.setStorage(ROOM_SESSION_KEY, roomCache);
+    getMPSDK().setStorageSync(ROOM_SESSION_KEY, roomCache);
   }
 
   triggerPlugins<T extends PageSpyPluginLifecycle>(
@@ -270,17 +271,15 @@ class PageSpy {
       {
         text: 'PageSpy 房间号：' + this.address.slice(0, 4),
         action() {
-          if (mp.setClipboardData) {
-            mp.setClipboardData({
-              data: that.getDebugLink(),
-              success() {
-                mp.showToast({
-                  title: '复制成功',
-                  icon: 'success',
-                });
-              },
-            });
-          }
+          mp.setClipboardData({
+            data: that.getDebugLink(),
+            success() {
+              mp.showToast({
+                title: '复制成功',
+                icon: 'success',
+              });
+            },
+          });
         },
       },
     ];
@@ -309,7 +308,7 @@ class PageSpy {
       }
     });
 
-    utilAPI.showActionSheet({
+    mp.showActionSheet({
       itemColor: '#b67cff',
       itemList: options.map((o) => o.text),
       success(res) {
@@ -386,3 +385,4 @@ export { SocketStoreBase, Client, psLog };
 export * from './types';
 export * from './utils';
 export * from './helpers/socket';
+export * from './helpers/mp-api';

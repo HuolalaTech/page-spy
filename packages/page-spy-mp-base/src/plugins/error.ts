@@ -8,7 +8,7 @@ import type {
   OnInitParams,
 } from '@huolala-tech/page-spy-types/index';
 import socketStore from '../helpers/socket';
-import { getMPSDK } from '../utils';
+import { getMPSDK, getOriginMPSDK } from '../helpers/mp-api';
 
 // TODO this plugin should test on multiple platforms
 export default class ErrorPlugin implements PageSpyPlugin {
@@ -33,7 +33,7 @@ export default class ErrorPlugin implements PageSpyPlugin {
   }
 
   public onReset() {
-    const mp = getMPSDK();
+    const mp = getOriginMPSDK();
     if (mp.canIUse('offError')) {
       mp.offError(this.errorHandler);
     }

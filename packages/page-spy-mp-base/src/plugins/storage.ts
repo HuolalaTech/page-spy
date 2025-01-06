@@ -8,8 +8,8 @@ import type {
   OnInitParams,
 } from '@huolala-tech/page-spy-types';
 import socketStore from '../helpers/socket';
-import { getMPSDK, utilAPI } from '../utils';
 import type { MPStorageAPI, KVList } from '../types';
+import { getMPSDK, getOriginMPSDK } from '../helpers/mp-api';
 
 const descriptor = {
   configurable: true,
@@ -58,7 +58,7 @@ export default class StoragePlugin implements PageSpyPlugin {
   }
 
   public onReset() {
-    const mp = getMPSDK();
+    const mp = getOriginMPSDK();
     Object.entries(StoragePlugin.originFunctions).forEach(([key, fn]) => {
       Object.defineProperty(mp, key, {
         value: fn,
@@ -76,7 +76,7 @@ export default class StoragePlugin implements PageSpyPlugin {
       const data = info.keys.map((key) => {
         return {
           name: key,
-          value: mpDataStringify(utilAPI.getStorage(key)),
+          value: mpDataStringify(mp.getStorageSync(key)),
         };
       });
 
@@ -103,7 +103,7 @@ export default class StoragePlugin implements PageSpyPlugin {
   /* c8 ignore stop */
 
   public initStorageProxy() {
-    const mp = getMPSDK();
+    const mp = getOriginMPSDK();
     const proxyFunctions = [
       'setStorage',
       'setStorageSync',
@@ -180,13 +180,12 @@ export default class StoragePlugin implements PageSpyPlugin {
       },
 
       removeStorageSync: {
-        // in alipay, the param is an object actually, but it works.
-        // TODO: really?
-        value(keyOrObj: string) {
+        value(keyOrObj: string | { key: string }) {
           try {
             const res =
               StoragePlugin.originFunctions!.removeStorageSync(keyOrObj);
-            that.sendRemoveItem(keyOrObj);
+            const key = typeof keyOrObj === 'string' ? keyOrObj : keyOrObj.key;
+            that.sendRemoveItem(key);
             return res;
             /* c8 ignore next 4 */
           } catch (e) {

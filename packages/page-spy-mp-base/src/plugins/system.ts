@@ -7,6 +7,8 @@ import type {
 import { makeMessage } from '@huolala-tech/page-spy-base/dist/message';
 import type { Client } from '@huolala-tech/page-spy-base/dist/client';
 import socketStore from '../helpers/socket';
+import { getMPSDK } from '../helpers/mp-api';
+import { promisifyMPApi } from '../utils';
 
 export default class SystemPlugin implements PageSpyPlugin {
   public name = 'SystemPlugin';
@@ -28,16 +30,16 @@ export default class SystemPlugin implements PageSpyPlugin {
     socketStore.addListener('refresh', ({ source }, reply) => {
       const { data } = source;
       if (data === 'system') {
-        const info = this.getSystemInfo();
-        if (info === null) return;
-
-        reply(info);
+        this.getSystemInfo().then((info) => {
+          if (info === null) return;
+          reply(info);
+        });
       }
     });
   }
 
-  public onceInitPublicData() {
-    const info = this.getSystemInfo();
+  public async onceInitPublicData() {
+    const info = await this.getSystemInfo();
     if (info === null) return;
 
     socketStore.dispatchEvent('public-data', info);
@@ -47,13 +49,19 @@ export default class SystemPlugin implements PageSpyPlugin {
     SystemPlugin.hasInitd = false;
   }
 
-  public getSystemInfo() {
+  public async getSystemInfo() {
     const info = {
       system: {
         ua: this.client?.getName(),
       },
       features: {},
     } as SpySystem.DataItem;
+
+    const mp = getMPSDK();
+    const sysInfo = mp.getSystemInfoSync();
+    const settings = await promisifyMPApi(mp.getSetting)();
+    info.mp = JSON.stringify(Object.assign(sysInfo, settings.authSetting));
+
     const processedByUser = this.$pageSpyConfig?.dataProcessor?.system?.(info);
 
     if (processedByUser === false) return null;

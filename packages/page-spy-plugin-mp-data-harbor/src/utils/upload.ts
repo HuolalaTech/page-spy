@@ -1,5 +1,5 @@
 import { psLog } from '@huolala-tech/page-spy-base/dist/utils';
-import { getMPSDK } from '@huolala-tech/page-spy-mp-base';
+import { getMPSDK } from '.';
 
 export type UploadArgs = {
   url: string;

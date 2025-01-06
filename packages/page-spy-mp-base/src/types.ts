@@ -1,10 +1,11 @@
 import { InitConfigBase, OnInitParams } from '@huolala-tech/page-spy-types';
 
-export type AsyncCallback<R = void, E = any> = {
+export interface AsyncCallback<R = void, E = any> {
   success?: (res: R) => void;
   fail?: (error: E) => void;
   complete?: (res?: R | E) => void;
-};
+  [other: string]: any;
+}
 
 export type KVList = {
   key: string;
@@ -108,7 +109,7 @@ export type MPStorageAPI = {
     } & AsyncCallback,
   ): void;
 
-  removeStorageSync(key: string): void;
+  removeStorageSync(key: string | { key: string }): void;
 
   clearStorage(params: AsyncCallback): void;
 
@@ -119,36 +120,35 @@ export type MPFileAPI = {
   getFileSystemManager(): FileSystemManager;
 };
 
-export type MPNetworkAPI = {
-  request(
-    params: {
-      url: string;
-      data?: string | object | ArrayBuffer;
-      header?: Record<string, string>;
-      timeout?: number;
-      method?:
-        | 'GET'
-        | 'POST'
-        | 'PUT'
-        | 'DELETE'
-        | 'HEAD'
-        | 'OPTIONS'
-        | 'TRACE'
-        | 'CONNECT';
-      dataType?: 'json';
-      responseType?: 'text' | 'arraybuffer';
-      enableHttp2?: boolean;
-      enableQuic?: boolean;
-      enableCache?: boolean;
+interface RequestParams<R>
+  extends AsyncCallback<{
+    data: R;
+    statusCode: number;
+    header?: Record<string, string>;
+    cookies?: string[];
+  }> {
+  url: string;
+  data?: string | object | ArrayBuffer;
+  header?: Record<string, string>;
+  timeout?: number;
+  method?:
+    | 'GET'
+    | 'POST'
+    | 'PUT'
+    | 'DELETE'
+    | 'HEAD'
+    | 'OPTIONS'
+    | 'TRACE'
+    | 'CONNECT';
+  dataType?: 'json';
+  responseType?: 'text' | 'arraybuffer';
+  enableHttp2?: boolean;
+  enableQuic?: boolean;
+  enableCache?: boolean;
+}
 
-      // TODO
-    } & AsyncCallback<{
-      data: any;
-      statusCode: number;
-      header?: Record<string, string>;
-      cookies?: string[];
-    }>,
-  ): any;
+export type MPNetworkAPI = {
+  request<R>(params: RequestParams<R>): any;
 
   uploadFile(
     params: {
@@ -261,6 +261,18 @@ export type MPSystemAPI = {
       version: string;
     };
   };
+
+  // getSetting(params:  AsyncCallback<AuthSetting>): void
+
+  // available in high version, need to check before using
+  getAppAuthorizeSetting(): Record<string, string>;
+
+  // available in high version, need to check before using
+  getSystemSetting(): Record<string, unknown>;
+
+  getSetting(
+    options: AsyncCallback<{ authSetting: Record<string, boolean> }>,
+  ): void;
 
   setClipboardData(
     options: {
