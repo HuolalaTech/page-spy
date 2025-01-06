@@ -21,16 +21,12 @@ interface Config {
    */
   logo: string;
   primaryColor: string;
-  statement: string;
 }
 
 const defaultConfig: Config = {
   title: '问题反馈',
   logo: pageSpyLogo,
   primaryColor: '#8434E9',
-  statement:
-    '声明：「问题反馈」组件处理的所有数据都是保存在您本地，不会主动将数据传输到任何服务器，可放心使用。',
-  // replayLabUrl: 'https://pagespy.org/#/replay-lab',
 };
 
 class WholeBundle {
@@ -104,7 +100,7 @@ class WholeBundle {
   }
 
   startRender() {
-    const { statement, title, logo } = this.config;
+    const { title, logo } = this.config;
 
     const doc = new DOMParser().parseFromString(
       `
@@ -125,6 +121,7 @@ class WholeBundle {
     const float = $c(classes.float) as UElement;
     moveable(float);
     float.addEventListener('click', () => {
+      if (float.isMoveEvent) return;
       modal.show();
     });
     const form = buildForm({ harborPlugin: this.$harbor! });
