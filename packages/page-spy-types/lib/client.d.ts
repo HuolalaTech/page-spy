@@ -34,6 +34,7 @@ export type Browser =
   | 'qq'
   | 'uc'
   | 'baidu'
+  | 'huawei'
   | 'edge'
   | 'chrome'
   | 'firefox'
