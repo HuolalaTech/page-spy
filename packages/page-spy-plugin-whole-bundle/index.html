@@ -4,11 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <style>
+      body {
+        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        font-size: 100px;
+      }
+    </style>
   </head>
   <body>
     <script type="module">
       import Feedback from './src';
-      const feedback = new Feedback();
+      window.feedback = new Feedback({
+        // autoRender: false,
+        primaryColor: 'darkgreen',
+      });
+      window.ondblclick = window.feedback.open;
     </script>
     <!-- <script src="./dist/iife/index.min.js"></script> -->
   </body>

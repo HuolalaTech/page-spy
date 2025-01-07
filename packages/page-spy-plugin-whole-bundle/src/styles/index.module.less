@@ -1,7 +1,7 @@
 @import url(./variable.less);
 
 :global {
-  #__pageSpyWholeBundle {
+  #page-spy-feedback-root {
     font-size: @font-size;
     * {
       box-sizing: border-box;
@@ -68,7 +68,7 @@
       color: #999;
     }
     &:focus {
-      border-color: lighten(@primary-color, 20%);
+      border-color: var(--primary-color, @primary-color);
     }
   }
   select {
@@ -121,7 +121,7 @@
     svg {
       width: (24em / @font-size);
       height: (24em / @font-size);
-      color: var(--primary-color);
+      color: var(--primary-color, @primary-color);
     }
   }
   .selectPeriod {
@@ -131,8 +131,9 @@
     margin: @size auto;
 
     --thumb-size: @size;
-    --thumb-shadow: 0 0 0 5px var(--primary-color) inset, 0 0 0 99px white inset;
-    --thumb-shadow-hover: 0 0 0 7px var(--primary-color) inset,
+    --thumb-shadow: 0 0 0 5px var(--primary-color, @primary-color) inset,
+      0 0 0 99px white inset;
+    --thumb-shadow-hover: 0 0 0 7px var(--primary-color, @primary-color) inset,
       0 0 0 99px white inset;
     --thumb-shadow-disabled: 0 0 0 5px #888 inset, 0 0 0 99px white inset;
     --track-size: calc(var(--thumb-size) / 2);
@@ -171,7 +172,7 @@
         left: var(--left);
         right: var(--right);
         height: 100%;
-        background-color: var(--primary-color);
+        background-color: var(--primary-color, @primary-color);
         border-radius: var(--track-size);
         &[data-min-text-position='bottom'] {
           &::before {
