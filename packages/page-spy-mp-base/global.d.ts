@@ -5,12 +5,14 @@ type AppData = {
   __proto__: Object;
 };
 
-interface PageInfo {
+interface RawPageInfo {
   route: string;
   // page state data
   data: Record<string, any>;
+
   // page query string params
-  options: Record<string, any>;
+  // not in alipay
+  options?: Record<string, any>;
 
   setData: (data: Record<string, any>) => void;
 
@@ -19,7 +21,7 @@ interface PageInfo {
   [other: string]: any;
 }
 
-declare function getCurrentPages<T extends PageInfo = PageInfo>(): T[];
+declare function getCurrentPages<T extends RawPageInfo = RawPageInfo>(): T[];
 declare function getApp(): AppData;
 
 declare function Page(config: any): void; // TODO 补完

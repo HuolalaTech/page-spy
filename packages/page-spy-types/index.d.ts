@@ -11,6 +11,7 @@ export * as SpyNetwork from './lib/network';
 export * as SpyStorage from './lib/storage';
 export * as SpyDatabase from './lib/database';
 export * as SpyPage from './lib/page';
+export * as SpyMPPage from './lib/mp-page';
 
 export * from './lib/modal';
 export * from './lib/toast';

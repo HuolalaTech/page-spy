@@ -197,12 +197,12 @@ export default class StoragePlugin implements PageSpyPlugin {
       },
 
       clearStorage: {
-        value(params: Parameters<MPStorageAPI['clearStorage']>[0]) {
+        value(params?: Parameters<MPStorageAPI['clearStorage']>[0]) {
           return StoragePlugin.originFunctions!.clearStorage({
             ...params,
             success(res) {
               that.sendClearItem();
-              params.success?.(res);
+              params?.success?.(res);
             },
           });
         },
