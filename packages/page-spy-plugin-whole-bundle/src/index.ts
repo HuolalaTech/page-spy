@@ -13,7 +13,7 @@ import { buildForm } from './utils/build-form';
 import { modal } from './utils/modal';
 import { ROOT_ID } from './utils/constant';
 
-interface Config {
+export interface Config {
   title: string;
   /**
    * Online source: 'https://example.com/xxx.jpg'
@@ -113,7 +113,7 @@ class WholeBundle {
         ${
           autoRender
             ? `<button class="${classes.float}">
-          <img src="${logo}" />
+          <img src="${logo}" draggable="false" />
           <span>${title}</span>
         </button>`
             : ''
@@ -157,20 +157,5 @@ class WholeBundle {
     WholeBundle.instance = null;
   }
 }
-
-const src = (document.currentScript as HTMLScriptElement)?.src;
-// prettier-ignore
-(function main() {
-  if (!src) return;
-  try {
-    const { hash } = new URL(src, window.location.href);
-    const userManual = hash.slice(1) === 'manual';
-    if (!userManual) {
-      window.$wholeBundle = new WholeBundle();
-    }
-  } catch (e) {
-    //
-  }
-}());
 
 export default WholeBundle;
