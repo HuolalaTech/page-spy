@@ -1,9 +1,9 @@
 {
   "name": "@huolala-tech/page-spy-base",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "The common utils of PageSpy.",
   "dependencies": {
-    "@huolala-tech/page-spy-types": "^2.0.0"
+    "@huolala-tech/page-spy-types": "^2.0.1"
   },
   "license": "MIT",
   "main": "./dist/index.js",
