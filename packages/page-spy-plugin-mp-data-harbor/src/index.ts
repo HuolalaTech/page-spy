@@ -29,7 +29,7 @@ interface DataHarborConfig {
   caredData?: Record<DataType, boolean>;
 
   // Custom uploaded filename by this.
-  // Default value is `new Date().toLocaleString()`.
+  // Default value is a date time string.
   filename?: () => string;
 
   // Custom behavior after upload
@@ -46,7 +46,7 @@ const defaultConfig: DataHarborConfig = {
   },
   filename: () => {
     const d = new Date();
-    return `${d.getFullYear()}_${d.getMonth() + 1}_${d.getDate()}_${d.getHours()}_${d.getMinutes()}_${d.getSeconds()}.json`;
+    return `${d.getFullYear()}_${d.getMonth() + 1}_${d.getDate()}_${d.getHours()}_${d.getMinutes()}_${d.getSeconds()}`;
   },
   onAfterUpload: () => {},
 };
@@ -171,7 +171,7 @@ export default class MPDataHarborPlugin implements PageSpyPlugin {
       // userAgent: navigator.userAgent,
       userAgent: this.client?.getName(),
       remark: params?.remark || '',
-      name: filename(),
+      name: filename() + '.json',
     };
     const data = [...this.harbor.container];
     data.push(this.makeMetaInfo());
