@@ -25,11 +25,11 @@ platformAPI.setStorageSync = (key: string, value: any) => {
   return my.setStorageSync({ key, data: value });
 };
 
-platformAPI.removeStorageSync = (key) => {
+platformAPI.removeStorageSync = (key: string) => {
   return my.removeStorageSync({ key });
 };
 
-platformAPI.showActionSheet = (params) => {
+platformAPI.showActionSheet = (params: Record<string, any>) => {
   return my.showActionSheet({
     ...params,
     items: params.itemList,
@@ -42,7 +42,7 @@ platformAPI.showActionSheet = (params) => {
 };
 
 // TODO 个人小程序不支持该 api.. 先不管
-platformAPI.setClipboardData = (params) => {
+platformAPI.setClipboardData = (params: Record<string, any>) => {
   return my.setClipboard({
     text: params.data,
     ...params,
