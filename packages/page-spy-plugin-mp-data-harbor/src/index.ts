@@ -13,7 +13,7 @@ import {
   type MPPluginInitParams,
 } from '@huolala-tech/page-spy-mp-base';
 import { MemoryHarbor } from './harbor/memoryHarbor';
-import { startUpload } from './utils/upload';
+import { saveData } from './utils/upload';
 import {
   buildSearchParams,
   getDeviceId,
@@ -45,7 +45,8 @@ const defaultConfig: DataHarborConfig = {
     meta: true,
   },
   filename: () => {
-    return new Date().toLocaleString();
+    const d = new Date();
+    return `${d.getFullYear()}_${d.getMonth() + 1}_${d.getDate()}_${d.getHours()}_${d.getMinutes()}_${d.getSeconds()}.json`;
   },
   onAfterUpload: () => {},
 };
@@ -91,7 +92,7 @@ export default class MPDataHarborPlugin implements PageSpyPlugin {
     MPDataHarborPlugin.hasInited = true;
     setMPSDK(mp);
     this.$pageSpyConfig = config;
-    this.$socketStore = socketStore;
+    this.$socketStore = socketStore as any; // TODO: fix this type issue
     this.client = client;
 
     const { api, enableSSL, offline } = config;
@@ -106,7 +107,7 @@ export default class MPDataHarborPlugin implements PageSpyPlugin {
       this.apiBase = removeEndSlash(`${apiScheme}${api}`);
     }
 
-    this.$socketStore.addListener('public-data', (message) => {
+    this.$socketStore?.addListener('public-data', (message) => {
       if (this.isPaused || !this.isCaredPublicData(message)) return;
 
       const data = makeData(message.type, message.data);
@@ -170,16 +171,16 @@ export default class MPDataHarborPlugin implements PageSpyPlugin {
       // userAgent: navigator.userAgent,
       userAgent: this.client?.getName(),
       remark: params?.remark || '',
+      name: filename(),
     };
     const data = [...this.harbor.container];
     data.push(this.makeMetaInfo());
 
-    const path = makeFile(data, filename());
-    const url = `${this.apiBase}/api/v1/log/upload?${buildSearchParams(tags)}`;
+    const url = `${this.apiBase}/api/v1/jsonLog/upload?${buildSearchParams(tags)}`;
     let debugUrl = '';
     try {
-      const res = await startUpload({
-        path,
+      const res = await saveData({
+        data,
         url,
       });
       debugUrl = this.getDebugUrl(res);
@@ -191,9 +192,6 @@ export default class MPDataHarborPlugin implements PageSpyPlugin {
     } catch (e: any) {
       psLog.error(e);
     }
-    // remove the local file
-    const fs = mp.getFileSystemManager();
-    fs.unlinkSync(path);
     return debugUrl;
   }
 

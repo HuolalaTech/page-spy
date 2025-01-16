@@ -3,24 +3,19 @@ import { getMPSDK } from '.';
 
 export type UploadArgs = {
   url: string;
-  path: string;
+  data: any;
 };
 
-declare var uni: any;
-
-export const startUpload = async ({ url, path }: UploadArgs) => {
+export const saveData = async ({ url, data }: UploadArgs) => {
   return new Promise<H.UploadResult>((resolve, reject) => {
     const mp = getMPSDK();
-    mp.uploadFile({
-      filePath: path,
-      header: {
-        'Content-Type': 'multipart/form-data',
-      },
-      name: 'log',
+    mp.request({
+      data,
       url,
+      method: 'POST',
       success: (res: any) => {
         if (res.statusCode === 200) {
-          const data = JSON.parse(res.data);
+          const data = res.data;
           if (data.success) {
             resolve(data);
           } else {
