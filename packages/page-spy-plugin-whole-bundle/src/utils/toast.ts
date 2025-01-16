@@ -1,6 +1,7 @@
 import classes from '../styles/toast.module.less';
 import successSvg from '../assets/success.svg?raw';
 import errorSvg from '../assets/error.svg?raw';
+import { ROOT_ID } from './constant';
 
 const toastIconMap = {
   success: successSvg,
@@ -13,7 +14,11 @@ type ToastType = 'success' | 'error';
  * Clear all notifications use `Toast.destroy()`
  */
 export class Toast {
-  public static timer: ReturnType<typeof setTimeout> | null = null;
+  private static timer: ReturnType<typeof setTimeout> | null = null;
+
+  private static get root() {
+    return document.querySelector(`#${ROOT_ID}`) ?? document.body;
+  }
 
   static message(text: string | Element) {
     let node = text;
@@ -22,13 +27,13 @@ export class Toast {
       node.textContent = String(text);
     }
     node.classList.add(classes.toast);
-    document.documentElement.appendChild(node);
+    Toast.root.appendChild(node);
     setTimeout(() => {
       node.classList.add(classes.show);
     }, 0);
     const timer = setTimeout(() => {
-      if (document.contains(node)) {
-        document.documentElement.removeChild(node);
+      if (Toast.root.contains(node)) {
+        Toast.root.removeChild(node);
       }
       if (Toast.timer === timer) {
         Toast.timer = null;

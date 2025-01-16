@@ -7,7 +7,7 @@ const defaultConfig: Omit<ModalConfig, 'footer'> = {
   logo: '',
   title: '',
   content: document.createElement('div'),
-  mounted: document.body,
+  mounted: document.body || document.documentElement,
 };
 
 class Modal extends EventTarget {

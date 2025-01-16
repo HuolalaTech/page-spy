@@ -9,7 +9,18 @@ function getPosition(evt: TouchEvent | MouseEvent): Touch | MouseEvent {
   return evt as MouseEvent;
 }
 
+const POSITION_CACHE_ID = 'page-spy-position';
+
 export function moveable(el: UElement) {
+  const position = localStorage.getItem(POSITION_CACHE_ID);
+  if (position) {
+    const [x, y] = position.split(',');
+    if (+x < window.innerWidth && +y < window.innerHeight) {
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+    }
+  }
+
   let rect: DOMRect;
   const critical = {
     xAxis: 0,
@@ -18,10 +29,12 @@ export function moveable(el: UElement) {
   const touch = { x: 0, y: 0 };
   function move(evt: TouchEvent | MouseEvent) {
     evt.preventDefault();
-    (el as UElement).isMoveEvent = true;
     const { clientX, clientY } = getPosition(evt);
     const diffX = clientX - touch.x;
     const diffY = clientY - touch.y;
+    if ([diffX, diffY].some((i) => Math.abs(i) > 5)) {
+      (el as UElement).isMoveEvent = true;
+    }
     let resultX = rect.x + diffX;
     if (resultX <= 0) {
       resultX = 0;
@@ -41,6 +54,9 @@ export function moveable(el: UElement) {
   function end() {
     touch.x = 0;
     touch.y = 0;
+    const { left, top } = el.getBoundingClientRect();
+    localStorage.setItem(POSITION_CACHE_ID, `${left},${top}`);
+
     document.removeEventListener('mousemove', move);
     document.removeEventListener('mouseup', end);
 

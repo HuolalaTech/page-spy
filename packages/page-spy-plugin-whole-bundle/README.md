@@ -2,7 +2,7 @@
 
 ![Screenshot](./.github/screenshots/image.png)
 
-插件打包了三个依赖，实现 _一个脚本开启离线模式的 PageSpy、录制操作轨迹、支持导出离线日志_ 的功能:
+插件打包了三个依赖，一个脚本实现 _离线模式的 PageSpy、录制操作轨迹、支持导出离线日志_ 的功能:
 
 - [@huolala-tech/page-spy-browser](../page-spy-browser/);
 - [@huolala-tech/page-spy-plugin-data-harbor](../page-spy-plugin-data-harbor/);
@@ -10,52 +10,41 @@
 
 ## 使用
 
-### 通过 `<script>` 引入
+### CDN 引入
 
-`WholeBundle` 插件资源文件会自动放置在你部署 PageSpy 的服务下、方便直接引用，路径是 `https://<your-pagespy-host>/plugin/whole-bundle/index.min.js`。
-
-举个例子，如果 PageSpy 的访问域名是 `https://example.com`，那么你可以在项目中通过下面的方式引入：
-
-```html
-<head>
-  ... ...
-  <script
-    src="https://example.com/plugin/whole-bundle/index.min.js"
-    crossorigin="anonymous"
-  ></script>
-</head>
-```
-
-按照以上方式引入后，`WholeBundle` 会自动完成初始化。
-
-如果你想自定义 logo / 标题 / 声明等内容，可以这样做：
+- jsdelivr: https://cdn.jsdelivr.net/npm/@huolala-tech/page-spy-plugin-whole-bundle
+- unpkg: https://unpkg.com/@huolala-tech/page-spy-plugin-whole-bundle
 
 ```html
 <head>
-  ... ...
-  <!-- 在路径上加 #manual 表明你要手动初始化，之后可以通过 window.WholeBundle 全局变量引用 -->
+  ...
+  <!-- 以 jsdelivr 为例 -->
+  >
   <script
-    src="https://example.com/plugin/whole-bundle/index.min.js#manual"
+    src="https://cdn.jsdelivr.net/npm/@huolala-tech/page-spy-plugin-whole-bundle"
     crossorigin="anonymous"
   ></script>
+
   <script>
     const $wholeBundle = new WholeBundle({
       /**
-       * Used for float button text and modal title
+       * 悬浮球和弹窗上显示
        */
       title?: string;
       /**
-       * - Online source: 'https://example.com/xxx.jpg'
+       * - 在线图片: 'https://example.com/xxx.jpg'
+       * - 相对路径: '../xxx.jpg'
        * - Data url: 'data:image/png;base64,xxxx...'
-       * - Relative source: '../xxx.jpg'
-       * - Plain SVG content: '<svg>xxx</svg>'
        */
       logo?: string;
-      statement?: string;
       /**
-       * Default is https://pagespy.org/#/replay-lab
+       * 定制主题色
        */
-      replayLabUrl?: string;
+      primaryColor?: string;
+      /**
+       * 是否自动渲染悬浮球
+       */
+      autoRender?: boolean;
     })
   </script>
 </head>
@@ -81,20 +70,22 @@ import '@huolala-tech/page-spy-plugin-whole-bundle/dist/index.css';
 
 const $wholeBundle = new WholeBundle({
   /**
-   * Used for float button text and modal title
+   * 悬浮球和弹窗上显示的标题
    */
   title?: string;
   /**
-   * Online source: 'https://example.com/xxx.jpg'
-   * Data url: 'data:image/png;base64,xxxx...'
-   * Relative source: '../xxx.jpg'
-   * Plain SVG content: '<svg>xxx</svg>'
+   * - 在线图片: 'https://example.com/xxx.jpg'
+   * - 相对路径: '../xxx.jpg'
+   * - Data url: 'data:image/png;base64,xxxx...'
    */
   logo?: string;
-  statement?: string;
   /**
-   * Default is https://pagespy.org/#/replay-lab
+   * 定制主题色
    */
-  replayLabUrl?: string;
+  primaryColor?: string;
+  /**
+   * 是否自动渲染悬浮球
+   */
+  autoRender?: boolean;
 })
 ```

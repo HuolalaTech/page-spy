@@ -11,8 +11,9 @@ import { moveable, UElement } from './utils/moveable';
 import { name } from '../package.json';
 import { buildForm } from './utils/build-form';
 import { modal } from './utils/modal';
+import { ROOT_ID } from './utils/constant';
 
-interface Config {
+export interface Config {
   title: string;
   /**
    * Online source: 'https://example.com/xxx.jpg'
@@ -21,16 +22,14 @@ interface Config {
    */
   logo: string;
   primaryColor: string;
-  statement: string;
+  autoRender: boolean;
 }
 
 const defaultConfig: Config = {
   title: '问题反馈',
   logo: pageSpyLogo,
   primaryColor: '#8434E9',
-  statement:
-    '声明：「问题反馈」组件处理的所有数据都是保存在您本地，不会主动将数据传输到任何服务器，可放心使用。',
-  // replayLabUrl: 'https://pagespy.org/#/replay-lab',
+  autoRender: true,
 };
 
 class WholeBundle {
@@ -41,6 +40,8 @@ class WholeBundle {
   $rrweb: RRWebPlugin | null = null;
 
   config: Config = defaultConfig;
+
+  root: HTMLDivElement | null = null;
 
   static instance: WholeBundle | null = null;
 
@@ -104,15 +105,19 @@ class WholeBundle {
   }
 
   startRender() {
-    const { statement, title, logo } = this.config;
+    const { title, logo, autoRender } = this.config;
 
     const doc = new DOMParser().parseFromString(
       `
-      <div id="__pageSpyWholeBundle" style="--primary-color: ${this.config.primaryColor}">
-        <button class="${classes.float}">
-          <img src="${logo}" />
+      <div id="${ROOT_ID}" style="--primary-color: ${this.config.primaryColor}">
+        ${
+          autoRender
+            ? `<button class="${classes.float}">
+          <img src="${logo}" draggable="false" />
           <span>${title}</span>
-        </button>
+        </button>`
+            : ''
+        }
       </div>
       `,
       'text/html',
@@ -121,44 +126,36 @@ class WholeBundle {
     const $c = (className: string) => {
       return doc.querySelector.bind(doc)(dot(className)) as HTMLElement;
     };
-    const root = doc.querySelector('#__pageSpyWholeBundle') as HTMLDivElement;
+    this.root = doc.querySelector(`#${ROOT_ID}`) as HTMLDivElement;
     const float = $c(classes.float) as UElement;
-    moveable(float);
-    float.addEventListener('click', () => {
-      modal.show();
-    });
+    if (float) {
+      moveable(float);
+      float.addEventListener('click', () => {
+        if (float.isMoveEvent) return;
+        modal.show();
+      });
+    }
     const form = buildForm({ harborPlugin: this.$harbor! });
 
     modal.build({
       logo,
       title,
       content: form,
-      mounted: root,
+      mounted: this.root,
     });
 
-    document.documentElement.insertAdjacentElement('beforeend', root);
+    document.documentElement.insertAdjacentElement('beforeend', this.root);
+  }
+
+  open() {
+    modal.show();
   }
 
   abort() {
-    document.querySelector('#__pageSpyWholeBundle')?.remove();
+    this.root?.remove();
     this.$pageSpy?.abort();
     WholeBundle.instance = null;
   }
 }
-
-const src = (document.currentScript as HTMLScriptElement)?.src;
-// prettier-ignore
-(function main() {
-  if (!src) return;
-  try {
-    const { hash } = new URL(src, window.location.href);
-    const userManual = hash.slice(1) === 'manual';
-    if (!userManual) {
-      window.$wholeBundle = new WholeBundle();
-    }
-  } catch (e) {
-    //
-  }
-}());
 
 export default WholeBundle;

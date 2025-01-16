@@ -6,6 +6,7 @@ export type UElement = HTMLElement & {
 
 const STICKY_RADIUS = '50%';
 const FULLY_RADIUS = '100%';
+const POSITION_CACHE_ID = 'page-spy-position';
 
 function getPosition(evt: TouchEvent | MouseEvent): Touch | MouseEvent {
   /* c8 ignore next 3 */
@@ -17,6 +18,15 @@ function getPosition(evt: TouchEvent | MouseEvent): Touch | MouseEvent {
 
 /* eslint-disable no-param-reassign */
 export function moveable(el: UElement) {
+  const position = localStorage.getItem(POSITION_CACHE_ID);
+  if (position) {
+    const [x, y] = position.split(',');
+    if (+x < window.innerWidth && +y < window.innerHeight) {
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+    }
+  }
+
   let hiddenTimer: ReturnType<typeof setTimeout> | null;
   let rect: DOMRect;
   const critical = {
@@ -94,6 +104,9 @@ export function moveable(el: UElement) {
   function end() {
     touch.x = 0;
     touch.y = 0;
+    const { left, top } = el.getBoundingClientRect();
+    localStorage.setItem(POSITION_CACHE_ID, `${left},${top}`);
+
     handleHidden();
     document.removeEventListener('mousemove', move);
     document.removeEventListener('mouseup', end);

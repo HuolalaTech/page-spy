@@ -92,7 +92,7 @@
       align-items: center;
       padding: @padding;
       color: white;
-      background-color: var(--primary-color);
+      background-color: var(--primary-color, @primary-color);
       .headerLeft {
         display: flex;
         align-items: flex-start;
@@ -102,7 +102,7 @@
         }
         .title {
           b {
-            font-size: (20em / @font-size);
+            font-size: (16em / @font-size);
             line-height: 1;
           }
           p {
@@ -127,15 +127,6 @@
     }
     .main {
       padding: 0;
-      .statement {
-        margin-top: 12px;
-        color: #aaa;
-        font-size: 12px;
-        &:before {
-          content: '*';
-          color: red;
-        }
-      }
     }
   }
 }
