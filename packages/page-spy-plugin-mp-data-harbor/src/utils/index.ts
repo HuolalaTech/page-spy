@@ -29,14 +29,6 @@ export const makeData = <T extends SpyMessage.DataType>(type: T, data: any) => {
   };
 };
 
-// in mini program, it's unable to make file in memory using blob, need to save file to disk.
-export const makeFile = (data: any, filename: string) => {
-  const fs = mp.getFileSystemManager();
-  const path = `${mp.env.USER_DATA_PATH}/${formatFilename(filename)}.json`;
-  fs.writeFileSync(path, JSON.stringify(data), 'utf8');
-  return path;
-};
-
 export const buildSearchParams = (obj: Record<string, any>) => {
   return Object.entries(obj)
     .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)

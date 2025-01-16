@@ -16,10 +16,10 @@ import { MemoryHarbor } from './harbor/memoryHarbor';
 import { saveData } from './utils/upload';
 import {
   buildSearchParams,
+  formatFilename,
   getDeviceId,
   getMPSDK,
   makeData,
-  makeFile,
   setMPSDK,
 } from './utils';
 import { DataType, WholeActionParams } from './harbor/base';
@@ -45,8 +45,7 @@ const defaultConfig: DataHarborConfig = {
     meta: true,
   },
   filename: () => {
-    const d = new Date();
-    return `${d.getFullYear()}_${d.getMonth() + 1}_${d.getDate()}_${d.getHours()}_${d.getMinutes()}_${d.getSeconds()}`;
+    return new Date().toLocaleString();
   },
   onAfterUpload: () => {},
 };
@@ -171,7 +170,7 @@ export default class MPDataHarborPlugin implements PageSpyPlugin {
       // userAgent: navigator.userAgent,
       userAgent: this.client?.getName(),
       remark: params?.remark || '',
-      name: filename() + '.json',
+      name: formatFilename(filename()) + '.json',
     };
     const data = [...this.harbor.container];
     data.push(this.makeMetaInfo());
