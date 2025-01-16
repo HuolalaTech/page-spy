@@ -2,108 +2,58 @@ import { getObjectKeys, hasOwnProperty } from '@huolala-tech/page-spy-base';
 import type { SpySystem } from '@huolala-tech/page-spy-types';
 
 export const FEATURE_MAP: SpySystem.Feature = {
-  Element: {
-    sandbox: {
-      title: 'iframe/sandbox',
-      keyPath: 'iframe/sandbox',
-    },
-    srcdoc: {
-      title: 'iframe/srcdoc',
-      keyPath: 'iframe/srcdoc',
-    },
-    apng: {
-      title: 'img/apng',
-      keyPath: 'img/apng',
-    },
-    avif: {
-      title: 'img/avif',
-      keyPath: 'img/avif',
-    },
-    imgcrossorigin: {
-      title: 'img/crossorigin',
-      keyPath: 'img/crossorigin',
-    },
-    exiforientation: {
-      title: 'img/exif-orientation',
-      keyPath: 'img/exif-orientation',
-    },
-    lazyloading: {
-      title: 'img/lazyloading',
-      keyPath: 'img/lazyloading',
-    },
-    webp: {
-      title: 'img/webp',
-      keyPath: 'img/webp',
-    },
-    prefetch: {
-      title: 'link/prefetch',
-      keyPath: 'link/prefetch',
-    },
-    scriptasync: {
-      title: 'script/async',
-      keyPath: 'script/async',
-    },
-    scriptdefer: {
-      title: 'script/defer',
-      keyPath: 'script/defer',
-    },
-  },
   Feature: {
+    blob: {
+      title: 'Blob',
+      keyPath: 'blob',
+    },
     clipboard: {
       title: 'Clipboard',
       keyPath: 'clipboard',
+    },
+    crypto: {
+      title: 'Crypto',
+      keyPath: 'crypto',
+    },
+    customelements: {
+      title: 'Custom Elements',
+      keyPath: 'custom-elements',
     },
     customevent: {
       title: 'Custom Event',
       keyPath: 'event/customevent',
     },
-    eventlistener: {
-      title: 'Eventlistener',
-      keyPath: 'event/eventlistener',
+    dataview: {
+      title: 'DataView',
+      keyPath: 'dataview-api',
     },
-    forcetouch: {
-      title: 'Force Touch',
-      keyPath: 'event/forcetouch',
+    intersectionobserver: {
+      title: 'Intersection Observer',
+      keyPath: 'dom/intersection-observer',
     },
-    hashchange: {
-      title: 'Hash Change',
-      keyPath: 'event/hashchange',
+    mutationobserver: {
+      title: 'Mutation Observer',
+      keyPath: 'dom/mutationobserver',
     },
-    oninput: {
-      title: 'Input Event',
-      keyPath: 'event/oninput',
-    },
-    pointerevents: {
-      title: 'Pointer Event',
-      keyPath: 'event/forcetouch',
-    },
-    history: {
-      title: 'History',
-      keyPath: 'history',
-    },
-    messagechannel: {
-      title: 'Message Channel',
-      keyPath: 'messagechannel',
-    },
-    postmessage: {
-      title: 'Postmessage',
-      keyPath: 'postmessage',
-    },
-    performance: {
-      title: 'Performance API',
-      keyPath: 'performance',
-    },
-    queryselector: {
-      title: 'queryselector',
-      keyPath: 'queryselector',
-    },
-    requestanimationframe: {
-      title: 'requestanimationframe',
-      keyPath: 'requestanimationframe',
+    passiveeventlisteners: {
+      title: 'Passive Event Listeners',
+      keyPath: 'dom/passiveeventlisteners',
     },
     serviceworker: {
       title: 'Service Worker',
       keyPath: 'serviceworker',
+    },
+    shadowroot: {
+      title: 'Shadow DOM',
+      keyPath: 'dom/shadowroot',
+    },
+    textencoder: {
+      title: 'TextEncoder & TextDecoder',
+      keyPath: 'textencoding',
+    },
+    typedarrays: {
+      title: 'Typed Arrays',
+      keyPath: 'typed-arrays',
     },
     webanimations: {
       title: 'Web Animation',
@@ -112,6 +62,10 @@ export const FEATURE_MAP: SpySystem.Feature = {
     webgl: {
       title: 'WebGL',
       keyPath: 'webgl/webgl',
+    },
+    urlsearchparams: {
+      title: 'URLSearchParams',
+      keyPath: 'url/urlsearchparams',
     },
     datachannel: {
       title: 'WebRTC/datachannel',
@@ -140,7 +94,7 @@ export const FEATURE_MAP: SpySystem.Feature = {
   },
   Network: {
     cors: {
-      title: 'Cors',
+      title: 'CORS',
       keyPath: 'cors',
     },
     beacon: {
@@ -150,6 +104,10 @@ export const FEATURE_MAP: SpySystem.Feature = {
     fetch: {
       title: 'Fetch',
       keyPath: 'network/fetch',
+    },
+    xhr2: {
+      title: 'XHR2',
+      keyPath: 'network/xhr2',
     },
   },
   Javascript: {
@@ -253,6 +211,98 @@ export const FEATURE_MAP: SpySystem.Feature = {
       customTest: '<ES6 Promise> && !!Promise.prototype.finally',
     },
   },
+  CSS: {
+    backgroundcliptext: {
+      title: 'Background Clip Text',
+      keyPath: 'css/backgroundcliptext',
+    },
+    borderimage: {
+      title: 'Border Image',
+      keyPath: 'css/borderimage',
+    },
+    cssgrid: {
+      title: 'CSS Grid',
+      keyPath: 'css/cssgrid',
+    },
+    customproperties: {
+      title: 'Custom Properties',
+      keyPath: 'css/customproperties',
+    },
+    flexgap: {
+      title: 'Flex Gap',
+      keyPath: 'css/flexgap',
+    },
+    focuswithin: {
+      title: 'Focus Within',
+      keyPath: 'css/focuswithin',
+    },
+    hsla: {
+      title: 'HSLA',
+      keyPath: 'css/hsla',
+    },
+    cssmask: {
+      title: 'Mask',
+      keyPath: 'css/mask',
+    },
+    csspositionsticky: {
+      title: 'Position Sticky',
+      keyPath: 'css/positionsticky',
+    },
+    rgba: {
+      title: 'RGBA',
+      keyPath: 'css/rgba',
+    },
+  },
+  Element: {
+    sandbox: {
+      title: 'iframe/sandbox',
+      keyPath: 'iframe/sandbox',
+    },
+    srcdoc: {
+      title: 'iframe/srcdoc',
+      keyPath: 'iframe/srcdoc',
+    },
+    apng: {
+      title: 'img/apng',
+      keyPath: 'img/apng',
+    },
+    imgcrossorigin: {
+      title: 'img/crossorigin',
+      keyPath: 'img/crossorigin',
+    },
+    exiforientation: {
+      title: 'img/exif-orientation',
+      keyPath: 'img/exif-orientation',
+    },
+    lazyloading: {
+      title: 'img/lazyloading',
+      keyPath: 'img/lazyloading',
+    },
+    sizes: {
+      title: 'img/sizes',
+      keyPath: 'img/sizes',
+    },
+    srcset: {
+      title: 'img/srcset',
+      keyPath: 'img/srcset',
+    },
+    webp: {
+      title: 'img/webp',
+      keyPath: 'img/webp',
+    },
+    prefetch: {
+      title: 'link/prefetch',
+      keyPath: 'link/prefetch',
+    },
+    scriptasync: {
+      title: 'script/async',
+      keyPath: 'script/async',
+    },
+    scriptdefer: {
+      title: 'script/defer',
+      keyPath: 'script/defer',
+    },
+  },
   Storage: {
     cookies: {
       title: 'Cookies',
@@ -269,10 +319,6 @@ export const FEATURE_MAP: SpySystem.Feature = {
     sessionstorage: {
       title: 'SessionStorage',
       keyPath: 'storage/sessionstorage',
-    },
-    websqldatabase: {
-      title: 'Web SQL Database',
-      keyPath: 'storage/websqldatabase',
     },
   },
 };
@@ -298,10 +344,11 @@ function computeAsyncFeature(key: string): Promise<boolean> {
 
 export async function computeResult() {
   const result: Record<SpySystem.Category, any[]> = {
-    Element: [],
     Feature: [],
     Network: [],
     Javascript: [],
+    CSS: [],
+    Element: [],
     Storage: [],
   };
   getObjectKeys(FEATURE_MAP).forEach((category) => {

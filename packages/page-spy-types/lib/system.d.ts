@@ -3,7 +3,8 @@ export type Category =
   | 'Javascript'
   | 'Feature'
   | 'Network'
-  | 'Storage';
+  | 'Storage'
+  | 'CSS';
 export interface FeatureDescriptor {
   title: string;
   keyPath?: string;
