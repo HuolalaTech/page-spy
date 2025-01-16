@@ -5,10 +5,11 @@ describe('System plugin', () => {
     const result = await computeResult();
 
     const features = [
-      'Element',
       'Feature',
       'Network',
       'Javascript',
+      'CSS',
+      'Element',
       'Storage',
     ] as const;
 

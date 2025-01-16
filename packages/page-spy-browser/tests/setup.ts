@@ -57,3 +57,10 @@ window.Modernizr = {
     cb(true);
   },
 };
+
+// mock window.CSS.supports
+if (typeof window.CSS.supports !== 'function') {
+  window.CSS.supports = (property: string, value?: string) => {
+    return true;
+  };
+}
