@@ -24,19 +24,7 @@
     src="https://cdn.jsdelivr.net/npm/@huolala-tech/page-spy-plugin-whole-bundle"
     crossorigin="anonymous"
   ></script>
-</head>
-```
 
-按照以上方式引入后，`WholeBundle` 会自动完成初始化。如果你想自定义 logo / 标题 / 声明等内容，可以这样做：
-
-```html
-<head>
-  ...
-  <!-- 在路径后面加 #manual 表明你要手动初始化，之后可以通过 window.WholeBundle 全局变量引用 -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/@huolala-tech/page-spy-plugin-whole-bundle#manual"
-    crossorigin="anonymous"
-  ></script>
   <script>
     const $wholeBundle = new WholeBundle({
       /**
