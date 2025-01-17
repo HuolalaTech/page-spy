@@ -87,7 +87,7 @@ export default DataHarborPlugin;
 
 ### Upload / download data
 
-Upon successful integration, the popup that appears after clicking on the client-side rendering control should include `download / upload` buttons.
+Upon successful integration, the popup that appears after clicking on the floating ball should include `download / upload` buttons.
 
 <img src="./screenshots/modal-en.jpg" alt="Download" height="400" />
 

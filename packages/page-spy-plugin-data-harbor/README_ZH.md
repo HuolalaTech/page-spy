@@ -87,7 +87,7 @@ export default DataHarborPlugin;
 
 ### 上传 / 导出数据
 
-引入成功后，点击客户端渲染的控件后出现的弹窗中应该包含了上传和下载的按钮。
+引入成功后页面右下方会出现 PageSpy 的悬浮球，点击悬浮球出现的弹窗中应该包含了上传和下载的按钮。
 
 <img src="./screenshots/modal.jpg" alt="Download" height="400" />
 
