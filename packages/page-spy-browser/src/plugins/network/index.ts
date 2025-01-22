@@ -6,6 +6,7 @@ import FetchProxy from './proxy/fetch-proxy';
 import BeaconProxy from './proxy/beacon-proxy';
 import SSEProxy from './proxy/sse-proxy';
 import { InitConfig } from '../../config';
+import { ResourceCollector } from './proxy/resource-collector';
 
 export default class NetworkPlugin implements PageSpyPlugin {
   public name = 'NetworkPlugin';
@@ -18,6 +19,8 @@ export default class NetworkPlugin implements PageSpyPlugin {
 
   public sseProxy: SSEProxy | null = null;
 
+  public resourceCollector: ResourceCollector | null = null;
+
   public static hasInitd = false;
 
   public onInit({ config }: OnInitParams<InitConfig>) {
@@ -29,6 +32,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
     this.fetchProxy = new FetchProxy();
     this.beaconProxy = new BeaconProxy();
     this.sseProxy = new SSEProxy();
+    this.resourceCollector = new ResourceCollector();
   }
 
   public onReset() {
@@ -36,6 +40,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
     this.fetchProxy?.reset();
     this.beaconProxy?.reset();
     this.sseProxy?.reset();
+    this.resourceCollector?.reset();
     NetworkPlugin.hasInitd = false;
   }
 }
