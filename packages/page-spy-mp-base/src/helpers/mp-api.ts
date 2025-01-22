@@ -39,15 +39,6 @@ export const getMPSDK = () => {
 
 export const getOriginMPSDK = () => originMPSDK as MPSDK;
 
-// Some frameworks(uniapp) make the mp sdk wrapped by Proxy...
-// this must be handled by different method.
-// If the mp sdk is a Proxy, it will not have own property, so we check the object keys of
-// origin sdk. The magic number here is because we may add some property to the sdk, so the
-// length will not be 0.
-export const isMPProxy = () => {
-  return Object.keys(originMPSDK).length < 20;
-};
-
 export const setMPSDK = (SDK: MPSDK) => {
   originMPSDK = SDK;
   if (typeof Proxy === 'undefined') {

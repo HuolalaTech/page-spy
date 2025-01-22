@@ -10,7 +10,7 @@ import {
 } from '@huolala-tech/page-spy-base/dist/network/common';
 import MPNetworkProxyBase from './base';
 import { MPNetworkAPI } from '../../../types';
-import { getOriginMPSDK, isMPProxy } from '../../../helpers/mp-api';
+import { getOriginMPSDK } from '../../../helpers/mp-api';
 import type { Client } from '@huolala-tech/page-spy-base';
 
 export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
@@ -26,17 +26,15 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
   public reset() {
     if (this.request) {
       const mp = getOriginMPSDK();
-      // if the origin mp sdk is a proxy, just delete the property.
-      if (isMPProxy()) {
-        delete (mp as any).request;
-      } else {
-        Object.defineProperty(mp, 'request', {
-          value: this.request,
-          configurable: true,
-          writable: true,
-          enumerable: true,
-        });
-      }
+      // in uniapp, the mp sdk, which name is 'uni', is a Proxy without any
+      // property... but we still define the property here, which will not have
+      // any unpredicted behavior.
+      Object.defineProperty(mp, 'request', {
+        value: this.request,
+        configurable: true,
+        writable: true,
+        enumerable: true,
+      });
       this.request = null;
     }
   }
