@@ -16,7 +16,7 @@ export class ResourceCollector extends WebNetworkProxyBase {
     const from = performance.timeOrigin || Date.now() - performance.now();
     this.observer = new PerformanceObserver((list) => {
       const entries = list.getEntries();
-      entries.forEach((e) => {
+      entries.forEach((e: any) => {
         const {
           name,
           initiatorType,
@@ -24,7 +24,7 @@ export class ResourceCollector extends WebNetworkProxyBase {
           responseEnd,
           duration,
           responseStatus = 0,
-        } = e as PerformanceResourceTiming;
+        } = e;
         if (this.excluded.test(initiatorType)) return;
 
         const id = getRandomId();
