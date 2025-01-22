@@ -145,14 +145,7 @@ interface PrimitiveResult {
   value: any;
 }
 
-const stringify = (value: any) => {
-  // symbol in string template will throw error
-  // just defensive code
-  if (typeof value === 'symbol') {
-    return value.toString();
-  }
-  return `${value}`;
-};
+const stringify = (value: any) => `${value}`;
 const primitive = (value: any) => ({
   ok: true,
   value,
@@ -165,17 +158,16 @@ export function makePrimitiveValue(value: unknown): PrimitiveResult {
   if (value === null) {
     return primitive(value);
   }
-  // check symbol first
-  if (typeof value === 'symbol' || typeof value === 'function') {
-    return primitive(stringify(value.toString()));
-  }
   if (isNumber(value)) {
     if (value === -Infinity || value === Infinity || Number.isNaN(value)) {
       return primitive(stringify(value));
     }
   }
   if (isBigInt(value)) {
-    return primitive(stringify(value) + 'n');
+    return primitive(`${value}n`);
+  }
+  if (typeof value === 'symbol' || typeof value === 'function') {
+    return primitive(stringify(value.toString()));
   }
   if (value instanceof Error) {
     return primitive(stringify(value.stack!));
