@@ -10,25 +10,34 @@ import {
 } from '@huolala-tech/page-spy-base/dist/network/common';
 import MPNetworkProxyBase from './base';
 import { MPNetworkAPI } from '../../../types';
-import { getOriginMPSDK } from '../../../helpers/mp-api';
+import { getOriginMPSDK, isMPProxy } from '../../../helpers/mp-api';
+import type { Client } from '@huolala-tech/page-spy-base';
 
 export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
   public request: MPNetworkAPI['request'] | null = null;
 
-  constructor() {
+  client: Client;
+  constructor({ client }: { client: Client }) {
     super();
+    this.client = client;
     this.initProxyHandler();
   }
 
   public reset() {
     if (this.request) {
       const mp = getOriginMPSDK();
-      Object.defineProperty(mp, 'request', {
-        value: this.request,
-        configurable: true,
-        writable: true,
-        enumerable: true,
-      });
+      // if the origin mp sdk is a proxy, just delete the property.
+      if (isMPProxy()) {
+        delete (mp as any).request;
+      } else {
+        Object.defineProperty(mp, 'request', {
+          value: this.request,
+          configurable: true,
+          writable: true,
+          enumerable: true,
+        });
+      }
+      this.request = null;
     }
   }
 
@@ -98,7 +107,9 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
             req.costTime = req.endTime - (req.startTime || req.endTime);
           };
 
-          params.success = function (res) {
+          type SuccessRes = Parameters<Required<typeof params>['success']>[0];
+          type FailRes = Parameters<Required<typeof params>['fail']>[0];
+          const successHandler = (res: SuccessRes) => {
             commonEnd();
             req.status = res?.statusCode || 200;
             req.statusText = 'Done';
@@ -148,17 +159,32 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
             }
             originOnSuccess?.(res);
           };
-
-          params.fail = function (err) {
+          const failHandler = (err: FailRes) => {
             commonEnd();
             originOnFailed?.(err);
           };
-
-          params.complete = function (res: any) {
+          const completeHandler = (res: any) => {
             req.readyState = ReqReadyState.DONE;
             that.sendRequestItem(id, req);
             originOnComplete?.(res);
           };
+          // In uniapp, if no success / fail / complete passed in, the return value will be
+          // a promise, has to handle this logic...
+          if (
+            that.client.info.sdk === 'uniapp' &&
+            !params.success &&
+            !params.fail &&
+            !params.complete
+          ) {
+            const resPromise = originRequest(params);
+            resPromise
+              .then(successHandler, failHandler)
+              .finally(completeHandler);
+            return resPromise;
+          }
+          params.success = successHandler;
+          params.fail = failHandler;
+          params.complete = completeHandler;
 
           const requestInstance = originRequest(params);
           return requestInstance;
