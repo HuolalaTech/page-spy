@@ -14,6 +14,7 @@ import type {
   PageSpyPluginLifecycleArgs,
   PluginOrder,
 } from '@huolala-tech/page-spy-types';
+import { setup } from 'iseedeadpeople';
 import type { InitConfig } from './config';
 
 import ConsolePlugin from './plugins/console';
@@ -112,19 +113,27 @@ class PageSpy {
 
   public cacheTimer: ReturnType<typeof setInterval> | null = null;
 
-  constructor(init: InitConfig = {}) {
+  constructor(ic: InitConfig = {}) {
     if (PageSpy.instance) {
       psLog.warn('Cannot initialize PageSpy multiple times');
       // eslint-disable-next-line no-constructor-return
       return PageSpy.instance;
     }
-    PageSpy.instance = this;
 
-    const config = this.config.mergeConfig(init);
-
-    this.updateConfiguration();
-    this.triggerPlugins('onInit', { config, socketStore });
-    this.init();
+    if (isArray(ic.gesture)) {
+      if (ic.gesture.length < 4) {
+        throw new Error(
+          '[PageSpy] The length of gesture commands must be at least 4.',
+        );
+      } else {
+        setup(ic.gesture, () => {
+          if (PageSpy.instance) return;
+          this.init(ic);
+        });
+      }
+    } else {
+      this.init(ic);
+    }
   }
 
   private updateConfiguration() {
@@ -142,8 +151,12 @@ class PageSpy {
     socketStore.messageCapacity = messageCapacity;
   }
 
-  private async init() {
-    const config = this.config.get();
+  private async init(ic: InitConfig) {
+    PageSpy.instance = this;
+
+    const config = this.config.mergeConfig(ic);
+    this.updateConfiguration();
+    this.triggerPlugins('onInit', { config, socketStore });
 
     // Online real-time mode
     if (config.offline === false) {

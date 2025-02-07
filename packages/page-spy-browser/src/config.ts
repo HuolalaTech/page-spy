@@ -1,5 +1,6 @@
 import { ConfigBase } from '@huolala-tech/page-spy-base';
 import { InitConfigBase } from '@huolala-tech/page-spy-types';
+import type { Command } from 'iseedeadpeople/dist/common';
 import logoUrl from './assets/logo.svg';
 import modalLogoUrl from './assets/modal-logo.svg';
 
@@ -58,6 +59,11 @@ export interface InitConfig extends InitConfigBase {
      */
     title?: string;
   };
+  /**
+   * Dynamic enable PageSpy by gesture.
+   * The size of `Command` must be at least 4.
+   */
+  gesture?: Command | null;
 }
 
 export class Config extends ConfigBase<InitConfig> {
@@ -90,6 +96,7 @@ export class Config extends ConfigBase<InitConfig> {
         logo: modalLogoUrl,
         title: 'PageSpy',
       },
+      gesture: null,
     };
 
     if (!Config.scriptLink) {

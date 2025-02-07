@@ -7687,6 +7687,11 @@ isarray@~1.0.0:
   resolved "https://registry.npmjs.org/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
   integrity sha512-VLghIWNM6ELQzo7zwmcg0NmTVyWKYjvIeM83yjp0wRDTmUnrM678fQbcKBo6n2CJEF0szoG//ytg+TKla89ALQ==
 
+iseedeadpeople@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/iseedeadpeople/-/iseedeadpeople-1.0.0.tgz#6ee20c9d207951294329e076a9a0d9cb7a211625"
+  integrity sha512-S/edvIn1spM9cyrsd3tMWF3wGIs59/gSUwo5ByQsOfzOEsY/AwMjcXGaLTr6QrOjWEcnl+MT1i3GjDOkS/cqGg==
+
 isexe@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
