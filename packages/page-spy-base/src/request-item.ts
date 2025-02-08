@@ -21,7 +21,7 @@ export class RequestItem implements SpyNetwork.RequestInfo {
 
   responseReason: string | null = null; // error response reason
 
-  responseType: XMLHttpRequest['responseType'] = '';
+  responseType: SpyNetwork.ResponseType = '';
 
   responseHeader: [string, string][] | null = null;
 

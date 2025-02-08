@@ -5,16 +5,7 @@ export type RequestType =
   | 'mp-request'
   | 'mp-upload'
   | 'eventsource'
-  // PerformanceResourceTiming.initiatorType
-  | 'audio'
-  | 'video'
-  | 'css'
-  | 'image'
-  | 'img'
-  | 'link'
-  | 'object'
-  | 'script'
-  | 'track';
+  | PerformanceResourceTiming['initiatorType'];
 
 export type ResponseType =
   | XMLHttpRequest['responseType']
