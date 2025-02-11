@@ -119,10 +119,10 @@ export class BlobHarbor {
     let result: CacheMessageItem[] = [];
 
     // all data in container
-    if (!fStock && !tStock) {
+    if (!isNumber(fStock) && !isNumber(tStock)) {
       result = this.container.slice(fData, tData);
     } else {
-      if (!fStock || !isNumber(fStock)) {
+      if ([null, undefined].includes(fStock as any) || !isNumber(fStock)) {
         throw new Error(t.invalidPeriods);
       }
 
