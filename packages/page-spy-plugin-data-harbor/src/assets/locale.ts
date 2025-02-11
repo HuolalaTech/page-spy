@@ -3,8 +3,6 @@ import { isCN } from '@huolala-tech/page-spy-base/dist/utils';
 const source = {
   zh: {
     title: '离线日志',
-    uploadAll: '上传全量',
-    downloadAll: '下载全量',
     uploadPeriods: '上传时间段',
     downloadPeriods: '下载时间段',
     readying: '准备数据...',
@@ -24,11 +22,11 @@ const source = {
     eventCountNotEnough: '时间段内的数据量不足以回放',
     invalidPeriods: '选择的开始时间无效',
     invalidParams: '调用 onOfflineLog() 的参数不正确',
+    copyUrl: '复制调试链接',
+    copyFailed: '复制失败',
   },
   en: {
     title: 'Offline log',
-    uploadAll: 'Upload All',
-    downloadAll: 'Download All',
     uploadPeriods: 'Upload Periods',
     downloadPeriods: 'Download Periods',
     readying: 'Handling...',
@@ -49,6 +47,8 @@ const source = {
       'The data within the time period is insufficient for playback',
     invalidPeriods: 'The start of selected period is invalid',
     invalidParams: 'Incorrect params which you call onOfflineLog()',
+    copyUrl: 'Copy URL',
+    copyFailed: 'Copy failed',
   },
 };
 
