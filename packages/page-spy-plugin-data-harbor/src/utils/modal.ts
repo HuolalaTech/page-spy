@@ -4,20 +4,16 @@ import copy from 'copy-to-clipboard';
 import classes from '../assets/index.module.less';
 import {
   cropSvg,
-  downloadAllSvg,
-  uploadAllSvg,
   uploadPeriodsSvg,
   downloadPeriodsSvg,
   refreshSvg,
+  successSvg,
+  copySvg,
 } from '../assets/svg';
 import { t } from '../assets/locale';
 import { PeriodItem } from '../harbor/base';
-import { formatTimeDuration } from './index';
+import { formatTime } from './index';
 import type DataHarborPlugin from '../index';
-
-function getLocaleTime(v: number) {
-  return new Date(v).toLocaleTimeString('en', { hour12: false });
-}
 
 function gapBetweenTextOnThumb(max: number) {
   if (max < 10) return 0.2;
@@ -68,21 +64,24 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
     </div>
 
     <!-- Upload / Download log button -->
-    <button class="page-spy-btn" data-primary id="upload-all">
-      ${uploadAllSvg}
-      <span>${t.uploadAll}</span>
-    </button>
-    <button class="page-spy-btn" data-primary id="download-all">
-      ${downloadAllSvg}
-      <span>${t.downloadAll}</span>
-    </button>
-    <button class="page-spy-btn" data-dashed id="upload-periods">
+    <button class="page-spy-btn" data-primary id="upload-periods">
       ${uploadPeriodsSvg}
       <span>${t.uploadPeriods}</span>
     </button>
-    <button class="page-spy-btn" data-dashed id="download-periods">
+    <button class="page-spy-btn" id="download-periods">
       ${downloadPeriodsSvg}
       <span>${t.downloadPeriods}</span>
+    </button>
+
+    <!-- Result -->
+    <div class="${classes.result}">
+      ${successSvg}
+      <b>${t.success}</b>
+    </div>
+
+    <button class="page-spy-btn" data-primary id="copy-replay-url" data-url>
+      ${copySvg}
+      <span>${t.copyUrl}</span>
     </button>
     `,
     'text/html',
@@ -100,10 +99,10 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
   const minThumb = $('#period-min') as HTMLInputElement;
   const maxThumb = $('#period-max') as HTMLInputElement;
   const remark = $('#harbor-remark') as HTMLInputElement;
-  const uploadAllButton = $('#upload-all') as HTMLButtonElement;
-  const downloadAllButton = $('#download-all') as HTMLButtonElement;
   const uploadPeriodsButton = $('#upload-periods') as HTMLButtonElement;
   const downloadPeriodsButton = $('#download-periods') as HTMLButtonElement;
+  const resultContent = $c(classes.result) as HTMLDivElement;
+  const copyUrlButton = $('#copy-replay-url') as HTMLButtonElement;
 
   const periodInfoRef: {
     max: number;
@@ -117,7 +116,7 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
     lastTime: 0,
   };
   const updateRangeInTrack = () => {
-    const { max, firstTime } = periodInfoRef;
+    const { max } = periodInfoRef;
     const minValue = +minThumb.value;
     const maxValue = +maxThumb.value;
 
@@ -126,10 +125,8 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
     range.style.setProperty('--left', `${(left * 100).toFixed(3)}%`);
     range.style.setProperty('--right', `${(right * 100).toFixed(3)}%`);
 
-    const leftTime = firstTime + minValue * 1000;
-    const rightTime = firstTime + maxValue * 1000;
-    range.style.setProperty('--min-text', `"${getLocaleTime(leftTime)}"`);
-    range.style.setProperty('--max-text', `"${getLocaleTime(rightTime)}"`);
+    range.style.setProperty('--min-text', `"${formatTime(minValue)}"`);
+    range.style.setProperty('--max-text', `"${formatTime(maxValue)}"`);
   };
 
   const refreshPeriods = () => {
@@ -206,38 +203,11 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
     range.dataset.maxTextPosition = 'top';
     updateRangeInTrack();
   });
-  uploadAllButton.addEventListener('click', async () => {
-    try {
-      uploadAllButton.disabled = true;
-      const debugUrl = await plugin.onOfflineLog('upload', {
-        clearCache: false,
-        remark: remark.value,
-      });
-      const ok = copy(debugUrl);
-      psLog.info(`${t.success}: ${debugUrl}`);
-      toast.message(ok ? t.copied : t.success);
-    } catch (e: any) {
-      psLog.error(e);
-      toast.message(e.message);
-    } finally {
-      uploadAllButton.disabled = false;
-    }
-  });
-  downloadAllButton.addEventListener('click', async () => {
-    try {
-      downloadAllButton.disabled = true;
-      // await plugin.onOfflineLog('download', false);
-      await plugin.onOfflineLog('download', {
-        clearCache: false,
-        remark: remark.value,
-      });
-      toast.message(t.success);
-    } catch (e: any) {
-      psLog.error(e);
-      toast.message(e.message);
-    } finally {
-      downloadAllButton.disabled = false;
-    }
+  copyUrlButton.addEventListener('click', () => {
+    const { url } = copyUrlButton.dataset;
+    const ok = copy(url!);
+    toast.message(ok ? t.copied : t.copyFailed);
+    modal.close();
   });
   uploadPeriodsButton.addEventListener('click', async () => {
     try {
@@ -247,9 +217,11 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
         getSelectedPeriod(),
       );
 
-      const ok = copy(debugUrl);
-      psLog.info(`${t.success}: ${debugUrl}`);
-      toast.message(ok ? t.copied : t.success);
+      copyUrlButton.dataset.url = debugUrl;
+      modal.show({
+        content: resultContent,
+        footer: [copyUrlButton],
+      });
     } catch (e: any) {
       psLog.error(e);
       toast.message(e.message);
@@ -276,25 +248,21 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
 
     const duration = modalContent?.querySelector(`.${classes.duration}`);
     if (duration) {
-      duration.textContent = formatTimeDuration(
-        Date.now() - plugin.startTimestamp,
-      );
-      durationTimer = setInterval(() => {
-        duration.textContent = formatTimeDuration(
-          Date.now() - plugin.startTimestamp,
+      const fn = () => {
+        const seconds = parseInt(
+          String((Date.now() - plugin.startTimestamp) / 1000),
+          10,
         );
-      }, 1000);
+        duration.textContent = formatTime(seconds);
+      };
+      fn();
+      durationTimer = setInterval(fn, 1000);
     }
     refreshPeriods();
 
     modal.show({
       content: modalContent,
-      footer: [
-        uploadAllButton,
-        uploadPeriodsButton,
-        downloadAllButton,
-        downloadPeriodsButton,
-      ],
+      footer: [uploadPeriodsButton, downloadPeriodsButton],
     });
   });
 
