@@ -1,14 +1,22 @@
+export type RequestType =
+  | 'xhr'
+  | 'fetch'
+  | 'ping'
+  | 'mp-request'
+  | 'mp-upload'
+  | 'eventsource'
+  | PerformanceResourceTiming['initiatorType'];
+
+export type ResponseType =
+  | XMLHttpRequest['responseType']
+  // The 'resource' is hardcoded and is used to represent static resources request
+  | 'resource';
+
 export interface RequestInfo {
   id: string;
   method: string;
   url: string;
-  requestType:
-    | 'xhr'
-    | 'fetch'
-    | 'ping'
-    | 'mp-request'
-    | 'mp-upload'
-    | 'eventsource';
+  requestType: RequestType;
   /**
    * `Content-Type` is a special value in requestHeader.
    * The property isn't required for `GET` request,
@@ -28,7 +36,7 @@ export interface RequestInfo {
   readyState: XMLHttpRequest['readyState'];
   response: any;
   responseReason: string | null;
-  responseType: XMLHttpRequest['responseType'];
+  responseType: ResponseType;
   responseHeader: [string, string][] | null;
   startTime: number;
   endTime: number;
