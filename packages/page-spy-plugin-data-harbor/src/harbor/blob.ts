@@ -113,16 +113,16 @@ export class BlobHarbor {
     const { head, tail } = this.getHeadAndTailPeriods(params);
     const { endTime } = params;
 
-    const { stockIndex: fStock, dataIndex: fData } = head || {};
-    const { stockIndex: tStock, dataIndex: tData } = tail || {};
+    const { stockIndex: fStock = null, dataIndex: fData } = head || {};
+    const { stockIndex: tStock = null, dataIndex: tData } = tail || {};
 
     let result: CacheMessageItem[] = [];
 
     // all data in container
-    if (!isNumber(fStock) && !isNumber(tStock)) {
+    if (fStock === null && tStock === null) {
       result = this.container.slice(fData, tData);
     } else {
-      if ([null, undefined].includes(fStock as any) || !isNumber(fStock)) {
+      if (fStock === null) {
         throw new Error(t.invalidPeriods);
       }
 
