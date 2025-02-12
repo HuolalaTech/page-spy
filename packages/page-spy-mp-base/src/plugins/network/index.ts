@@ -14,12 +14,12 @@ export default class NetworkPlugin implements PageSpyPlugin {
 
   public static hasInitd = false;
 
-  public onInit({ config }: OnInitParams<SpyMP.MPInitConfig>) {
+  public onInit({ config, client }: OnInitParams<SpyMP.MPInitConfig>) {
     if (NetworkPlugin.hasInitd) return;
     NetworkPlugin.hasInitd = true;
     NetworkProxyBase.dataProcessor = config.dataProcessor.network;
 
-    this.requestProxy = new RequestProxy();
+    this.requestProxy = new RequestProxy({ client });
   }
 
   public onReset() {
