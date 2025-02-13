@@ -8,15 +8,16 @@ import {
   ReqReadyState,
   toLowerKeys,
 } from '@huolala-tech/page-spy-base/dist/network/common';
+import type { Client } from '@huolala-tech/page-spy-base';
 import MPNetworkProxyBase from './base';
 import { MPNetworkAPI } from '../../../types';
 import { getOriginMPSDK } from '../../../helpers/mp-api';
-import type { Client } from '@huolala-tech/page-spy-base';
 
 export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
   public request: MPNetworkAPI['request'] | null = null;
 
   client: Client;
+
   constructor({ client }: { client: Client }) {
     super();
     this.client = client;

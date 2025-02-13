@@ -64,3 +64,13 @@ if (typeof window.CSS.supports !== 'function') {
     return true;
   };
 }
+
+beforeAll(() => {
+  const mockPerformanceObserver = jest.fn();
+  mockPerformanceObserver.mockReturnValue({
+    observe: () => {},
+    disconnect: () => {},
+  });
+  // @ts-ignore
+  global.PerformanceObserver = mockPerformanceObserver;
+});
