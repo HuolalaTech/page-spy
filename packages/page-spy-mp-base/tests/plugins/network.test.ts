@@ -10,6 +10,7 @@ const initParams = {
   config: new Config().mergeConfig({ api: 'example.com' }),
   socketStore: socket,
   atom,
+  client: {},
 } as OnInitParams<SpyMP.MPInitConfig>;
 const port = 6688;
 const apiPrefix = `http://localhost:${port}`;

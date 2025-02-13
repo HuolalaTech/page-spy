@@ -170,7 +170,7 @@ export default class MPWeixinRequestProxy extends MPNetworkProxyBase {
           // In uniapp, if no success / fail / complete passed in, the return value will be
           // a promise, has to handle this logic...
           if (
-            that.client.info.sdk === 'uniapp' &&
+            that.client.info?.sdk === 'uniapp' &&
             !params.success &&
             !params.fail &&
             !params.complete
