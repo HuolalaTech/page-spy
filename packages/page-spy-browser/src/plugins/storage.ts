@@ -116,7 +116,7 @@ export class StoragePlugin implements PageSpyPlugin {
     };
     if (window.cookieStore) {
       data.data = await window.cookieStore.getAll();
-    } /* c8 ignore start */ else {
+    } /* c8 ignore start */ else if (document.cookie) {
       data.data = document.cookie.split('; ').map((item) => {
         const [name, value] = item.split('=');
         return {
