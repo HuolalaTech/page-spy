@@ -189,16 +189,6 @@ export const buildForm = ({ harborPlugin }: Params) => {
   const description = form.querySelector('textarea') as HTMLTextAreaElement;
   // prettier-ignore
   const submit = form.querySelector('button[type="submit"]') as HTMLButtonElement;
-  const updateSubmitStatus = () => {
-    const desc = description.value?.trim();
-    if (desc) {
-      submit.disabled = false;
-    } else {
-      submit.disabled = true;
-    }
-  };
-  updateSubmitStatus();
-  description.addEventListener('input', updateSubmitStatus);
 
   form.addEventListener('submit', async (evt) => {
     evt.preventDefault();
