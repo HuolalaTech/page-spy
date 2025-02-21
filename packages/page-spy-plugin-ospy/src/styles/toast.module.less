@@ -1,0 +1,44 @@
+@import url(./variable.less);
+
+.toast {
+  position: fixed;
+  left: 50%;
+  top: 10%;
+  transform: translate(-50%, 0);
+
+  max-width: 50vw;
+  padding: 10px 14px;
+  font-size: @font-size;
+  line-height: 1;
+  color: lighten(#fff, 20%);
+  font-family: @font-family;
+  background-color: var(--primary-color, @primary-color);
+  border-radius: (4em / @font-size);
+  box-shadow: 0px 0px 4px 1px rgba(255, 255, 255, 0.15);
+  z-index: 99999;
+  opacity: 0;
+  &.show {
+    opacity: 1;
+    :local {
+      animation: slideIn 0.3s ease-in-out forwards;
+    }
+    @keyframes slideIn {
+      0% {
+        transform: translate3d(-50%, (25em / @font-size), 0);
+        opacity: 0;
+      }
+      80% {
+        transform: translate3d(-50%, (-10em / @font-size), 0);
+      }
+      100% {
+        transform: translate3d(-50%, 0, 0);
+        opacity: 1;
+      }
+    }
+  }
+  &.withIcon {
+    display: flex;
+    gap: (4em / @font-size);
+    align-items: center;
+  }
+}

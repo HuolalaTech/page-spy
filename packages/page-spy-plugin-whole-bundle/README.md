@@ -1,5 +1,8 @@
 # `@huolala-tech/page-spy-plugin-whole-bundle`
 
+> [!WARNING]
+> 此包已经更名为 `@huolala-tech/page-spy-plugin-ospy`，不再维护、新增功能。
+
 ![Screenshot](./.github/screenshots/image.png)
 
 插件打包了三个依赖，一个脚本实现 _离线模式的 PageSpy、录制操作轨迹、支持导出离线日志_ 的功能:
