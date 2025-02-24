@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande',
+          'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        font-size: 100px;
+      }
+    </style>
+  </head>
+  <body>
+    <script type="module">
+      import OSpy from './src';
+      window.oSpy = new OSpy({
+        // autoRender: false,
+        // primaryColor: 'darkgreen',
+        // exportButtonText: '下载数据',
+        // onExportButtonClick: async (data) => {
+        //   await new Promise((r) => {
+        //     setTimeout(r, 3000);
+        //   });
+        //   console.log(data);
+        // },
+      });
+      window.ondblclick = window.oSpy.open;
+    </script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@huolala-tech/page-spy-plugin-ospy#manual"></script> -->
+  </body>
+</html>

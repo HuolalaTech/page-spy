@@ -1,0 +1,132 @@
+@import url(./variable.less);
+
+.modal {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: none;
+  z-index: 99999;
+  &.show {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out forwards;
+    @keyframes fadeIn {
+      0% {
+        background-color: rgba(0, 0, 0, 0);
+      }
+      100% {
+        background-color: rgba(0, 0, 0, 0.3);
+      }
+    }
+    .content {
+      animation: scaleIn 0.3s ease-in forwards;
+      @keyframes scaleIn {
+        0% {
+          opacity: 0;
+          transform: translate3d(-50%, -50%, 0) scale(0.8);
+        }
+        70% {
+          opacity: 1;
+          transform: translate3d(-50%, -50%, 0) scale(1.1);
+        }
+        100% {
+          transform: translate3d(-50%, -50%, 0) scale(1);
+        }
+      }
+    }
+  }
+  &.leaving {
+    display: block;
+    animation: fadeOut 0.3s ease-in-out forwards;
+    @keyframes fadeOut {
+      0% {
+        background-color: rgba(0, 0, 0, 0.3);
+      }
+      100% {
+        background-color: rgba(0, 0, 0, 0);
+      }
+    }
+    .content {
+      animation: scaleOut 0.3s ease-out forwards;
+      @keyframes scaleOut {
+        0% {
+          opacity: 1;
+          transform: translate3d(-50%, -50%, 0) scale(1);
+        }
+        30% {
+          transform: translate3d(-50%, -50%, 0) scale(1.1);
+        }
+        60% {
+          opacity: 0;
+          transform: translate3d(-50%, -50%, 0) scale(0.9);
+        }
+        100% {
+          opacity: 0;
+          transform: translate3d(-50%, -50%, 0) scale(0.9);
+        }
+      }
+    }
+  }
+  .content {
+    position: absolute;
+    left: 50%;
+    top: 45%;
+    transform: translate3d(-50%, -50%, 0);
+    width: 95%;
+    background-color: #fff;
+    border-radius: 4px;
+    overflow: hidden;
+    @media screen and (min-width: 768px) {
+      max-width: 50%;
+    }
+    @media screen and (min-width: 1024px) {
+      max-width: 40%;
+    }
+    @media screen and (min-width: 1920px) {
+      max-width: 35%;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: @padding;
+      color: white;
+      background-color: var(--primary-color, @primary-color);
+      .headerLeft {
+        display: flex;
+        align-items: flex-start;
+        gap: (8em / @font-size);
+        .logo {
+          width: (20em / @font-size);
+        }
+        .title {
+          b {
+            font-size: (16em / @font-size);
+            line-height: 1;
+          }
+          p {
+            margin: 4px 0;
+            font-size: (12em / @font-size);
+            a {
+              color: white;
+              text-decoration: underline;
+              text-underline-offset: 4px;
+            }
+          }
+        }
+      }
+      .headerRight {
+        padding: 6px;
+        cursor: pointer;
+        .close {
+          width: (24em / @font-size);
+          height: (24em / @font-size);
+        }
+      }
+    }
+    .main {
+      padding: 0;
+    }
+  }
+}

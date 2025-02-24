@@ -6,37 +6,14 @@ import RRWebPlugin from '@huolala-tech/page-spy-plugin-rrweb';
 import { dot, pageSpyExist } from './utils';
 import classes from './styles/index.module.less';
 import './styles/normalize.less';
-import pageSpyLogo from './assets/logo.svg';
 import { moveable, UElement } from './utils/moveable';
 import { name } from '../package.json';
 import { buildForm } from './utils/build-form';
 import { modal } from './utils/modal';
 import { ROOT_ID } from './utils/constant';
+import { Config, defaultConfig } from './config';
 
-console.error(
-  '[DEPRECATED] @huolala-tech/page-spy-plugin-whole-bundle is deprecated, please use @huolala-tech/page-spy-plugin-ospy instead. See https://www.pagespy.org/#/o-spy.',
-);
-
-export interface Config {
-  title: string;
-  /**
-   * Online source: 'https://example.com/xxx.jpg'
-   * Data url: 'data:image/png;base64,xxxx...'
-   * Relative source: '../xxx.jpg'
-   */
-  logo: string;
-  primaryColor: string;
-  autoRender: boolean;
-}
-
-const defaultConfig: Config = {
-  title: '问题反馈',
-  logo: pageSpyLogo,
-  primaryColor: '#8434E9',
-  autoRender: true,
-};
-
-class WholeBundle {
+class OSpy {
   $pageSpy: PageSpy | null = null;
 
   $harbor: DataHarborPlugin | null = null;
@@ -47,7 +24,7 @@ class WholeBundle {
 
   root: HTMLDivElement | null = null;
 
-  static instance: WholeBundle | null = null;
+  static instance: OSpy | null = null;
 
   constructor(userCfg: Partial<Config> = {}) {
     if (pageSpyExist()) {
@@ -56,11 +33,11 @@ class WholeBundle {
       );
       return;
     }
-    if (WholeBundle.instance) {
+    if (OSpy.instance) {
       // eslint-disable-next-line no-constructor-return
-      return WholeBundle.instance;
+      return OSpy.instance;
     }
-    WholeBundle.instance = this;
+    OSpy.instance = this;
     this.config = {
       ...defaultConfig,
       ...userCfg,
@@ -74,7 +51,9 @@ class WholeBundle {
       (i) => i.name === 'DataHarborPlugin',
     );
     if (!$harbor) {
-      $harbor = new DataHarborPlugin();
+      $harbor = new DataHarborPlugin({
+        onDownload: this.config.onExportButtonClick,
+      });
       PageSpy.registerPlugin($harbor);
     }
     let $rrweb = PageSpy.pluginsWithOrder.find((i) => i.name === 'RRWebPlugin');
@@ -139,7 +118,10 @@ class WholeBundle {
         modal.show();
       });
     }
-    const form = buildForm({ harborPlugin: this.$harbor! });
+    const form = buildForm({
+      harborPlugin: this.$harbor!,
+      config: this.config,
+    });
 
     modal.build({
       logo,
@@ -158,8 +140,8 @@ class WholeBundle {
   abort() {
     this.root?.remove();
     this.$pageSpy?.abort();
-    WholeBundle.instance = null;
+    OSpy.instance = null;
   }
 }
 
-export default WholeBundle;
+export default OSpy;

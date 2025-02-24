@@ -1,0 +1,52 @@
+@primary-color: #8434e9;
+@padding: 14px;
+@font-size: 14px;
+@font-color: #444;
+@font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC',
+  'Microsoft YaHei', 'Source Han Sans SC', 'Noto Sans CJK SC', sans-serif;
+
+.common-button() {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: (60em / @font-size);
+  padding: (8em / @font-size) (10em / @font-size);
+  gap: (4em / @font-size);
+  letter-spacing: 0.4px;
+  border: 1px solid #333;
+  border-radius: (4em / @font-size);
+  background-color: white;
+  color: #333;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all ease-in-out 100ms;
+  font-size: (13em / @font-size);
+  &[data-primary] {
+    border-color: var(--primary-color, @primary-color);
+    background-color: var(--primary-color, @primary-color);
+    color: white;
+  }
+  &[data-dashed] {
+    border-style: dashed;
+  }
+  &:disabled {
+    border-color: #c8c8c8;
+    background-color: #c8c8c8;
+    color: white;
+    cursor: not-allowed;
+  }
+  &:active {
+    opacity: 0.7;
+  }
+  img,
+  svg {
+    width: (20em / @font-size);
+    height: (20em / @font-size);
+  }
+}
+
+.text-ellipse() {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
