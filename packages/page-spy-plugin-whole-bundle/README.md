@@ -1,7 +1,7 @@
 # `@huolala-tech/page-spy-plugin-whole-bundle`
 
 > [!WARNING]
-> 此包已经更名为 `@huolala-tech/page-spy-plugin-ospy`，不再维护、新增功能。
+> 此包已经更名为 [`@huolala-tech/page-spy-plugin-ospy`](../page-spy-plugin-ospy)，后续不会再在这个包里新增功能。
 
 ![Screenshot](./.github/screenshots/image.png)
 
