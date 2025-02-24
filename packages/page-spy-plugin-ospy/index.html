@@ -17,14 +17,14 @@
       import OSpy from './src';
       window.oSpy = new OSpy({
         // autoRender: false,
-        primaryColor: 'darkgreen',
-        exportButtonText: '下载数据',
-        onExportButtonClick: async (data) => {
-          await new Promise((r) => {
-            setTimeout(r, 3000);
-          });
-          console.log(data);
-        },
+        // primaryColor: 'darkgreen',
+        // exportButtonText: '下载数据',
+        // onExportButtonClick: async (data) => {
+        //   await new Promise((r) => {
+        //     setTimeout(r, 3000);
+        //   });
+        //   console.log(data);
+        // },
       });
       window.ondblclick = window.oSpy.open;
     </script>
