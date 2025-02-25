@@ -34,8 +34,21 @@
     transform: translateY(2px);
     box-shadow: 0 0px 4px rgba(0, 0, 0, 0.1);
   }
-  img {
+  img.logo {
     max-height: 20px;
+  }
+  img.close {
+    @size: (20em / @font-size);
+    width: @size;
+    height: @size;
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 2px;
+    transform: translate(50%, -50%);
+    box-shadow: 0 0 1px 2px #fff;
+    border-radius: 999px;
+    background-color: var(--primary-color, @primary-color);
   }
 }
 

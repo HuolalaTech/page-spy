@@ -13,8 +13,6 @@ const defaultConfig: Omit<ModalConfig, 'footer'> = {
 class Modal extends EventTarget {
   private config = defaultConfig;
 
-  private root: HTMLDivElement | null = null;
-
   private template = `
   <div class="${classes.modal}">
     <div class="${classes.content}">
@@ -40,6 +38,8 @@ class Modal extends EventTarget {
     </div>
   </div>
   `;
+
+  public root: HTMLDivElement | null = null;
 
   private get rendered() {
     return this.config.mounted.contains(this.root);
@@ -71,14 +71,13 @@ class Modal extends EventTarget {
       this.query(classes.headerRight).addEventListener('click', () => {
         this.close();
       });
-
-      // logo
-      this.query(classes.logo).setAttribute('src', this.config.logo);
-
-      // title
-      this.query(classes.title).querySelector('b')!.textContent =
-        this.config.title;
     }
+    // logo
+    this.query(classes.logo).setAttribute('src', this.config.logo);
+
+    // title
+    this.query(classes.title).querySelector('b')!.textContent =
+      this.config.title;
   }
 
   public show(args?: Partial<ShowParams>) {

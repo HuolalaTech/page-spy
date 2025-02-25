@@ -12,6 +12,7 @@ import { buildForm } from './utils/build-form';
 import { modal } from './utils/modal';
 import { ROOT_ID } from './utils/constant';
 import { Config, defaultConfig } from './config';
+import closeSvg from './assets/close.svg';
 
 class OSpy {
   $pageSpy: PageSpy | null = null;
@@ -96,8 +97,9 @@ class OSpy {
         ${
           autoRender
             ? `<button class="${classes.float}">
-          <img src="${logo}" draggable="false" />
+          <img class="${classes.logo}" src="${logo}" draggable="false" />
           <span>${title}</span>
+          <img class="${classes.close}" src="${closeSvg}" />
         </button>`
             : ''
         }
@@ -118,6 +120,12 @@ class OSpy {
         modal.show();
       });
     }
+    const close = $c(classes.close);
+    close?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      float.style.display = 'none';
+    });
+
     const form = buildForm({
       harborPlugin: this.$harbor!,
       config: this.config,
@@ -130,6 +138,10 @@ class OSpy {
       mounted: this.root,
     });
 
+    if (modal.root) {
+      this.root.appendChild(modal.root);
+    }
+
     document.documentElement.insertAdjacentElement('beforeend', this.root);
   }
 
@@ -140,6 +152,7 @@ class OSpy {
   abort() {
     this.root?.remove();
     this.$pageSpy?.abort();
+    modal.reset();
     OSpy.instance = null;
   }
 }
