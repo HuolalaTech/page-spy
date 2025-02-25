@@ -42,7 +42,7 @@ export default defineConfig(({ command, mode }) => {
         }),
         dts({
           outDir: 'dist/types',
-          include: ['./src/index.ts'],
+          include: ['./src/index.ts', './src/config.ts'],
         }),
       ],
     };

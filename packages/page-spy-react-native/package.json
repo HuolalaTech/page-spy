@@ -11,7 +11,8 @@
   "homepage": "https://www.pagespy.org/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/HuolalaTech/page-spy"
+    "url": "git+https://github.com/HuolalaTech/page-spy.git",
+    "directory": "packages/page-spy-react-native"
   },
   "keywords": [
     "pagespy",

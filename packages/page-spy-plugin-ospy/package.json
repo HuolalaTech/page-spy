@@ -12,7 +12,8 @@
   "homepage": "https://www.pagespy.org/#/o-spy",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/HuolalaTech/page-spy.git"
+    "url": "git+https://github.com/HuolalaTech/page-spy.git",
+    "directory": "packages/page-spy-plugin-ospy"
   },
   "bugs": {
     "url": "https://github.com/HuolalaTech/page-spy/issues"

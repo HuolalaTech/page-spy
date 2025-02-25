@@ -15,7 +15,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/HuolalaTech/page-spy.git"
+    "url": "git+https://github.com/HuolalaTech/page-spy.git",
+    "directory": "packages/page-spy-plugin-rn-async-storage"
   },
   "bugs": {
     "url": "https://github.com/HuolalaTech/page-spy/issues"
