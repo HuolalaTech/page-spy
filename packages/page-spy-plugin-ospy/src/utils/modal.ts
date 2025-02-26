@@ -2,6 +2,7 @@ import { isString } from '@huolala-tech/page-spy-base';
 import type { ModalConfig, ShowParams } from '@huolala-tech/page-spy-types';
 import classes from '../styles/modal.module.less';
 import closeSvg from '../assets/close.svg';
+import { t } from './locale';
 
 const defaultConfig: Omit<ModalConfig, 'footer'> = {
   logo: '',
@@ -23,8 +24,8 @@ class Modal extends EventTarget {
           <div class="${classes.title}">
             <b></b>
             <p>
-              <span>操作录制基于 PageSpy 技术实现，</span>
-              <a href="https://www.pagespy.org/#/o-spy" target="_blank">查看文档</a>
+              <span>${t.desc1}</span>
+              <a href="https://www.pagespy.org/#/o-spy" target="_blank">${t.desc2}</a>
             </p>
           </div>
         </div>

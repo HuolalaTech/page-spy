@@ -2,6 +2,8 @@ import { isCN } from '@huolala-tech/page-spy-base';
 
 const source = {
   zh: {
+    desc1: '操作录制基于 PageSpy 技术实现，',
+    desc2: '查看文档',
     selectPeriod: '选择时间段',
     title: '离线日志',
     readying: '处理中...',
@@ -19,6 +21,8 @@ const source = {
     export: '导出日志',
   },
   en: {
+    desc1: 'Recording is based on PageSpy, ',
+    desc2: 'view docs',
     selectPeriod: 'Select period',
     title: 'Offline log',
     readying: 'Handling...',
