@@ -119,10 +119,13 @@ export function isClass(obj: unknown): obj is Function {
 
 const CN_IDs = ['zh-CN', 'zh-HK', 'zh-TW', 'zh', 'zh-Hans-CN'];
 export function isCN() {
-  const lang = document?.documentElement.lang;
-  if (lang) return CN_IDs.some((i) => i === lang);
+  if (isBrowser()) {
+    const { lang } = document.documentElement;
+    if (lang) return CN_IDs.some((i) => i === lang);
 
-  return CN_IDs.some((i) => i === navigator?.language);
+    return CN_IDs.some((i) => i === navigator.language);
+  }
+  return false;
 }
 
 type TypedArray =
