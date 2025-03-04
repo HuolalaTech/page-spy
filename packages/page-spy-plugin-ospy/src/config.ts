@@ -1,8 +1,9 @@
 import { CacheMessageItem } from '@huolala-tech/page-spy-plugin-data-harbor/dist/types/harbor/base';
+import { Lang } from '@huolala-tech/page-spy-base';
 import pageSpyLogo from './assets/logo.svg';
-import { t } from './utils/locale';
 
 export interface Config {
+  lang: Lang | null;
   title: string;
   /**
    * Online source: 'https://example.com/xxx.jpg'
@@ -12,15 +13,16 @@ export interface Config {
   logo: string;
   primaryColor: string;
   autoRender: boolean;
-  exportButtonText: string;
+  exportButtonText: string | null;
   onExportButtonClick: ((data: CacheMessageItem[]) => void) | null;
 }
 
 export const defaultConfig: Config = {
+  lang: null,
   title: 'O-Spy',
   logo: pageSpyLogo,
   primaryColor: '#8434E9',
   autoRender: true,
-  exportButtonText: t.export,
+  exportButtonText: null,
   onExportButtonClick: null,
 };

@@ -2,7 +2,7 @@ import type DataHarborPlugin from '@huolala-tech/page-spy-plugin-data-harbor';
 import type { PeriodItem } from '@huolala-tech/page-spy-plugin-data-harbor/dist/types/harbor/base';
 import classes from '../styles/index.module.less';
 import refreshSvg from '../assets/refresh.svg?raw';
-import { t } from './locale';
+import { i18n } from './locale';
 import { formatTime } from '.';
 import { Toast } from './toast';
 import { modal } from './modal';
@@ -29,7 +29,7 @@ export const buildForm = ({ harborPlugin, config }: Params) => {
         <div class="${classes.formItem}">
           <label>
             <span>
-              ${t.selectPeriod}: 
+              ${i18n.t('selectPeriod')}: 
             </span>
             <button class="${classes.refreshButton}" type="button">${refreshSvg}</button>
           </label>
@@ -45,9 +45,9 @@ export const buildForm = ({ harborPlugin, config }: Params) => {
         <!-- 表单项：备注信息 -->
         <div class="${classes.formItem}">
           <label>
-            <span>${t.remark}:</span>
+            <span>${i18n.t('remark')}:</span>
           </label>
-          <textarea name="description" rows="3" placeholder="${t.remarkPlaceholder}"></textarea>
+          <textarea name="description" rows="3" placeholder="${i18n.t('remarkPlaceholder')}"></textarea>
         </div>
       </div>
 
@@ -58,7 +58,7 @@ export const buildForm = ({ harborPlugin, config }: Params) => {
           <span class="${classes.duration}">--</span>
         </div>
         <button type="submit" data-primary>
-          ${config.exportButtonText || t.export}
+          ${config.exportButtonText || i18n.t('export')}
         </button>
       </div>
     </form>`,
@@ -148,7 +148,7 @@ export const buildForm = ({ harborPlugin, config }: Params) => {
   refreshButton.addEventListener('click', () => {
     refreshButton.disabled = true;
     refreshPeriods();
-    Toast.message(t.refreshed);
+    Toast.message(i18n.t('refreshed'));
     refreshButton.disabled = false;
   });
   minThumb.addEventListener('input', () => {
@@ -197,19 +197,19 @@ export const buildForm = ({ harborPlugin, config }: Params) => {
 
     try {
       submit.disabled = true;
-      submit.textContent = t.readying;
+      submit.textContent = i18n.t('readying');
       await harborPlugin!.onOfflineLog('download-periods', {
         ...getSelectedPeriod(),
         remark: `${description.value}`,
       });
 
-      Toast.show('success', t.success);
+      Toast.show('success', i18n.t('success'));
       modal.close();
     } catch (e: any) {
-      submit.textContent = t.fail;
+      submit.textContent = i18n.t('fail');
       Toast.show('error', e.message);
     } finally {
-      submit.textContent = t.export;
+      submit.textContent = i18n.t('export');
       submit.disabled = false;
     }
   });

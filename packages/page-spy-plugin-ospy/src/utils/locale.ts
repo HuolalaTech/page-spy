@@ -1,6 +1,6 @@
-import { isCN } from '@huolala-tech/page-spy-base';
+import { Translation } from '@huolala-tech/page-spy-base';
 
-const source = {
+const locales = {
   zh: {
     desc1: '操作录制基于 PageSpy 技术实现，',
     desc2: '查看文档',
@@ -42,4 +42,6 @@ const source = {
   },
 };
 
-export const t = isCN() ? source.zh : source.en;
+export const i18n = new Translation({
+  locales,
+});

@@ -1,4 +1,4 @@
-import { ConfigBase } from '@huolala-tech/page-spy-base';
+import { ConfigBase, Lang } from '@huolala-tech/page-spy-base';
 import { InitConfigBase } from '@huolala-tech/page-spy-types';
 import type { Command } from 'iseedeadpeople/dist/common';
 import logoUrl from './assets/logo.svg';
@@ -64,6 +64,10 @@ export interface InitConfig extends InitConfigBase {
    * The size of `Command` must be at least 4.
    */
   gesture?: Command | null;
+  /**
+   * Specify language
+   */
+  lang?: Lang | null;
 }
 
 export class Config extends ConfigBase<InitConfig> {
@@ -97,6 +101,7 @@ export class Config extends ConfigBase<InitConfig> {
         title: 'PageSpy',
       },
       gesture: null,
+      lang: null,
     };
 
     if (!Config.scriptLink) {

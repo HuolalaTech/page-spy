@@ -117,11 +117,12 @@ export function isClass(obj: unknown): obj is Function {
   return typeof obj === 'function' && typeof obj.prototype !== 'undefined';
 }
 
+const CN_IDs = ['zh-CN', 'zh-HK', 'zh-TW', 'zh', 'zh-Hans-CN'];
 export function isCN() {
-  const langs = navigator.languages;
-  return ['zh-CN', 'zh-HK', 'zh-TW', 'zh', 'zh-Hans-CN'].some((l) => {
-    return langs.includes(l);
-  });
+  const lang = document?.documentElement.lang;
+  if (lang) return CN_IDs.some((i) => i === lang);
+
+  return CN_IDs.some((i) => i === navigator?.language);
 }
 
 type TypedArray =

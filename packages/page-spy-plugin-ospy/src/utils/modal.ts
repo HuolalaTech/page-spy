@@ -2,7 +2,7 @@ import { isString } from '@huolala-tech/page-spy-base';
 import type { ModalConfig, ShowParams } from '@huolala-tech/page-spy-types';
 import classes from '../styles/modal.module.less';
 import closeSvg from '../assets/close.svg';
-import { t } from './locale';
+import { i18n } from './locale';
 
 const defaultConfig: Omit<ModalConfig, 'footer'> = {
   logo: '',
@@ -14,31 +14,33 @@ const defaultConfig: Omit<ModalConfig, 'footer'> = {
 class Modal extends EventTarget {
   private config = defaultConfig;
 
-  private template = `
-  <div class="${classes.modal}">
-    <div class="${classes.content}">
-      <!-- Header -->
-      <div class="${classes.header}">
-        <div class="${classes.headerLeft}">
-          <img class="${classes.logo}" />
-          <div class="${classes.title}">
-            <b></b>
-            <p>
-              <span>${t.desc1}</span>
-              <a href="https://www.pagespy.org/#/o-spy" target="_blank">${t.desc2}</a>
-            </p>
+  private get template() {
+    return `
+      <div class="${classes.modal}">
+        <div class="${classes.content}">
+          <!-- Header -->
+          <div class="${classes.header}">
+            <div class="${classes.headerLeft}">
+              <img class="${classes.logo}" />
+              <div class="${classes.title}">
+                <b></b>
+                <p>
+                  <span>${i18n.t('desc1')}</span>
+                  <a href="https://www.pagespy.org/#/o-spy" target="_blank">${i18n.t('desc2')}</a>
+                </p>
+              </div>
+            </div>
+            <div class="${classes.headerRight}">
+              <img class="${classes.close}" src="${closeSvg}" />
+            </div>
           </div>
-        </div>
-        <div class="${classes.headerRight}">
-          <img class="${classes.close}" src="${closeSvg}" />
+
+          <!-- Main content -->
+          <div class="${classes.main}"></div>
         </div>
       </div>
-
-      <!-- Main content -->
-      <div class="${classes.main}"></div>
-    </div>
-  </div>
-  `;
+      `;
+  }
 
   public root: HTMLDivElement | null = null;
 

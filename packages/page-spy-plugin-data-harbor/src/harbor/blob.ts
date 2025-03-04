@@ -1,7 +1,7 @@
 import { isBrowser, isNumber } from '@huolala-tech/page-spy-base/dist/utils';
 import { isValidMaximum } from '../utils';
 import { CacheMessageItem, PeriodActionParams, PeriodItem } from './base';
-import { t } from '../assets/locale';
+import { i18n } from '../assets/locale';
 
 interface HarborConfig {
   maximum: number;
@@ -123,7 +123,7 @@ export class BlobHarbor {
       result = this.container.slice(fData, tData);
     } else {
       if (fStock === null) {
-        throw new Error(t.invalidPeriods);
+        throw new Error(i18n.t('invalidPeriods'));
       }
 
       // <stock> [
