@@ -31,7 +31,7 @@ import {
   WholeActionParams,
 } from './harbor/base';
 import { buildModal } from './utils/modal';
-import { t } from './assets/locale';
+import { i18n } from './assets/locale';
 
 interface DataHarborConfig {
   // Specify the maximum bytes of single harbor's container.
@@ -113,7 +113,10 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     this.$pageSpyConfig = config;
     this.$socketStore = socketStore;
 
-    const { api, enableSSL, offline } = config;
+    const { api, enableSSL, offline, lang } = config;
+    if (lang) {
+      i18n.setLang(lang);
+    }
     if (!offline && !api) {
       psLog.warn(
         "Cannot upload log to PageSpy for miss 'api' configuration. See: ",
@@ -181,7 +184,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     let data: CacheMessageItem[];
     if (isPeriodAction(type)) {
       if (!isPeriodActionParams(params) || params.startTime > params.endTime) {
-        throw new Error(t.invalidParams);
+        throw new Error(i18n.t('invalidParams'));
       }
       data = await this.harbor.getPeriodData(params);
 
@@ -196,7 +199,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
         (i) => i.timestamp >= validStartTime && i.timestamp <= params.endTime,
       ).length;
       if (validEventCount < 5) {
-        throw new Error(t.eventCountNotEnough);
+        throw new Error(i18n.t('eventCountNotEnough'));
       }
 
       data.push({

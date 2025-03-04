@@ -10,7 +10,7 @@ import {
   successSvg,
   copySvg,
 } from '../assets/svg';
-import { t } from '../assets/locale';
+import { i18n } from '../assets/locale';
 import { PeriodItem } from '../harbor/base';
 import { formatTime } from './index';
 import type DataHarborPlugin from '../index';
@@ -33,7 +33,7 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
     <!-- Add button for default modal -->
     <button class="page-spy-btn" data-dashed id="open-log-action">
       ${cropSvg}
-      <span>${t.title}</span>
+      <span>${i18n.t('title')}</span>
     </button>
 
     <!-- Show modal content on button#open-log-action clicked -->
@@ -45,7 +45,7 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
       <div class="${classes.periodInfo}">
         <div class="${classes.label}">
           <div class="${classes.periodTips}">
-            <b>${t.selectPeriod}</b>
+            <b>${i18n.t('selectPeriod')}</b>
           </div>
           <button class="${classes.refreshButton}">${refreshSvg}</button>
         </div>
@@ -58,30 +58,30 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
         </div>
       </div>
       <div class="${classes.remarkInfo}">
-        <div class="${classes.label}">${t.remark}</div>
-        <textarea rows="5" id="harbor-remark" placeholder="${t.remarkPlaceholder}"></textarea>
+        <div class="${classes.label}">${i18n.t('remark')}</div>
+        <textarea rows="5" id="harbor-remark" placeholder="${i18n.t('remarkPlaceholder')}"></textarea>
       </div>
     </div>
 
     <!-- Upload / Download log button -->
     <button class="page-spy-btn" data-primary id="upload-periods">
       ${uploadPeriodsSvg}
-      <span>${t.uploadPeriods}</span>
+      <span>${i18n.t('uploadPeriods')}</span>
     </button>
     <button class="page-spy-btn" id="download-periods">
       ${downloadPeriodsSvg}
-      <span>${t.downloadPeriods}</span>
+      <span>${i18n.t('downloadPeriods')}</span>
     </button>
 
     <!-- Result -->
     <div class="${classes.result}">
       ${successSvg}
-      <b>${t.success}</b>
+      <b>${i18n.t('success')}</b>
     </div>
 
     <button class="page-spy-btn" data-primary id="copy-replay-url" data-url>
       ${copySvg}
-      <span>${t.copyUrl}</span>
+      <span>${i18n.t('copyUrl')}</span>
     </button>
     `,
     'text/html',
@@ -168,7 +168,7 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
   refreshButton.addEventListener('click', () => {
     refreshButton.disabled = true;
     refreshPeriods();
-    toast.message(t.refreshed);
+    toast.message(i18n.t('refreshed'));
     refreshButton.disabled = false;
   });
   minThumb.addEventListener('input', function () {
@@ -206,7 +206,7 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
   copyUrlButton.addEventListener('click', () => {
     const { url } = copyUrlButton.dataset;
     const ok = copy(url!);
-    toast.message(ok ? t.copied : t.copyFailed);
+    toast.message(ok ? i18n.t('copied') : i18n.t('copyFailed'));
     modal.close();
   });
   uploadPeriodsButton.addEventListener('click', async () => {
@@ -233,7 +233,7 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
     try {
       downloadPeriodsButton.disabled = true;
       await plugin.onOfflineLog('download-periods', getSelectedPeriod());
-      toast.message(t.success);
+      toast.message(i18n.t('success'));
     } catch (e: any) {
       psLog.error(e);
       toast.message(e.message);

@@ -1,6 +1,6 @@
-import { isCN } from '@huolala-tech/page-spy-base/dist/utils';
+import { Translation } from '@huolala-tech/page-spy-base';
 
-const source = {
+const locales = {
   zh: {
     title: '离线日志',
     uploadPeriods: '上传时间段',
@@ -52,4 +52,6 @@ const source = {
   },
 };
 
-export const t = isCN() ? source.zh : source.en;
+export const i18n = new Translation({
+  locales,
+});

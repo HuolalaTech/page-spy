@@ -1,6 +1,6 @@
 import { psLog } from '@huolala-tech/page-spy-base/dist/utils';
 import { CacheMessageItem } from '../harbor/base';
-import { t } from '../assets/locale';
+import { i18n } from '../assets/locale';
 import { formatFilename } from './index';
 
 export type UploadArgs = {
@@ -68,5 +68,5 @@ export const startDownload = async ({
   root.removeChild(a);
   URL.revokeObjectURL(url);
 
-  psLog.info(`${t.success}`);
+  psLog.info(`${i18n.t('success')}`);
 };

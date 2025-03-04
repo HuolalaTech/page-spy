@@ -1,6 +1,6 @@
-import { isCN } from '@huolala-tech/page-spy-base';
+import { Translation } from '@huolala-tech/page-spy-base';
 
-const source = {
+const locales = {
   zh: {
     copyLink: '复制在线调试链接',
     copied: '复制成功',
@@ -13,6 +13,6 @@ const source = {
   },
 };
 
-const locales = isCN() ? source.zh : source.en;
-
-export default locales;
+export const i18n = new Translation({
+  locales,
+});

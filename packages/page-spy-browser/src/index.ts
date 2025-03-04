@@ -32,12 +32,12 @@ import type { UElement } from './helpers/moveable';
 import { moveable } from './helpers/moveable';
 import { Config, nodeId } from './config';
 import { toast } from './helpers/toast';
-import locales from './assets/locales';
 import modalLogoSvg from './assets/modal-logo.svg';
 import copySvg from './assets/copy.svg';
 import { modal } from './helpers/modal';
 import classes from './assets/styles/index.module.less';
 import { version } from '../package.json';
+import { i18n } from './assets/locales';
 
 type UpdateConfig = {
   title?: string;
@@ -136,25 +136,13 @@ class PageSpy {
     }
   }
 
-  private updateConfiguration() {
-    const { messageCapacity, offline, useSecret } = this.config.get();
-    if (useSecret === true) {
-      const cache = JSON.parse(
-        sessionStorage.getItem(ROOM_SESSION_KEY) as string,
-      );
-      this.config.set('secret', cache?.secret || getAuthSecret());
-    }
-    socketStore.connectable = true;
-    socketStore.getPageSpyConfig = () => this.config.get();
-    socketStore.getClient = () => PageSpy.client;
-    socketStore.isOffline = offline;
-    socketStore.messageCapacity = messageCapacity;
-  }
-
   private async init(ic: InitConfig) {
     PageSpy.instance = this;
 
     const config = this.config.mergeConfig(ic);
+    if (config.lang) {
+      i18n.setLang(config.lang);
+    }
     this.updateConfiguration();
     this.triggerPlugins('onInit', { config, socketStore });
 
@@ -183,6 +171,21 @@ class PageSpy {
     if (config.autoRender) {
       this.render();
     }
+  }
+
+  private updateConfiguration() {
+    const { messageCapacity, offline, useSecret } = this.config.get();
+    if (useSecret === true) {
+      const cache = JSON.parse(
+        sessionStorage.getItem(ROOM_SESSION_KEY) as string,
+      );
+      this.config.set('secret', cache?.secret || getAuthSecret());
+    }
+    socketStore.connectable = true;
+    socketStore.getPageSpyConfig = () => this.config.get();
+    socketStore.getClient = () => PageSpy.client;
+    socketStore.isOffline = offline;
+    socketStore.messageCapacity = messageCapacity;
   }
 
   private cacheIsInvalid() {
@@ -362,7 +365,7 @@ class PageSpy {
       <!-- Default button for modal -->
       <button class="page-spy-btn" data-primary id="page-spy-copy-link">
         <img src="${copySvg}" alt="Copy" />
-        <span>${locales.copyLink}</span>
+        <span>${i18n.t('copyLink')}</span>
       </button>
     `,
       'text/html',
@@ -401,7 +404,7 @@ class PageSpy {
         text += `&secret=${secret}`;
       }
       const copied = copy(text);
-      const message = copied ? locales.copied : locales.copyFailed;
+      const message = copied ? i18n.t('copied') : i18n.t('copyFailed');
       modal.close();
       toast.message(message);
     });

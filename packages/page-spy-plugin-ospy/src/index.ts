@@ -13,6 +13,7 @@ import { modal } from './utils/modal';
 import { ROOT_ID } from './utils/constant';
 import { Config, defaultConfig } from './config';
 import closeSvg from './assets/close.svg';
+import { i18n } from './utils/locale';
 
 class OSpy {
   $pageSpy: PageSpy | null = null;
@@ -43,6 +44,9 @@ class OSpy {
       ...defaultConfig,
       ...userCfg,
     };
+    if (this.config.lang) {
+      i18n.setLang(this.config.lang);
+    }
     this.init();
     this.render();
   }
