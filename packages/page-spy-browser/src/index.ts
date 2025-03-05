@@ -324,6 +324,7 @@ class PageSpy {
       secret,
       primaryColor,
       modal: modalConfig,
+      offline,
     } = config;
 
     const doc = new DOMParser().parseFromString(
@@ -408,6 +409,10 @@ class PageSpy {
       modal.close();
       toast.message(message);
     });
+    if (offline) {
+      copyLink.disabled = true;
+      copyLink.title = 'In Offline Mode';
+    }
     // 配置 modal 默认显示内容
     modal.build({
       logo: modalConfig.logo || modalLogoSvg,
