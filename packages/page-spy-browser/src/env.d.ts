@@ -48,4 +48,6 @@ declare global {
   var cookieStore: CookieStoreEventTarget;
 
   var Modernizr: any;
+
+  var pageSpyStyles: HTMLStyleElement[];
 }

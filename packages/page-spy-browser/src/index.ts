@@ -379,6 +379,11 @@ class PageSpy {
 
     const root = $(`#${nodeId}`) as HTMLDivElement;
     root.style.setProperty('--primary-color', primaryColor);
+
+    // pageSpyStyles 是 rollup.config.mjs 中 inject 的样式
+    window.pageSpyStyles?.forEach((style) => {
+      root.appendChild(style.cloneNode(true));
+    });
     this.root = root;
 
     const logo = $('.page-spy-logo') as UElement;

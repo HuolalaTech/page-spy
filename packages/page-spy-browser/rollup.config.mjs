@@ -28,6 +28,21 @@ const plugins = [
     },
     extensions: ['.css', '.less'],
     extract: false,
+    inject: (css) => {
+      const code = `(function() {
+        const style = document.createElement('style');
+        style.setAttribute('data-page-spy-style', 'true');
+        style.textContent = ${css};
+
+        if (!window.pageSpyStyles || !Array.isArray(window.pageSpyStyles)) {
+          window.pageSpyStyles = [];
+        }
+
+        window.pageSpyStyles.push(style);
+      })();
+      `;
+      return code;
+    },
     plugins: [postcssPresetEnv()],
   }),
   terser(),
