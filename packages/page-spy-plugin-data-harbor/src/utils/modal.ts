@@ -59,7 +59,7 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
       </div>
       <div class="${classes.remarkInfo}">
         <div class="${classes.label}">${i18n.t('remark')}</div>
-        <textarea rows="5" id="harbor-remark" placeholder="${i18n.t('remarkPlaceholder')}"></textarea>
+        <textarea rows="4" id="harbor-remark" placeholder="${i18n.t('remarkPlaceholder')}"></textarea>
       </div>
     </div>
 

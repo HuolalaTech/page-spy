@@ -56,6 +56,21 @@ const plugins = [
     },
     extensions: ['.css', '.less'],
     extract: false,
+    inject: (css) => {
+      const code = `(function() {
+        const style = document.createElement('style');
+        style.setAttribute('data-harbor-style', 'true');
+        style.textContent = ${css};
+
+        if (!window.dataHarborStyles || !Array.isArray(window.dataHarborStyles)) {
+          window.dataHarborStyles = [];
+        }
+
+        window.dataHarborStyles.push(style);
+      })();
+      `;
+      return code;
+    },
     plugins: [postcssPresetEnv()],
   }),
 ];

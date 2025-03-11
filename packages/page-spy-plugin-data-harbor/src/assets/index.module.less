@@ -1,8 +1,11 @@
 @font-size: 14px;
+@font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC',
+  'Microsoft YaHei', Arial, 'Source Han Sans SC', 'Noto Sans CJK SC', sans-serif;
 
 .content {
   padding: (20em / @font-size) 0;
-  --mono-font: 'Roboto Mono', Menlo, 'Fira Mono', 'Source Code Pro', monospace;
+  --mono-font: 'Roboto Mono', Arial, Menlo, 'Fira Mono', 'Source Code Pro',
+    monospace;
 }
 
 .timeInfo {
@@ -211,6 +214,10 @@
     box-sizing: border-box;
     border: 1px solid #999;
     outline: none;
+    color: #333;
+    font-size: (14em / @font-size);
+    line-height: 1.5;
+    font-family: @font-family;
     &:focus,
     &:active {
       border-color: var(--primary-color);

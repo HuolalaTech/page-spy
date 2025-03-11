@@ -158,9 +158,14 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     );
   }
 
-  public onMounted({ modal, toast }: OnMountedParams<InitConfigBase>) {
+  public onMounted({ modal, toast, root }: OnMountedParams<InitConfigBase>) {
     if (DataHarborPlugin.hasMounted) return;
     DataHarborPlugin.hasMounted = true;
+
+    // dataHarborStyles 是 rollup.config.mjs 中 inject 的样式
+    window.dataHarborStyles?.forEach((style) => {
+      root.appendChild(style.cloneNode(true));
+    });
 
     if (modal && toast) {
       buildModal({

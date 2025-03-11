@@ -26,6 +26,7 @@ declare namespace H {
 interface Window {
   $pageSpy: any;
   PageSpy: any;
+  dataHarborStyles: HTMLStyleElement[];
 }
 
 declare module '*.less' {
