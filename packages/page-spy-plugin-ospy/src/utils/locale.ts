@@ -19,6 +19,8 @@ const locales = {
     minutes: '分钟',
     eventCountNotEnough: '时间段内的数据量不足以回放',
     export: '导出日志',
+    paused: '已暂停',
+    pausedInfoText: '暂停期间数据不会被记录',
   },
   en: {
     desc1: 'Recording is based on PageSpy, ',
@@ -39,6 +41,8 @@ const locales = {
     eventCountNotEnough:
       'The data within the time period is insufficient for playback',
     export: 'Export log',
+    paused: 'Paused',
+    pausedInfoText: 'Data will not be recorded during pause',
   },
 };
 

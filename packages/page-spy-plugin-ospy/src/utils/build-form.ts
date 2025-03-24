@@ -2,6 +2,8 @@ import type DataHarborPlugin from '@huolala-tech/page-spy-plugin-data-harbor';
 import type { PeriodItem } from '@huolala-tech/page-spy-plugin-data-harbor/dist/types/harbor/base';
 import classes from '../styles/index.module.less';
 import refreshSvg from '../assets/refresh.svg?raw';
+import pauseSvg from '../assets/pause.svg?raw';
+import infoSvg from '../assets/info.svg?raw';
 import { i18n } from './locale';
 import { formatTime } from '.';
 import { Toast } from './toast';
@@ -54,8 +56,20 @@ export const buildForm = ({ harborPlugin, config }: Params) => {
       <!-- 底部 -->
       <div class="${classes.footer}">
         <div class="${classes.recorder}">
-          <b>REC</b>
-          <span class="${classes.duration}">--</span>
+          <div>
+            <b>REC</b>
+            <span class="${classes.duration}">--</span>
+          </div>
+          <div>
+            ${pauseSvg}
+            <b>${i18n.t('paused')}</b>
+            <div class="${classes.pausedInfo}">
+              ${infoSvg}
+              <div class="${classes.pausedInfoText}">
+                <span>${i18n.t('pausedInfoText')}</span>
+              </div>
+            </div>
+          </div>
         </div>
         <button type="submit" data-primary>
           ${config.exportButtonText || i18n.t('export')}
@@ -73,17 +87,39 @@ export const buildForm = ({ harborPlugin, config }: Params) => {
   const range = $c(classes.range) as HTMLDivElement;
   const minThumb = $('#period-min') as HTMLInputElement;
   const maxThumb = $('#period-max') as HTMLInputElement;
+  const recorder = $c(classes.recorder) as HTMLDivElement;
   const duration = $c(classes.duration) as HTMLParagraphElement;
+  const pausedInfo = $c(classes.pausedInfo) as HTMLDivElement;
+  const recorderFn = () => {
+    const { isPaused, startTimestamp } = harborPlugin;
+    if (isPaused) {
+      recorder.classList.add(classes.paused);
+      return;
+    }
 
-  setInterval(() => {
-    if (harborPlugin.startTimestamp && duration) {
+    recorder.classList.remove(classes.paused);
+    if (startTimestamp && duration) {
       const seconds = parseInt(
         String((Date.now() - harborPlugin.startTimestamp) / 1000),
         10,
       );
       duration.textContent = formatTime(seconds);
     }
-  }, 1000);
+  };
+  recorderFn();
+  setInterval(recorderFn, 1000);
+  recorder.addEventListener('click', () => {
+    if (harborPlugin.isPaused) {
+      harborPlugin.resume();
+    } else {
+      harborPlugin.pause();
+    }
+    recorderFn();
+  });
+  pausedInfo.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+  });
 
   const periodInfoRef: {
     max: number;
