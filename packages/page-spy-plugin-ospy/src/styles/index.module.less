@@ -6,6 +6,7 @@
     font-family: @font-family;
     * {
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
   }
 }
@@ -279,7 +280,7 @@
         background-color: #eaeaea;
       }
       &:active {
-        transform: scale(0.95);
+        transform: scale(0.97);
       }
       &.paused {
         > div {
@@ -337,7 +338,7 @@
               position: absolute;
               left: 0;
               top: 0;
-              transform: translate(-45%, -135%);
+              transform: translate(-25%, -135%);
               white-space: nowrap;
               font-size: (14em / @font-size);
               color: #333;
@@ -349,9 +350,9 @@
               &::before {
                 content: '';
                 position: absolute;
-                left: 50%;
+                left: 25%;
                 bottom: 0;
-                transform: translate(-50%, 30%) rotate(45deg);
+                transform: translate(0, 30%) rotate(45deg);
                 width: (12em / @font-size);
                 height: (12em / @font-size);
                 background-color: #fff;
