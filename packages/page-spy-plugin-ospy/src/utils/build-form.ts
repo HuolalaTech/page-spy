@@ -100,7 +100,7 @@ export const buildForm = ({ harborPlugin, config }: Params) => {
     recorder.classList.remove(classes.paused);
     if (startTimestamp && duration) {
       const seconds = parseInt(
-        String((Date.now() - harborPlugin.startTimestamp) / 1000),
+        String((Date.now() - startTimestamp) / 1000),
         10,
       );
       duration.textContent = formatTime(seconds);

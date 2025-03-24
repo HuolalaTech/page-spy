@@ -24,6 +24,8 @@ const locales = {
     invalidParams: '调用 onOfflineLog() 的参数不正确',
     copyUrl: '复制调试链接',
     copyFailed: '复制失败',
+    paused: '已暂停',
+    pausedInfoText: '暂停期间数据不会被记录',
   },
   en: {
     title: 'Offline log',
@@ -49,6 +51,8 @@ const locales = {
     invalidParams: 'Incorrect params which you call onOfflineLog()',
     copyUrl: 'Copy URL',
     copyFailed: 'Copy failed',
+    paused: 'Paused',
+    pausedInfoText: 'Data will not be recorded during pause',
   },
 };
 

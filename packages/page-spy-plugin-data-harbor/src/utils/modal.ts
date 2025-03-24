@@ -9,6 +9,8 @@ import {
   refreshSvg,
   successSvg,
   copySvg,
+  pauseSvg,
+  infoSvg,
 } from '../assets/svg';
 import { i18n } from '../assets/locale';
 import { PeriodItem } from '../harbor/base';
@@ -39,8 +41,21 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
     <!-- Show modal content on button#open-log-action clicked -->
     <div class="${classes.content}">
       <div class="${classes.timeInfo}">
-        <div class="${classes.recorder}"></div>
-        <div class="${classes.duration}"></div>
+        <div class="${classes.recorder}">
+          <div>
+            <span class="${classes.duration}">--</span>
+          </div>
+          <div>
+            <span class="${classes.pauseIcon}">${pauseSvg}</span>
+            <b>${i18n.t('paused')}</b>
+            <div class="${classes.pausedInfo}">
+              <span class="${classes.infoIcon}">${infoSvg}</span>
+              <div class="${classes.pausedInfoText}">
+                <span>${i18n.t('pausedInfoText')}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="${classes.periodInfo}">
         <div class="${classes.label}">
@@ -103,6 +118,9 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
   const downloadPeriodsButton = $('#download-periods') as HTMLButtonElement;
   const resultContent = $c(classes.result) as HTMLDivElement;
   const copyUrlButton = $('#copy-replay-url') as HTMLButtonElement;
+  const recorder = $c(classes.recorder) as HTMLDivElement;
+  const duration = $c(classes.duration) as HTMLSpanElement;
+  const pausedInfo = $c(classes.pausedInfo) as HTMLDivElement;
 
   const periodInfoRef: {
     max: number;
@@ -243,21 +261,46 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
   });
 
   let durationTimer: ReturnType<typeof setInterval> | null = null;
-  openLogAction?.addEventListener('click', () => {
-    if (durationTimer) clearInterval(durationTimer);
-
-    const duration = modalContent?.querySelector(`.${classes.duration}`);
-    if (duration) {
-      const fn = () => {
-        const seconds = parseInt(
-          String((Date.now() - plugin.startTimestamp) / 1000),
-          10,
-        );
-        duration.textContent = formatTime(seconds);
-      };
-      fn();
-      durationTimer = setInterval(fn, 1000);
+  const recorderFn = () => {
+    const { isPaused, startTimestamp } = plugin;
+    if (isPaused) {
+      recorder.classList.add(classes.paused);
+      return;
     }
+
+    recorder.classList.remove(classes.paused);
+    if (startTimestamp && duration) {
+      const seconds = parseInt(
+        String((Date.now() - startTimestamp) / 1000),
+        10,
+      );
+      duration.textContent = formatTime(seconds);
+    }
+  };
+
+  recorder.addEventListener('click', () => {
+    if (plugin.isPaused) {
+      plugin.resume();
+    } else {
+      plugin.pause();
+    }
+    recorderFn();
+  });
+  pausedInfo.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+  });
+  openLogAction?.addEventListener('click', () => {
+    if (!plugin.$pageSpyConfig?.api) {
+      uploadPeriodsButton.disabled = true;
+    } else {
+      uploadPeriodsButton.disabled = false;
+    }
+
+    if (durationTimer) clearInterval(durationTimer);
+    recorderFn();
+    durationTimer = setInterval(recorderFn, 1000);
+
     refreshPeriods();
 
     modal.show({
