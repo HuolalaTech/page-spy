@@ -1,11 +1,7 @@
 @font-size: 14px;
-@font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC',
-  'Microsoft YaHei', Arial, 'Source Han Sans SC', 'Noto Sans CJK SC', sans-serif;
 
 .content {
-  padding: (20em / @font-size) 0;
-  --mono-font: 'Roboto Mono', Menlo, 'Fira Mono', Arial, 'Source Code Pro',
-    monospace;
+  padding-top: var(--block-padding);
 }
 
 .timeInfo {
@@ -14,16 +10,17 @@
   align-items: center;
 
   .recorder {
-    padding: (4em / @font-size) (6em / @font-size);
-    font-size: (14em / @font-size);
+    padding: var(--input-padding-lg);
+    font-size: var(--text-base);
     border-radius: 999px;
     transition:
       background-color 0.15s ease,
       transform 0.15s ease;
     cursor: pointer;
     user-select: none;
+    background-color: hsl(0, 0%, 94%);
     &:hover {
-      background-color: #eaeaea;
+      background-color: hsl(0, 0%, 90%);
     }
     &:active {
       transform: scale(0.95);
@@ -39,7 +36,7 @@
       }
     }
     > div {
-      gap: (8em / @font-size);
+      gap: var(--input-padding-lg);
       &:nth-child(1) {
         display: flex;
         align-items: center;
@@ -62,31 +59,39 @@
           }
         }
         .duration {
-          color: #333;
-          font-size: (32em / @font-size);
+          display: flex;
+          align-items: center;
+          font-size: var(--text-3xl);
           font-weight: 700;
-          font-family: var(--mono-font);
+          span {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: round((9em / @font-size), 2);
+            &.colon {
+              width: round((5em / @font-size), 2);
+            }
+          }
         }
       }
       &:nth-child(2) {
         display: none;
         align-items: center;
-        color: #333;
+        color: var(--text-primary);
         b {
-          color: #333;
-          font-size: (32em / @font-size);
+          color: var(--text-primary);
+          font-size: var(--text-3xl);
           font-weight: 700;
-          font-family: var(--mono-font);
         }
         svg {
           width: 1em;
           height: 1em;
         }
         .pauseIcon {
-          font-size: (32em / @font-size);
+          font-size: var(--text-3xl);
         }
         .infoIcon {
-          font-size: (18em / @font-size);
+          font-size: var(--text-lg);
         }
 
         .pausedInfo {
@@ -102,14 +107,14 @@
             position: absolute;
             left: 0;
             top: 0;
-            transform: translate(-65%, -150%);
+            transform: translate(-65%, -170%);
             white-space: nowrap;
-            font-size: (14em / @font-size);
-            color: #333;
+            font-size: var(--text-base);
+            color: var(--text-primary);
             background-color: #fff;
-            padding: (8em / @font-size);
-            border-radius: (4em / @font-size);
-            box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.2);
+            padding: var(--input-padding);
+            border-radius: round((4em / @font-size), 2);
+            box-shadow: var(--dark-shadow);
             z-index: 1;
             &::before {
               content: '';
@@ -117,11 +122,12 @@
               left: 65%;
               bottom: 0;
               transform: translate(0, 30%) rotate(45deg);
-              width: (12em / @font-size);
-              height: (12em / @font-size);
+              @size: round((12em / @font-size), 2);
+              width: @size;
+              height: @size;
               background-color: #fff;
               border-radius: 2px;
-              z-index: 1;
+              z-index: -1;
             }
           }
         }
@@ -131,39 +137,31 @@
 }
 
 .periodInfo {
-  margin-top: (20em / @font-size);
+  margin-top: round((20em / @font-size), 2);
   .label {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: (32em / @font-size);
+    margin-bottom: round((32em / @font-size), 2);
     .periodTips {
       display: flex;
       align-items: center;
-      gap: (4em / @font-size);
+      gap: var(--gap);
       b {
         font-size: 1em;
-        color: #333;
+        color: var(--text-primary);
       }
       span {
-        color: #888;
-        font-size: (12em / @font-size);
+        color: var(--text-secondary);
+        font-size: var(--text-sm);
       }
     }
-    .refreshButton {
-      background: none;
-      border: none;
-      outline: none;
+    .refreshIcon {
       cursor: pointer;
-      &:disabled {
-        cursor: not-allowed;
-        svg {
-          color: #888;
-        }
-      }
       svg {
-        width: (24em / @font-size);
-        height: (24em / @font-size);
+        @size: round((24em / @font-size), 2);
+        width: @size;
+        height: @size;
         color: var(--primary-color);
       }
     }
@@ -173,17 +171,18 @@
     width: 92%;
     margin: 0 auto;
 
-    @size: (24em / @font-size);
+    @size: round((24em / @font-size), 2);
     --thumb-size: @size;
     --thumb-shadow: 0 0 0 5px var(--primary-color) inset, 0 0 0 99px white inset;
     --thumb-shadow-hover: 0 0 0 7px var(--primary-color) inset,
       0 0 0 99px white inset;
-    --thumb-shadow-disabled: 0 0 0 5px #888 inset, 0 0 0 99px white inset;
+    --thumb-shadow-disabled: 0 0 0 5px var(--disabled-color) inset,
+      0 0 0 99px white inset;
     --track-size: calc(var(--thumb-size) / 2);
     &.disabled {
       cursor: not-allowed;
       .track .range {
-        background-color: #d7d7d7;
+        background-color: var(--disabled-color);
       }
       input {
         &:disabled {
@@ -203,7 +202,7 @@
     .track {
       width: 100%;
       height: var(--track-size);
-      background-color: #ddd;
+      background-color: var(--divider-color);
       border-radius: var(--track-size);
 
       .range {
@@ -232,10 +231,9 @@
           position: absolute;
           top: calc(var(--thumb-size) * -1);
           transition: top 0.15s ease-in-out;
-          font-size: 1em;
+          font-size: var(--text-base);
           font-weight: 500;
-          font-family: var(--mono-font);
-          color: #999;
+          color: var(--text-placeholder);
         }
         &::before {
           content: var(--min-text);
@@ -270,11 +268,11 @@
         width: var(--thumb-size);
         height: var(--thumb-size);
         border-radius: var(--thumb-size);
-        background-color: #fff;
+        background-color: white;
         box-shadow: var(--thumb-shadow);
         cursor: grab;
         transition: 0.15s;
-        border: (2em / @font-size) solid white;
+        border: round((2em / @font-size), 2) solid white;
       }
       &::-webkit-slider-thumb {
         .thumb-mixin();
@@ -290,25 +288,25 @@
 }
 
 .remarkInfo {
-  margin-top: (20em / @font-size);
+  margin-top: round((20em / @font-size), 2);
   .label {
-    margin-bottom: (12em / @font-size);
+    margin-bottom: round((12em / @font-size), 2);
     font-size: 1em;
     font-weight: 700;
-    color: #333;
+    color: var(--text-primary);
   }
   textarea {
     width: 100%;
-    padding: (6em / @font-size) (8em / @font-size);
-    background-color: #fcfcfc;
-    border-radius: (4em / @font-size);
+    padding: var(--input-padding);
+    background-color: hsl(0, 0%, 95%);
+    border-radius: round((4em / @font-size), 2);
     box-sizing: border-box;
-    border: 1px solid #999;
+    border: var(--border);
     outline: none;
-    color: #333;
-    font-size: (14em / @font-size);
+    color: var(--text-primary);
+    font-size: var(--text-base);
     line-height: 1.5;
-    font-family: @font-family;
+    font-family: var(--font-family);
     &:focus,
     &:active {
       border-color: var(--primary-color);
@@ -320,14 +318,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: (12em / @font-size);
-  padding-block: (12em / @font-size);
+  gap: var(--gap-lg);
+  padding-block: var(--gap-lg);
   svg {
-    width: (40em / @font-size);
-    height: (40em / @font-size);
+    @size: round((40em / @font-size), 2);
+    width: @size;
+    height: @size;
     color: var(--primary-color);
   }
   b {
-    font-size: (18em / @font-size);
+    font-size: var(--text-lg);
   }
 }

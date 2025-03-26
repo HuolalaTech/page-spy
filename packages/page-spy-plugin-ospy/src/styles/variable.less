@@ -20,10 +20,6 @@
     border-color: var(--primary-color);
     background-color: var(--primary-color);
     color: white;
-    &:active {
-      border-color: hsl(var(--hue), 100%, 60%);
-      background-color: hsl(var(--hue), 100%, 60%);
-    }
   }
   &[data-dashed] {
     border-style: dashed;
@@ -33,6 +29,9 @@
     background-color: var(--disabled-color);
     color: white;
     cursor: not-allowed;
+  }
+  &:active {
+    opacity: 0.7;
   }
   img,
   svg {

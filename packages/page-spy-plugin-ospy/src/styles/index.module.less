@@ -8,7 +8,8 @@
     --text-primary: hsl(0, 0%, 10%);
     --text-secondary: hsl(0, 0%, 30%);
     --text-placeholder: hsl(0, 0%, 60%);
-    --border-color: hsl(0, 0%, 90%);
+    --divider-color: hsl(0, 0%, 90%);
+    --border-color: hsl(0, 0%, 70%);
     --disabled-color: hsl(0, 0%, 75%);
 
     // size
@@ -16,6 +17,8 @@
     --text-sm: round((12em / @font-size), 2);
     --text-lg: round((16em / @font-size), 2);
     --text-xl: round((20em / @font-size), 2);
+    --text-2xl: round((24em / @font-size), 2);
+    --text-3xl: round((32em / @font-size), 2);
     --input-padding: round((6em / @font-size), 2) round((8em / @font-size), 2);
     --input-padding-lg: round((8em / @font-size), 2)
       round((12em / @font-size), 2);
@@ -154,21 +157,11 @@
     }
   }
   .refreshIcon {
-    min-width: auto;
-    padding: 0;
-    background: none;
-    border: none;
-    outline: none;
     cursor: pointer;
-    &:disabled {
-      cursor: not-allowed;
-      svg {
-        color: var(--disabled-color);
-      }
-    }
     svg {
-      width: round((24em / @font-size), 2);
-      height: round((24em / @font-size), 2);
+      @size: round((24em / @font-size), 2);
+      width: @size;
+      height: @size;
       color: var(--primary-color);
     }
   }
@@ -208,7 +201,7 @@
     .track {
       width: 100%;
       height: var(--track-size);
-      background-color: hsl(0, 0%, 90%);
+      background-color: var(--divider-color);
       border-radius: var(--track-size);
 
       .range {
@@ -298,7 +291,7 @@
     justify-content: space-between;
     align-items: center;
     padding: var(--block-padding);
-    border-top: var(--border);
+    border-top: 1px solid var(--divider-color);
     background-color: white;
     .recorder {
       font-size: var(--text-base);

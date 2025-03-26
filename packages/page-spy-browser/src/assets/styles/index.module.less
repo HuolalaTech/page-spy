@@ -1,14 +1,52 @@
 @import url(./variable.less);
 :global {
   #__pageSpy {
-    font-size: @font-size;
-    font-family: @font-family;
-    line-height: 1;
-    -webkit-tap-highlight-color: transparent;
-    ::selection {
-      background-color: var(--primary-color);
-      color: white;
+    // color
+    --hue: 270;
+    --primary-color: hsl(var(--hue), 100%, 55%);
+    --text-primary: hsl(0, 0%, 10%);
+    --text-secondary: hsl(0, 0%, 30%);
+    --text-placeholder: hsl(0, 0%, 60%);
+    --divider-color: hsl(0, 0%, 90%);
+    --border-color: hsl(0, 0%, 70%);
+    --disabled-color: hsl(0, 0%, 75%);
+
+    // size
+    --text-base: @font-size;
+    --text-sm: round((12em / @font-size), 2);
+    --text-lg: round((16em / @font-size), 2);
+    --text-xl: round((20em / @font-size), 2);
+    --text-2xl: round((24em / @font-size), 2);
+    --text-3xl: round((32em / @font-size), 2);
+    --input-padding: round((6em / @font-size), 2) round((8em / @font-size), 2);
+    --input-padding-lg: round((8em / @font-size), 2)
+      round((12em / @font-size), 2);
+    --block-padding: round((14em / @font-size), 2);
+    --gap: round((4em / @font-size), 2);
+    --gap-lg: round((8em / @font-size), 2);
+
+    // border
+    --border: 1px solid var(--border-color);
+    --border-active: 1px solid var(--primary-color);
+
+    // shadow
+    --light-shadow: 0 4px 10px 4px hsla(0, 0%, 100%, 0.1);
+    --dark-shadow: 0 4px 10px 4px hsla(0, 0%, 0%, 0.1);
+
+    // font
+    --font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC',
+      'Microsoft YaHei', 'Source Han Sans SC', 'Noto Sans CJK SC', sans-serif;
+
+    font-size: var(--text-base);
+    font-family: var(--font-family);
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
+    font-size: var(--text-base);
+    font-family: var(--font-family);
+    line-height: 1;
     .page-spy-logo {
       --top-radius: 100%;
       --right-radius: 100%;
@@ -20,12 +58,13 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      width: (@size / @font-size);
-      height: (@size / @font-size);
-      font-size: (14em / @font-size);
-      border-radius: (@size / @font-size);
-      background-color: #fff;
-      box-shadow: 0px 4px 8px 2px rgba(0, 0, 0, 0.2);
+      @size: round((80em / @font-size), 2);
+      width: @size;
+      height: @size;
+      font-size: var(--text-base);
+      border-radius: @size;
+      background-color: white;
+      box-shadow: var(--dark-shadow);
       cursor: pointer;
       z-index: 13000;
       transition:
@@ -34,7 +73,7 @@
         background-color ease-in-out 0.3s,
         filter ease-in-out 0.3s;
       &.inactive {
-        background-color: #a2a2a2;
+        background-color: hsl(0, 0%, 70%);
         filter: grayscale(1);
       }
 
@@ -93,7 +132,7 @@
         display: block;
         z-index: 100;
         transition: transform ease-in-out 0.1s 0.4s;
-        width: (50em / @font-size);
+        width: round((50em / @font-size), 2);
         pointer-events: none;
         user-select: none;
       }
@@ -105,20 +144,20 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 4px;
+  gap: var(--gap);
   > p {
     flex: 1 0 0;
     text-align: center;
     word-break: break-word;
     span {
-      font-size: (12em / @font-size);
-      color: #aaa;
+      font-size: var(--text-sm);
+      color: var(--text-placeholder);
     }
     b {
       display: block;
-      margin-top: 12px;
-      font-size: (18em / @font-size);
-      color: #333;
+      margin-top: round((12em / @font-size), 2);
+      font-size: var(--text-lg);
+      color: var(--text-primary);
     }
   }
 }

@@ -5,7 +5,7 @@
   position: fixed;
   inset: 0;
   z-index: 13000;
-  font-size: @font-size;
+  font-size: var(--text-base);
   line-height: 1;
   &:global {
     &.show {
@@ -15,10 +15,10 @@
       }
       @keyframes fadeIn {
         0% {
-          background-color: rgba(0, 0, 0, 0);
+          background-color: hsla(0, 0%, 0%, 0);
         }
         100% {
-          background-color: rgba(0, 0, 0, 0.3);
+          background-color: hsla(0, 0%, 0%, 0.3);
         }
       }
       :local(.content) {
@@ -47,10 +47,10 @@
       }
       @keyframes fadeOut {
         0% {
-          background-color: rgba(0, 0, 0, 0.3);
+          background-color: hsla(0, 0%, 0%, 0.3);
         }
         100% {
-          background-color: rgba(0, 0, 0, 0);
+          background-color: hsla(0, 0%, 0%, 0);
         }
       }
       :local(.content) {
@@ -83,9 +83,13 @@
     top: 45%;
     transform: translate3d(-50%, -50%, 0);
     width: 90%;
-    background-color: #fafafa;
-    border-radius: (6em / @font-size);
+    background-color: white;
+    border-radius: round((6em / @font-size), 2);
     overflow: hidden;
+    ::selection {
+      background-color: var(--primary-color);
+      color: white;
+    }
     @media screen and (min-width: 440px) {
       max-width: 70%;
     }
@@ -107,39 +111,44 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: (8em / @font-size) (14em / @font-size);
+    padding: var(--block-padding);
     color: white;
     background-color: var(--primary-color);
+    ::selection {
+      background-color: #fff;
+      color: var(--primary-color);
+    }
     .headerLeft {
       display: flex;
       align-items: center;
-      gap: (8em / @font-size);
+      gap: var(--gap-lg);
       .logo {
-        height: (28em / @font-size);
+        height: round((28em / @font-size), 2);
       }
       .title {
-        font-size: (20em / @font-size);
+        font-size: var(--text-xl);
       }
     }
     .headerRight {
       padding: 6px;
       cursor: pointer;
       .close {
-        width: (24em / @font-size);
-        height: (24em / @font-size);
+        @size: round((24em / @font-size), 2);
+        width: @size;
+        height: @size;
       }
     }
   }
   .main {
-    padding: (14em / @font-size);
+    padding: var(--block-padding);
   }
   .footer {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    gap: (8em / @font-size);
-    padding: (8em / @font-size) (14em / @font-size);
-    border-top: 1px solid #dedede;
+    gap: var(--gap-lg);
+    padding: var(--block-padding);
+    border-top: 1px solid var(--divider-color);
     button {
       .common-button();
     }

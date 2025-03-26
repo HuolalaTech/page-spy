@@ -21,7 +21,7 @@ export const defaultConfig: Config = {
   lang: null,
   title: 'O-Spy',
   logo: pageSpyLogo,
-  primaryColor: '#8434E9',
+  primaryColor: 'hsl(270, 100%, 55%)',
   autoRender: true,
   exportButtonText: null,
   onExportButtonClick: null,

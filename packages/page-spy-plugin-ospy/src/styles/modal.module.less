@@ -70,18 +70,28 @@
     left: 50%;
     top: 45%;
     transform: translate3d(-50%, -50%, 0);
-    width: 95%;
-    background-color: #fff;
-    border-radius: 4px;
+    width: 90%;
+    background-color: white;
+    border-radius: round((6em / @font-size), 2);
     overflow: hidden;
+    ::selection {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    @media screen and (min-width: 440px) {
+      max-width: 70%;
+    }
     @media screen and (min-width: 768px) {
-      max-width: 50%;
+      max-width: 55%;
     }
     @media screen and (min-width: 1024px) {
       max-width: 40%;
     }
+    @media screen and (min-width: 1440px) {
+      max-width: 30%;
+    }
     @media screen and (min-width: 1920px) {
-      max-width: 35%;
+      max-width: 25%;
     }
     .header {
       display: flex;

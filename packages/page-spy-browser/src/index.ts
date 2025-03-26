@@ -31,7 +31,7 @@ import Request from './api';
 import type { UElement } from './helpers/moveable';
 import { moveable } from './helpers/moveable';
 import { Config, nodeId } from './config';
-import { toast } from './helpers/toast';
+import { Toast } from './helpers/toast';
 import modalLogoSvg from './assets/modal-logo.svg';
 import copySvg from './assets/copy.svg';
 import { modal } from './helpers/modal';
@@ -271,7 +271,7 @@ class PageSpy {
       }
       // eslint-disable-next-line prefer-spread
       (plugin[lifecycle] as any)?.apply(plugin, [
-        { ...args[0], modal, toast },
+        { ...args[0], modal, toast: Toast },
         args.slice(1),
       ]);
     });
@@ -330,7 +330,7 @@ class PageSpy {
     const doc = new DOMParser().parseFromString(
       `
       <!-- PageSpy Root Container -->
-      <div id="${nodeId}" style="--primary-color: #8434e9">
+      <div id="${nodeId}" style="--primary-color: hsl(270, 100%, 55%)">
         <div class="page-spy-logo">
           <img src="${logoUrl}" alt="Logo" />
         </div>
@@ -412,7 +412,7 @@ class PageSpy {
       const copied = copy(text);
       const message = copied ? i18n.t('copied') : i18n.t('copyFailed');
       modal.close();
-      toast.message(message);
+      Toast.message(message);
     });
     if (offline) {
       copyLink.disabled = true;
