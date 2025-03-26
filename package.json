@@ -2,8 +2,7 @@
   "private": true,
   "workspaces": [
     "packages/page-spy*",
-    "!packages/page-spy-harmony",
-    "!packages/page-spy-plugin-whole-bundle"
+    "!packages/page-spy-harmony"
   ],
   "scripts": {
     "test": "jest --silent",
