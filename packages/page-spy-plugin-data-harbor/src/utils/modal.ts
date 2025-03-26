@@ -62,7 +62,7 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
           <div class="${classes.periodTips}">
             <b>${i18n.t('selectPeriod')}</b>
           </div>
-          <button class="${classes.refreshButton}">${refreshSvg}</button>
+          <button class="${classes.refreshIcon}">${refreshSvg}</button>
         </div>
         <div class="${classes.selectPeriod}">
           <div class="${classes.track}">
@@ -109,7 +109,7 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
 
   const openLogAction = $('#open-log-action') as HTMLButtonElement;
   const modalContent = $c(classes.content) as HTMLDivElement;
-  const refreshButton = $c(classes.refreshButton) as HTMLButtonElement;
+  const refreshIcon = $c(classes.refreshIcon) as HTMLButtonElement;
   const range = $c(classes.range) as HTMLDivElement;
   const minThumb = $('#period-min') as HTMLInputElement;
   const maxThumb = $('#period-max') as HTMLInputElement;
@@ -183,11 +183,9 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
     };
   };
 
-  refreshButton.addEventListener('click', () => {
-    refreshButton.disabled = true;
+  refreshIcon.addEventListener('click', () => {
     refreshPeriods();
     toast.message(i18n.t('refreshed'));
-    refreshButton.disabled = false;
   });
   minThumb.addEventListener('input', function () {
     const max = +maxThumb.value;
@@ -274,7 +272,13 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
         String((Date.now() - startTimestamp) / 1000),
         10,
       );
-      duration.textContent = formatTime(seconds);
+      duration.innerHTML = formatTime(seconds)
+        .split('')
+        .map(
+          (v) =>
+            `<span class="${v === ':' ? classes.colon : 'duration-item'}">${v}</span>`,
+        )
+        .join('');
     }
   };
 

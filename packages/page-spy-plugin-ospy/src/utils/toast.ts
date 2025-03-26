@@ -17,10 +17,12 @@ export class Toast {
   private static timer: ReturnType<typeof setTimeout> | null = null;
 
   private static get root() {
-    return document.querySelector(`#${ROOT_ID}`) ?? document.body;
+    return document.querySelector(`#${ROOT_ID}`);
   }
 
   static message(text: string | Element) {
+    if (!Toast.root) return;
+
     let node = text;
     if (typeof node === 'string') {
       node = document.createElement('div');
@@ -32,7 +34,7 @@ export class Toast {
       node.classList.add(classes.show);
     }, 0);
     const timer = setTimeout(() => {
-      if (Toast.root.contains(node)) {
+      if (Toast.root?.contains(node)) {
         Toast.root.removeChild(node);
       }
       if (Toast.timer === timer) {

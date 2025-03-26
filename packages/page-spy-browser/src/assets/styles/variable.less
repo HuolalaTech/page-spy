@@ -1,26 +1,21 @@
-@gradient: linear-gradient(45deg, #efdfff, #4e00b1 52%, #3d0c7c);
-@size: 80em;
-@hidden-size: 40em;
 @font-size: 14px;
-@font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC',
-  'Microsoft YaHei', Arial, 'Source Han Sans SC', 'Noto Sans CJK SC', sans-serif;
 
 .common-button() {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-width: (60em / @font-size);
-  padding: (6em / @font-size) (6em / @font-size);
-  gap: (4em / @font-size);
+  min-width: round((60em / @font-size), 2);
+  padding: var(--input-padding);
+  gap: var(--gap);
   letter-spacing: 0.4px;
-  border: 1px solid #333;
-  border-radius: (4em / @font-size);
+  border: var(--border);
+  border-radius: round((4em / @font-size), 2);
   background-color: white;
-  color: #333;
+  color: var(--text-primary);
   cursor: pointer;
   white-space: nowrap;
   transition: all ease-in-out 100ms;
-  font-size: (13em / @font-size);
+  font-size: var(--text-base);
   &[data-primary] {
     border-color: var(--primary-color);
     background-color: var(--primary-color);
@@ -30,8 +25,8 @@
     border-style: dashed;
   }
   &:disabled {
-    border-color: #c8c8c8;
-    background-color: #c8c8c8;
+    border-color: var(--disabled-color);
+    background-color: var(--disabled-color);
     color: white;
     cursor: not-allowed;
   }
@@ -40,8 +35,9 @@
   }
   img,
   svg {
-    width: (20em / @font-size);
-    height: (20em / @font-size);
+    @size: round((20em / @font-size), 2);
+    width: @size;
+    height: @size;
   }
   @media screen and (max-width: 440px) {
     img,

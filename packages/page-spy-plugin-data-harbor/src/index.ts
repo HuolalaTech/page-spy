@@ -192,6 +192,9 @@ export default class DataHarborPlugin implements PageSpyPlugin {
         throw new Error(i18n.t('invalidParams'));
       }
       data = await this.harbor.getPeriodData(params);
+      if (!data.length) {
+        throw new Error(i18n.t('noData'));
+      }
 
       const startTimeFromUser = params.startTime;
       const startTimeFromEvent = data[0].timestamp;
@@ -220,6 +223,9 @@ export default class DataHarborPlugin implements PageSpyPlugin {
       });
     } else {
       data = await this.harbor.getAll();
+      if (!data.length) {
+        throw new Error(i18n.t('noData'));
+      }
       const startTime = data[0].timestamp;
       const endTime = data[data.length - 1].timestamp;
       data.push({

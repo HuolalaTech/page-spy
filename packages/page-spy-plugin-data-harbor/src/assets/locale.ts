@@ -26,6 +26,7 @@ const locales = {
     copyFailed: '复制失败',
     paused: '已暂停',
     pausedInfoText: '暂停期间数据不会被记录',
+    noData: '请先选择时间段',
   },
   en: {
     title: 'Offline log',
@@ -53,6 +54,7 @@ const locales = {
     copyFailed: 'Copy failed',
     paused: 'Paused',
     pausedInfoText: 'Data will not be recorded during pause',
+    noData: 'Please select period',
   },
 };
 

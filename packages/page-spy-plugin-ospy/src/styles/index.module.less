@@ -2,8 +2,45 @@
 
 :global {
   #o-spy {
-    font-size: @font-size;
-    font-family: @font-family;
+    // color
+    --hue: 270;
+    --primary-color: hsl(var(--hue), 100%, 55%);
+    --text-primary: hsl(0, 0%, 10%);
+    --text-secondary: hsl(0, 0%, 30%);
+    --text-placeholder: hsl(0, 0%, 60%);
+    --divider-color: hsl(0, 0%, 90%);
+    --border-color: hsl(0, 0%, 70%);
+    --disabled-color: hsl(0, 0%, 75%);
+
+    // size
+    --text-base: @font-size;
+    --text-sm: round((12em / @font-size), 2);
+    --text-lg: round((16em / @font-size), 2);
+    --text-xl: round((20em / @font-size), 2);
+    --text-2xl: round((24em / @font-size), 2);
+    --text-3xl: round((32em / @font-size), 2);
+    --input-padding: round((6em / @font-size), 2) round((8em / @font-size), 2);
+    --input-padding-lg: round((8em / @font-size), 2)
+      round((12em / @font-size), 2);
+    --block-padding: round((14em / @font-size), 2);
+    --gap: round((4em / @font-size), 2);
+    --gap-lg: round((8em / @font-size), 2);
+
+    // border
+    --border: 1px solid var(--border-color);
+    --border-active: 1px solid var(--primary-color);
+
+    // shadow
+    --light-shadow: 0 4px 10px 4px hsla(0, 0%, 100%, 0.1);
+    --dark-shadow: 0 4px 10px 4px hsla(0, 0%, 0%, 0.1);
+
+    // font
+    --font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC',
+      'Microsoft YaHei', 'Source Han Sans SC', 'Noto Sans CJK SC', sans-serif;
+
+    font-size: var(--text-base);
+    font-family: var(--font-family);
+
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
@@ -17,29 +54,27 @@
   align-items: center;
   gap: 4px;
   position: fixed;
-  left: calc(100vw - 160px);
-  top: calc(100vh - 140px);
-  width: 120px;
-  height: 40px;
-  padding: 4px 8px;
+  left: calc(100vw - round((160em / @font-size), 2));
+  top: calc(100vh - round((140em / @font-size), 2));
+  width: round((120em / @font-size), 2);
+  height: round((40em / @font-size), 2);
   border-radius: 4px;
   letter-spacing: 1.5px;
-  color: #fff;
+  color: hsl(0, 0%, 100%);
   font-weight: 700;
-  background-color: var(--primary-color, @primary-color);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  background-color: var(--primary-color);
+  box-shadow: var(--light-shadow);
   cursor: pointer;
   border: none;
-  transition: color 0.3s ease;
   &:active {
     transform: translateY(2px);
-    box-shadow: 0 0px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--dark-shadow);
   }
   img.logo {
-    max-height: 20px;
+    max-height: round((20em / @font-size), 2);
   }
   img.close {
-    @size: (20em / @font-size);
+    @size: round((20em / @font-size), 2);
     width: @size;
     height: @size;
     position: absolute;
@@ -49,24 +84,14 @@
     transform: translate(50%, -50%);
     box-shadow: 0 0 1px 2px #fff;
     border-radius: 999px;
-    background-color: var(--primary-color, @primary-color);
+    background-color: var(--primary-color);
   }
 }
 
 .form {
-  font-family: @font-family;
-  font-size: (14em / @font-size);
-  color: rgba(0, 0, 0, 0.88);
-  * {
-    box-sizing: border-box;
-  }
-  b,
-  strong {
-    font-weight: 700;
-  }
-  button {
-    outline: none;
-  }
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  color: var(--text-primary);
   svg {
     display: block;
   }
@@ -74,30 +99,30 @@
   select,
   textarea {
     width: 100%;
-    border: 1px solid #f1f1f1;
-    border-radius: (4em / @font-size);
-    background-color: #f1f1f1;
+    border: var(--border);
+    border-radius: round((4em / @font-size), 2);
+    background-color: hsl(0, 0%, 95%);
     outline: none;
-    font-size: (14em / @font-size);
+    font-size: var(--text-base);
     &::placeholder {
-      color: #999;
+      color: var(--text-placeholder);
     }
     &:focus {
-      border-color: var(--primary-color, @primary-color);
+      border-color: var(--primary-color);
     }
   }
   select {
-    padding: (8em / @font-size) (4em / @font-size);
+    padding: var(--input-padding);
   }
   input:not([type='range']),
   textarea {
-    padding: (8em / @font-size);
+    padding: var(--input-padding);
   }
   button {
     .common-button();
   }
   .formContent {
-    padding: @padding;
+    padding: var(--block-padding);
   }
   .formItem {
     label {
@@ -105,12 +130,12 @@
       justify-content: space-between;
       align-items: center;
       position: relative;
-      margin-block: (8em / @font-size) (4em / @font-size);
+      margin-block: var(--gap);
       font-weight: 500;
       &[required] span::before {
         content: '*';
         color: red;
-        margin-right: (2em / @font-size);
+        margin-right: var(--gap);
       }
     }
     &:first-child label {
@@ -118,44 +143,45 @@
     }
   }
   .duration {
-    font-family: monospace;
-  }
-  .refreshButton {
-    min-width: auto;
-    padding: 0;
-    background: none;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    &:disabled {
-      cursor: not-allowed;
-      svg {
-        color: #888;
+    display: flex;
+    align-items: center;
+    span {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: round((9em / @font-size), 2);
+      line-height: 1;
+      &.colon {
+        width: round((5em / @font-size), 2);
       }
     }
+  }
+  .refreshIcon {
+    cursor: pointer;
     svg {
-      width: (24em / @font-size);
-      height: (24em / @font-size);
-      color: var(--primary-color, @primary-color);
+      @size: round((24em / @font-size), 2);
+      width: @size;
+      height: @size;
+      color: var(--primary-color);
     }
   }
   .selectPeriod {
-    @size: (24em / @font-size);
+    @size: round((24em / @font-size), 2);
     position: relative;
-    width: 93%;
+    width: 96%;
     margin: @size auto;
 
     --thumb-size: @size;
-    --thumb-shadow: 0 0 0 5px var(--primary-color, @primary-color) inset,
+    --thumb-shadow: 0 0 0 5px var(--primary-color) inset, 0 0 0 99px white inset;
+    --thumb-shadow-hover: 0 0 0 7px var(--primary-color) inset,
       0 0 0 99px white inset;
-    --thumb-shadow-hover: 0 0 0 7px var(--primary-color, @primary-color) inset,
+    --thumb-shadow-disabled: 0 0 0 5px var(--disabled-color) inset,
       0 0 0 99px white inset;
-    --thumb-shadow-disabled: 0 0 0 5px #888 inset, 0 0 0 99px white inset;
     --track-size: calc(var(--thumb-size) / 2);
     &.disabled {
       cursor: not-allowed;
       .track .range {
-        background-color: #d7d7d7;
+        background-color: var(--disabled-color);
       }
       input {
         &:disabled {
@@ -175,7 +201,7 @@
     .track {
       width: 100%;
       height: var(--track-size);
-      background-color: #ddd;
+      background-color: var(--divider-color);
       border-radius: var(--track-size);
 
       .range {
@@ -187,7 +213,7 @@
         left: var(--left);
         right: var(--right);
         height: 100%;
-        background-color: var(--primary-color, @primary-color);
+        background-color: var(--primary-color);
         border-radius: var(--track-size);
         &[data-min-text-position='bottom'] {
           &::before {
@@ -204,20 +230,20 @@
           position: absolute;
           top: calc(var(--thumb-size) * -1);
           transition: top 0.15s ease-in-out;
-          font-size: 1em;
+          font-size: var(--text-base);
           font-weight: 500;
-          font-family: var(--mono-font);
-          color: #999;
+          font-family: var(--font-family);
+          color: var(--text-placeholder);
         }
         &::before {
           content: var(--min-text);
           left: 0;
-          transform: translateX(-50%) scale(0.7);
+          transform: translateX(-50%) scale(0.8);
         }
         &::after {
           content: var(--max-text);
           right: 0;
-          transform: translateX(50%) scale(0.7);
+          transform: translateX(50%) scale(0.8);
         }
       }
     }
@@ -231,7 +257,7 @@
 
       width: calc(100% + var(--thumb-size));
       background-color: transparent;
-      font-size: @font-size;
+      font-size: var(--text-base);
 
       z-index: 2;
       &:hover {
@@ -243,11 +269,11 @@
         width: var(--thumb-size);
         height: var(--thumb-size);
         border-radius: var(--thumb-size);
-        background-color: #fff;
+        background-color: white;
         box-shadow: var(--thumb-shadow);
         cursor: grab;
         transition: 0.15s;
-        border: (2em / @font-size) solid white;
+        border: round((2em / @font-size), 2) solid white;
       }
       &::-webkit-slider-thumb {
         .thumb-mixin();
@@ -264,20 +290,25 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: @padding;
-    border-top: 1px solid #efefef;
-    background-color: #fff;
+    padding: var(--block-padding);
+    border-top: 1px solid var(--divider-color);
+    background-color: white;
     .recorder {
-      font-size: (14em / @font-size);
-      padding: (4em / @font-size) (6em / @font-size);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: round((32em / @font-size), 2);
+      padding: var(--input-padding-lg);
+      font-size: var(--text-base);
       border-radius: 999px;
       transition:
         background-color 0.15s ease,
         transform 0.15s ease;
       cursor: pointer;
       user-select: none;
+      background-color: hsl(0, 0%, 95%);
       &:hover {
-        background-color: #eaeaea;
+        background-color: hsl(0, 0%, 90%);
       }
       &:active {
         transform: scale(0.97);
@@ -298,31 +329,35 @@
           align-items: center;
           position: relative;
           &::before {
-            @size: (8em / @font-size);
+            @size: round((8em / @font-size), 2);
             content: '';
             width: @size;
             height: @size;
             border-radius: @size;
-            background-color: rgb(255, 15, 15);
+            background-color: hsl(0, 100%, 53%);
             animation: fade 0.8s ease-in-out infinite alternate;
             @keyframes fade {
               from {
-                opacity: 1;
+                background-color: hsl(0, 100%, 53%);
               }
               to {
-                opacity: 0.05;
+                background-color: hsl(0, 100%, 93%);
               }
             }
+          }
+          span {
+            color: var(--text-secondary);
+            font-weight: 500;
           }
         }
         &:nth-child(2) {
           display: none;
           align-items: center;
-          color: #333;
+          color: var(--text-primary);
           .pausedInfo {
             position: relative;
-            font-size: (14em / @font-size);
-            margin-left: (-5em / @font-size);
+            font-size: var(--text-base);
+            margin-left: round((-5em / @font-size), 2);
             svg {
               transform: scale(0.8);
               transform-origin: left center;
@@ -340,12 +375,12 @@
               top: 0;
               transform: translate(-25%, -135%);
               white-space: nowrap;
-              font-size: (14em / @font-size);
-              color: #333;
-              background-color: #fff;
-              padding: (8em / @font-size);
-              border-radius: (4em / @font-size);
-              box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.2);
+              font-size: var(--text-base);
+              color: var(--text-primary);
+              background-color: white;
+              padding: round((8em / @font-size), 2);
+              border-radius: round((4em / @font-size), 2);
+              box-shadow: var(--dark-shadow);
               z-index: 1;
               &::before {
                 content: '';
@@ -353,26 +388,26 @@
                 left: 25%;
                 bottom: 0;
                 transform: translate(0, 30%) rotate(45deg);
-                width: (12em / @font-size);
-                height: (12em / @font-size);
-                background-color: #fff;
-                border-radius: 2px;
-                z-index: 1;
+                @size: round((12em / @font-size), 2);
+                width: @size;
+                height: @size;
+                background-color: white;
+                border-radius: round((2em / @font-size), 2);
+                z-index: -1;
               }
             }
           }
         }
         b {
-          margin-inline: (5em / @font-size) (8em / @font-size);
-          font-size: (16em / @font-size);
-          color: #333;
-        }
-        span {
-          color: #444;
+          margin-inline: var(--gap) var(--gap-lg);
+          font-size: var(--text-lg);
+          line-height: 1;
+          color: var(--text-primary);
         }
         svg {
-          width: (20em / @font-size);
-          height: (20em / @font-size);
+          @size: round((20em / @font-size), 2);
+          width: @size;
+          height: @size;
         }
       }
     }

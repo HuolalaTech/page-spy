@@ -2,10 +2,7 @@
 
 .modal {
   position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
+  inset: 0;
   display: none;
   z-index: 99999;
   &.show {
@@ -13,10 +10,10 @@
     animation: fadeIn 0.3s ease-in-out forwards;
     @keyframes fadeIn {
       0% {
-        background-color: rgba(0, 0, 0, 0);
+        background-color: hsla(0, 0%, 0%, 0);
       }
       100% {
-        background-color: rgba(0, 0, 0, 0.3);
+        background-color: hsla(0, 0%, 0%, 0.3);
       }
     }
     .content {
@@ -41,10 +38,10 @@
     animation: fadeOut 0.3s ease-in-out forwards;
     @keyframes fadeOut {
       0% {
-        background-color: rgba(0, 0, 0, 0.3);
+        background-color: hsla(0, 0%, 0%, 0.3);
       }
       100% {
-        background-color: rgba(0, 0, 0, 0);
+        background-color: hsla(0, 0%, 0%, 0);
       }
     }
     .content {
@@ -73,41 +70,54 @@
     left: 50%;
     top: 45%;
     transform: translate3d(-50%, -50%, 0);
-    width: 95%;
-    background-color: #fff;
-    border-radius: 4px;
+    width: 90%;
+    border-radius: round((6em / @font-size), 2);
     overflow: hidden;
+    ::selection {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    @media screen and (min-width: 440px) {
+      max-width: 70%;
+    }
     @media screen and (min-width: 768px) {
-      max-width: 50%;
+      max-width: 55%;
     }
     @media screen and (min-width: 1024px) {
       max-width: 40%;
     }
+    @media screen and (min-width: 1440px) {
+      max-width: 30%;
+    }
     @media screen and (min-width: 1920px) {
-      max-width: 35%;
+      max-width: 25%;
     }
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: @padding;
+      padding: var(--block-padding);
       color: white;
-      background-color: var(--primary-color, @primary-color);
+      background-color: var(--primary-color);
+      ::selection {
+        background-color: white;
+        color: var(--primary-color);
+      }
       .headerLeft {
         display: flex;
         align-items: flex-start;
-        gap: (8em / @font-size);
+        gap: var(--gap-lg);
         .logo {
-          width: (20em / @font-size);
+          width: round((20em / @font-size), 2);
         }
         .title {
           b {
-            font-size: (16em / @font-size);
+            font-size: var(--text-lg);
             line-height: 1;
           }
           p {
             margin: 4px 0;
-            font-size: (12em / @font-size);
+            font-size: var(--text-sm);
             a {
               color: white;
               text-decoration: underline;
@@ -117,16 +127,18 @@
         }
       }
       .headerRight {
-        padding: 6px;
+        padding: var(--input-padding);
         cursor: pointer;
         .close {
-          width: (24em / @font-size);
-          height: (24em / @font-size);
+          @size: round((24em / @font-size), 2);
+          width: @size;
+          height: @size;
         }
       }
     }
     .main {
       padding: 0;
+      background-color: white;
     }
   }
 }

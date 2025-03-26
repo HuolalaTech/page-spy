@@ -33,7 +33,7 @@ export const buildForm = ({ harborPlugin, config }: Params) => {
             <span>
               ${i18n.t('selectPeriod')}: 
             </span>
-            <button class="${classes.refreshButton}" type="button">${refreshSvg}</button>
+            <div class="${classes.refreshIcon}" type="button">${refreshSvg}</div>
           </label>
           <div class="${classes.selectPeriod}">
             <div class="${classes.track}">
@@ -58,7 +58,7 @@ export const buildForm = ({ harborPlugin, config }: Params) => {
         <div class="${classes.recorder}">
           <div>
             <b>REC</b>
-            <span class="${classes.duration}">--</span>
+            <div class="${classes.duration}">--</div>
           </div>
           <div>
             ${pauseSvg}
@@ -83,12 +83,12 @@ export const buildForm = ({ harborPlugin, config }: Params) => {
   };
   const $c = (c: string) => $(`.${c}`);
   const form = $c(classes.form) as HTMLFormElement;
-  const refreshButton = $c(classes.refreshButton) as HTMLButtonElement;
+  const refreshIcon = $c(classes.refreshIcon) as HTMLButtonElement;
   const range = $c(classes.range) as HTMLDivElement;
   const minThumb = $('#period-min') as HTMLInputElement;
   const maxThumb = $('#period-max') as HTMLInputElement;
   const recorder = $c(classes.recorder) as HTMLDivElement;
-  const duration = $c(classes.duration) as HTMLParagraphElement;
+  const duration = $c(classes.duration) as HTMLDivElement;
   const pausedInfo = $c(classes.pausedInfo) as HTMLDivElement;
   const recorderFn = () => {
     const { isPaused, startTimestamp } = harborPlugin;
@@ -103,7 +103,13 @@ export const buildForm = ({ harborPlugin, config }: Params) => {
         String((Date.now() - startTimestamp) / 1000),
         10,
       );
-      duration.textContent = formatTime(seconds);
+      duration.innerHTML = formatTime(seconds)
+        .split('')
+        .map(
+          (v) =>
+            `<span class="${v === ':' ? classes.colon : 'duration-item'}">${v}</span>`,
+        )
+        .join('');
     }
   };
   recorderFn();
@@ -181,11 +187,9 @@ export const buildForm = ({ harborPlugin, config }: Params) => {
     };
   };
 
-  refreshButton.addEventListener('click', () => {
-    refreshButton.disabled = true;
+  refreshIcon.addEventListener('click', () => {
     refreshPeriods();
     Toast.message(i18n.t('refreshed'));
-    refreshButton.disabled = false;
   });
   minThumb.addEventListener('input', () => {
     const max = +maxThumb.value;

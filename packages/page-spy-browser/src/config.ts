@@ -95,7 +95,7 @@ export class Config extends ConfigBase<InitConfig> {
       clientOrigin: '',
       autoRender: true,
       logo: logoUrl,
-      primaryColor: '#8434e9',
+      primaryColor: 'hsl(270, 100%, 55%)',
       modal: {
         logo: modalLogoUrl,
         title: 'PageSpy',
