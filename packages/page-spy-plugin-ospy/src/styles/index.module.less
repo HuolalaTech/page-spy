@@ -294,15 +294,19 @@
     border-top: 1px solid var(--divider-color);
     background-color: white;
     .recorder {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: round((32em / @font-size), 2);
+      padding: var(--input-padding-lg);
       font-size: var(--text-base);
-      padding: var(--input-padding);
       border-radius: 999px;
       transition:
         background-color 0.15s ease,
         transform 0.15s ease;
       cursor: pointer;
       user-select: none;
-      background-color: hsl(0, 0%, 94%);
+      background-color: hsl(0, 0%, 95%);
       &:hover {
         background-color: hsl(0, 0%, 90%);
       }
