@@ -6,7 +6,7 @@ import {
   waitFor,
 } from '@testing-library/dom';
 import copy from 'copy-to-clipboard';
-import { toast } from 'page-spy-browser/src/helpers/toast';
+import { Toast } from 'page-spy-browser/src/helpers/toast';
 jest.mock('copy-to-clipboard', () =>
   jest.fn().mockImplementation((text: string) => true),
 );
@@ -92,7 +92,7 @@ describe('Render PageSpy', () => {
     fireEvent.click(logo);
 
     await waitFor(() => {
-      const toastFn = jest.spyOn(toast, 'message');
+      const toastFn = jest.spyOn(Toast, 'message');
 
       const copyButton = document.querySelector('#page-spy-copy-link');
       const isVisible = expect(copyButton).not.toBe(null);
@@ -110,19 +110,23 @@ describe('Render PageSpy', () => {
   it('toast static method', () => {
     jest.useFakeTimers();
 
+    const root = document.createElement('div');
+    root.id = rootId.slice(1);
+    document.body.appendChild(root);
+
     expect(document.querySelector('.page-spy-toast')).toBe(null);
 
-    toast.message('Hello PageSpy');
+    Toast.message('Hello PageSpy');
     expect(document.querySelectorAll('.page-spy-toast').length).toBe(1);
     jest.advanceTimersByTime(3000);
     expect(document.querySelectorAll('.page-spy-toast').length).toBe(0);
 
-    toast.message('The 1st message');
-    toast.message('The 2nd message');
-    toast.message('The 3rd message');
+    Toast.message('The 1st message');
+    Toast.message('The 2nd message');
+    Toast.message('The 3rd message');
     expect(document.querySelectorAll('.page-spy-toast').length).toBe(3);
 
-    toast.destroy();
+    Toast.destroy();
     expect(document.querySelectorAll('.page-spy-toast').length).toBe(0);
   });
 });

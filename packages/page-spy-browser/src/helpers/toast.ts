@@ -37,15 +37,13 @@ export class Toast {
       node = document.createElement('div');
       node.textContent = String(text);
     }
-    node.classList.add(classes.toast);
+    node.classList.add('page-spy-toast', classes.toast);
     Toast.root.appendChild(node);
     setTimeout(() => {
       node.classList.add(classes.show);
     }, 0);
     const timer = setTimeout(() => {
-      if (Toast.root?.contains(node)) {
-        Toast.root.removeChild(node);
-      }
+      node?.remove();
       if (Toast.timer === timer) {
         Toast.timer = null;
       }
@@ -71,9 +69,7 @@ export class Toast {
     const nodes = document.querySelectorAll('.page-spy-toast');
     if (nodes.length) {
       [...nodes].forEach((n) => {
-        if (document.contains(n)) {
-          document.documentElement.removeChild(n);
-        }
+        n.remove();
       });
 
       if (Toast.timer) {
