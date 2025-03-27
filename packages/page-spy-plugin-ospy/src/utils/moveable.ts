@@ -2,11 +2,6 @@ export type UElement = HTMLElement & {
   isMoveEvent: boolean;
 };
 
-const listenerOptions = {
-  capture: false,
-  passive: true,
-};
-
 function getPosition(evt: TouchEvent | MouseEvent): Touch | MouseEvent {
   if (window.TouchEvent && evt instanceof TouchEvent) {
     return evt.touches[0];
@@ -33,16 +28,19 @@ export function moveable(el: UElement) {
   };
   const touch = { x: 0, y: 0 };
   function move(evt: TouchEvent | MouseEvent) {
+    evt.preventDefault();
     const { clientX, clientY } = getPosition(evt);
     const diffX = clientX - touch.x;
     const diffY = clientY - touch.y;
     if ([diffX, diffY].some((i) => Math.abs(i) > 5) && !el.isMoveEvent) {
       el.isMoveEvent = true;
-      const preventClick = (e: MouseEvent) => {
-        e.stopImmediatePropagation();
-        el.removeEventListener('click', preventClick, true);
-      };
-      el.addEventListener('click', preventClick, true);
+      if (evt.type === 'mousemove') {
+        const preventClick = (e: MouseEvent) => {
+          e.stopImmediatePropagation();
+          el.removeEventListener('click', preventClick, true);
+        };
+        el.addEventListener('click', preventClick, true);
+      }
     }
     let resultX = rect.x + diffX;
     if (resultX <= 0) {
@@ -84,13 +82,16 @@ export function moveable(el: UElement) {
     touch.x = clientX;
     touch.y = clientY;
     document.body.classList.add('dragging');
-    document.addEventListener('mousemove', move, listenerOptions);
-    document.addEventListener('mouseup', end, listenerOptions);
+    document.addEventListener('mousemove', move, false);
+    document.addEventListener('mouseup', end, false);
 
-    document.addEventListener('touchmove', move, listenerOptions);
-    document.addEventListener('touchend', end, listenerOptions);
+    document.addEventListener('touchmove', move, {
+      capture: false,
+      passive: false,
+    });
+    document.addEventListener('touchend', end, false);
   }
 
-  el.addEventListener('mousedown', start, listenerOptions);
-  el.addEventListener('touchstart', start, listenerOptions);
+  el.addEventListener('mousedown', start, false);
+  el.addEventListener('touchstart', start, false);
 }
