@@ -118,8 +118,7 @@ export function moveable(el: UElement) {
 
     el.isMoveEvent = false;
     handleHidden();
-    document.body.style.pointerEvents = 'auto';
-    document.body.style.userSelect = 'auto';
+    document.body.classList.remove('dragging');
     document.removeEventListener('mousemove', move);
     document.removeEventListener('mouseup', end);
 
@@ -147,8 +146,7 @@ export function moveable(el: UElement) {
     const { clientX, clientY } = getPosition(evt);
     touch.x = clientX;
     touch.y = clientY;
-    document.body.style.pointerEvents = 'none';
-    document.body.style.userSelect = 'none';
+    document.body.classList.add('dragging');
     document.addEventListener('mousemove', move, listenerOptions);
     document.addEventListener('mouseup', end, listenerOptions);
 
