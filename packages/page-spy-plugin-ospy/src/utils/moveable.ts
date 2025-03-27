@@ -32,8 +32,15 @@ export function moveable(el: UElement) {
     const { clientX, clientY } = getPosition(evt);
     const diffX = clientX - touch.x;
     const diffY = clientY - touch.y;
-    if ([diffX, diffY].some((i) => Math.abs(i) > 5)) {
-      (el as UElement).isMoveEvent = true;
+    if ([diffX, diffY].some((i) => Math.abs(i) > 5) && !el.isMoveEvent) {
+      el.isMoveEvent = true;
+      if (evt.type === 'mousemove') {
+        const preventClick = (e: MouseEvent) => {
+          e.stopImmediatePropagation();
+          el.removeEventListener('click', preventClick, true);
+        };
+        el.addEventListener('click', preventClick, true);
+      }
     }
     let resultX = rect.x + diffX;
     if (resultX <= 0) {
@@ -57,6 +64,8 @@ export function moveable(el: UElement) {
     const { left, top } = el.getBoundingClientRect();
     localStorage.setItem(POSITION_CACHE_ID, `${left},${top}`);
 
+    el.isMoveEvent = false;
+    document.body.classList.remove('dragging');
     document.removeEventListener('mousemove', move);
     document.removeEventListener('mouseup', end);
 
@@ -72,6 +81,7 @@ export function moveable(el: UElement) {
     const { clientX, clientY } = getPosition(evt);
     touch.x = clientX;
     touch.y = clientY;
+    document.body.classList.add('dragging');
     document.addEventListener('mousemove', move, false);
     document.addEventListener('mouseup', end, false);
 
@@ -83,5 +93,5 @@ export function moveable(el: UElement) {
   }
 
   el.addEventListener('mousedown', start, false);
-  el.addEventListener('touchstart', start, { capture: false, passive: false });
+  el.addEventListener('touchstart', start, false);
 }

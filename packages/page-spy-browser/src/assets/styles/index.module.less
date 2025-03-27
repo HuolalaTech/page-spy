@@ -1,5 +1,11 @@
 @import url(./variable.less);
 :global {
+  body.dragging {
+    user-select: none;
+    iframe {
+      pointer-events: none;
+    }
+  }
   #__pageSpy {
     // color
     --hue: 270;

@@ -1,6 +1,12 @@
 @import url(./variable.less);
 
 :global {
+  body.dragging {
+    user-select: none;
+    iframe {
+      pointer-events: none;
+    }
+  }
   #o-spy {
     // color
     --hue: 270;
@@ -66,6 +72,7 @@
   box-shadow: var(--light-shadow);
   cursor: pointer;
   border: none;
+  z-index: 13000;
   &:active {
     transform: translateY(2px);
     box-shadow: var(--dark-shadow);

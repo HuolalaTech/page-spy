@@ -390,7 +390,7 @@ class PageSpy {
     moveable(logo);
 
     const showModal = () => {
-      if (logo.isMoveEvent || logo.isHidden) {
+      if (logo.isMoveEvent) {
         return;
       }
       modal.show();
