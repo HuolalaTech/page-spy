@@ -62,7 +62,7 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
           <div class="${classes.periodTips}">
             <b>${i18n.t('selectPeriod')}</b>
           </div>
-          <button class="${classes.refreshIcon}">${refreshSvg}</button>
+          <div class="${classes.refreshIcon}">${refreshSvg}</div>
         </div>
         <div class="${classes.selectPeriod}">
           <div class="${classes.track}">

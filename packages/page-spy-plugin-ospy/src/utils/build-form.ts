@@ -33,7 +33,7 @@ export const buildForm = ({ harborPlugin, config }: Params) => {
             <span>
               ${i18n.t('selectPeriod')}: 
             </span>
-            <div class="${classes.refreshIcon}" type="button">${refreshSvg}</div>
+            <div class="${classes.refreshIcon}">${refreshSvg}</div>
           </label>
           <div class="${classes.selectPeriod}">
             <div class="${classes.track}">
