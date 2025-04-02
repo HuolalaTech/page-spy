@@ -21,7 +21,8 @@ export type InteractiveType =
   | 'atom-getter'
   | `atom-getter-${string}`
   | 'debugger-online'
-  | 'database-pagination';
+  | 'database-pagination'
+  | 'rrweb-player-visible-change';
 
 /**
  * Internal types used in PageSpy self, such as plugin-plugin communication.

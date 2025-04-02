@@ -138,6 +138,7 @@ export abstract class SocketStoreBase {
     'database-pagination': [],
     'public-data': [],
     'harbor-clear': [],
+    'rrweb-player-visible-change': [],
   };
 
   // initial retry interval.
