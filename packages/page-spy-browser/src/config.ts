@@ -8,62 +8,68 @@ import modalLogoUrl from './assets/modal-logo.svg';
 
 export const nodeId = '__pageSpy';
 
-const schema = extendConfigSchema((z) => ({
-  /**
-   * Client host. Form example, "https://example.com".
-   */
-  clientOrigin: z.string().optional(),
-  /**
-   * Indicate whether auto render the widget on the bottom-left corner.
-   * You can manually render later by calling "window.$pageSpy.render()"
-   * if passed false.
-   * @default true
-   */
-  autoRender: z.boolean().optional(),
-  /**
-   * Indicate whether enable offline mode. Once enabled, PageSpy will not
-   * make network requests and send data by server. Collected data can be
-   * exported with "DataHarborPlugin" and then replayed in the debugger.
-   */
-  offline: z.boolean().optional(),
-  /**
-   * Customize logo source url in float-ball.
-   */
-  logo: z.string().optional(),
-  /**
-   * Customize brand primary color.
-   */
-  primaryColor: z.string().optional(),
-  /**
-   * Customize modal.
-   */
-  modal: z
+const schema = extendConfigSchema((z) => {
+  return z
     .object({
       /**
-       * Customize logo source url in modal.
+       * Client host. Form example, "https://example.com".
        */
-      logo: z.string().optional(),
+      clientOrigin: z.string().url(),
       /**
-       * Customize modal title.
+       * Indicate whether auto render the widget on the bottom-left corner.
+       * You can manually render later by calling "window.$pageSpy.render()"
+       * if passed false.
+       * @default true
        */
-      title: z.string().optional(),
+      autoRender: z.boolean(),
+      /**
+       * Customize logo source url in float-ball.
+       */
+      logo: z.string(),
+      /**
+       * Customize brand primary color.
+       */
+      primaryColor: z.string(),
+      /**
+       * Customize modal.
+       */
+      modal: z
+        .object({
+          /**
+           * Customize logo source url in modal.
+           */
+          logo: z.string(),
+          /**
+           * Customize modal title.
+           */
+          title: z.string(),
+        })
+        .partial()
+        .strict(),
+      /**
+       * Dynamic enable PageSpy by gesture.
+       * The size of `Command` must be at least 4.
+       */
+      gesture: z.nullable(
+        z
+          .array(
+            z.union([
+              z.literal('U'),
+              z.literal('D'),
+              z.literal('L'),
+              z.literal('R'),
+            ]),
+          )
+          .min(4),
+      ),
+      /**
+       * Specify language
+       */
+      lang: z.enum(['zh', 'en']),
     })
-    .optional(),
-  /**
-   * Dynamic enable PageSpy by gesture.
-   * The size of `Command` must be at least 4.
-   */
-  gesture: z
-    .array(
-      z.union([z.literal('U'), z.literal('D'), z.literal('L'), z.literal('R')]),
-    )
-    .min(4)
-    .optional(),
-  /**
-   * Specify language
-   */
-  lang: z.enum(['en', 'zh']).optional(),
-}));
+    .partial()
+    .strict();
+});
 
 export type InitConfig = SchemaUnwrap<typeof schema>;
 
@@ -74,11 +80,18 @@ export class Config extends ConfigBase<InitConfig> {
    */
   public static scriptLink = (document.currentScript as HTMLScriptElement)?.src;
 
-  protected schema = schema;
+  protected schema = schema.refine(
+    (val) => {
+      return val.offline === false && val.api?.length;
+    },
+    {
+      message: 'Must provide "api" when "offline" is false',
+      path: ['api'],
+    },
+  );
 
   protected get platform() {
     const defaultConfig = {
-      secret: '',
       clientOrigin: '',
       autoRender: true,
       logo: logoUrl,
@@ -87,7 +100,7 @@ export class Config extends ConfigBase<InitConfig> {
         logo: modalLogoUrl,
         title: 'PageSpy',
       },
-      gesture: [],
+      gesture: null,
       lang: 'zh' as const,
     };
 

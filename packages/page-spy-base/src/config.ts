@@ -61,6 +61,12 @@ const baseSchema = z
     }),
 
     /**
+     * Indicate whether enable offline mode. Once enabled, PageSpy will not
+     * make network requests and send data by server. Collected data can be
+     * exported with "DataHarborPlugin" and then replayed in the debugger.
+     */
+    offline: z.boolean(),
+    /**
      * Indicate whether serialize non-primitive data in offline log.
      */
     serializeData: z.boolean(),
@@ -103,10 +109,10 @@ const baseSchema = z
 
 export type BaseConfig = z.infer<typeof baseSchema>;
 
-export const extendConfigSchema = <T extends z.ZodRawShape>(
+export const extendConfigSchema = <T extends z.AnyZodObject>(
   extendFn: (_z: typeof z) => T,
 ) => {
-  return baseSchema.extend(extendFn(z));
+  return baseSchema.merge(extendFn(z));
 };
 
 class InvalidConfigError extends Error {
@@ -132,10 +138,11 @@ export abstract class ConfigBase<C extends BaseConfig> {
       api: '',
       project: '--',
       title: '--',
-      enableSSL: null,
+      enableSSL: true,
       messageCapacity: 1000,
       useSecret: false,
-      secret: '',
+      secret: '', // secret is private and would generated automatically when enable "useSecret: true"
+      offline: false,
       serializeData: false,
       disabledPlugins: [],
       dataProcessor: {},
@@ -151,6 +158,7 @@ export abstract class ConfigBase<C extends BaseConfig> {
   public mergeConfig = (userCfg: C): Required<C> => {
     const value = {
       ...this.base,
+      ...this.platform,
       ...userCfg,
     } as Required<C>;
     try {
