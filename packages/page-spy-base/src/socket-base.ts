@@ -3,12 +3,7 @@
  * 不同平台 socket 的 api 不同但功能相同，这里抽象一层
  */
 
-import {
-  SpyMessage,
-  SpySocket,
-  SpyBase,
-  InitConfigBase,
-} from '@huolala-tech/page-spy-types';
+import { SpyMessage, SpySocket, SpyBase } from '@huolala-tech/page-spy-types';
 import { PackedEvent } from '@huolala-tech/page-spy-types/lib/socket-event';
 import { getRandomId, psLog, stringifyData } from './utils';
 import {
@@ -19,6 +14,7 @@ import {
 import * as SERVER_MESSAGE_TYPE from './message/server-type';
 import { atom } from './atom';
 import { Client } from './client';
+import { BaseConfig } from './config';
 
 type InteractiveType = SpyMessage.InteractiveType;
 type InternalMsgType = SpyMessage.InternalMsgType;
@@ -151,7 +147,7 @@ export abstract class SocketStoreBase {
     return this.socketWrapper;
   }
 
-  public getPageSpyConfig: (() => Required<InitConfigBase>) | null = null;
+  public getPageSpyConfig: (() => Required<BaseConfig>) | null = null;
 
   public getClient: (() => Client) | null = null;
 

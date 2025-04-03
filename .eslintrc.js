@@ -34,5 +34,6 @@ module.exports = {
     'no-restricted-properties': 'off',
     'prefer-exponentiation-operator': 'off',
     'implicit-arrow-linebreak': 'off',
+    'function-paren-newline': 'off',
   },
 };

@@ -119,27 +119,22 @@ class PageSpy {
       // eslint-disable-next-line no-constructor-return
       return PageSpy.instance;
     }
+    const config = this.config.mergeConfig(ic);
 
-    if (isArray(ic.gesture)) {
-      if (ic.gesture.length < 4) {
-        throw new Error(
-          '[PageSpy] The length of gesture commands must be at least 4.',
-        );
-      } else {
-        setup(ic.gesture, () => {
-          if (PageSpy.instance) return;
-          this.init(ic);
-        });
-      }
+    if (isArray(config.gesture)) {
+      setup(config.gesture, () => {
+        if (PageSpy.instance) return;
+        this.init();
+      });
     } else {
-      this.init(ic);
+      this.init();
     }
   }
 
-  private async init(ic: InitConfig) {
+  private async init() {
     PageSpy.instance = this;
 
-    const config = this.config.mergeConfig(ic);
+    const config = this.config.get();
     if (config.lang) {
       i18n.setLang(config.lang);
     }
@@ -199,7 +194,7 @@ class PageSpy {
       const config = this.config.get();
 
       return ['project', 'title', 'useSecret'].some(
-        (key) => cache[key] !== config[key],
+        (key) => cache[key] !== config[key as keyof InitConfig],
       );
     } catch (e) {
       return true;
