@@ -39,10 +39,8 @@ const baseSchema = z
      * Specify the server <scheme> manually.
      * - false: sdk will use ['http://', 'ws://'];
      * - true: sdk will use ['https://', 'wss://'];
-     * - null: sdk will automatically analyse the scheme by the
-     *        'src' property value
      */
-    enableSSL: z.nullable(z.boolean()),
+    enableSSL: z.boolean(),
 
     /**
      * Specify how many messages to cache.
