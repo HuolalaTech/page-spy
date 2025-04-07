@@ -171,7 +171,7 @@ describe('new PageSpy([config])', () => {
       name: sdk.name,
       address: sdk.address,
       roomUrl: sdk.roomUrl,
-      project: 'default',
+      project: '--',
       secret: '',
       useSecret: false,
     });
@@ -185,7 +185,7 @@ describe('new PageSpy([config])', () => {
       name: '',
       address: 'xxxx-address',
       roomUrl: 'test-room-url',
-      project: 'default',
+      project: '--',
     });
 
     const spy = jest.spyOn(PageSpy.prototype, 'useOldConnection');

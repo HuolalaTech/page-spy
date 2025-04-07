@@ -9,7 +9,8 @@ describe('Web API utils fn', () => {
     Config.scriptLink = 'https://exp.com/page-spy/index.min.js';
     const config1 = new Config();
     config1.mergeConfig({
-      api: 'init-api',
+      api: 'example.com',
+      clientOrigin: 'https://example.com',
     });
     const request1 = new Request(config1.get());
     expect(request1.getScheme()).toEqual(['https://', 'wss://']);
@@ -18,7 +19,8 @@ describe('Web API utils fn', () => {
     Config.scriptLink = 'http://exp.com/page-spy/index.min.js';
     const config2 = new Config();
     config2.mergeConfig({
-      api: 'init-api',
+      api: 'example.com',
+      clientOrigin: 'http://example.com',
     });
     const request2 = new Request(config2.get());
     expect(request2.getScheme()).toEqual(['http://', 'ws://']);
@@ -28,10 +30,11 @@ describe('Web API utils fn', () => {
       'some-others://like-chrome-extension/page-spy/index.min.js';
     const config3 = new Config();
     config3.mergeConfig({
-      api: 'init-api',
+      api: 'example.com',
+      clientOrigin: 'http://example.com',
     });
     const request3 = new Request(config3.get());
-    expect(request3.getScheme()).toEqual(['http://', 'ws://']);
+    expect(request3.getScheme()).toEqual(['https://', 'wss://']);
 
     // reset to default
     Config.scriptLink = originLink;

@@ -114,7 +114,7 @@ export class Config extends ConfigBase<InitConfig> {
         ...defaultConfig,
         api: host,
         clientOrigin: origin,
-        enableSSL: protocol.startsWith('https'),
+        enableSSL: protocol !== 'http:',
       };
       return result;
     } catch (e) {
