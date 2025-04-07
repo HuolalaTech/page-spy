@@ -1,11 +1,8 @@
 // eslint-disable no-case-declarations
-import type {
-  OnInitParams,
-  PageSpyPlugin,
-  SpyMP,
-} from '@huolala-tech/page-spy-types';
+import type { OnInitParams, PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import { NetworkProxyBase } from '@huolala-tech/page-spy-base';
 import RequestProxy from './proxy/request';
+import { InitConfig } from '../../config';
 
 export default class NetworkPlugin implements PageSpyPlugin {
   public name = 'NetworkPlugin';
@@ -14,7 +11,7 @@ export default class NetworkPlugin implements PageSpyPlugin {
 
   public static hasInitd = false;
 
-  public onInit({ config, client }: OnInitParams<SpyMP.MPInitConfig>) {
+  public onInit({ config, client }: OnInitParams<InitConfig>) {
     if (NetworkPlugin.hasInitd) return;
     NetworkPlugin.hasInitd = true;
     NetworkProxyBase.dataProcessor = config.dataProcessor.network;

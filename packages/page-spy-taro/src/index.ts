@@ -5,13 +5,14 @@ import PageSpyMPBase, {
   Client,
   psLog,
 } from '@huolala-tech/page-spy-mp-base';
-import { SpyClient, SpyMP } from '@huolala-tech/page-spy-types';
+import { InitConfig } from '@huolala-tech/page-spy-mp-base/dist/types/config';
+import { SpyClient } from '@huolala-tech/page-spy-types';
 
 declare const tt: any;
 
 class PageSpyTaro extends PageSpyMPBase {
   constructor(
-    init: SpyMP.MPInitConfig & {
+    init: InitConfig & {
       taro: any;
     },
   ) {

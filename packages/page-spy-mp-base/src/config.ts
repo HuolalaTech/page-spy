@@ -1,24 +1,26 @@
-import { ConfigBase } from '@huolala-tech/page-spy-base/dist/config';
-import type { SpyMP } from '@huolala-tech/page-spy-types';
+import {
+  ConfigBase,
+  extendConfigSchema,
+  SchemaUnwrap,
+} from '@huolala-tech/page-spy-base/dist/config';
 
-export class Config extends ConfigBase<SpyMP.MPInitConfig> {
-  protected privateKeys: (keyof SpyMP.MPInitConfig)[] = ['secret'];
+const schema = extendConfigSchema((z) => {
+  return z
+    .object({
+      disabledOnProd: z.boolean(),
+      singletonSocket: z.boolean(),
+    })
+    .partial()
+    .strict();
+});
 
-  // I need to use generic type on this method, so it can't be static
-  protected defaultConfig() {
-    return {
-      api: '',
-      project: 'default',
-      title: '',
-      enableSSL: null,
-      disabledOnProd: true,
-      disabledPlugins: [],
-      singletonSocket: false,
-      messageCapacity: 1000,
-      useSecret: false,
-      secret: '',
-      serializeData: false,
-      dataProcessor: {},
-    };
-  }
+export type InitConfig = SchemaUnwrap<typeof schema>;
+
+export class Config extends ConfigBase<InitConfig> {
+  protected schema = schema;
+
+  platform = {
+    disabledOnProd: true,
+    singletonSocket: false,
+  };
 }

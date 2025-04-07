@@ -1,74 +1,77 @@
-import { ConfigBase, Lang } from '@huolala-tech/page-spy-base';
-import { InitConfigBase } from '@huolala-tech/page-spy-types';
-import type { Command } from 'iseedeadpeople/dist/common';
+import {
+  ConfigBase,
+  extendConfigSchema,
+  SchemaUnwrap,
+} from '@huolala-tech/page-spy-base';
 import logoUrl from './assets/logo.svg';
 import modalLogoUrl from './assets/modal-logo.svg';
 
 export const nodeId = '__pageSpy';
 
-type InternalPlugins =
-  | 'ConsolePlugin'
-  | 'ErrorPlugin'
-  | 'NetworkPlugin'
-  | 'StoragePlugin'
-  | 'DatabasePlugin'
-  | 'PagePlugin'
-  | 'SystemPlugin';
+const schema = extendConfigSchema((z) => {
+  return z
+    .object({
+      /**
+       * Client host. Form example, "https://example.com".
+       */
+      clientOrigin: z.string().url(),
+      /**
+       * Indicate whether auto render the widget on the bottom-left corner.
+       * You can manually render later by calling "window.$pageSpy.render()"
+       * if passed false.
+       * @default true
+       */
+      autoRender: z.boolean(),
+      /**
+       * Customize logo source url in float-ball.
+       */
+      logo: z.string(),
+      /**
+       * Customize brand primary color.
+       */
+      primaryColor: z.string(),
+      /**
+       * Customize modal.
+       */
+      modal: z
+        .object({
+          /**
+           * Customize logo source url in modal.
+           */
+          logo: z.string(),
+          /**
+           * Customize modal title.
+           */
+          title: z.string(),
+        })
+        .partial()
+        .strict(),
+      /**
+       * Dynamic enable PageSpy by gesture.
+       * The size of `Command` must be at least 4.
+       */
+      gesture: z.nullable(
+        z
+          .array(
+            z.union([
+              z.literal('U'),
+              z.literal('D'),
+              z.literal('L'),
+              z.literal('R'),
+            ]),
+          )
+          .min(4),
+      ),
+      /**
+       * Specify language
+       */
+      lang: z.enum(['zh', 'en']),
+    })
+    .partial()
+    .strict();
+});
 
-export interface InitConfig extends InitConfigBase {
-  /**
-   * Client host. Form example, "https://example.com".
-   */
-  clientOrigin?: string;
-  /**
-   * Indicate whether auto render the widget on the bottom-left corner.
-   * You can manually render later by calling "window.$pageSpy.render()"
-   * if passed false.
-   * @default true
-   */
-  autoRender?: boolean;
-  /**
-   * All internal plugins are carried with PageSpy by default out of the box.
-   * You can disable some plugins as needed.
-   */
-  disabledPlugins?: (InternalPlugins | string)[];
-  /**
-   * Indicate whether enable offline mode. Once enabled, PageSpy will not
-   * make network requests and send data by server. Collected data can be
-   * exported with "DataHarborPlugin" and then replayed in the debugger.
-   */
-  offline?: boolean;
-  /**
-   * Customize logo source url in float-ball.
-   */
-  logo?: string;
-  /**
-   * Customize brand primary color.
-   */
-  primaryColor?: string;
-  /**
-   * Customize modal.
-   */
-  modal?: {
-    /**
-     * Customize logo source url in modal.
-     */
-    logo?: string;
-    /**
-     * Customize modal title.
-     */
-    title?: string;
-  };
-  /**
-   * Dynamic enable PageSpy by gesture.
-   * The size of `Command` must be at least 4.
-   */
-  gesture?: Command | null;
-  /**
-   * Specify language
-   */
-  lang?: Lang | null;
-}
+export type InitConfig = SchemaUnwrap<typeof schema>;
 
 export class Config extends ConfigBase<InitConfig> {
   /**
@@ -77,21 +80,18 @@ export class Config extends ConfigBase<InitConfig> {
    */
   public static scriptLink = (document.currentScript as HTMLScriptElement)?.src;
 
-  protected privateKeys: (keyof InitConfig)[] = ['secret'];
+  protected schema = schema.refine(
+    (val) => {
+      return val.offline === false && val.api?.length;
+    },
+    {
+      message: 'Must provide "api" when "offline" is false',
+      path: ['api'],
+    },
+  );
 
-  protected defaultConfig = () => {
+  protected get platform() {
     const defaultConfig = {
-      api: '',
-      project: 'default',
-      title: '--',
-      enableSSL: null,
-      disabledPlugins: [],
-      offline: false,
-      messageCapacity: 1000,
-      useSecret: false,
-      secret: '',
-      serializeData: false,
-      dataProcessor: {},
       clientOrigin: '',
       autoRender: true,
       logo: logoUrl,
@@ -101,7 +101,7 @@ export class Config extends ConfigBase<InitConfig> {
         title: 'PageSpy',
       },
       gesture: null,
-      lang: null,
+      lang: 'zh' as const,
     };
 
     if (!Config.scriptLink) {
@@ -114,11 +114,11 @@ export class Config extends ConfigBase<InitConfig> {
         ...defaultConfig,
         api: host,
         clientOrigin: origin,
-        enableSSL: protocol.startsWith('https'),
+        enableSSL: protocol !== 'http:',
       };
       return result;
     } catch (e) {
       return defaultConfig;
     }
-  };
+  }
 }

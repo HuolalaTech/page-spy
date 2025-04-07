@@ -7,14 +7,10 @@ import NetworkPlugin from 'page-spy-mp-base/src/plugins/network';
 import ErrorPlugin from 'page-spy-mp-base/src/plugins/error';
 import SystemPlugin from 'page-spy-mp-base/src/plugins/system';
 
-import {
-  OnInitParams,
-  SpyConsole,
-  SpyMP,
-} from '@huolala-tech/page-spy-types/index';
+import { OnInitParams, SpyConsole } from '@huolala-tech/page-spy-types/index';
 import { ROOM_SESSION_KEY } from 'page-spy-base/src';
 import { mp } from './setup';
-import { Config } from 'page-spy-mp-base/src/config';
+import { Config, InitConfig } from 'page-spy-mp-base/src/config';
 import socket from 'page-spy-mp-base/src/helpers/socket';
 import { MPStorageAPI } from 'page-spy-mp-base/src/types';
 import { Client } from 'page-spy-base/src';
@@ -23,7 +19,7 @@ const initParams = {
   config: new Config().mergeConfig({ api: 'example.com' }),
   socketStore: socket,
   atom,
-} as OnInitParams<SpyMP.MPInitConfig>;
+} as OnInitParams<InitConfig>;
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 let sdk: PageSpy | null;
 
@@ -175,7 +171,7 @@ describe('new PageSpy([config])', () => {
       name: sdk.name,
       address: sdk.address,
       roomUrl: sdk.roomUrl,
-      project: 'default',
+      project: '--',
       secret: '',
       useSecret: false,
     });
@@ -189,7 +185,7 @@ describe('new PageSpy([config])', () => {
       name: '',
       address: 'xxxx-address',
       roomUrl: 'test-room-url',
-      project: 'default',
+      project: '--',
     });
 
     const spy = jest.spyOn(PageSpy.prototype, 'useOldConnection');

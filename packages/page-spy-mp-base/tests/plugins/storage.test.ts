@@ -2,16 +2,16 @@ import StoragePlugin, {
   mpDataStringify,
 } from 'page-spy-mp-base/src/plugins/storage';
 import { mp } from '../setup';
-import { OnInitParams, SpyMP } from 'packages/page-spy-types';
+import { OnInitParams } from 'packages/page-spy-types';
 import { atom } from 'page-spy-base/src';
-import { Config } from 'page-spy-mp-base/src/config';
+import { Config, InitConfig } from 'page-spy-mp-base/src/config';
 import socket from 'page-spy-mp-base/src/helpers/socket';
 
 const initParams = {
   config: new Config().mergeConfig({ api: 'example.com' }),
   socketStore: socket,
   atom,
-} as OnInitParams<SpyMP.MPInitConfig>;
+} as OnInitParams<InitConfig>;
 const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 
 const trigger = jest.spyOn(StoragePlugin.prototype, 'sendStorageItem');

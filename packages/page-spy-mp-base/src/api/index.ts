@@ -1,9 +1,8 @@
-import type { SpyMP } from '@huolala-tech/page-spy-types';
-import { getRandomId } from '@huolala-tech/page-spy-base/dist/utils';
 import type { Client } from '@huolala-tech/page-spy-base/dist/client';
+import { getRandomId } from '@huolala-tech/page-spy-base/dist/utils';
 
 import { joinQuery, promisifyMPApi } from '../utils';
-import { Config } from '../config';
+import { Config, InitConfig } from '../config';
 import { getMPSDK } from '../helpers/mp-api';
 
 interface TResponse<T> {
@@ -21,7 +20,7 @@ interface TCreateRoom {
   tags: Record<string, any>;
 }
 
-const getScheme = (enableSSL: SpyMP.MPInitConfig['enableSSL']) => {
+const getScheme = (enableSSL: InitConfig['enableSSL']) => {
   return enableSSL === false ? ['http://', 'ws://'] : ['https://', 'wss://'];
 };
 

@@ -2,8 +2,8 @@ import type {
   SpyConsole,
   PageSpyPlugin,
   OnInitParams,
-  InitConfigBase,
 } from '@huolala-tech/page-spy-types/index';
+import { InitConfigBase } from '@huolala-tech/page-spy-base';
 import { atom } from '@huolala-tech/page-spy-base/dist/atom';
 import { makeMessage } from '@huolala-tech/page-spy-base/dist/message';
 import socketStore from '../helpers/socket';

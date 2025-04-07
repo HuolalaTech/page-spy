@@ -1,7 +1,6 @@
 import type {
   SpySystem,
   PageSpyPlugin,
-  SpyMP,
   OnInitParams,
 } from '@huolala-tech/page-spy-types';
 import { makeMessage } from '@huolala-tech/page-spy-base/dist/message';
@@ -9,17 +8,18 @@ import type { Client } from '@huolala-tech/page-spy-base/dist/client';
 import socketStore from '../helpers/socket';
 import { getMPSDK } from '../helpers/mp-api';
 import { promisifyMPApi } from '../utils';
+import { InitConfig } from '../config';
 
 export default class SystemPlugin implements PageSpyPlugin {
   public name = 'SystemPlugin';
 
   public static hasInitd = false;
 
-  public $pageSpyConfig: SpyMP.MPInitConfig | null = null;
+  public $pageSpyConfig: InitConfig | null = null;
 
   public client: Client | null = null;
 
-  public onInit({ config, client }: OnInitParams<SpyMP.MPInitConfig>) {
+  public onInit({ config, client }: OnInitParams<InitConfig>) {
     if (SystemPlugin.hasInitd) return;
     SystemPlugin.hasInitd = true;
 

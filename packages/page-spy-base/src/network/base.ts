@@ -44,7 +44,7 @@ export class NetworkProxyBase {
     return true;
   }
 
-  public static dataProcessor?: (data: RequestItem) => boolean;
+  public static dataProcessor?: (data: RequestItem) => boolean | undefined;
 
   protected sendRequestItem(id: string, req: RequestItem) {
     const processedByUser = NetworkProxyBase.dataProcessor?.(req);

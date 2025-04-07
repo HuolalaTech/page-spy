@@ -16,13 +16,14 @@ import {
   isClass,
   psLog,
 } from '@huolala-tech/page-spy-base/dist/utils';
-import { SocketState } from '@huolala-tech/page-spy-base/dist/socket-base';
+import {
+  SocketState,
+  SocketStoreBase,
+} from '@huolala-tech/page-spy-base/dist/socket-base';
 import { atom } from '@huolala-tech/page-spy-base/dist/atom';
 import { Client } from '@huolala-tech/page-spy-base/dist/client';
 import { ROOM_SESSION_KEY } from '@huolala-tech/page-spy-base/dist/constants';
-import { SocketStoreBase } from '@huolala-tech/page-spy-base/dist/socket-base';
 import type {
-  SpyMP,
   PageSpyPlugin,
   PageSpyPluginLifecycle,
   PluginOrder,
@@ -40,7 +41,7 @@ import Request from './api';
 
 // import './index.less';
 // eslint-disable-next-line import/order
-import { Config } from './config';
+import { Config, InitConfig } from './config';
 import { getMPSDK } from './helpers/mp-api';
 
 type UpdateConfig = {
@@ -70,7 +71,7 @@ class PageSpy {
 
   static client: Client;
 
-  constructor(init: SpyMP.MPInitConfig) {
+  constructor(init: InitConfig) {
     if (PageSpy.instance) {
       psLog.warn('Cannot initialize PageSpy multiple times');
       // eslint-disable-next-line no-constructor-return

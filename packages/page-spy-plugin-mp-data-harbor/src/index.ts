@@ -3,7 +3,6 @@ import type {
   SpyMessage,
   PageSpyPlugin,
   PluginOrder,
-  InitConfigBase,
 } from '@huolala-tech/page-spy-types';
 import { removeEndSlash } from '@huolala-tech/page-spy-base/dist/utils';
 import {
@@ -12,6 +11,7 @@ import {
   psLog,
   type MPPluginInitParams,
 } from '@huolala-tech/page-spy-mp-base';
+import { InitConfigBase } from '@huolala-tech/page-spy-base';
 import { MemoryHarbor } from './harbor/memoryHarbor';
 import { saveData } from './utils/upload';
 import {
@@ -160,7 +160,6 @@ export default class MPDataHarborPlugin implements PageSpyPlugin {
   }
 
   async upload(params?: WholeActionParams) {
-    const mp = getMPSDK();
     const { filename } = this.$harborConfig;
     const { project = '', title = '' } = this.$pageSpyConfig || {};
     const tags = {

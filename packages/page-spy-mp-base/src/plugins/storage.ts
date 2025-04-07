@@ -4,12 +4,12 @@ import { makeMessage } from '@huolala-tech/page-spy-base/dist/message';
 import type {
   SpyStorage,
   PageSpyPlugin,
-  SpyMP,
   OnInitParams,
 } from '@huolala-tech/page-spy-types';
 import socketStore from '../helpers/socket';
 import type { MPStorageAPI, KVList } from '../types';
 import { getMPSDK, getOriginMPSDK } from '../helpers/mp-api';
+import { InitConfig } from '../config';
 
 const descriptor = {
   configurable: true,
@@ -43,11 +43,11 @@ export default class StoragePlugin implements PageSpyPlugin {
 
   public static originFunctions = {} as MPStorageAPI;
 
-  public $pageSpyConfig: SpyMP.MPInitConfig | null = null;
+  public $pageSpyConfig: InitConfig | null = null;
 
   public client: Client | null = null;
 
-  public onInit({ config, client }: OnInitParams<SpyMP.MPInitConfig>) {
+  public onInit({ config, client }: OnInitParams<InitConfig>) {
     if (StoragePlugin.hasInitd) return;
     StoragePlugin.hasInitd = true;
 
