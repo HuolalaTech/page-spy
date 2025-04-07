@@ -14,7 +14,7 @@ import {
 import * as SERVER_MESSAGE_TYPE from './message/server-type';
 import { atom } from './atom';
 import { Client } from './client';
-import { BaseConfig } from './config';
+import { InitConfigBase } from './config';
 
 type InteractiveType = SpyMessage.InteractiveType;
 type InternalMsgType = SpyMessage.InternalMsgType;
@@ -147,7 +147,7 @@ export abstract class SocketStoreBase {
     return this.socketWrapper;
   }
 
-  public getPageSpyConfig: (() => Required<BaseConfig>) | null = null;
+  public getPageSpyConfig: (() => Required<InitConfigBase>) | null = null;
 
   public getClient: (() => Client) | null = null;
 

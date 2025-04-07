@@ -4,13 +4,13 @@ import type {
   SpyStorage,
   PageSpyPlugin,
   OnInitParams,
-  InitConfigBase,
 } from '@huolala-tech/page-spy-types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type {
   Callback,
   MultiCallback,
 } from '@react-native-async-storage/async-storage/lib/typescript/types';
+import { InitConfigBase } from '@huolala-tech/page-spy-base';
 
 const descriptor = {
   configurable: true,

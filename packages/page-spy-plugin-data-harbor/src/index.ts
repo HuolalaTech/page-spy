@@ -4,11 +4,11 @@ import type {
   OnInitParams,
   PageSpyPlugin,
   PluginOrder,
-  InitConfigBase,
   OnMountedParams,
 } from '@huolala-tech/page-spy-types';
 import { psLog, removeEndSlash } from '@huolala-tech/page-spy-base/dist/utils';
 import type { SocketStoreBase, RequestItem } from '@huolala-tech/page-spy-base';
+import type { InitConfig } from '@huolala-tech/page-spy-browser/dist/types/config';
 import {
   BlobHarbor,
   DEFAULT_MAXIMUM,
@@ -87,7 +87,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
   public $socketStore: SocketStoreBase | null = null;
 
-  public $pageSpyConfig: InitConfigBase | null = null;
+  public $pageSpyConfig: InitConfig | null = null;
 
   public $harborConfig: Required<DataHarborConfig>;
 
@@ -106,7 +106,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     });
   }
 
-  public async onInit({ socketStore, config }: OnInitParams<InitConfigBase>) {
+  public async onInit({ socketStore, config }: OnInitParams<InitConfig>) {
     if (DataHarborPlugin.hasInited) return;
     DataHarborPlugin.hasInited = true;
 
@@ -158,7 +158,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
     );
   }
 
-  public onMounted({ modal, toast, root }: OnMountedParams<InitConfigBase>) {
+  public onMounted({ modal, toast, root }: OnMountedParams<InitConfig>) {
     if (DataHarborPlugin.hasMounted) return;
     DataHarborPlugin.hasMounted = true;
 

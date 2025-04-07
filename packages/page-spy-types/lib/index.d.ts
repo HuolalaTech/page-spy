@@ -1,4 +1,4 @@
-import { SocketStoreBase } from '@huolala-tech/page-spy-base';
+import { SocketStoreBase, InitConfigBase } from '@huolala-tech/page-spy-base';
 import { Modal } from './modal';
 import { Toast } from './toast';
 

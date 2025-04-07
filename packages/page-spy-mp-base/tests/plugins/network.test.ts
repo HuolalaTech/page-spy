@@ -1,8 +1,8 @@
 import NetworkPlugin from 'page-spy-mp-base/src/plugins/network';
 import { computeRequestMapInfo } from './util';
-import { OnInitParams, SpyMP } from 'packages/page-spy-types';
+import { OnInitParams } from 'packages/page-spy-types';
 import { atom } from 'page-spy-base/src';
-import { Config } from 'page-spy-mp-base/src/config';
+import { Config, InitConfig } from 'page-spy-mp-base/src/config';
 import socket from 'page-spy-mp-base/src/helpers/socket';
 import { mp } from '../setup';
 
@@ -11,7 +11,7 @@ const initParams = {
   socketStore: socket,
   atom,
   client: {},
-} as OnInitParams<SpyMP.MPInitConfig>;
+} as OnInitParams<InitConfig>;
 const port = 6688;
 const apiPrefix = `http://localhost:${port}`;
 // const stopServer = startServer(port);

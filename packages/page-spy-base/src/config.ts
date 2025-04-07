@@ -8,6 +8,9 @@ import { RequestInfo } from '@huolala-tech/page-spy-types/lib/network';
 
 export type SchemaUnwrap<T extends z.ZodType> = z.infer<T>;
 
+const processorFn = <T>() =>
+  z.function().args(z.custom<T>()).returns(z.boolean().optional());
+
 const baseSchema = z
   .object({
     /**
@@ -82,24 +85,12 @@ const baseSchema = z
      */
     dataProcessor: z
       .object({
-        console: z
-          .function()
-          .args(z.custom<ConsoleData>())
-          .returns(z.boolean()),
-        network: z
-          .function()
-          .args(z.custom<RequestInfo>())
-          .returns(z.boolean()),
-        storage: z
-          .function()
-          .args(z.custom<StorageData>())
-          .returns(z.boolean()),
-        database: z
-          .function()
-          .args(z.custom<DatabaseData>())
-          .returns(z.boolean()),
-        page: z.function().args(z.custom<PageData>()).returns(z.boolean()),
-        system: z.function().args(z.custom<SystemData>()).returns(z.boolean()),
+        console: processorFn<ConsoleData>(),
+        network: processorFn<RequestInfo>(),
+        storage: processorFn<StorageData>(),
+        database: processorFn<DatabaseData>(),
+        page: processorFn<PageData>(),
+        system: processorFn<SystemData>(),
       })
       .partial()
       .strict(),
@@ -107,7 +98,7 @@ const baseSchema = z
   .partial()
   .strict();
 
-export type BaseConfig = z.infer<typeof baseSchema>;
+export type InitConfigBase = z.infer<typeof baseSchema>;
 
 export const extendConfigSchema = <T extends z.AnyZodObject>(
   extendFn: (_z: typeof z) => T,
@@ -130,10 +121,12 @@ class InvalidConfigError extends Error {
   }
 }
 
-export abstract class ConfigBase<C extends BaseConfig> {
+export abstract class ConfigBase<C extends InitConfigBase> {
   protected abstract schema: z.ZodSchema<C>;
 
-  protected get base(): BaseConfig {
+  protected abstract platform: C;
+
+  protected get base(): InitConfigBase {
     return {
       api: '',
       project: '--',
@@ -149,24 +142,22 @@ export abstract class ConfigBase<C extends BaseConfig> {
     };
   }
 
-  protected abstract platform: C;
-
   protected value: Required<C> = {
     ...this.base,
   } as Required<C>;
 
-  public mergeConfig = (userCfg: C): Required<C> => {
+  public mergeConfig = (userCfg: Record<string, any>): Required<C> => {
     const value = {
       ...this.base,
       ...this.platform,
       ...userCfg,
-    } as Required<C>;
+    };
     try {
       this.schema.parse(value);
     } catch (error) {
       throw new InvalidConfigError(error as ZodError);
     }
-    this.value = value;
+    this.value = value as Required<C>;
     return this.value;
   };
 

@@ -1,7 +1,7 @@
 import ErrorPlugin from 'page-spy-mp-base/src/plugins/error';
 import { mp } from '../setup';
-import { OnInitParams, SpyMP } from 'packages/page-spy-types';
-import { Config } from 'page-spy-mp-base/src/config';
+import { OnInitParams } from 'packages/page-spy-types';
+import { Config, InitConfig } from 'page-spy-mp-base/src/config';
 import socket from 'page-spy-mp-base/src/helpers/socket';
 import { atom } from 'page-spy-base/src';
 
@@ -9,7 +9,7 @@ const initParams = {
   config: new Config().mergeConfig({ api: 'example.com' }),
   socketStore: socket,
   atom,
-} as OnInitParams<SpyMP.MPInitConfig>;
+} as OnInitParams<InitConfig>;
 const plugin = new ErrorPlugin();
 
 beforeEach(() => {
