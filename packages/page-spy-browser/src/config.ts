@@ -14,7 +14,11 @@ const schema = extendConfigSchema((z) => {
       /**
        * Client host. Form example, "https://example.com".
        */
-      clientOrigin: z.string().url(),
+      clientOrigin: z
+        .string()
+        .refine((val) => val === '' || /^https?:\/\//i.test(val), {
+          message: 'Invalid url',
+        }),
       /**
        * Indicate whether auto render the widget on the bottom-left corner.
        * You can manually render later by calling "window.$pageSpy.render()"
@@ -80,15 +84,17 @@ export class Config extends ConfigBase<InitConfig> {
    */
   public static scriptLink = (document.currentScript as HTMLScriptElement)?.src;
 
-  protected schema = schema.refine(
-    (val) => {
-      return val.offline === false && val.api?.length;
-    },
-    {
-      message: 'Must provide "api" when "offline" is false',
-      path: ['api'],
-    },
-  );
+  protected schema = schema.superRefine((val, ctx) => {
+    if (val.offline === false) {
+      if (!val.api || !val.clientOrigin) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Must provide value when "offline" is false',
+          path: [val.api ? 'clientOrigin' : 'api'],
+        });
+      }
+    }
+  });
 
   protected get platform() {
     const defaultConfig = {

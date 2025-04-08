@@ -105,7 +105,7 @@ export const extendConfigSchema = <T extends z.AnyZodObject>(
 };
 
 class InvalidConfigError extends Error {
-  constructor(error: ZodError) {
+  constructor(error: ZodError, config: Record<string, any>) {
     const message = error.issues
       .map((issue) => {
         if (issue.code === 'unrecognized_keys') {
@@ -114,7 +114,11 @@ class InvalidConfigError extends Error {
         return `- ${issue.path.join('.')}: ${issue.message};`;
       })
       .join('\n');
-    super(`[PageSpy] Invalid config values.\n\n${message}\n`);
+    super(`config values validation failed.
+
+${message}
+
+Current config: ${JSON.stringify(config, null, 2)}`);
     this.name = 'InvalidConfigError';
   }
 }
@@ -153,7 +157,7 @@ export abstract class ConfigBase<C extends InitConfigBase> {
     try {
       this.schema.parse(value);
     } catch (error) {
-      throw new InvalidConfigError(error as ZodError);
+      throw new InvalidConfigError(error as ZodError, value);
     }
     this.value = value as Required<C>;
     return this.value;
