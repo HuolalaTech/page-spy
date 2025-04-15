@@ -1,16 +1,19 @@
 import { handle404, handle500, seeErrorResponse, normalRequest } from '../api';
-import deviceInfo from '@ohos.deviceInfo';
-import { getOwnPropertyDescriptor, getOwnPropertyDescriptors } from './utils';
-
 
 @Entry
 @Component
 struct Index {
+  ctx: UIContext = this.getUIContext();
+
   build() {
     Row() {
       Column() {
         Flex({ justifyContent: FlexAlign.Center, alignItems: ItemAlign.Start, direction: FlexDirection.Column }) {
 
+          Button('点击显示 PageSpy 弹窗')
+            .onClick(() => {
+              globalThis.$pageSpy.showPanel();
+            })
           Button('Console')
             .margin({ bottom: 20 })
             .onClick(() => {

@@ -17,6 +17,8 @@ import { SocketState, UpdateConfig } from './utils/socket-base';
 import StoragePlugin from './plugins/storage';
 import { Preferences } from './utils/preferences';
 import Client from './utils/client';
+import { promptAction } from '@kit.ArkUI';
+import { copy } from './utils/copy';
 
 class PageSpy {
   // TODO - 自动获取
@@ -156,7 +158,9 @@ class PageSpy {
   }
 
   updateRoomInfo(obj: Pick<UpdateConfig, 'project' | 'title'>) {
-    if (!obj) return;
+    if (!obj) {
+      return;
+    }
 
     const { project, title } = obj;
     if (project) {
@@ -166,6 +170,37 @@ class PageSpy {
       this.config.set('title', String(title));
     }
     socketStore.updateRoomInfo();
+  }
+
+  showPanel() {
+    const { api, enableSSL, project, title } = this.config.get();
+    promptAction.showDialog(
+      {
+        title: 'PageSpy',
+        message: `设备 ID: ${this.address.slice(0, 4)}\n\nProject: ${project}\n\nTitle: ${title}`,
+        buttons: [
+          {
+            text: '复制调试链接',
+            color: '#8c1aff',
+          },
+          {
+            text: '关闭',
+            color: '#000000',
+          },
+        ],
+      },
+      (err, data) => {
+        if (err) {
+          psLog.error('showDialog err: ' + err);
+          return;
+        }
+        if (data.index === 0) {
+          const schema = enableSSL ? 'https://' : 'http://';
+          const debugLink = `${schema}${api}/#/devtools?address=${this.address}`;
+          copy(debugLink);
+        }
+      },
+    );
   }
 
   static instance: PageSpy | null = null;
