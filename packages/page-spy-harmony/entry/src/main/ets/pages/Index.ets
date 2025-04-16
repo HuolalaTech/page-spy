@@ -1,4 +1,4 @@
-import { handle404, handle500, seeErrorResponse, normalRequest } from '../api';
+import { handle404, handle500, seeErrorResponse, normalRequest, fakeAuth } from '../api';
 
 @Entry
 @Component
@@ -42,6 +42,7 @@ struct Index {
           Button("Network (基于 @ohos/axios)")
             .onClick(() => {
               normalRequest();
+              fakeAuth();
               handle404();
               handle500();
               seeErrorResponse();

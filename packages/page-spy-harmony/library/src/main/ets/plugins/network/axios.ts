@@ -64,6 +64,7 @@ export default class AxiosProxy extends NetworkProxyBase {
           reqItem.readyState = ReqReadyState.DONE;
           this.sendRequestItem(id, reqItem);
         }
+        return Promise.reject(err);
       },
     );
   }

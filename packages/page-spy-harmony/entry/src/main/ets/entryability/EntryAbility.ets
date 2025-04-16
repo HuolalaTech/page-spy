@@ -15,7 +15,6 @@ export default class EntryAbility extends UIAbility {
   }
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
-
     globalThis.$pageSpy = new PageSpy({
       context: this.context,
       api: 'page-spy-web-v.huolala.work',
@@ -24,7 +23,7 @@ export default class EntryAbility extends UIAbility {
       project: 'hello-harmony',
       title: '测试 API-11'
     })
-    
+
     windowStage.loadContent('pages/Index', (err) => {
       // const name = 'page-spy-room'
       // const preferences = dataPreferences.getPreferencesSync(this.context, {
