@@ -1,4 +1,6 @@
+import { PageSpy } from '@huolala/page-spy-harmony';
 import { handle404, handle500, seeErrorResponse, normalRequest, fakeAuth } from '../api';
+import { GlobalThis } from '../utils/global';
 
 @Entry
 @Component
@@ -12,7 +14,7 @@ struct Index {
 
           Button('点击显示 PageSpy 弹窗')
             .onClick(() => {
-              globalThis.$pageSpy.showPanel();
+              (GlobalThis.getValue('$pageSpy') as PageSpy).showPanel();
             })
           Button('Console')
             .margin({ bottom: 20 })

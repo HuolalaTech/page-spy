@@ -191,7 +191,6 @@ class PageSpy {
       },
       (err, data) => {
         if (err) {
-          psLog.error('showDialog err: ' + err);
           return;
         }
         if (data.index === 0) {

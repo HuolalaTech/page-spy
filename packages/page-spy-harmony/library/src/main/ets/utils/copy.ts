@@ -7,12 +7,12 @@ export function copy(text: string) {
     text,
   );
   const systemPasteboard = pasteboard.getSystemPasteboard();
-  systemPasteboard.setData(pasteboardData);
-  systemPasteboard.getData().then((data) => {
-    if (data) {
+  systemPasteboard.setData(pasteboardData).then(
+    () => {
       promptAction.showToast({ message: '复制成功' });
-    } else {
+    },
+    () => {
       promptAction.showToast({ message: '复制失败' });
-    }
-  });
+    },
+  );
 }
