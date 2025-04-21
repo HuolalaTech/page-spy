@@ -13,9 +13,8 @@
     "remote",
     "devtool"
   ],
-  "dependencies": {
-    "@ohos/axios": "^2.1.0"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "@ohos/axios": "^2.1.0"
   }
 }
