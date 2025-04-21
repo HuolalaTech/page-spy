@@ -87,5 +87,5 @@ export default class EntryAbility extends UIAbility {
 PageSpy 默认会在 DevEcho Studio 的 Log 面板中输出调试的连接信息；同时你也可以使用下面的方法手动弹窗查看：
 
 ```typescript
-$pageSpy.showPanel();
+$pageSpy.showPanel(); // 2.1.0 新增
 ```
