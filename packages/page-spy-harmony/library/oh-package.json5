@@ -6,16 +6,15 @@
   "author": "Blucas",
   "license": "MIT",
   "repository": "https://github.com/HuolalaTech/page-spy-web/",
-  "homepage": "https://github.com/HuolalaTech/page-spy-web/",
+  "homepage": "https://pagespy.org",
   "keywords": [
     "PageSpy",
     "debug",
     "remote",
     "devtool"
   ],
-  "dependencies": {
-    "@ohos/axios": "^2.1.0"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "@ohos/axios": "^2.1.0"
   }
 }

@@ -3,6 +3,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { PageSpy } from '@huolala/page-spy-harmony';
 import axios from '../api/axios'
+import { GlobalThis } from '../utils/global';
 
 
 export default class EntryAbility extends UIAbility {
@@ -15,16 +16,15 @@ export default class EntryAbility extends UIAbility {
   }
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
-    const $pageSpy = new PageSpy({
+    GlobalThis.setValue('$pageSpy', new PageSpy({
       context: this.context,
       api: 'page-spy-web-v.huolala.work',
       enableSSL: true,
       axios,
       project: 'hello-harmony',
       title: '测试 API-11'
-    })
+    }))
 
-    console.log('PageSpy 实例', $pageSpy)
     windowStage.loadContent('pages/Index', (err) => {
       // const name = 'page-spy-room'
       // const preferences = dataPreferences.getPreferencesSync(this.context, {

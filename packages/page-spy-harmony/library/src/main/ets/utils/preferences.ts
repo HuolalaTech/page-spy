@@ -33,7 +33,7 @@ export class Preferences {
     );
     let jsonString = cache;
     if (new util.types().isUint8Array(cache)) {
-      jsonString = util.TextDecoder.create('utf-8').decodeWithStream(
+      jsonString = util.TextDecoder.create('utf-8').decodeToString(
         cache as Uint8Array,
       );
     }

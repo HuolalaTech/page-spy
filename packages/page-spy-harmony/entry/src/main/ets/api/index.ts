@@ -1,4 +1,3 @@
-import axios from '@ohos/axios';
 import request from './axios';
 
 export const normalRequest = () => {
@@ -11,12 +10,18 @@ export const normalRequest = () => {
   });
 };
 
+export const fakeAuth = () => {
+  return request.get('/detail', {
+    checkLogin: true,
+  } as any);
+};
+
 export const handle404 = () => {
-  return request.post('/404');
+  return request.post('/status/404');
 };
 
 export const handle500 = () => {
-  return request.delete('/500');
+  return request.delete('/status/500');
 };
 
 export const seeErrorResponse = () => {

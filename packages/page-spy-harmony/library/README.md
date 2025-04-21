@@ -21,7 +21,8 @@
 ## 版本兼容性
 
 - `@huolala/page-spy-harmony@1.x`：基于 API 9 版本开发；
-- `@huolala/page-spy-harmony@2.x`：基于 API 11 版本开发；
+- `@huolala/page-spy-harmony@2.0.x`：基于 API 11 版本开发；
+- `@huolala/page-spy-harmony@2.1.x`：基于 API 16 版本开发；
 
 ## 能力概览
 
@@ -64,7 +65,7 @@ import axiosInstance from 'path/to/your/axios';
 
 export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage) {
-    new PageSpy({
+    const $pageSpy = new PageSpy({
       context: this.context,
 
       // PageSpy 服务的域名
@@ -82,3 +83,9 @@ export default class EntryAbility extends UIAbility {
 ```
 
 以上就是引入 PageSpy 的全部内容！之后请启动模拟器或设备，接着打开浏览器前往 PageSpy 服务就可以正式开启调试。
+
+PageSpy 默认会在 DevEcho Studio 的 Log 面板中输出调试的连接信息；同时你也可以使用下面的方法手动弹窗查看：
+
+```typescript
+$pageSpy.showPanel();
+```

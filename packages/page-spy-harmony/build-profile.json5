@@ -1,11 +1,24 @@
 {
   "app": {
-    "signingConfigs": [],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "/Users/blucas/.ohos/config/default_page-spy-harmony_EIyv-Z5lyeA5WWrDk515hx-A26q3vJqMe-Jp2ogWqIs=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001B265FBFF1FFE68CECCFB29AF123465D309624246CA9D4553BE01A120DE2FB8E1677D2C225915B81",
+          "profile": "/Users/blucas/.ohos/config/default_page-spy-harmony_EIyv-Z5lyeA5WWrDk515hx-A26q3vJqMe-Jp2ogWqIs=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "/Users/blucas/.ohos/config/default_page-spy-harmony_EIyv-Z5lyeA5WWrDk515hx-A26q3vJqMe-Jp2ogWqIs=.p12",
+          "storePassword": "0000001B364CD79532D3DA32C1DA6072A566157292246D860F98589F6EB13845D0E5503E8ECDB7B1251BFD"
+        }
+      }
+    ],
     "products": [
       {
         "name": "default",
         "signingConfig": "default",
-        "compileSdkVersion": "4.1.0(11)",
         "compatibleSdkVersion": "4.1.0(11)",
         "runtimeOS": "HarmonyOS"
       }
