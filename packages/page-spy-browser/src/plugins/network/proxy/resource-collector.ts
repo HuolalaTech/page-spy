@@ -1,4 +1,4 @@
-import { getRandomId } from '@huolala-tech/page-spy-base';
+import { getRandomId, psLog } from '@huolala-tech/page-spy-base';
 import { SpyNetwork } from '@huolala-tech/page-spy-types';
 import WebNetworkProxyBase from './base';
 
@@ -43,10 +43,17 @@ export class ResourceCollector extends WebNetworkProxyBase {
         this.sendRequestItem(id, req);
       });
     });
-    this.observer.observe({
-      type: 'resource',
-      buffered: true,
-    });
+    try {
+      this.observer.observe({
+        type: 'resource',
+        buffered: true,
+      });
+    } catch (e) {
+      psLog.warn('Resource collector error', e);
+      this.observer.observe({
+        entryTypes: ['resource'],
+      });
+    }
   }
 
   reset() {
