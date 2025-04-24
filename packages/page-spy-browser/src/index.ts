@@ -121,7 +121,7 @@ class PageSpy {
     }
     const config = this.config.mergeConfig(ic);
 
-    if (isArray(config.gesture)) {
+    if (config.gesture) {
       setup(config.gesture, () => {
         if (PageSpy.instance) return;
         this.init();
