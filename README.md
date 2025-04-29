@@ -40,7 +40,7 @@ to get more detail.
 | [`@huolala-tech/page-spy-alipay`](./packages/page-spy-alipay/)                                     | Alipay         | Done   |
 | [`@huolala-tech/page-spy-uniapp`](./packages/page-spy-uniapp/)                                     | UniApp         | Done   |
 | [`@huolala-tech/page-spy-taro`](./packages/page-spy-taro/)                                         | Taro           | Done   |
-| [`@huolala-tech/page-spy-rn`](./packages/page-spy-rn/)                                             | React Native   | Done   |
+| [`@huolala-tech/page-spy-react-native`](./packages/page-spy-react-native/)                         | React Native   | Done   |
 | [`@huolala/page-spy-harmony`](https://ohpm.openharmony.cn/#/cn/detail/@huolala%2Fpage-spy-harmony) | Huawei Harmony | Done   |
 
 ## Official plugins
