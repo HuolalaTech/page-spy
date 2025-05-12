@@ -114,11 +114,18 @@ class InvalidConfigError extends Error {
         return `- ${issue.path.join('.')}: ${issue.message};`;
       })
       .join('\n');
-    super(`config values validation failed.
 
-${message}
+    let output = `config values validation failed.
 
-Current config: ${JSON.stringify(config, null, 2)}`);
+${message}`;
+    try {
+      output = `${output}
+      
+Current config: ${JSON.stringify(config, null, 2)}`;
+    } catch (e) {
+      //
+    }
+    super(output);
     this.name = 'InvalidConfigError';
   }
 }
