@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-plugin-rn-async-storage",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "A PageSpy plugin, used for React Native app with async-storage.",
   "homepage": "https://github.com/HuolalaTech/page-spy/tree/main/packages/page-spy-plugin-rn-async-storage",
   "license": "MIT",
@@ -26,14 +26,14 @@
     "watch": "rollup -c -w"
   },
   "dependencies": {
-    "@huolala-tech/page-spy-base": "^2.2.1"
+    "@huolala-tech/page-spy-base": "^2.2.2"
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
     "@babel/preset-env": "^7.14.1",
     "@babel/preset-typescript": "^7.13.0",
     "@babel/runtime": "^7.13.0",
-    "@huolala-tech/page-spy-types": "^2.2.1",
+    "@huolala-tech/page-spy-types": "^2.2.2",
     "@react-native-async-storage/async-storage": "^1.23.1",
     "@rollup/plugin-babel": "^6.0.3",
     "@rollup/plugin-commonjs": "^25.0.7",
