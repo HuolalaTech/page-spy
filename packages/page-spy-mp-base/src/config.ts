@@ -9,6 +9,7 @@ const schema = extendConfigSchema((z) => {
     .object({
       disabledOnProd: z.boolean(),
       singletonSocket: z.boolean(),
+      taro: z.any(),
     })
     .partial()
     .strict();
@@ -22,5 +23,6 @@ export class Config extends ConfigBase<InitConfig> {
   platform = {
     disabledOnProd: true,
     singletonSocket: false,
+    taro: null,
   };
 }
