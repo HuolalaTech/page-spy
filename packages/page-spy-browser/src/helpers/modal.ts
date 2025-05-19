@@ -2,6 +2,7 @@ import { isString, psLog } from '@huolala-tech/page-spy-base';
 import { ModalConfig, ShowParams } from '@huolala-tech/page-spy-types';
 import classes from '../assets/styles/modal.module.less';
 import closeSvg from '../assets/close.svg';
+import { eventBus } from './event-bus';
 
 const defaultConfig: ModalConfig = {
   logo: '',
@@ -23,10 +24,10 @@ export class modal {
   private static root: HTMLDivElement | null;
 
   private static template = `
-  <div class="${classes.modal}">
-    <div class="${classes.content}">
+  <div class="${classes.modal} page-spy-modal">
+    <div class="${classes.content} page-spy-modal-content">
       <!-- Header -->
-      <div class="${classes.header}">
+      <div class="${classes.header} page-spy-modal-header">
         <div class="${classes.headerLeft}">
           <img class="${classes.logo}" />
           <b class="${classes.title}"></b>
@@ -37,10 +38,10 @@ export class modal {
       </div>
 
       <!-- Main content -->
-      <div class="${classes.main}"></div>
+      <div class="${classes.main} page-spy-modal-main"></div>
 
       <!-- Footer -->
-      <div class="${classes.footer}"></div>
+      <div class="${classes.footer} page-spy-modal-footer"></div>
     </div>
   </div>
   `;
@@ -117,6 +118,7 @@ export class modal {
       mounted.appendChild(modal.root);
     }
     modal.root.classList.add('show');
+    eventBus.dispatchEvent(new Event('modal:show'));
   }
 
   public static close() {
@@ -126,6 +128,7 @@ export class modal {
     modal.root.classList.add('leaving');
     setTimeout(() => {
       modal.root?.classList.remove('leaving');
+      eventBus.dispatchEvent(new Event('modal:close'));
     }, 300);
   }
 

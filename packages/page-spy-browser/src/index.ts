@@ -38,6 +38,7 @@ import { modal } from './helpers/modal';
 import classes from './assets/styles/index.module.less';
 import { version } from '../package.json';
 import { i18n } from './assets/locales';
+import { eventBus } from './helpers/event-bus';
 
 type UpdateConfig = {
   title?: string;
@@ -113,6 +114,8 @@ class PageSpy {
 
   public cacheTimer: ReturnType<typeof setInterval> | null = null;
 
+  public eventBus = eventBus;
+
   constructor(ic: InitConfig = {}) {
     if (PageSpy.instance) {
       psLog.warn('Cannot initialize PageSpy multiple times');
@@ -163,6 +166,7 @@ class PageSpy {
       });
     }
     psLog.log('Plugins inited');
+    this.eventBus.dispatchEvent(new Event('core:inited'));
     if (config.autoRender) {
       this.render();
     }
@@ -332,7 +336,7 @@ class PageSpy {
       </div>
 
       <!-- Default content for modal -->
-      <div class="${classes.connectInfo}">
+      <div class="${classes.connectInfo} page-spy-connect-info">
         <p>
           <span>Device ID</span>
           <b style="font-family: 'Monaco'" class="page-spy-device-id">
@@ -430,6 +434,7 @@ class PageSpy {
     });
     this.handleDeviceDPR();
     psLog.log('Render success');
+    this.eventBus.dispatchEvent(new Event('core:rendered'));
   }
 
   private handleDeviceDPR() {
@@ -481,6 +486,7 @@ class PageSpy {
     if (root) {
       document.documentElement.removeChild(root);
     }
+    this.eventBus.dispatchEvent(new Event('core:aborted'));
   }
 }
 
