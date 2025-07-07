@@ -4,7 +4,6 @@ import { NetworkProxyBase } from '@huolala-tech/page-spy-base';
 import XhrProxy from './proxy/xhr-proxy';
 import FetchProxy from './proxy/fetch-proxy';
 import BeaconProxy from './proxy/beacon-proxy';
-import SSEProxy from './proxy/sse-proxy';
 import { InitConfig } from '../../config';
 import { ResourceCollector } from './proxy/resource-collector';
 
@@ -16,8 +15,6 @@ export default class NetworkPlugin implements PageSpyPlugin {
   public fetchProxy: FetchProxy | null = null;
 
   public beaconProxy: BeaconProxy | null = null;
-
-  public sseProxy: SSEProxy | null = null;
 
   public resourceCollector: ResourceCollector | null = null;
 
@@ -31,7 +28,6 @@ export default class NetworkPlugin implements PageSpyPlugin {
     this.xhrProxy = new XhrProxy();
     this.fetchProxy = new FetchProxy();
     this.beaconProxy = new BeaconProxy();
-    this.sseProxy = new SSEProxy();
     this.resourceCollector = new ResourceCollector();
   }
 
@@ -39,7 +35,6 @@ export default class NetworkPlugin implements PageSpyPlugin {
     this.xhrProxy?.reset();
     this.fetchProxy?.reset();
     this.beaconProxy?.reset();
-    this.sseProxy?.reset();
     this.resourceCollector?.reset();
     NetworkPlugin.hasInitd = false;
   }

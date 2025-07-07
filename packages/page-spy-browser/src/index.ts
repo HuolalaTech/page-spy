@@ -39,6 +39,8 @@ import classes from './assets/styles/index.module.less';
 import { version } from '../package.json';
 import { i18n } from './assets/locales';
 import { eventBus } from './helpers/event-bus';
+import EventSourcePlugin from './plugins/network/eventsource';
+import WebSocketPlugin from './plugins/network/websocket';
 
 type UpdateConfig = {
   title?: string;
@@ -498,6 +500,8 @@ const INTERNAL_PLUGINS = [
   new DatabasePlugin(),
   new PagePlugin(),
   new SystemPlugin(),
+  new EventSourcePlugin(),
+  new WebSocketPlugin(),
 ];
 
 INTERNAL_PLUGINS.forEach((p) => {
