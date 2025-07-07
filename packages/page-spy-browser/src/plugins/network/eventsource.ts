@@ -23,6 +23,7 @@ export default class EventSourcePlugin
   extends WebNetworkProxyBase
   implements PageSpyPlugin
 {
+  // eslint-disable-next-line @typescript-eslint/brace-style
   public name = 'EventSourcePlugin';
 
   public static hasInitd = false;

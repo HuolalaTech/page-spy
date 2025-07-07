@@ -19,6 +19,7 @@ export default class WebSocketPlugin
   extends WebNetworkProxyBase
   implements PageSpyPlugin
 {
+  // eslint-disable-next-line @typescript-eslint/brace-style
   public name = 'WebSocketPlugin';
 
   public static hasInitd = false;
