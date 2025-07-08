@@ -3,9 +3,11 @@ import {
   getRandomId,
   RequestItem,
   ReqReadyState,
+  NetworkProxyBase,
 } from '@huolala-tech/page-spy-base';
-import { PageSpyPlugin } from '@huolala-tech/page-spy-types';
+import { OnInitParams, PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import WebNetworkProxyBase from './proxy/base';
+import { InitConfig } from '../../config';
 
 const OriginEventSource = window.EventSource;
 
@@ -28,9 +30,10 @@ export default class EventSourcePlugin
 
   public static hasInitd = false;
 
-  public onInit() {
+  public onInit({ config }: OnInitParams<InitConfig>) {
     if (EventSourcePlugin.hasInitd) return;
     EventSourcePlugin.hasInitd = true;
+    NetworkProxyBase.dataProcessor = config.dataProcessor.network;
 
     this.initProxyHandler();
   }
