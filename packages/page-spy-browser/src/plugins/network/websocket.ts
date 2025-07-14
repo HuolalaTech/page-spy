@@ -4,19 +4,14 @@ import {
   RequestItem,
   ReqReadyState,
   NetworkProxyBase,
+  PAGE_SPY_WS_ENDPOINT,
+  WebSocketMessage,
 } from '@huolala-tech/page-spy-base';
 import { OnInitParams, PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import WebNetworkProxyBase from './proxy/base';
 import { InitConfig } from '../../config';
 
 const OriginWebSocket = window.WebSocket;
-const PAGE_SPY_WS_ENDPOINT = '/api/v1/ws/room/join';
-
-interface WebSocketMessage {
-  type: 'send' | 'receive';
-  data: any;
-  timestamp: number;
-}
 
 export default class WebSocketPlugin
   extends WebNetworkProxyBase
