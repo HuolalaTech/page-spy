@@ -22,17 +22,17 @@ export class MockSocket {
   private ee = new EventEmitter();
   status: SocketState = SocketState.CONNECTING;
   send(params: { data: string | ArrayBuffer }) {}
-  onOpen(handler: (res: any) => void) {
+  onOpen(handler: SocketOnOpenHandler) {
     this.status = SocketState.OPEN;
     this.ee.addListener('open', handler);
   }
-  onClose(handler: (res: any) => void) {
+  onClose(handler: SocketOnCloseHandler) {
     this.ee.addListener('close', handler);
   }
-  onError(handler: (msg: string) => void) {
+  onError(handler: SocketOnErrorHandler) {
     this.ee.addListener('error', handler);
   }
-  onMessage(handler: (data: string | ArrayBuffer) => void) {
+  onMessage(handler: SocketOnMessageHandler) {
     this.ee.addListener('message', handler);
   }
   close() {
