@@ -1,9 +1,13 @@
+/* eslint-disable @typescript-eslint/brace-style */
 import {
   getRandomId,
   RequestItem,
   ReqReadyState,
+  NetworkProxyBase,
 } from '@huolala-tech/page-spy-base';
-import WebNetworkProxyBase from './base';
+import { OnInitParams, PageSpyPlugin } from '@huolala-tech/page-spy-types';
+import WebNetworkProxyBase from './proxy/base';
+import { InitConfig } from '../../config';
 
 const OriginEventSource = window.EventSource;
 
@@ -18,9 +22,19 @@ const OriginEventSource = window.EventSource;
  * does not dispatch the "message" event listener, and we can't get what the value
  * of the event actually is.
  */
-export default class SSEProxy extends WebNetworkProxyBase {
-  constructor() {
-    super();
+export default class EventSourcePlugin
+  extends WebNetworkProxyBase
+  implements PageSpyPlugin
+{
+  public name = 'EventSourcePlugin';
+
+  public static hasInitd = false;
+
+  public onInit({ config }: OnInitParams<InitConfig>) {
+    if (EventSourcePlugin.hasInitd) return;
+    EventSourcePlugin.hasInitd = true;
+    NetworkProxyBase.dataProcessor = config.dataProcessor.network;
+
     this.initProxyHandler();
   }
 
@@ -91,7 +105,7 @@ export default class SSEProxy extends WebNetworkProxyBase {
     } as any;
   }
 
-  public reset() {
+  public onReset() {
     window.EventSource = OriginEventSource;
   }
 }

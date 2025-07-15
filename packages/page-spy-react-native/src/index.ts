@@ -18,6 +18,7 @@ import ConsolePlugin from './plugins/console';
 import ErrorPlugin from './plugins/error';
 import NetworkPlugin from './plugins/network';
 import SystemPlugin from './plugins/system';
+import WebSocketPlugin from './plugins/network/websocket';
 
 import socketStore from './helpers/socket';
 import Request from './api';
@@ -211,6 +212,7 @@ const INTERNAL_PLUGINS = [
   new ErrorPlugin(),
   new NetworkPlugin(),
   new SystemPlugin(),
+  new WebSocketPlugin(),
 ];
 
 INTERNAL_PLUGINS.forEach((p) => {

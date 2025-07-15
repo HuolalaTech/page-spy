@@ -35,6 +35,7 @@ import ErrorPlugin from './plugins/error';
 import NetworkPlugin from './plugins/network';
 import SystemPlugin from './plugins/system';
 import StoragePlugin from './plugins/storage';
+// import WebSocketPlugin from './plugins/network/websocket';
 
 import socketStore, { MPSocketWrapper } from './helpers/socket';
 import Request from './api';
@@ -375,6 +376,7 @@ const INTERNAL_PLUGINS = [
   new NetworkPlugin(),
   new StoragePlugin(),
   new SystemPlugin(),
+  // new WebSocketPlugin(),
 ];
 
 INTERNAL_PLUGINS.forEach((p) => {

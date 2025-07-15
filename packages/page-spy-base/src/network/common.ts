@@ -16,6 +16,12 @@ export const MAX_SIZE = 1024 * 1024 * 2;
 export const Reason = {
   EXCEED_SIZE: 'Exceed maximum limit',
 };
+export const PAGE_SPY_WS_ENDPOINT = '/api/v1/ws/room/join';
+export interface WebSocketMessage {
+  type: 'send' | 'receive';
+  data: any;
+  timestamp: number;
+}
 
 // Fork XMLHttpRequest status, for usage in platforms other than browser.
 export enum ReqReadyState {

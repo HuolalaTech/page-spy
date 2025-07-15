@@ -20,12 +20,26 @@ export type SocketOnCloseHandler = (res: {
   code: number;
   reason: string;
 }) => void;
-export type SocketOnErrorHandler = (msg: string) => void;
-export type SocketOnMessageHandler = (data: string | ArrayBuffer) => void;
+export type SocketOnErrorHandler = (err: { errMsg: string }) => void;
+export type SocketOnMessageHandler = (data: {
+  data: string | ArrayBuffer;
+}) => void;
+export type SocketFnOptions = {
+  success: (params: { errMsg: string; [key: string]: any }) => void;
+  fail: (err: { errMsg: string; [key: string]: any }) => void;
+  complete: (res?: { errMsg: string; [key: string]: any }) => void;
+};
+export type SendSocketMessageOptions = {
+  data: string | ArrayBuffer;
+} & Partial<SocketFnOptions>;
+export type CloseSocketOptions = {
+  code?: number;
+  reason?: string;
+} & Partial<SocketFnOptions>;
 
 export type MPSocket = {
-  send(data: object): void;
-  close(data: {}): void;
+  send(data: SendSocketMessageOptions): void;
+  close(data: CloseSocketOptions): void;
   onOpen(fun: SocketOnOpenHandler): void;
   onClose(fun: SocketOnCloseHandler): void;
   onError(fun: SocketOnErrorHandler): void;

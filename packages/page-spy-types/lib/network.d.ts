@@ -5,6 +5,7 @@ export type RequestType =
   | 'mp-request'
   | 'mp-upload'
   | 'eventsource'
+  | 'websocket'
   | PerformanceResourceTiming['initiatorType'];
 
 export type ResponseType =
