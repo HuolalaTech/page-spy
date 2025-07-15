@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-plugin-mp-data-harbor",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Used for caching data and downloading.",
   "homepage": "https://github.com/HuolalaTech/page-spy/tree/main/packages/page-spy-plugin-data-harbor",
   "license": "MIT",
@@ -26,14 +26,14 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.13.0",
-    "@huolala-tech/page-spy-base": "^2.2.2",
-    "@huolala-tech/page-spy-mp-base": "^2.2.2"
+    "@huolala-tech/page-spy-base": "^2.2.3",
+    "@huolala-tech/page-spy-mp-base": "^2.2.3"
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
     "@babel/preset-env": "^7.14.1",
     "@babel/preset-typescript": "^7.13.0",
-    "@huolala-tech/page-spy-types": "^2.2.2",
+    "@huolala-tech/page-spy-types": "^2.2.3",
     "@rollup/plugin-babel": "^6.0.3",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.0.1",

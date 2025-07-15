@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-types",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "Types for PageSpy SDK",
   "license": "MIT",
   "types": "index.d.ts",
@@ -21,6 +21,6 @@
     "access": "public"
   },
   "dependencies": {
-    "@huolala-tech/page-spy-base": "^2.2.2"
+    "@huolala-tech/page-spy-base": "^2.2.3"
   }
 }

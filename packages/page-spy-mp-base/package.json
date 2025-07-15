@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-mp-base",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "The base of PageSpy for miniprogram.",
   "license": "MIT",
   "main": "./dist/esm/index.js",
@@ -11,8 +11,8 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@huolala-tech/page-spy-base": "^2.2.2",
-    "@huolala-tech/page-spy-types": "^2.2.2"
+    "@huolala-tech/page-spy-base": "^2.2.3",
+    "@huolala-tech/page-spy-types": "^2.2.3"
   },
   "publishConfig": {
     "access": "public"
