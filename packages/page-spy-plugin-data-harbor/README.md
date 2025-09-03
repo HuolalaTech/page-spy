@@ -3,9 +3,6 @@
 [minified-image]: https://img.shields.io/bundlephobia/min/@huolala-tech/page-spy-plugin-data-harbor
 [minified-url]: https://unpkg.com/browse/@huolala-tech/page-spy-plugin-data-harbor/dist/iife/index.min.js
 
-> [!CAUTION]
-> The package is deprecated, please use @huolala-tech/page-spy-plugin-ospy instead. See https://pagespy.org/#/o-spy.
-
 English | [中文](./README_ZH.md)
 
 # `@huolala-tech/page-spy-plugin-data-harbor`

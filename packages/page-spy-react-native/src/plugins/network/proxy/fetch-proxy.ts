@@ -16,7 +16,7 @@ import { IS_FETCH_HEADER } from './xhr-proxy';
 import { addContentTypeHeader, getFormattedBody } from '../common';
 
 export default class FetchProxy extends RNNetworkProxyBase {
-  public fetch: WindowOrWorkerGlobalScope['fetch'] | null = null;
+  public fetch: typeof globalThis.fetch | null = null;
 
   constructor() {
     super();
@@ -37,6 +37,7 @@ export default class FetchProxy extends RNNetworkProxyBase {
       return;
     }
     this.fetch = originFetch;
+    
     globalThis.fetch = function (
       input: RequestInfo | URL,
       init: RequestInit = {},
@@ -162,6 +163,6 @@ export default class FetchProxy extends RNNetworkProxyBase {
         psLog.warn('The request object is not found on global.fetch event');
       } /* c8 ignore stop */
       return fetchInstance;
-    };
+    } as WindowOrWorkerGlobalScope['fetch'];
   }
 }
