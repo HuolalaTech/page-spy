@@ -30,101 +30,70 @@ export default class WebSocketPlugin
   }
 
   public initProxyHandler() {
-    if (!globalThis.WebSocket) {
+    if (!OriginWebSocket || typeof OriginWebSocket !== 'function') {
       return;
     }
 
-    const _wsProxy = this;
-    globalThis.WebSocket = class PageSpyWebSocketProxy {
-      private ws: WebSocket | null = null;
+    const plugin = this;
+    class PageSpyWebSocketProxy extends OriginWebSocket {
+      private _requestId: string | null = null;
 
-      private requestId: string | null = null;
+      private _req: RequestItem | null = null;
 
-      private req: RequestItem | null = null;
+      private _lastEventId = 0;
 
-      private id = 0;
+      constructor(uri: string, ...args: any[]) {
+        super(uri, ...args);
+        if (uri.includes(PAGE_SPY_WS_ENDPOINT)) return;
 
-      constructor(url: string, protocols?: string | string[]) {
-        const { pathname } = new URL(url);
-        if (pathname.startsWith(PAGE_SPY_WS_ENDPOINT)) {
-          // @ts-ignore
-          // eslint-disable-next-line no-constructor-return
-          return new OriginWebSocket(url, protocols);
-        }
-
-        this.requestId = getRandomId();
-        _wsProxy.createRequest(this.requestId);
-        this.req = _wsProxy.getRequest(this.requestId)!;
+        this._requestId = getRandomId();
+        plugin.createRequest(this._requestId);
+        this._req = plugin.getRequest(this._requestId)!;
 
         // 设置基本请求信息
-        this.req.url = url.toString();
-        this.req.method = 'GET';
-        this.req.requestType = 'websocket';
-        this.req.requestHeader = [
+        this._req.url = uri.toString();
+        this._req.method = 'GET';
+        this._req.requestType = 'websocket';
+        this._req.requestHeader = [
           ['Upgrade', 'websocket'],
           ['Connection', 'Upgrade'],
           ['Sec-WebSocket-Version', '13'],
         ];
+
+        const protocols = args[0];
         if (protocols) {
           const protocolsStr = Array.isArray(protocols)
             ? protocols.join(', ')
             : protocols;
-          this.req.requestHeader.push(['Sec-WebSocket-Protocol', protocolsStr]);
+          this._req.requestHeader.push([
+            'Sec-WebSocket-Protocol',
+            protocolsStr,
+          ]);
         }
-        this.req.readyState = ReqReadyState.UNSENT;
-        this.req.startTime = Date.now();
-        this.req.response = null;
-
-        // 创建原生 WebSocket 实例
-        this.ws = new OriginWebSocket(url, protocols);
+        this._req.readyState = ReqReadyState.UNSENT;
+        this._req.startTime = Date.now();
+        this._req.response = null;
         this.setupEventListeners();
-
-        // 返回代理对象
-        const proxy = new Proxy(this, {
-          get(target, prop) {
-            if (prop in target) {
-              return (target as any)[prop];
-            }
-            const value = (target.ws as any)[prop];
-            return typeof value === 'function' ? value.bind(target.ws) : value;
-          },
-          set(target, prop, value) {
-            if (prop in target) {
-              (target as any)[prop] = value;
-            } else {
-              (target.ws as any)[prop] = value;
-            }
-            return true;
-          },
-        });
-
-        // eslint-disable-next-line no-constructor-return
-        return proxy;
       }
 
       private setupEventListeners() {
-        if (!this.ws) {
-          return;
-        }
-
-        // 监听连接打开事件
-        this.ws.addEventListener('open', () => {
-          if (!this.req || !this.requestId) return;
-          this.req.readyState = ReqReadyState.OPENED;
-          this.req.status = 101; // Switching Protocols
-          this.req.statusText = 'Switching Protocols';
-          this.req.endTime = Date.now();
-          this.req.costTime = this.req.endTime - this.req.startTime;
-          this.req.responseHeader = [
+        this.addEventListener('open', () => {
+          if (!this._req || !this._requestId) return;
+          this._req.readyState = ReqReadyState.OPENED;
+          this._req.status = 101; // Switching Protocols
+          this._req.statusText = 'Switching Protocols';
+          this._req.endTime = Date.now();
+          this._req.costTime = this._req.endTime - this._req.startTime;
+          this._req.responseHeader = [
             ['Upgrade', 'websocket'],
             ['Connection', 'Upgrade'],
           ];
-          _wsProxy.sendRequestItem(this.requestId, this.req);
+          plugin.sendRequestItem(this._requestId, this._req);
         });
 
         // 监听消息接收事件
-        this.ws.addEventListener('message', (event) => {
-          if (!this.req || !this.requestId) return;
+        this.addEventListener('message', (event) => {
+          if (!this._req || !this._requestId) return;
 
           const message: WebSocketMessage = {
             type: 'receive',
@@ -132,70 +101,66 @@ export default class WebSocketPlugin
             timestamp: Date.now(),
           };
 
-          this.req.readyState = ReqReadyState.DONE;
-          this.req.status = 200;
-          this.req.statusText = 'OK';
-          this.req.response = message;
-          this.req.endTime = Date.now();
-          this.req.costTime = this.req.endTime - this.req.startTime;
-          this.req.lastEventId = String(this.id++);
+          this._req.readyState = ReqReadyState.DONE;
+          this._req.status = 200;
+          this._req.statusText = 'OK';
+          this._req.response = message;
+          this._req.endTime = Date.now();
+          this._req.costTime = this._req.endTime - this._req.startTime;
+          this._req.lastEventId = String(this._lastEventId++);
 
-          _wsProxy.sendRequestItem(this.requestId, this.req);
+          plugin.sendRequestItem(this._requestId, this._req);
         });
 
         // 监听错误事件
-        this.ws.addEventListener('error', () => {
-          if (!this.req || !this.requestId) return;
-          this.req.readyState = ReqReadyState.DONE;
-          this.req.status = 400;
-          this.req.statusText = 'WebSocket Error';
-          this.req.endTime = Date.now();
-          this.req.costTime = this.req.endTime - this.req.startTime;
+        this.addEventListener('error', () => {
+          if (!this._req || !this._requestId) return;
+          this._req.readyState = ReqReadyState.DONE;
+          this._req.status = 400;
+          this._req.statusText = 'WebSocket Error';
+          this._req.endTime = Date.now();
+          this._req.costTime = this._req.endTime - this._req.startTime;
 
-          _wsProxy.sendRequestItem(this.requestId, this.req);
+          plugin.sendRequestItem(this._requestId, this._req);
         });
 
         // 监听连接关闭事件
-        this.ws.addEventListener('close', (event) => {
-          if (!this.req || !this.requestId) return;
-          this.req.readyState = ReqReadyState.DONE;
-          this.req.status = event.code;
-          this.req.statusText = event.reason || 'Connection Closed';
-          this.req.endTime = Date.now();
-          this.req.costTime = this.req.endTime - this.req.startTime;
+        this.addEventListener('close', (event) => {
+          if (!this._req || !this._requestId) return;
+          this._req.readyState = ReqReadyState.DONE;
+          this._req.status = Number(event.code);
+          this._req.statusText = event.reason || 'Connection Closed';
+          this._req.endTime = Date.now();
+          this._req.costTime = this._req.endTime - this._req.startTime;
 
-          _wsProxy.sendRequestItem(this.requestId, this.req);
+          plugin.sendRequestItem(this._requestId, this._req);
         });
       }
 
       // 代理 send 方法
-      send(data: string | ArrayBufferLike | Blob | ArrayBufferView) {
-        if (this.req && this.requestId) {
+      send(data: string | ArrayBuffer | ArrayBufferView | Blob) {
+        if (this._req && this._requestId) {
           const message: WebSocketMessage = {
             type: 'send',
             data: this.formatSendData(data),
             timestamp: Date.now(),
           };
 
-          this.req.readyState = ReqReadyState.DONE;
-          this.req.status = 200;
-          this.req.statusText = 'OK';
-          this.req.response = message;
-          this.req.lastEventId = String(this.id++);
-          this.req.endTime = Date.now();
-          this.req.costTime = this.req.endTime - this.req.startTime;
-          _wsProxy.sendRequestItem(this.requestId, this.req);
+          this._req.readyState = ReqReadyState.DONE;
+          this._req.status = 200;
+          this._req.statusText = 'OK';
+          this._req.response = message;
+          this._req.lastEventId = String(this._lastEventId++);
+          this._req.endTime = Date.now();
+          this._req.costTime = this._req.endTime - this._req.startTime;
+          plugin.sendRequestItem(this._requestId, this._req);
         }
         // 调用原生 send 方法
-        return this.ws?.send(data);
-      }
-
-      close(code?: number, reason?: string) {
-        return this.ws?.close(code, reason);
+        super.send(data);
       }
 
       private formatSendData(
-        data: string | ArrayBufferLike | Blob | ArrayBufferView,
+        data: string | ArrayBuffer | ArrayBufferView | Blob,
       ): string {
         if (typeof data === 'string') {
           return data;
@@ -208,10 +173,13 @@ export default class WebSocketPlugin
         }
         return String(data);
       }
-    } as any;
+    }
+
+    globalThis.WebSocket = PageSpyWebSocketProxy as any;
   }
 
   public onReset() {
     globalThis.WebSocket = OriginWebSocket;
+    WebSocketPlugin.hasInitd = false;
   }
 }
