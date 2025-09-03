@@ -37,16 +37,14 @@ export default class FetchProxy extends RNNetworkProxyBase {
       return;
     }
     this.fetch = originFetch;
-    globalThis.fetch = function (input: RequestInfo, init: RequestInit = {}) {
-      const fetchInstance = originFetch(input, {
-        ...init,
-        headers: {
-          // set this header to let lower xhr not to proxy.
-          [IS_FETCH_HEADER]: 'true',
-          ...init.headers,
-        },
-      });
-
+    
+    globalThis.fetch = function (
+      input: RequestInfo | URL,
+      init: RequestInit = {},
+    ) {
+      const request = new Request(input, init);
+      request.headers.append(IS_FETCH_HEADER, 'true');
+      const fetchInstance = originFetch(request);
       const id = getRandomId();
       that.createRequest(id);
       const req = that.getRequest(id);
