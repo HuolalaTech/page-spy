@@ -118,6 +118,8 @@ class PageSpy {
 
   public eventBus = eventBus;
 
+  private visibilityChangeHandler: (() => void) | null = null;
+
   constructor(ic: InitConfig = {}) {
     if (PageSpy.instance) {
       psLog.warn('Cannot initialize PageSpy multiple times');
@@ -156,7 +158,7 @@ class PageSpy {
         this.useOldConnection();
       }
       // reconnect when page switch to front-ground.
-      document.addEventListener('visibilitychange', () => {
+      this.visibilityChangeHandler = () => {
         // For browser, if the connection exist, no need to recreate.
         if (
           !document.hidden &&
@@ -165,7 +167,11 @@ class PageSpy {
         ) {
           this.useOldConnection();
         }
-      });
+      };
+      document.addEventListener(
+        'visibilitychange',
+        this.visibilityChangeHandler,
+      );
     }
     psLog.log('Plugins inited');
     this.eventBus.dispatchEvent(new Event('core:inited'));
@@ -480,9 +486,21 @@ class PageSpy {
   public abort() {
     this.triggerPlugins('onReset');
     PageSpy.instance = null;
-
     socketStore.close();
     modal.reset();
+
+    if (this.visibilityChangeHandler) {
+      document.removeEventListener(
+        'visibilitychange',
+        this.visibilityChangeHandler,
+      );
+      this.visibilityChangeHandler = null;
+    }
+
+    if (this.cacheTimer) {
+      clearInterval(this.cacheTimer);
+      this.cacheTimer = null;
+    }
 
     const root = document.querySelector(`#${nodeId}`);
     if (root) {
