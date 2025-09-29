@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-browser",
-  "version": "2.2.7",
+  "version": "2.2.8",
   "description": "A developer tool for debugging remote web page.",
   "license": "MIT",
   "main": "dist/iife/index.min.js",
