@@ -101,8 +101,6 @@ export default class FetchProxy extends WebNetworkProxyBase {
         fetchInstance
           .then<string | Blob, never>((res) => {
             // Headers received
-            req.endTime = Date.now();
-            req.costTime = req.endTime - (req.startTime || req.endTime);
             req.status = res.status || 200;
             req.statusText = res.statusText || 'Done';
             req.responseHeader = [...res.headers.entries()];
@@ -159,6 +157,8 @@ export default class FetchProxy extends WebNetworkProxyBase {
             }
           })
           .finally(() => {
+            req.endTime = Date.now();
+            req.costTime = req.endTime - (req.startTime || req.endTime);
             req.readyState = XMLHttpRequest.DONE;
             that.sendRequestItem(id, req);
           });
