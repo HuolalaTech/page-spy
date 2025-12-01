@@ -142,6 +142,20 @@
         pointer-events: none;
         user-select: none;
       }
+
+      .page-spy-logo-device-id {
+        position: relative;
+        z-index: 100;
+        font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+        font-size: round((18em / @font-size), 2);
+        font-weight: 700;
+        color: var(--primary-color);
+        text-transform: uppercase;
+        letter-spacing: round((1em / @font-size), 2);
+        pointer-events: none;
+        user-select: none;
+        transition: transform ease-in-out 0.1s 0.4s;
+      }
     }
   }
 }

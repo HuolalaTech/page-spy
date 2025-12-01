@@ -225,6 +225,7 @@ class PageSpy {
 
     sessionStorage.removeItem(ROOM_SESSION_KEY);
     this.refreshRoomInfo();
+    this.updateDeviceIdDisplay();
   }
 
   private useOldConnection() {
@@ -236,6 +237,7 @@ class PageSpy {
     const { address } = JSON.parse(cache);
     this.address = address;
     this.refreshRoomInfo();
+    this.updateDeviceIdDisplay();
 
     const url = this.request?.getRoomUrl(this.address);
     if (!url) return;
@@ -327,6 +329,7 @@ class PageSpy {
       clientOrigin,
       title,
       logo: logoUrl,
+      logoType,
       useSecret,
       secret,
       primaryColor,
@@ -334,12 +337,21 @@ class PageSpy {
       offline,
     } = config;
 
+    // 设备 ID 取前 4 位
+    const deviceId = this.address.slice(0, 4) || '--';
+
+    // 根据 logoType 决定显示图片还是设备 ID
+    const logoContent =
+      logoType === 'deviceId'
+        ? `<span class="page-spy-logo-device-id">${deviceId}</span>`
+        : `<img src="${logoUrl}" alt="Logo" />`;
+
     const doc = new DOMParser().parseFromString(
       `
       <!-- PageSpy Root Container -->
       <div id="${nodeId}" style="--primary-color: hsl(270, 100%, 55%)">
-        <div class="page-spy-logo">
-          <img src="${logoUrl}" alt="Logo" />
+        <div class="page-spy-logo" data-logo-type="${logoType}">
+          ${logoContent}
         </div>
       </div>
 
@@ -481,6 +493,25 @@ class PageSpy {
     }
 
     socketStore.updateRoomInfo();
+  }
+
+  /**
+   * 更新显示的设备 ID（在 logo 和 modal 中）
+   */
+  private updateDeviceIdDisplay() {
+    const deviceId = this.address.slice(0, 4) || '--';
+
+    // 更新 logo 中的设备 ID（如果配置为显示设备 ID）
+    const logoDeviceIdEl = document.querySelector('.page-spy-logo-device-id');
+    if (logoDeviceIdEl) {
+      logoDeviceIdEl.textContent = deviceId;
+    }
+
+    // 更新 modal 中的设备 ID
+    const modalDeviceIdEl = document.querySelector('.page-spy-device-id');
+    if (modalDeviceIdEl) {
+      modalDeviceIdEl.textContent = deviceId;
+    }
   }
 
   public abort() {
