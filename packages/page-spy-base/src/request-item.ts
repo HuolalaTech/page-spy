@@ -17,7 +17,8 @@ export class RequestItem implements SpyNetwork.RequestInfo {
 
   readyState: XMLHttpRequest['readyState'] = 0;
 
-  response: any;
+  // See: https://github.com/HuolalaTech/page-spy-web/issues/390
+  response: any = '__PLACEHOLDER_RESPONSE_DEFINED_BY_PAGE_SPY__';
 
   responseReason: string | null = null; // error response reason
 
