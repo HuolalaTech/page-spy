@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-plugin-ospy",
-  "version": "2.2.10",
+  "version": "2.2.11",
   "description": "Offline-fist PageSpy, plug and play. Only available in browser.",
   "license": "MIT",
   "main": "dist/iife/index.min.js",
@@ -36,7 +36,7 @@
     "@huolala-tech/page-spy-base": "^2.2.4",
     "@huolala-tech/page-spy-browser": "^2.2.10",
     "@huolala-tech/page-spy-plugin-data-harbor": "^2.2.10",
-    "@huolala-tech/page-spy-plugin-rrweb": "^2.2.4",
+    "@huolala-tech/page-spy-plugin-rrweb": "^2.2.5",
     "@huolala-tech/page-spy-types": "^2.2.4"
   },
   "devDependencies": {
