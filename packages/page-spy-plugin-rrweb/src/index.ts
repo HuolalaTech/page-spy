@@ -1,7 +1,7 @@
 import { OnInitParams, PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import { InitConfigBase } from '@huolala-tech/page-spy-base';
 import { record } from 'rrweb';
-import type { recordOptions } from 'rrweb/typings/types';
+import type { recordOptions } from 'rrweb';
 import type { eventWithTime, listenerHandler } from '@rrweb/types';
 import { isBrowser, psLog } from '@huolala-tech/page-spy-base/dist/utils';
 import { makeMessage } from '@huolala-tech/page-spy-base/dist/message';
