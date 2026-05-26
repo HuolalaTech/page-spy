@@ -117,6 +117,15 @@ export function isClass(obj: unknown): obj is Function {
   return typeof obj === 'function' && typeof obj.prototype !== 'undefined';
 }
 
+/**
+ * ES Module namespace objects (result of dynamic import()) have:
+ * - Symbol.toStringTag === 'Module'
+ * - null prototype (no constructor)
+ */
+export function isModuleNamespace(value: unknown): value is object {
+  return isObjectLike(value) && toStringTag(value) === '[object Module]';
+}
+
 const CN_IDs = ['zh-CN', 'zh-HK', 'zh-TW', 'zh', 'zh-Hans-CN'];
 export function isCN() {
   if (isBrowser()) {

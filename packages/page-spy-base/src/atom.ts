@@ -7,6 +7,7 @@ import {
   hasOwnProperty,
   isArray,
   isArrayLike,
+  isModuleNamespace,
   isPlainObject,
   isPrototype,
   makePrimitiveValue,
@@ -136,8 +137,10 @@ export class Atom {
     if (isArray(data)) {
       return `Array (${data.length})`;
     }
-    const constructorName = data.constructor.name;
-    return constructorName;
+    if (isModuleNamespace(data)) {
+      return 'Module {...}';
+    }
+    return data?.constructor?.name ?? 'Object';
   }
 
   public addExtraProperty(id: string) {
