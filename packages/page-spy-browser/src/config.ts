@@ -31,6 +31,13 @@ const schema = extendConfigSchema((z) => {
        */
       logo: z.string(),
       /**
+       * Customize logo display type in float-ball.
+       * - 'image': Display logo image (default)
+       * - 'deviceId': Display device ID for easy identification
+       * @default 'image'
+       */
+      logoType: z.enum(['image', 'deviceId']),
+      /**
        * Customize brand primary color.
        */
       primaryColor: z.string(),
@@ -101,6 +108,7 @@ export class Config extends ConfigBase<InitConfig> {
       clientOrigin: '',
       autoRender: true,
       logo: logoUrl,
+      logoType: 'image' as const,
       primaryColor: 'hsl(270, 100%, 55%)',
       modal: {
         logo: modalLogoUrl,
