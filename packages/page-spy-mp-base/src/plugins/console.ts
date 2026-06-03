@@ -3,7 +3,10 @@ import type {
   PageSpyPlugin,
   OnInitParams,
 } from '@huolala-tech/page-spy-types/index';
-import { InitConfigBase } from '@huolala-tech/page-spy-base';
+import {
+  InitConfigBase,
+  isCompleteConsoleExportMode,
+} from '@huolala-tech/page-spy-base';
 import { atom } from '@huolala-tech/page-spy-base/dist/atom';
 import { makeMessage } from '@huolala-tech/page-spy-base/dist/message';
 import socketStore from '../helpers/socket';
@@ -90,16 +93,23 @@ export default class ConsolePlugin implements PageSpyPlugin {
       }
 
       this.console[data.logType](...data.logs);
+      const serializeConsoleLog = isCompleteConsoleExportMode(
+        this.$pageSpyConfig,
+      );
       const atomLog = makeMessage('console', {
         ...data,
         time: Date.now(),
         logs: data.logs.map((log) => {
-          return atom.transformToAtom(log, false);
+          return atom.transformToAtom(
+            log,
+            serializeConsoleLog,
+            serializeConsoleLog,
+          );
         }),
       });
       socketStore.broadcastMessage(atomLog);
 
-      if (!this.$pageSpyConfig?.serializeData) {
+      if (!this.$pageSpyConfig?.serializeData || serializeConsoleLog) {
         socketStore.dispatchEvent('public-data', atomLog);
       } else {
         const serializeLog = {

@@ -11,9 +11,10 @@ export interface Overview {
     | 'function'
     | 'null'
     | 'error'
+    | 'json'
     | 'debug-origin'
     | 'atom';
-  value: string | PropertyDescriptor;
+  value: any;
   __atomId?: string;
   instanceId?: string;
 }

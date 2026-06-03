@@ -1,4 +1,5 @@
 import { atom } from '@huolala-tech/page-spy-base/dist/atom';
+import { isCompleteConsoleExportMode } from '@huolala-tech/page-spy-base';
 import { makeMessage } from '@huolala-tech/page-spy-base/dist/message';
 import { formatErrorObj } from '@huolala-tech/page-spy-base/dist/utils';
 import type {
@@ -103,7 +104,12 @@ export default class ErrorPlugin implements PageSpyPlugin {
     );
     if (processedByUser === false) return;
 
-    error.logs = error.logs.map((l) => atom.transformToAtom(l));
+    const serializeConsoleLog = isCompleteConsoleExportMode(
+      this.$pageSpyConfig,
+    );
+    error.logs = error.logs.map((l) =>
+      atom.transformToAtom(l, serializeConsoleLog, serializeConsoleLog),
+    );
     const message = makeMessage('console', error);
     socketStore.dispatchEvent('public-data', message);
     socketStore.broadcastMessage(message);

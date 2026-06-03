@@ -13,6 +13,19 @@ export function hasOwnProperty(target: Object, key: string) {
   return Object.prototype.hasOwnProperty.call(target, key);
 }
 
+export enum ConsoleExportMode {
+  Original = 'original',
+  Complete = 'complete',
+}
+
+export type ConsoleExportModeValue = 'original' | 'complete';
+
+export function isCompleteConsoleExportMode(
+  config?: { consoleExportMode?: ConsoleExportModeValue | null } | null,
+) {
+  return config?.consoleExportMode === ConsoleExportMode.Complete;
+}
+
 export function isString(value: unknown): value is string {
   return typeof value === 'string';
 }
@@ -133,6 +146,201 @@ export function stringifyData(data: any): any {
     return value;
   }
   return JSON.stringify(data, (key, val) => makePrimitiveValue(val).value, 2);
+}
+
+function getSerializableType(value: any) {
+  return value?.constructor?.name || toStringTag(value).slice(8, -1);
+}
+
+interface SerializableSnapshotResult {
+  value: any;
+  complete: boolean;
+}
+
+const completeSnapshot = (value: any): SerializableSnapshotResult => ({
+  value,
+  complete: true,
+});
+
+const incompleteSnapshot = (): SerializableSnapshotResult => ({
+  value: null,
+  complete: false,
+});
+
+function instanceOfGlobal(value: any, name: string) {
+  const ctor = (globalThis as any)[name];
+  return typeof ctor === 'function' && value instanceof ctor;
+}
+
+function isKnownIncompleteSnapshotValue(value: any) {
+  return [
+    'Node',
+    'Window',
+    'Document',
+    'Element',
+    'Blob',
+    'File',
+    'FormData',
+    'Headers',
+    'Promise',
+    'WeakMap',
+    'WeakSet',
+  ].some((name) => instanceOfGlobal(value, name));
+}
+
+function makeSerializableSnapshot(
+  data: any,
+  visited = new WeakSet<object>(),
+): SerializableSnapshotResult {
+  const { ok, value } = makePrimitiveValue(data);
+  if (ok) {
+    return completeSnapshot(value);
+  }
+
+  if (!isObjectLike(data)) {
+    return completeSnapshot(data);
+  }
+
+  if (isKnownIncompleteSnapshotValue(data)) {
+    return incompleteSnapshot();
+  }
+
+  if (visited.has(data)) {
+    return completeSnapshot('[Circular]');
+  }
+  visited.add(data);
+
+  if (data instanceof Date) {
+    return completeSnapshot(
+      Number.isNaN(data.getTime()) ? data.toString() : data.toISOString(),
+    );
+  }
+
+  if (data instanceof RegExp) {
+    return completeSnapshot(data.toString());
+  }
+
+  if (isArray(data)) {
+    const values: any[] = [];
+    const items = Array.from(data);
+    for (let index = 0; index < items.length; index += 1) {
+      const item = items[index];
+      const snapshot = makeSerializableSnapshot(item, visited);
+      if (!snapshot.complete) {
+        return incompleteSnapshot();
+      }
+      values.push(snapshot.value);
+    }
+    return completeSnapshot(values);
+  }
+
+  if (data instanceof Map) {
+    const entries: any[] = [];
+    const mapEntries = Array.from(data.entries());
+    for (let index = 0; index < mapEntries.length; index += 1) {
+      const [key, val] = mapEntries[index];
+      const keySnapshot = makeSerializableSnapshot(key, visited);
+      const valueSnapshot = makeSerializableSnapshot(val, visited);
+      if (!keySnapshot.complete || !valueSnapshot.complete) {
+        return incompleteSnapshot();
+      }
+      entries.push([keySnapshot.value, valueSnapshot.value]);
+    }
+    return completeSnapshot({
+      __type: 'Map',
+      entries,
+    });
+  }
+
+  if (data instanceof Set) {
+    const values: any[] = [];
+    const setValues = Array.from(data.values());
+    for (let index = 0; index < setValues.length; index += 1) {
+      const val = setValues[index];
+      const snapshot = makeSerializableSnapshot(val, visited);
+      if (!snapshot.complete) {
+        return incompleteSnapshot();
+      }
+      values.push(snapshot.value);
+    }
+    return completeSnapshot({
+      __type: 'Set',
+      values,
+    });
+  }
+
+  if (isArrayBuffer(data)) {
+    return completeSnapshot({
+      __type: 'ArrayBuffer',
+      bytes: Array.from(new Uint8Array(data)),
+    });
+  }
+
+  if (isTypedArray(data)) {
+    const view = data as any;
+    return completeSnapshot({
+      __type: getSerializableType(data),
+      bytes:
+        typeof view.length === 'number'
+          ? Array.from(view)
+          : Array.from(
+              new Uint8Array(view.buffer, view.byteOffset, view.byteLength),
+            ),
+    });
+  }
+
+  const result: Record<string, any> = {};
+  const type = getSerializableType(data);
+  if (type && type !== 'Object' && !isArray(data)) {
+    result.__type = type;
+  }
+
+  const keys = Object.keys(data);
+  for (let index = 0; index < keys.length; index += 1) {
+    const key = keys[index];
+    const desc = Object.getOwnPropertyDescriptor(data, key);
+    if (!desc) {
+      continue;
+    }
+    if (hasOwnProperty(desc, 'value')) {
+      const snapshot = makeSerializableSnapshot(desc.value, visited);
+      if (!snapshot.complete) {
+        return incompleteSnapshot();
+      }
+      result[key] = snapshot.value;
+      continue;
+    }
+
+    const accessor = [
+      desc.get ? 'Getter' : '',
+      desc.set ? 'Setter' : '',
+    ].filter(Boolean);
+    result[key] = `[${accessor.join('/') || 'Accessor'}]`;
+  }
+
+  if (
+    type &&
+    type !== 'Object' &&
+    !isArray(data) &&
+    Object.keys(result).length === 1 &&
+    result.__type === type
+  ) {
+    return incompleteSnapshot();
+  }
+
+  return completeSnapshot(result);
+}
+
+export function stringifyJsonSnapshot(data: any): string | null {
+  try {
+    const snapshot = makeSerializableSnapshot(data);
+    if (!snapshot.complete) {
+      return null;
+    }
+    return JSON.stringify(snapshot.value);
+  } catch (e) {
+    return null;
+  }
 }
 
 export function getValueType(value: any) {

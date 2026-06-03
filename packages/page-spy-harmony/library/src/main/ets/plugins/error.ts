@@ -1,4 +1,5 @@
 import atom from '../utils/atom';
+import { isCompleteConsoleExportMode } from '../utils';
 import { makeMessage } from '../utils/message';
 import socketStore from '../helpers/socket';
 import type {
@@ -53,7 +54,12 @@ export default class ErrorPlugin implements PageSpyPlugin {
     );
     if (processedByUser === false) return;
 
-    error.logs = error.logs.map((l) => atom.transformToAtom(l));
+    const serializeConsoleLog = isCompleteConsoleExportMode(
+      this.$pageSpyConfig,
+    );
+    error.logs = error.logs.map((l) =>
+      atom.transformToAtom(l, serializeConsoleLog, serializeConsoleLog),
+    );
     const message = makeMessage('console', error);
     socketStore.dispatchEvent('public-data', message);
     socketStore.broadcastMessage(message);
