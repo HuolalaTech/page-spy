@@ -133,4 +133,55 @@ describe('transformToAtom: convert data to be descriptive atom object', () => {
     expect(atom.transformToAtom(new Boolean()).type).toBe('atom');
     expect(atom.transformToAtom(Object.prototype).type).toBe('atom');
   });
+
+  it('Complex value can be serialized as a JSON snapshot', () => {
+    const data: Record<string, any> = {
+      plain: {
+        value: 1,
+      },
+      list: [1, undefined, { nested: true }],
+      tuple: [{ id: 1 }, { id: 2 }],
+      map: new Map([['key', { nested: true }]]),
+      set: new Set(['a', 'b']),
+    };
+    Object.defineProperty(data, 'lazy', {
+      enumerable: true,
+      get() {
+        return 'should not be invoked';
+      },
+    });
+    data.self = data;
+
+    const result = atom.transformToAtom(data, true);
+    expect(result.type).toBe('json');
+    expect(result.value).not.toBeNull();
+
+    const parsed = JSON.parse(result.value);
+    expect(parsed.plain.value).toBe(1);
+    expect(parsed.list).toEqual([1, 'undefined', { nested: true }]);
+    expect(parsed.tuple).toEqual([{ id: 1 }, { id: 2 }]);
+    expect(parsed.map).toEqual({
+      __type: 'Map',
+      entries: [['key', { nested: true }]],
+    });
+    expect(parsed.set).toEqual({
+      __type: 'Set',
+      values: ['a', 'b'],
+    });
+    expect(parsed.lazy).toBe('[Getter]');
+    expect(parsed.self).toBe('[Circular]');
+  });
+
+  it('Complex value can fall back to atom when complete snapshot is incomplete', () => {
+    const result = atom.transformToAtom(
+      {
+        element: document.body,
+      },
+      true,
+      true,
+    );
+
+    expect(result.type).toBe('atom');
+    expect(result.value).toBe('Object {...}');
+  });
 });

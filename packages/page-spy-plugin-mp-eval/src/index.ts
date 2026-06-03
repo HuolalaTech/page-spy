@@ -80,7 +80,13 @@ export default class MPEvalPlugin implements PageSpyPlugin {
         // const result = new Function(`return ${data}`)();
         const evalMsg = makeMessage('console', {
           logType: 'debug-eval',
-          logs: [MPEvalPlugin.atom?.transformToAtom(result)],
+          logs: [
+            MPEvalPlugin.atom?.transformToAtom(
+              result,
+              MPEvalPlugin.socketStore?.getPageSpyConfig?.()
+                ?.consoleExportMode === 'complete',
+            ),
+          ],
         });
         reply(evalMsg);
       } catch (err) {

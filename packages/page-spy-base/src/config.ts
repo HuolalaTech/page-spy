@@ -6,6 +6,22 @@ import { DataItem as DatabaseData } from '@huolala-tech/page-spy-types/lib/datab
 import { DataItem as SystemData } from '@huolala-tech/page-spy-types/lib/system';
 import { RequestInfo } from '@huolala-tech/page-spy-types/lib/network';
 
+export enum ConsoleExportMode {
+  Original = 'original',
+  Complete = 'complete',
+}
+
+export type ConsoleExportModeValue = `${ConsoleExportMode}`;
+
+const consoleExportModeValues = [
+  ConsoleExportMode.Original,
+  ConsoleExportMode.Complete,
+] as [ConsoleExportModeValue, ConsoleExportModeValue];
+
+export const isCompleteConsoleExportMode = (
+  config?: { consoleExportMode?: ConsoleExportModeValue | null } | null,
+) => config?.consoleExportMode === ConsoleExportMode.Complete;
+
 export type SchemaUnwrap<T extends z.ZodType> = z.infer<T>;
 
 const processorFn = <T>() =>
@@ -71,6 +87,13 @@ const baseSchema = z
      * Indicate whether serialize non-primitive data in offline log.
      */
     serializeData: z.boolean(),
+
+    /**
+     * Specify how console object logs are sent to the debugger.
+     * - original: keep lazy atom previews and fetch properties when expanded.
+     * - complete: serialize every console argument as a log-time JSON snapshot.
+     */
+    consoleExportMode: z.enum(consoleExportModeValues),
 
     /**
      * Internal plugins is out-of-box carried with PageSpy.
@@ -146,6 +169,7 @@ export abstract class ConfigBase<C extends InitConfigBase> {
       secret: '', // secret is private and would generated automatically when enable "useSecret: true"
       offline: false,
       serializeData: false,
+      consoleExportMode: ConsoleExportMode.Original,
       disabledPlugins: [],
       dataProcessor: {},
     };

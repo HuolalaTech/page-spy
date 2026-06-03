@@ -9,7 +9,7 @@ import type {
 } from '../types';
 import atom from '../utils/atom';
 import router from '@ohos.router';
-import { getRandomId } from '../utils';
+import { getRandomId, isCompleteConsoleExportMode } from '../utils';
 
 export default class ConsolePlugin implements PageSpyPlugin {
   public name: string = 'ConsolePlugin';
@@ -27,6 +27,10 @@ export default class ConsolePlugin implements PageSpyPlugin {
   public console: Record<string, any> = {};
 
   public $pageSpyConfig: InitConfig | null = null;
+
+  private static shouldSerializeConsoleLog() {
+    return isCompleteConsoleExportMode(socketStore.getPageSpyConfig?.());
+  }
 
   public async onInit({ config }: OnInitParams<InitConfig>) {
     if (ConsolePlugin.hasInitd) return;
@@ -89,9 +93,16 @@ export default class ConsolePlugin implements PageSpyPlugin {
       try {
         // TODO
         const result = '🚧 动态执行函数暂未开放，敬请期待 ...';
+        const serializeConsoleLog = ConsolePlugin.shouldSerializeConsoleLog();
         const evalMsg = makeMessage('console', {
           logType: 'debug-eval',
-          logs: [atom.transformToAtom(result)],
+          logs: [
+            atom.transformToAtom(
+              result,
+              serializeConsoleLog,
+              serializeConsoleLog,
+            ),
+          ],
         });
         reply(evalMsg);
       } catch (err) {
@@ -121,16 +132,23 @@ export default class ConsolePlugin implements PageSpyPlugin {
       }
 
       this.console[data.logType](...data.logs);
+      const serializeConsoleLog = isCompleteConsoleExportMode(
+        this.$pageSpyConfig,
+      );
       const atomLog = makeMessage('console', {
         ...data,
         time: Date.now(),
         logs: data.logs.map((log) => {
-          return atom.transformToAtom(log, false);
+          return atom.transformToAtom(
+            log,
+            serializeConsoleLog,
+            serializeConsoleLog,
+          );
         }),
       });
       socketStore.broadcastMessage(atomLog);
 
-      if (!this.$pageSpyConfig?.serializeData) {
+      if (!this.$pageSpyConfig?.serializeData || serializeConsoleLog) {
         socketStore.dispatchEvent('public-data', atomLog);
       } else {
         const serializeLog = {

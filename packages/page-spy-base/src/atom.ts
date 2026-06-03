@@ -11,6 +11,7 @@ import {
   isPlainObject,
   isPrototype,
   makePrimitiveValue,
+  stringifyJsonSnapshot,
 } from './utils';
 
 export class Atom {
@@ -35,7 +36,11 @@ export class Atom {
     this.instanceStore = {};
   }
 
-  public transformToAtom(data: any, serializeData = false): any {
+  public transformToAtom(
+    data: any,
+    serializeData = false,
+    fallbackToAtomOnIncomplete = false,
+  ): any {
     const { value, ok } = makePrimitiveValue(data);
     const id = getRandomId();
     if (ok) {
@@ -47,12 +52,19 @@ export class Atom {
     }
     if (serializeData) {
       try {
+        const jsonSnapshot = stringifyJsonSnapshot(data);
+        if (jsonSnapshot === null && fallbackToAtomOnIncomplete) {
+          return this.add(data);
+        }
         return {
           id,
           type: 'json',
-          value: JSON.stringify(data),
+          value: jsonSnapshot,
         };
       } catch (e) {
+        if (fallbackToAtomOnIncomplete) {
+          return this.add(data);
+        }
         // type === 'json' && value === null 作为无法序列化数据时的硬编码
         return {
           id,

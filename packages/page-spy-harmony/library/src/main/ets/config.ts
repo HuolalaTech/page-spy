@@ -1,4 +1,5 @@
 import { ConfigBase } from './utils/config';
+import { ConsoleExportMode } from './utils';
 import type { InitConfig } from './types/harmony';
 
 export class Config extends ConfigBase<InitConfig> {
@@ -17,6 +18,7 @@ export class Config extends ConfigBase<InitConfig> {
       useSecret: false,
       secret: '',
       serializeData: false,
+      consoleExportMode: ConsoleExportMode.Original,
       dataProcessor: {},
     };
   };

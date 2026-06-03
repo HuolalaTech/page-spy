@@ -82,35 +82,57 @@ export function isPrototype(value: unknown): value is Object {
 }
 
 export function isBlob(value: unknown): value is Blob {
-  return value instanceof Blob;
+  return typeof Blob !== 'undefined' && value instanceof Blob;
 }
 
 export function isArrayBuffer(value: unknown): value is ArrayBuffer {
-  return value instanceof ArrayBuffer;
+  return typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer;
 }
 
 export function isURLSearchParams(value: unknown): value is URLSearchParams {
-  return value instanceof URLSearchParams;
+  return (
+    typeof URLSearchParams !== 'undefined' && value instanceof URLSearchParams
+  );
 }
 
 export function isFormData(value: unknown): value is FormData {
-  return value instanceof FormData;
+  return typeof FormData !== 'undefined' && value instanceof FormData;
 }
 
 export function isFile(value: unknown): value is File {
-  return value instanceof File;
+  return typeof File !== 'undefined' && value instanceof File;
 }
 
 export function isHeaders(value: unknown): value is Headers {
-  return value instanceof Headers;
+  return typeof Headers !== 'undefined' && value instanceof Headers;
 }
 
 export function isDocument(value: unknown): value is Document {
-  return value instanceof Document;
+  return typeof Document !== 'undefined' && value instanceof Document;
 }
 
 export function isURL(value: unknown): value is URL {
-  return value instanceof URL;
+  return typeof URL !== 'undefined' && value instanceof URL;
+}
+
+export function isNode(value: unknown): value is Node {
+  return typeof Node !== 'undefined' && value instanceof Node;
+}
+
+export function isWindow(value: unknown): value is Window {
+  return typeof Window !== 'undefined' && value instanceof Window;
+}
+
+export function isPromise(value: unknown): value is Promise<unknown> {
+  return typeof Promise !== 'undefined' && value instanceof Promise;
+}
+
+export function isWeakMap(value: unknown): value is WeakMap<object, unknown> {
+  return typeof WeakMap !== 'undefined' && value instanceof WeakMap;
+}
+
+export function isWeakSet(value: unknown): value is WeakSet<object> {
+  return typeof WeakSet !== 'undefined' && value instanceof WeakSet;
 }
 
 export function isClass(obj: unknown): obj is Function {
@@ -210,6 +232,211 @@ export function stringifyData(data: any): any {
     return value;
   }
   return JSON.stringify(data, (key, val) => makePrimitiveValue(val).value, 2);
+}
+
+function getSerializableKey(key: string | symbol) {
+  return typeof key === 'symbol' ? key.toString() : key;
+}
+
+function getSerializableType(value: any) {
+  return value?.constructor?.name || toStringTag(value).slice(8, -1);
+}
+
+interface SerializableSnapshotResult {
+  value: any;
+  complete: boolean;
+}
+
+const completeSnapshot = (value: any): SerializableSnapshotResult => ({
+  value,
+  complete: true,
+});
+
+const incompleteSnapshot = (): SerializableSnapshotResult => ({
+  value: null,
+  complete: false,
+});
+
+function isKnownIncompleteSnapshotValue(value: any) {
+  return (
+    isNode(value) ||
+    isWindow(value) ||
+    isDocument(value) ||
+    isBlob(value) ||
+    isFile(value) ||
+    isFormData(value) ||
+    isHeaders(value) ||
+    isPromise(value) ||
+    isWeakMap(value) ||
+    isWeakSet(value)
+  );
+}
+
+function makeSerializableSnapshot(
+  data: any,
+  visited = new WeakSet<object>(),
+): SerializableSnapshotResult {
+  const { ok, value } = makePrimitiveValue(data);
+  if (ok) {
+    return completeSnapshot(value);
+  }
+
+  if (!isObjectLike(data)) {
+    return completeSnapshot(data);
+  }
+
+  if (isKnownIncompleteSnapshotValue(data)) {
+    return incompleteSnapshot();
+  }
+
+  if (visited.has(data)) {
+    return completeSnapshot('[Circular]');
+  }
+  visited.add(data);
+
+  if (data instanceof Date) {
+    return completeSnapshot(
+      Number.isNaN(data.getTime()) ? data.toString() : data.toISOString(),
+    );
+  }
+
+  if (data instanceof RegExp) {
+    return completeSnapshot(data.toString());
+  }
+
+  if (isArray(data)) {
+    const values: any[] = [];
+    const items = Array.from(data);
+    for (let index = 0; index < items.length; index += 1) {
+      const item = items[index];
+      const snapshot = makeSerializableSnapshot(item, visited);
+      if (!snapshot.complete) {
+        return incompleteSnapshot();
+      }
+      values.push(snapshot.value);
+    }
+    return completeSnapshot(values);
+  }
+
+  if (data instanceof Map) {
+    const entries: any[] = [];
+    const mapEntries = Array.from(data.entries());
+    for (let index = 0; index < mapEntries.length; index += 1) {
+      const [key, val] = mapEntries[index];
+      const keySnapshot = makeSerializableSnapshot(key, visited);
+      const valueSnapshot = makeSerializableSnapshot(val, visited);
+      if (!keySnapshot.complete || !valueSnapshot.complete) {
+        return incompleteSnapshot();
+      }
+      entries.push([keySnapshot.value, valueSnapshot.value]);
+    }
+    return {
+      value: {
+        __type: 'Map',
+        entries,
+      },
+      complete: true,
+    };
+  }
+
+  if (data instanceof Set) {
+    const values: any[] = [];
+    const setValues = Array.from(data.values());
+    for (let index = 0; index < setValues.length; index += 1) {
+      const val = setValues[index];
+      const snapshot = makeSerializableSnapshot(val, visited);
+      if (!snapshot.complete) {
+        return incompleteSnapshot();
+      }
+      values.push(snapshot.value);
+    }
+    return completeSnapshot({
+      __type: 'Set',
+      values,
+    });
+  }
+
+  if (isArrayBuffer(data)) {
+    return completeSnapshot({
+      __type: 'ArrayBuffer',
+      bytes: Array.from(new Uint8Array(data)),
+    });
+  }
+
+  if (isTypedArray(data)) {
+    const view = data as any;
+    return completeSnapshot({
+      __type: getSerializableType(data),
+      bytes:
+        typeof view.length === 'number'
+          ? Array.from(view)
+          : Array.from(
+              new Uint8Array(view.buffer, view.byteOffset, view.byteLength),
+            ),
+    });
+  }
+
+  if (isURLSearchParams(data)) {
+    return completeSnapshot({
+      __type: 'URLSearchParams',
+      entries: Array.from(data.entries()),
+    });
+  }
+
+  if (isURL(data)) {
+    return completeSnapshot(data.toString());
+  }
+
+  const result: Record<string, any> = {};
+  const type = getSerializableType(data);
+  if (type && type !== 'Object' && !isArray(data)) {
+    result.__type = type;
+  }
+
+  const descriptors = Object.getOwnPropertyDescriptors(data);
+  const descriptorKeys = Reflect.ownKeys(descriptors);
+  for (let index = 0; index < descriptorKeys.length; index += 1) {
+    const key = descriptorKeys[index];
+    const desc = descriptors[key as keyof typeof descriptors];
+    const serializableKey = getSerializableKey(key);
+    if (hasOwnProperty(desc, 'value')) {
+      const snapshot = makeSerializableSnapshot(desc.value, visited);
+      if (!snapshot.complete) {
+        return incompleteSnapshot();
+      }
+      result[serializableKey] = snapshot.value;
+    } else {
+      const accessor = [
+        desc.get ? 'Getter' : '',
+        desc.set ? 'Setter' : '',
+      ].filter(Boolean);
+      result[serializableKey] = `[${accessor.join('/') || 'Accessor'}]`;
+    }
+  }
+
+  if (
+    type &&
+    type !== 'Object' &&
+    !isArray(data) &&
+    Reflect.ownKeys(result).length === 1 &&
+    result.__type === type
+  ) {
+    return incompleteSnapshot();
+  }
+
+  return completeSnapshot(result);
+}
+
+export function stringifyJsonSnapshot(data: any): string | null {
+  try {
+    const snapshot = makeSerializableSnapshot(data);
+    if (!snapshot.complete) {
+      return null;
+    }
+    return JSON.stringify(snapshot.value);
+  } catch (e) {
+    return null;
+  }
 }
 
 export function getValueType(value: any) {

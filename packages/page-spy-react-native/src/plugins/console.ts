@@ -7,6 +7,7 @@ import type {
 import { getRandomId } from '@huolala-tech/page-spy-base/dist/utils';
 import { atom } from '@huolala-tech/page-spy-base/dist/atom';
 import { makeMessage } from '@huolala-tech/page-spy-base/dist/message';
+import { isCompleteConsoleExportMode } from '@huolala-tech/page-spy-base';
 import socketStore from '../helpers/socket';
 import type { InitConfig } from '../config';
 
@@ -26,6 +27,10 @@ export default class ConsolePlugin implements PageSpyPlugin {
   ];
 
   public $pageSpyConfig: InitConfig | null = null;
+
+  private static shouldSerializeConsoleLog() {
+    return isCompleteConsoleExportMode(socketStore.getPageSpyConfig?.());
+  }
 
   public async onInit({ config }: OnInitParams<InitConfig>) {
     if (ConsolePlugin.hasInitd) return;
@@ -90,9 +95,16 @@ export default class ConsolePlugin implements PageSpyPlugin {
       try {
         // eslint-disable-next-line no-new-func, @typescript-eslint/no-implied-eval
         const result = new Function(`return ${data}`)();
+        const serializeConsoleLog = ConsolePlugin.shouldSerializeConsoleLog();
         const evalMsg = makeMessage('console', {
           logType: 'debug-eval',
-          logs: [atom.transformToAtom(result)],
+          logs: [
+            atom.transformToAtom(
+              result,
+              serializeConsoleLog,
+              serializeConsoleLog,
+            ),
+          ],
         });
         reply(evalMsg);
       } catch (err) {
@@ -122,16 +134,23 @@ export default class ConsolePlugin implements PageSpyPlugin {
       }
 
       this.console[data.logType](...data.logs);
+      const serializeConsoleLog = isCompleteConsoleExportMode(
+        this.$pageSpyConfig,
+      );
       const atomLog = makeMessage('console', {
         ...data,
         time: Date.now(),
         logs: data.logs.map((log) => {
-          return atom.transformToAtom(log, false);
+          return atom.transformToAtom(
+            log,
+            serializeConsoleLog,
+            serializeConsoleLog,
+          );
         }),
       });
       socketStore.broadcastMessage(atomLog);
 
-      if (!this.$pageSpyConfig?.serializeData) {
+      if (!this.$pageSpyConfig?.serializeData || serializeConsoleLog) {
         socketStore.dispatchEvent('public-data', atomLog);
       } else {
         const serializeLog = {

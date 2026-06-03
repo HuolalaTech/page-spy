@@ -1,4 +1,9 @@
-import { atom, formatErrorObj, makeMessage } from '@huolala-tech/page-spy-base';
+import {
+  atom,
+  formatErrorObj,
+  isCompleteConsoleExportMode,
+  makeMessage,
+} from '@huolala-tech/page-spy-base';
 import type {
   SpyConsole,
   PageSpyPlugin,
@@ -94,7 +99,12 @@ export default class ErrorPlugin implements PageSpyPlugin {
     );
     if (processedByUser === false) return;
 
-    error.logs = error.logs.map((l) => atom.transformToAtom(l));
+    const serializeConsoleLog = isCompleteConsoleExportMode(
+      this.$pageSpyConfig,
+    );
+    error.logs = error.logs.map((l) =>
+      atom.transformToAtom(l, serializeConsoleLog, serializeConsoleLog),
+    );
     const message = makeMessage('console', error);
     socketStore.dispatchEvent('public-data', message);
     socketStore.broadcastMessage(message);

@@ -6,6 +6,8 @@ import { DataItem as DatabaseData } from './database';
 import { DataItem as SystemData } from './system';
 import { RequestInfo } from './network';
 
+export type ConsoleExportModeValue = 'original' | 'complete';
+
 export interface InitConfigBase {
   /**
    * The server base url. For example, "example.com".
@@ -59,6 +61,14 @@ export interface InitConfigBase {
    * @default false
    */
   serializeData?: boolean;
+
+  /**
+   * Specify how console object logs are sent to the debugger.
+   * - original: keep lazy atom previews and fetch properties when expanded.
+   * - complete: serialize every console argument as a log-time JSON snapshot.
+   * @default 'original'
+   */
+  consoleExportMode?: ConsoleExportModeValue;
 
   /**
    *
