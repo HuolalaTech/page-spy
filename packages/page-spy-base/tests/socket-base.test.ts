@@ -34,6 +34,10 @@ class TestSocketStore extends SocketStoreBase {
   protected socketWrapper = new TestSocketWrapper();
 
   onOffline(): void {}
+
+  setSocketState(state: SocketState) {
+    this.socketWrapper.state = state;
+  }
 }
 
 describe('SocketWrapper', () => {
@@ -89,5 +93,48 @@ describe('SocketStoreBase', () => {
     expect(
       store.messages.slice(1).map((message) => message.content.data.data),
     ).toEqual(['second', 'third']);
+  });
+
+  it('sends only when the socket is open and a debugger is connected', () => {
+    const store = new TestSocketStore();
+    const message = {
+      type: 'broadcast' as const,
+      content: {
+        data: { role: 'client' as const, type: 'console' as const, data: {} },
+      },
+    };
+
+    expect(store.checkIfSend(message)).toBe(false);
+    store.setSocketState(SocketState.OPEN);
+    expect(store.checkIfSend(message)).toBe(false);
+    store.debuggerConnection = {
+      address: 'debugger',
+      name: 'Debugger',
+      userId: 'debugger',
+    };
+    expect(store.checkIfSend(message)).toBe(true);
+  });
+
+  it('does not cache direct messages, pings, or offline messages', () => {
+    const store = new TestSocketStore();
+
+    expect(store.checkIfCache({ type: 'ping', content: null })).toBe(false);
+    expect(
+      store.checkIfCache({
+        type: 'message',
+        content: {
+          data: { role: 'client', type: 'debug', data: {} },
+          from: { address: 'a', name: 'a', userId: 'a' },
+          to: { address: 'b', name: 'b', userId: 'b' },
+        },
+      }),
+    ).toBe(false);
+    store.isOffline = true;
+    expect(
+      store.checkIfCache({
+        type: 'broadcast',
+        content: { data: { role: 'client', type: 'console', data: {} } },
+      }),
+    ).toBe(false);
   });
 });
