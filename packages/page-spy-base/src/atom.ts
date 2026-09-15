@@ -14,6 +14,18 @@ import {
 } from './utils';
 
 /**
+ * Atom representation returned when a complex value is serialized inline.
+ *
+ * This is intentionally separate from `SpyAtom.Overview`: the public type
+ * predates the `serializeData` option and does not include the `json` variant.
+ */
+export interface SerializedAtomOverview {
+  id: string;
+  type: 'json';
+  value: string | null | undefined;
+}
+
+/**
  * Atom 类用于处理复杂对象的序列化
  *
  * 远程调试时无法直接序列化循环引用、getter、原型链等复杂结构。
@@ -60,10 +72,14 @@ export class Atom {
    * 3. Complex objects with serializeData=false → atom reference (stored for later expansion)
    *
    * @param data - The value to transform
-   * @param serializeData - If true, serialize complex objects to JSON instead of creating references
+   * @param serializeData - If true, serialize complex objects to JSON instead
+   *                        of creating references
    * @returns An atom structure with id, type, and value/reference
    */
-  public transformToAtom(data: any, serializeData = false): any {
+  public transformToAtom(
+    data: unknown,
+    serializeData = false,
+  ): SpyAtom.Overview | SerializedAtomOverview {
     const { value, ok } = makePrimitiveValue(data);
     const id = getRandomId();
     if (ok) {
@@ -140,7 +156,7 @@ export class Atom {
    *                to ensure getters are called with the correct `this` context
    * @returns An atom overview with the generated ID and semantic type name
    */
-  public add(data: any, insId: string = ''): SpyAtom.Overview {
+  public add(data: unknown, insId: string = ''): SpyAtom.Overview {
     const id = getRandomId();
     let instanceId = id;
     // Prototype objects must use the instance ID to bind getters correctly

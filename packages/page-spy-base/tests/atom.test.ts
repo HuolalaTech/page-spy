@@ -133,6 +133,25 @@ describe('transformToAtom: convert data to be descriptive atom object', () => {
     expect(atom.transformToAtom(new Boolean()).type).toBe('atom');
     expect(atom.transformToAtom(Object.prototype).type).toBe('atom');
   });
+
+  it('Serializes complex values inline when serializeData is enabled', () => {
+    const result = atom.transformToAtom({ answer: 42 }, true);
+
+    expect(result).toMatchObject({
+      type: 'json',
+      value: '{"answer":42}',
+    });
+  });
+
+  it('Uses a null placeholder when an inline value is not serializable', () => {
+    const circular: Record<string, unknown> = {};
+    circular.self = circular;
+
+    expect(atom.transformToAtom(circular, true)).toMatchObject({
+      type: 'json',
+      value: null,
+    });
+  });
 });
 
 describe('Atom store eviction', () => {
