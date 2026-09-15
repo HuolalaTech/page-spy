@@ -15,6 +15,7 @@ import * as SERVER_MESSAGE_TYPE from './message/server-type';
 import { atom } from './atom';
 import { Client } from './client';
 import { InitConfigBase } from './config';
+import { SOCKET_CONFIG } from './constants';
 
 type InteractiveType = SpyMessage.InteractiveType;
 type InternalMsgType = SpyMessage.InternalMsgType;
@@ -52,17 +53,12 @@ export enum SocketState {
   CLOSED = 3,
 }
 
-// Heartbeat interval: send ping every 5s to keep connection alive
-const HEARTBEAT_INTERVAL = 5000;
-
-// Reconnection strategy uses exponential backoff with a cap:
-// - Initial interval: 2000ms
-// - Each retry multiplies by 1.5x
-// - After 4 retries, interval caps at 2000 * 1.5^4 ≈ 10,125ms
-// - This prevents infinite growth while allowing quick recovery
-const INIT_RETRY_INTERVAL = 2000;
-const RETRY_TIME_INCR = 1.5;
-const MAX_RETRY_INTERVAL = Math.pow(RETRY_TIME_INCR, 4) * INIT_RETRY_INTERVAL;
+// Caps exponential backoff after SOCKET_CONFIG.MAX_RETRY_ATTEMPTS increases.
+const MAX_RETRY_INTERVAL =
+  Math.pow(
+    SOCKET_CONFIG.RETRY_INTERVAL_MULTIPLIER,
+    SOCKET_CONFIG.MAX_RETRY_ATTEMPTS,
+  ) * SOCKET_CONFIG.INITIAL_RETRY_INTERVAL_MS;
 
 // 封装不同平台的 socket
 export abstract class SocketWrapper {
@@ -158,8 +154,8 @@ export abstract class SocketStoreBase {
     'harbor-clear': [],
   };
 
-  // initial retry interval.
-  public retryInterval = INIT_RETRY_INTERVAL;
+  // Starts at the configured delay and increases with exponential backoff.
+  public retryInterval = SOCKET_CONFIG.INITIAL_RETRY_INTERVAL_MS;
 
   public connectable = true;
 
@@ -313,7 +309,7 @@ export abstract class SocketStoreBase {
   }
 
   public connectOnline() {
-    this.retryInterval = INIT_RETRY_INTERVAL;
+    this.retryInterval = SOCKET_CONFIG.INITIAL_RETRY_INTERVAL_MS;
     this.updateRoomInfo();
     this.ping();
   }
@@ -329,7 +325,7 @@ export abstract class SocketStoreBase {
     if (!this.connectable) return;
     this.retryTimer = setTimeout(() => {
       if (this.retryInterval < MAX_RETRY_INTERVAL) {
-        this.retryInterval *= RETRY_TIME_INCR;
+        this.retryInterval *= SOCKET_CONFIG.RETRY_INTERVAL_MULTIPLIER;
       }
       this.retryTimer = null;
       this.tryReconnect();
@@ -358,8 +354,8 @@ export abstract class SocketStoreBase {
         // lost connection
         this.connectOffline();
         this.pongTimer = null;
-      }, HEARTBEAT_INTERVAL);
-    }, HEARTBEAT_INTERVAL);
+      }, SOCKET_CONFIG.HEARTBEAT_INTERVAL_MS);
+    }, SOCKET_CONFIG.HEARTBEAT_INTERVAL_MS);
     /* c8 ignore stop */
   }
 

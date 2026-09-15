@@ -12,6 +12,7 @@ import {
   isPrototype,
   makePrimitiveValue,
 } from './utils';
+import { ATOM_CONFIG } from './constants';
 
 /**
  * Atom representation returned when a complex value is serialized inline.
@@ -56,9 +57,8 @@ export class Atom {
     this.instanceStore = {};
   }
 
-  // Maximum number of entries to retain in the store.
-  // Once exceeded, the oldest entries are evicted (FIFO).
-  public maxStoreSize: number = 5000;
+  // Defaults to ATOM_CONFIG.MAX_STORE_SIZE; once exceeded, evict oldest entries (FIFO).
+  public maxStoreSize: number = ATOM_CONFIG.MAX_STORE_SIZE;
 
   // Insertion-ordered key list for efficient eviction
   private storeKeys: string[] = [];
