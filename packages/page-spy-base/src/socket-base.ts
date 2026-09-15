@@ -25,8 +25,24 @@ interface GetterMember {
   instanceId: string; // 当前实例的 id
 }
 
-export type WebSocketEvents = keyof WebSocketEventMap;
-type CallbackType = (data?: any) => void;
+/** Platform-neutral event payload emitted by socket wrappers. */
+export interface SocketMessageEvent {
+  data: unknown;
+}
+
+export interface SocketEventPayloadMap {
+  open: { header?: Record<string, string> };
+  close: { code: number; reason: string };
+  error: unknown;
+  message: SocketMessageEvent;
+}
+
+export type WebSocketEvents = keyof SocketEventPayloadMap;
+type SocketEventListeners = {
+  [Event in WebSocketEvents]: Array<
+    (data: SocketEventPayloadMap[Event]) => void
+  >;
+};
 
 // fork WebSocket state
 export enum SocketState {
@@ -54,14 +70,17 @@ export abstract class SocketWrapper {
   abstract send(data: string): void;
   abstract close(data?: {}): void;
   abstract getState(): SocketState;
-  events: Record<WebSocketEvents, CallbackType[]> = {
+  events: SocketEventListeners = {
     open: [],
     close: [],
     error: [],
     message: [],
   };
 
-  protected emit(event: WebSocketEvents, data: any) {
+  protected emit<Event extends WebSocketEvents>(
+    event: Event,
+    data: SocketEventPayloadMap[Event],
+  ) {
     this.events[event].forEach((fun) => {
       fun(data);
     });
@@ -71,19 +90,19 @@ export abstract class SocketWrapper {
     }
   }
 
-  onOpen(fun: (res: { header?: Record<string, string> }) => void) {
+  onOpen(fun: (res: SocketEventPayloadMap['open']) => void) {
     this.events.open.push(fun);
   }
 
-  onClose(fun: (res: { code: number; reason: string }) => void) {
+  onClose(fun: (res: SocketEventPayloadMap['close']) => void) {
     this.events.close.push(fun);
   }
 
-  onError(fun: (msg: string) => void) {
+  onError(fun: (error: SocketEventPayloadMap['error']) => void) {
     this.events.error.push(fun);
   }
 
-  onMessage(fun: (data: string | ArrayBuffer) => void) {
+  onMessage(fun: (event: SocketEventPayloadMap['message']) => void) {
     this.events.message.push(fun);
   }
 
@@ -179,7 +198,8 @@ export abstract class SocketStoreBase {
   }
 
   // response message filters, to handle some wired messages
-  public static messageFilters: ((data: any) => any)[] = [];
+  public static messageFilters: Array<(data: SocketMessageEvent) => unknown> =
+    [];
 
   constructor() {
     this.addListener('atom-detail', SocketStoreBase.handleResolveAtom);
@@ -225,8 +245,8 @@ export abstract class SocketStoreBase {
       });
       this.socketUrl = url;
       this.socketWrapper?.init(url);
-    } catch (e: any) {
-      psLog.error(e.message);
+    } catch (e: unknown) {
+      psLog.error(e instanceof Error ? e.message : String(e));
     }
   }
 
@@ -238,7 +258,10 @@ export abstract class SocketStoreBase {
     type: InternalMsgType,
     fn: SpyBase.InternalEventCallback,
   ): void;
-  public addListener(type: any, fn: any) {
+  public addListener(
+    type: InteractiveType | InternalMsgType,
+    fn: SpyBase.EventCallback,
+  ) {
     /* c8 ignore next 3 */
     if (!this.events[type]) {
       this.events[type] = [];
@@ -254,7 +277,10 @@ export abstract class SocketStoreBase {
     type: InternalMsgType,
     fn: SpyBase.InternalEventCallback,
   ): void;
-  public removeListener(type: any, fn: any) {
+  public removeListener(
+    type: InteractiveType | InternalMsgType,
+    fn: SpyBase.EventCallback,
+  ) {
     /* c8 ignore next 3 */
     const fns = this.events[type] || [];
     const index = fns.indexOf(fn);
@@ -357,11 +383,24 @@ export abstract class SocketStoreBase {
   }
 
   // get the data which we expected from nested structure of the message
-  protected handleMessage(evt: any) {
-    if (SocketStoreBase.messageFilters.length) {
-      SocketStoreBase.messageFilters.forEach((filter) => {
-        evt = filter(evt);
-      });
+  protected handleMessage(evt: SocketMessageEvent) {
+    const filteredEvent = SocketStoreBase.messageFilters.reduce<unknown>(
+      (currentEvent, filter) => {
+        if (!SocketStoreBase.isSocketMessageEvent(currentEvent)) {
+          return currentEvent;
+        }
+        return filter(currentEvent);
+      },
+      evt,
+    );
+    if (!SocketStoreBase.isSocketMessageEvent(filteredEvent)) {
+      psLog.warn('Failed to parse message, invalid message event received.');
+      return;
+    }
+    const { data: rawData } = filteredEvent;
+    if (typeof rawData !== 'string') {
+      psLog.warn('Failed to parse message, expected string data.');
+      return;
     }
     const {
       CONNECT,
@@ -376,7 +415,7 @@ export abstract class SocketStoreBase {
     } = SERVER_MESSAGE_TYPE;
     let result: SpySocket.Event;
     try {
-      result = JSON.parse(evt.data) as SpySocket.Event;
+      result = JSON.parse(rawData) as SpySocket.Event;
     } catch (e) {
       psLog.warn('Failed to parse message, malformed data received.');
       return;
@@ -404,9 +443,12 @@ export abstract class SocketStoreBase {
         break;
       case MESSAGE:
         const { data, from, to } = result.content;
-        if (to.address === this.socketConnection?.address) {
+        if (
+          to.address === this.socketConnection?.address &&
+          SocketStoreBase.isInteractiveType(data.type)
+        ) {
           this.dispatchEvent(data.type, {
-            source: data,
+            source: data as SpyMessage.MessageItem<InteractiveType>,
             from,
             to,
           });
@@ -433,20 +475,30 @@ export abstract class SocketStoreBase {
     type: SpyMessage.InteractiveType,
     data: SpyBase.InteractiveEvent,
   ): void;
-  public dispatchEvent(type: InternalMsgType, data: any): void;
-  public dispatchEvent(type: any, data: any) {
+  public dispatchEvent(
+    type: InternalMsgType,
+    data: SpyMessage.MessageItem<SpyMessage.DataType>,
+  ): void;
+  public dispatchEvent(
+    type: InteractiveType | InternalMsgType,
+    data:
+      | SpyBase.InteractiveEvent
+      | SpyMessage.MessageItem<SpyMessage.DataType>,
+  ) {
     if (['public-data'].includes(type)) {
       this.events['public-data'].forEach((fn) => {
-        (fn as SpyBase.InternalEventCallback)(data);
+        (fn as SpyBase.InternalEventCallback)(
+          data as SpyMessage.MessageItem<SpyMessage.DataType>,
+        );
       });
       return;
     }
     this.events[type]?.forEach((fn) => {
       (fn as SpyBase.InteractiveEventCallback).call(
         this,
-        data,
+        data as SpyBase.InteractiveEvent,
         (d: SpyMessage.MessageItem<SpyMessage.InteractiveType>) => {
-          this.unicastMessage(d, data.from);
+          this.unicastMessage(d, (data as SpyBase.InteractiveEvent).from);
         },
       );
     });
@@ -475,7 +527,7 @@ export abstract class SocketStoreBase {
       const data: SpySocket.UnicastEvent = {
         type: SERVER_MESSAGE_TYPE.MESSAGE,
         content: {
-          data: msg.content.data as any,
+          data: msg.content.data,
           from: this.socketConnection!,
           to: message.from,
         },
@@ -487,7 +539,7 @@ export abstract class SocketStoreBase {
 
   public static handleResolveAtom(
     { source }: SpyBase.InteractiveEvent<string>,
-    reply: (data: any) => void,
+    reply: (data: SpyMessage.MessageItem) => void,
   ) {
     const { type, data } = source;
     if (type === 'atom-detail') {
@@ -499,7 +551,7 @@ export abstract class SocketStoreBase {
 
   public static handleAtomPropertyGetter(
     { source }: SpyBase.InteractiveEvent<GetterMember>,
-    reply: (data: any) => void,
+    reply: (data: SpyMessage.MessageItem) => void,
   ) {
     const { type, data } = source;
     if (type === 'atom-getter') {
@@ -589,6 +641,27 @@ export abstract class SocketStoreBase {
         data: clientInfo,
       },
       true,
+    );
+  }
+
+  private static isSocketMessageEvent(
+    value: unknown,
+  ): value is SocketMessageEvent {
+    return typeof value === 'object' && value !== null && 'data' in value;
+  }
+
+  private static isInteractiveType(
+    type: SpyMessage.MessageType,
+  ): type is InteractiveType {
+    return (
+      type === 'debug' ||
+      type === 'refresh' ||
+      type === 'atom-detail' ||
+      type.startsWith('atom-detail-') ||
+      type === 'atom-getter' ||
+      type.startsWith('atom-getter-') ||
+      type === 'debugger-online' ||
+      type === 'database-pagination'
     );
   }
 }
