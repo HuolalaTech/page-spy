@@ -13,6 +13,13 @@ import {
   makePrimitiveValue,
 } from './utils';
 
+/**
+ * Atom 类用于处理复杂对象的序列化
+ *
+ * 远程调试时无法直接序列化循环引用、getter、原型链等复杂结构。
+ * Atom 采用"引用存储"方案：复杂对象存入 store，返回包含 __atomId 的引用，
+ * Web 端按需通过 atom-detail 消息获取详情。
+ */
 export class Atom {
   public store: Record<string, any> = {};
 
@@ -25,7 +32,8 @@ export class Atom {
     this.storeKeys = [];
   }
 
-  // { __atomId: instanceId }
+  // Store instance IDs for getter invocation: { atomId: instanceId }
+  // Prototype objects inherit parent's instanceId to bind correct `this` when calling getters
   public instanceStore: Record<string, string> = {};
 
   public getInstanceStore() {
@@ -43,6 +51,18 @@ export class Atom {
   // Insertion-ordered key list for efficient eviction
   private storeKeys: string[] = [];
 
+  /**
+   * Transforms any JavaScript value into an atom representation for remote inspection.
+   *
+   * Strategy:
+   * 1. Primitives (string/number/boolean/null/undefined) → inline value
+   * 2. Complex objects with serializeData=true → JSON string
+   * 3. Complex objects with serializeData=false → atom reference (stored for later expansion)
+   *
+   * @param data - The value to transform
+   * @param serializeData - If true, serialize complex objects to JSON instead of creating references
+   * @returns An atom structure with id, type, and value/reference
+   */
   public transformToAtom(data: any, serializeData = false): any {
     const { value, ok } = makePrimitiveValue(data);
     const id = getRandomId();
@@ -61,7 +81,7 @@ export class Atom {
           value: JSON.stringify(data),
         };
       } catch (e) {
-        // type === 'json' && value === null 作为无法序列化数据时的硬编码
+        // Unserializable data (circular refs, functions, etc.) returns null placeholder
         return {
           id,
           type: 'json',
@@ -72,6 +92,15 @@ export class Atom {
     return this.add(data);
   }
 
+  /**
+   * Retrieves a stored object by ID and expands its properties one level deep.
+   *
+   * Returns an object with all own properties (including non-enumerable ones),
+   * plus extra metadata like [[Prototype]], [[Entries]] for Set/Map, etc.
+   *
+   * @param id - The atom ID to retrieve
+   * @returns Expanded property descriptors, or null if not found
+   */
   public get(id: string) {
     const cacheData = this.store[id];
     const instanceId = this.instanceStore[id];
@@ -97,19 +126,24 @@ export class Atom {
     };
   }
 
-  /* c8 ignore start */
   public getOrigin(id: string) {
     const value = this.store[id];
     if (!value) return null;
     return value;
   }
-  /* c8 ignore stop */
 
+  /**
+   * Stores a complex object and returns an atom reference to it.
+   *
+   * @param data - The object to store
+   * @param insId - Instance ID for prototype objects (required when isPrototype returns true)
+   *                to ensure getters are called with the correct `this` context
+   * @returns An atom overview with the generated ID and semantic type name
+   */
   public add(data: any, insId: string = ''): SpyAtom.Overview {
     const id = getRandomId();
     let instanceId = id;
-    // must provide the instance id if the `isPrototype(data)` return true,
-    // or else will occur panic when access the property along the proto chain
+    // Prototype objects must use the instance ID to bind getters correctly
     if (isPrototype(data)) {
       instanceId = insId;
     }
@@ -121,6 +155,7 @@ export class Atom {
     return Atom.getAtomOverview({ atomId: id, value: name, instanceId });
   }
 
+  // FIFO 淘汰策略：当存储条目超过 maxStoreSize 时，移除最早添加的条目
   private evictIfNeeded() {
     while (this.storeKeys.length > this.maxStoreSize) {
       const oldestKey = this.storeKeys.shift()!;
@@ -161,6 +196,10 @@ export class Atom {
     return data?.constructor?.name ?? 'Object';
   }
 
+  // 为特殊类型添加额外属性，使其在 Web 端能够正确展示
+  // - 包装对象（String/Number/Boolean）：添加 [[PrimitiveValue]] 显示原始值
+  // - Set/Map：添加 [[Entries]] 显示内容
+  // - 原型链：添加 [[Prototype]] 支持向上追溯
   public addExtraProperty(id: string) {
     const data = this.store[id];
     const instanceId = this.instanceStore[id];

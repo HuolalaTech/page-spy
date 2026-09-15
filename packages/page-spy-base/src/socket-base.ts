@@ -36,16 +36,16 @@ export enum SocketState {
   CLOSED = 3,
 }
 
+// Heartbeat interval: send ping every 5s to keep connection alive
 const HEARTBEAT_INTERVAL = 5000;
 
-// The reconnect interval has an initial time of 2000 ms,
-// for each failed reconnection attempt, the time will be increased by 1.5x,
-// until the attempt number reaches 4, the time will be fixed, which is Math.pow(1.5, 4) * 2000.
-// retry interval
+// Reconnection strategy uses exponential backoff with a cap:
+// - Initial interval: 2000ms
+// - Each retry multiplies by 1.5x
+// - After 4 retries, interval caps at 2000 * 1.5^4 ≈ 10,125ms
+// - This prevents infinite growth while allowing quick recovery
 const INIT_RETRY_INTERVAL = 2000;
-// retry interval time will increase by 1.5x each time.
 const RETRY_TIME_INCR = 1.5;
-// the time increase pow limit.
 const MAX_RETRY_INTERVAL = Math.pow(RETRY_TIME_INCR, 4) * INIT_RETRY_INTERVAL;
 
 // 封装不同平台的 socket
@@ -114,14 +114,14 @@ export abstract class SocketStoreBase {
   // Cache messages only in online mode
   public isOffline = false;
 
-  // Maximum message length,
-  // the 0 meant no limitation.
+  // Maximum message buffer size (0 = unlimited).
+  // When limit is reached, oldest messages are evicted using a sliding window approach.
   public messageCapacity: number = 0;
 
-  // messages store
+  // Message buffer implementing FIFO eviction
   public messages: SpySocket.BroadcastEvent[] = [];
 
-  // pointer to the first valid message in the buffer (avoids O(n) shift)
+  // Index of the first valid message (avoids O(n) array shifts on every eviction)
   protected messageHead: number = 0;
 
   // events center
@@ -539,12 +539,14 @@ export abstract class SocketStoreBase {
     }
     const cacheable = this.checkIfCache(msg, noCache);
     if (cacheable) {
+      // FIFO eviction: when buffer is full, advance the head pointer
       if (
         this.messageCapacity !== 0 &&
         this.messages.length - this.messageHead >= this.messageCapacity
       ) {
         this.messageHead += 1;
-        // Periodically compact the array to prevent unbounded growth
+        // Compact the array periodically to prevent unbounded growth
+        // Once half the array is unused, slice it off
         if (this.messageHead > this.messageCapacity) {
           this.messages = this.messages.slice(this.messageHead);
           this.messageHead = 0;

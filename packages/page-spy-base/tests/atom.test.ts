@@ -176,3 +176,30 @@ describe('Atom store eviction', () => {
     expect(Object.keys(atom.getStore()).length).toBe(1);
   });
 });
+
+describe('Atom.getOrigin', () => {
+  it('Returns original data by atomId', () => {
+    const data = { foo: 'bar', nested: { value: 123 } };
+    const overview = atom.add(data);
+    const atomId = overview.__atomId!;
+
+    const origin = atom.getOrigin(atomId);
+    expect(origin).toBe(data);
+    expect(origin.foo).toBe('bar');
+    expect(origin.nested.value).toBe(123);
+  });
+
+  it('Returns null for non-existent atomId', () => {
+    const result = atom.getOrigin('non-existent-id');
+    expect(result).toBeNull();
+  });
+
+  it('Returns null after store is reset', () => {
+    const overview = atom.add({ test: 'data' });
+    const atomId = overview.__atomId!;
+
+    atom.resetStore();
+    const result = atom.getOrigin(atomId);
+    expect(result).toBeNull();
+  });
+});
