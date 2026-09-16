@@ -356,6 +356,48 @@ describe('SocketStoreBase', () => {
     ).toEqual(['second', 'third']);
   });
 
+  it('replays buffered messages newer than the debugger latest id', () => {
+    const store = new TestSocketStore();
+    const client = { address: 'client', name: 'Client', userId: 'client' };
+    const debuggerConnection = {
+      address: 'debugger',
+      name: 'Debugger',
+      userId: 'Debugger',
+    };
+    store.socketConnection = client;
+    store.broadcastMessage({
+      role: 'client',
+      type: 'console',
+      data: { id: 'first' },
+    });
+    store.broadcastMessage({
+      role: 'client',
+      type: 'console',
+      data: { id: 'second' },
+    });
+    store.setSocketState(SocketState.OPEN);
+    store.debuggerConnection = debuggerConnection;
+
+    store.handleFlushBuffer({
+      source: {
+        role: 'debugger',
+        type: 'debugger-online',
+        data: { latestId: 'first' },
+      },
+      from: debuggerConnection,
+      to: client,
+    });
+
+    expect(JSON.parse(store.getSentPayloads()[0])).toMatchObject({
+      type: 'message',
+      content: {
+        data: { type: 'console', data: { id: 'second' } },
+        from: client,
+        to: debuggerConnection,
+      },
+    });
+  });
+
   it('sends only when the socket is open and a debugger is connected', () => {
     const store = new TestSocketStore();
     const message = {
