@@ -86,6 +86,25 @@ describe('SocketStoreBase', () => {
     store.close();
   });
 
+  it('removes interactive listeners and dispatches public data listeners', () => {
+    const store = new TestSocketStore();
+    const interactiveListener = jest.fn();
+    const publicDataListener = jest.fn();
+    store.addListener('debug', interactiveListener);
+    store.removeListener('debug', interactiveListener);
+    store.addListener('public-data', publicDataListener);
+    const message = {
+      role: 'client' as const,
+      type: 'console' as const,
+      data: {},
+    };
+
+    store.dispatchEvent('public-data', message);
+
+    expect(store.events.debug).toEqual([]);
+    expect(publicDataListener).toHaveBeenCalledWith(message);
+  });
+
   it('routes valid incoming interactive messages to listeners', () => {
     const store = new TestSocketStore();
     const listener = jest.fn();
