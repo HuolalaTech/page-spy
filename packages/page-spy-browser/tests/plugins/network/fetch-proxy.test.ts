@@ -139,6 +139,46 @@ describe('window.fetch proxy', () => {
     });
   });
 
+  it('Records messages from an event stream response', async () => {
+    const np = new NetworkPlugin();
+    np.onInit(initParams);
+    const { fetchProxy } = np;
+    const chunks = [
+      new TextEncoder().encode(
+        'id: first\ndata: hello\n\nid: second\ndata: Page',
+      ),
+      new TextEncoder().encode('Spy\n\n'),
+    ];
+    const response = new Response('', {
+      status: 200,
+      headers: { 'content-type': 'text/event-stream' },
+    });
+    const reader = {
+      read: jest.fn(async () => {
+        const value = chunks.shift();
+        return value ? { done: false, value } : { done: true, value };
+      }),
+    };
+    Object.defineProperty(response, 'body', {
+      value: { getReader: () => reader },
+    });
+    jest.spyOn(response, 'clone').mockReturnValue(response);
+    fetchMock.mockResolvedValueOnce(response);
+
+    await fetch(`${apiPrefix}/events`);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    const { freezedRequests, size } = computeRequestMapInfo(fetchProxy);
+    expect(size).toBe(1);
+    expect(Object.values(freezedRequests)[0]).toMatchObject({
+      requestType: 'fetch',
+      responseType: 'text',
+      response: 'PageSpy',
+      lastEventId: 'second',
+      readyState: XMLHttpRequest.DONE,
+    });
+  });
+
   it('Big response entity will not be converted to base64 by PageSpy', async () => {
     const np = new NetworkPlugin();
     np.onInit(initParams);
