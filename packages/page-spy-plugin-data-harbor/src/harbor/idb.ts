@@ -94,9 +94,11 @@ export class IDBHarbor {
     try {
       const store = await this.getStore('readwrite');
       await promisify(store.clear());
-    } catch (e: any) {
+    } catch (e: unknown) {
       psLog.error(
-        `idbContainer.clear() failed. The error detail: ${e.message}`,
+        `idbContainer.clear() failed. The error detail: ${
+          e instanceof Error ? e.message : String(e)
+        }`,
       );
     }
   }

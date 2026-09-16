@@ -476,14 +476,16 @@ export abstract class SocketStoreBase {
     data: SpyBase.InteractiveEvent,
   ): void;
   public dispatchEvent(
-    type: InternalMsgType,
+    type: 'public-data',
     data: SpyMessage.MessageItem<SpyMessage.DataType>,
   ): void;
+  public dispatchEvent(type: 'harbor-clear', data: null): void;
   public dispatchEvent(
     type: InteractiveType | InternalMsgType,
     data:
       | SpyBase.InteractiveEvent
-      | SpyMessage.MessageItem<SpyMessage.DataType>,
+      | SpyMessage.MessageItem<SpyMessage.DataType>
+      | null,
   ) {
     if (['public-data'].includes(type)) {
       this.events['public-data'].forEach((fn) => {
