@@ -278,6 +278,22 @@ describe('new PageSpy([config])', () => {
     expect(updateRoomInfo).toHaveBeenCalledTimes(1);
   });
 
+  it('Aborts the active instance', () => {
+    jest.useFakeTimers();
+    sdk = new SDK();
+    const closeSocket = jest.spyOn(socketStore, 'close');
+    const aborted = jest.fn();
+    sdk.eventBus.addEventListener('core:aborted', aborted);
+    sdk.cacheTimer = setInterval(() => {}, 15 * 1000);
+
+    sdk.abort();
+
+    expect(SDK.instance).toBeNull();
+    expect(sdk.cacheTimer).toBeNull();
+    expect(closeSocket).toHaveBeenCalledTimes(1);
+    expect(aborted).toHaveBeenCalledTimes(1);
+  });
+
   // it('PageSpy.prototype.refreshRoomInfo', () => {
   //   jest.useFakeTimers();
 
