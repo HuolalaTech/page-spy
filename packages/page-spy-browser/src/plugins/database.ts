@@ -204,8 +204,12 @@ export class DatabasePlugin implements PageSpyPlugin {
         });
       }
       return result;
-    } catch (e: any) {
-      psLog.error(`Failed to get indexedDB data, more info: ${e.message}`);
+    } catch (e: unknown) {
+      psLog.error(
+        `Failed to get indexedDB data, more info: ${
+          e instanceof Error ? e.message : String(e)
+        }`,
+      );
       return null;
     }
   }
