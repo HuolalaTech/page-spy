@@ -261,6 +261,27 @@ describe('SocketStoreBase', () => {
     store.close();
   });
 
+  it('broadcasts client information when a debugger joins', () => {
+    const store = new CapturingSocketStore();
+    const debuggerConnection = {
+      address: 'debugger',
+      name: 'Debugger',
+      userId: 'Debugger',
+    };
+    store.getClient = () => new Client({ ua: 'Client UA', sdk: 'browser' });
+
+    store.processMessage(
+      JSON.stringify({
+        type: 'join',
+        content: { connection: debuggerConnection },
+      }),
+    );
+
+    expect(store.debuggerConnection).toEqual(debuggerConnection);
+    expect(store.sent[0].message).toMatchObject({ type: 'broadcast' });
+    store.close();
+  });
+
   it('keeps only the latest buffered broadcast messages at capacity', () => {
     const store = new TestSocketStore();
     store.messageCapacity = 2;
