@@ -355,6 +355,36 @@ describe('SocketStoreBase', () => {
     ).toBe(false);
   });
 
+  it('serializes unicast messages with transport metadata', () => {
+    const store = new TestSocketStore();
+    const client = { address: 'client', name: 'Client', userId: 'client' };
+    const debuggerConnection = {
+      address: 'debugger',
+      name: 'Debugger',
+      userId: 'Debugger',
+    };
+    store.setSocketState(SocketState.OPEN);
+    store.socketConnection = client;
+    store.debuggerConnection = debuggerConnection;
+
+    store.unicastMessage(
+      { role: 'client', type: 'debug', data: { enabled: true } },
+      debuggerConnection,
+    );
+
+    expect(JSON.parse(store.getSentPayloads()[0])).toMatchObject({
+      type: 'message',
+      content: {
+        data: { role: 'client', type: 'debug', data: { enabled: true } },
+        from: client,
+        to: debuggerConnection,
+      },
+      createdAt: expect.any(Number),
+      requestId: expect.any(String),
+    });
+    expect(store.messages).toEqual([]);
+  });
+
   it('schedules reconnects with exponential backoff', () => {
     jest.useFakeTimers();
     const store = new TestSocketStore();
