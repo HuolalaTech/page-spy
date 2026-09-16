@@ -24,6 +24,14 @@ const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 let sdk: SDK | null;
 
 const rootId = '#__pageSpy';
+beforeEach(() => {
+  jest.spyOn(Request.prototype, 'createRoom').mockResolvedValue({
+    name: 'test-room',
+    address: 'test-address',
+    roomUrl: 'wss://test-room',
+  });
+});
+
 afterEach(() => {
   jest.restoreAllMocks();
   jest.useRealTimers();
