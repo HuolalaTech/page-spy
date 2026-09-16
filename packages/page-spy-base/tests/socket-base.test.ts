@@ -109,6 +109,31 @@ describe('SocketStoreBase', () => {
       expect.objectContaining({ from, to }),
       expect.any(Function),
     );
+    store.close();
+  });
+
+  it('records SDK and debugger connections from a connect event', () => {
+    const store = new TestSocketStore();
+    const sdk = { address: 'client', name: 'Client', userId: 'client' };
+    const debuggerConnection = {
+      address: 'debugger',
+      name: 'Debugger',
+      userId: 'Debugger',
+    };
+
+    store.processMessage(
+      JSON.stringify({
+        type: 'connect',
+        content: {
+          selfConnection: sdk,
+          roomConnections: [sdk, debuggerConnection],
+        },
+      }),
+    );
+
+    expect(store.socketConnection).toEqual(sdk);
+    expect(store.debuggerConnection).toEqual(debuggerConnection);
+    store.close();
   });
 
   it('keeps only the latest buffered broadcast messages at capacity', () => {
