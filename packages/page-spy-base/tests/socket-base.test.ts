@@ -1,6 +1,7 @@
 import {
   Client,
   InitConfigBase,
+  psLog,
   SocketState,
   SocketStoreBase,
   SocketWrapper,
@@ -296,6 +297,49 @@ describe('SocketStoreBase', () => {
     expect(store.debuggerConnection).toEqual(debuggerConnection);
     expect(store.sent[0].message).toMatchObject({ type: 'broadcast' });
     store.close();
+  });
+
+  it('handles invalid incoming messages and removes a departed debugger', () => {
+    const store = new TestSocketStore();
+    const warn = jest.spyOn(psLog, 'warn').mockImplementation();
+    const debuggerConnection = {
+      address: 'debugger',
+      name: 'Debugger',
+      userId: 'Debugger',
+    };
+    store.debuggerConnection = debuggerConnection;
+
+    store.processEvent(null);
+    store.processMessage('{');
+    store.processMessage(
+      JSON.stringify({
+        type: 'leave',
+        content: { connection: debuggerConnection },
+      }),
+    );
+
+    expect(warn).toHaveBeenCalledWith(
+      'Failed to parse message, expected string data.',
+    );
+    expect(warn).toHaveBeenCalledWith(
+      'Failed to parse message, malformed data received.',
+    );
+    expect(store.debuggerConnection).toBeNull();
+
+    warn.mockRestore();
+    store.close();
+  });
+
+  it('reports an empty socket URL without initializing a connection', async () => {
+    const store = new TestSocketStore();
+    const error = jest.spyOn(psLog, 'error').mockImplementation();
+
+    await store.init('');
+
+    expect(error).toHaveBeenCalledWith('WebSocket url cannot be empty');
+    expect(store.socketUrl).toBe('');
+
+    error.mockRestore();
   });
 
   it('keeps only the latest buffered broadcast messages at capacity', () => {
