@@ -49,6 +49,10 @@ class TestSocketStore extends SocketStoreBase {
   processMessage(data: string) {
     this.handleMessage({ data });
   }
+
+  processEvent(data: unknown) {
+    this.handleMessage({ data });
+  }
 }
 
 class CapturingSocketStore extends TestSocketStore {
@@ -205,6 +209,31 @@ describe('SocketStoreBase', () => {
       expect.objectContaining({ from, to }),
       expect.any(Function),
     );
+    store.close();
+  });
+
+  it('routes messages unwrapped by platform filters', () => {
+    const store = new TestSocketStore();
+    const listener = jest.fn();
+    const from = { address: 'debugger', name: 'Debugger', userId: 'debugger' };
+    const to = { address: 'client', name: 'Client', userId: 'client' };
+    store.socketConnection = to;
+    store.addListener('debug', listener);
+    SocketStoreBase.messageFilters.push((event) => event.data);
+
+    store.processEvent({
+      data: JSON.stringify({
+        type: 'message',
+        content: {
+          data: { role: 'debugger', type: 'debug', data: {} },
+          from,
+          to,
+        },
+      }),
+    });
+
+    expect(listener).toHaveBeenCalled();
+    SocketStoreBase.messageFilters = [];
     store.close();
   });
 
