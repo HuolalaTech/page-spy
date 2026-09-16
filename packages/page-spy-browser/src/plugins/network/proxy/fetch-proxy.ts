@@ -35,10 +35,11 @@ export default class FetchProxy extends WebNetworkProxyBase {
     req: RequestItem,
   ) {
     const reader = response.body?.getReader();
-    if (!reader) return;
+    if (!reader) return false;
 
     const decoder = new TextDecoder();
     let pending = '';
+    let receivedMessage = false;
     const publishEvents = (isFinished = false) => {
       const events = pending.split(/\r?\n\r?\n/);
       pending = isFinished ? '' : events.pop() || '';
@@ -70,6 +71,7 @@ export default class FetchProxy extends WebNetworkProxyBase {
         req.lastEventId = lastEventId;
         req.endTime = Date.now();
         req.costTime = req.endTime - (req.startTime || req.endTime);
+        receivedMessage = true;
         this.sendRequestItem(id, req);
       });
     };
@@ -89,6 +91,7 @@ export default class FetchProxy extends WebNetworkProxyBase {
     };
 
     await read();
+    return receivedMessage;
   }
 
   public initProxyHandler() {
@@ -163,24 +166,37 @@ export default class FetchProxy extends WebNetworkProxyBase {
         that.sendRequestItem(id, req);
 
         let isEventStream = false;
+        let receivedEventStreamMessage = false;
         fetchInstance
           .then<string | Blob | undefined, never>((res) => {
-            // Headers received
-            req.status = res.status || 200;
-            req.statusText = res.statusText || 'Done';
             req.responseHeader = [...res.headers.entries()];
-            req.readyState = XMLHttpRequest.HEADERS_RECEIVED;
-            that.sendRequestItem(id, req);
 
             const contentType = res.headers.get('content-type');
             if (contentType) {
               if (contentType.includes('text/event-stream')) {
                 isEventStream = true;
+                // The debugger aggregates EventSource messages by request id.
+                // Convert the initial fetch record before publishing stream data.
+                req.requestType = 'eventsource';
+                req.status = 0;
+                req.statusText = 'Pending';
                 req.responseType = 'text';
+                req.response = [];
+                req.readyState = ReqReadyState.OPENED;
+                that.sendRequestItem(id, req);
                 return that
                   .consumeEventStream(res.clone(), id, req)
-                  .then(() => undefined);
+                  .then((receivedMessage) => {
+                    receivedEventStreamMessage = receivedMessage;
+                    return undefined;
+                  });
               }
+
+              // Headers received
+              req.status = res.status || 200;
+              req.statusText = res.statusText || 'Done';
+              req.readyState = XMLHttpRequest.HEADERS_RECEIVED;
+              that.sendRequestItem(id, req);
 
               if (contentType.includes('application/json')) {
                 req.responseType = 'json';
@@ -195,6 +211,11 @@ export default class FetchProxy extends WebNetworkProxyBase {
                 return res.clone().text();
               }
             }
+            // Headers received
+            req.status = res.status || 200;
+            req.statusText = res.statusText || 'Done';
+            req.readyState = XMLHttpRequest.HEADERS_RECEIVED;
+            that.sendRequestItem(id, req);
             req.responseType = 'blob';
             return res.clone().blob();
           })
@@ -232,6 +253,8 @@ export default class FetchProxy extends WebNetworkProxyBase {
             }
           })
           .finally(() => {
+            if (isEventStream && receivedEventStreamMessage) return;
+
             req.endTime = Date.now();
             req.costTime = req.endTime - (req.startTime || req.endTime);
             req.readyState = XMLHttpRequest.DONE;

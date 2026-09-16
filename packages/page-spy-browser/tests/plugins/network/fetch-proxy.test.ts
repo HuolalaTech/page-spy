@@ -2,7 +2,7 @@ import NetworkPlugin from 'page-spy-browser/src/plugins/network';
 import data from '../../server/data.json';
 import { atom, MAX_SIZE, Reason } from 'page-spy-base/src';
 import { computeRequestMapInfo } from './util';
-import { OnInitParams } from 'packages/page-spy-types';
+import { OnInitParams, SpyMessage } from 'packages/page-spy-types';
 import { Config, InitConfig } from 'page-spy-browser/src/config';
 import socket from 'page-spy-browser/src/helpers/socket';
 
@@ -143,6 +143,17 @@ describe('window.fetch proxy', () => {
     const np = new NetworkPlugin();
     np.onInit(initParams);
     const { fetchProxy } = np;
+    const messages: string[] = [];
+    const captureEventStreamMessage = (message: SpyMessage.MessageItem) => {
+      if (
+        message.type === 'network' &&
+        message.data.requestType === 'eventsource' &&
+        typeof message.data.response === 'string'
+      ) {
+        messages.push(message.data.response);
+      }
+    };
+    socket.addListener('public-data', captureEventStreamMessage);
     const chunks = [
       new TextEncoder().encode(
         'id: first\ndata: hello\n\nid: second\ndata: Page',
@@ -165,13 +176,18 @@ describe('window.fetch proxy', () => {
     jest.spyOn(response, 'clone').mockReturnValue(response);
     fetchMock.mockResolvedValueOnce(response);
 
-    await fetch(`${apiPrefix}/events`);
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    try {
+      await fetch(`${apiPrefix}/events`);
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    } finally {
+      socket.removeListener('public-data', captureEventStreamMessage);
+    }
 
     const { freezedRequests, size } = computeRequestMapInfo(fetchProxy);
     expect(size).toBe(1);
+    expect(messages).toEqual(['hello', 'PageSpy']);
     expect(Object.values(freezedRequests)[0]).toMatchObject({
-      requestType: 'fetch',
+      requestType: 'eventsource',
       responseType: 'text',
       response: 'PageSpy',
       lastEventId: 'second',
