@@ -442,6 +442,20 @@ describe('SocketStoreBase', () => {
     jest.useRealTimers();
   });
 
+  it('cancels a pending reconnect when closed', () => {
+    jest.useFakeTimers();
+    const store = new TestSocketStore();
+    const reconnect = jest.spyOn(store, 'tryReconnect').mockImplementation();
+
+    store.connectOffline();
+    store.close();
+    jest.advanceTimersByTime(2000);
+
+    expect(reconnect).not.toHaveBeenCalled();
+    expect(store.retryTimer).toBeNull();
+    jest.useRealTimers();
+  });
+
   it('initializes the socket, sends heartbeats, and schedules a reconnect on close', async () => {
     jest.useFakeTimers();
     const store = new TestSocketStore();

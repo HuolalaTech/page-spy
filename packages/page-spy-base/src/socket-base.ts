@@ -296,6 +296,10 @@ export abstract class SocketStoreBase {
   public close() {
     this.connectable = false;
     this.clearPing();
+    if (this.retryTimer) {
+      clearTimeout(this.retryTimer);
+      this.retryTimer = null;
+    }
     this.socketWrapper?.close();
     this.messages = [];
     this.messageHead = 0;
