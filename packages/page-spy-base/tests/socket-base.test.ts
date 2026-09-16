@@ -1,4 +1,11 @@
-import { SocketState, SocketStoreBase, SocketWrapper } from 'page-spy-base/src';
+import {
+  Client,
+  InitConfigBase,
+  SocketState,
+  SocketStoreBase,
+  SocketWrapper,
+} from 'page-spy-base/src';
+import type { SpySocket } from '@huolala-tech/page-spy-types';
 
 class TestSocketWrapper extends SocketWrapper {
   public state = SocketState.CLOSED;
@@ -41,6 +48,14 @@ class TestSocketStore extends SocketStoreBase {
 
   processMessage(data: string) {
     this.handleMessage({ data });
+  }
+}
+
+class CapturingSocketStore extends TestSocketStore {
+  public sent: Array<{ message: SpySocket.ClientEvent; noCache: boolean }> = [];
+
+  protected send(message: SpySocket.ClientEvent, noCache = false) {
+    this.sent.push({ message, noCache });
   }
 }
 
@@ -103,6 +118,43 @@ describe('SocketStoreBase', () => {
 
     expect(store.events.debug).toEqual([]);
     expect(publicDataListener).toHaveBeenCalledWith(message);
+  });
+
+  it('sends room information from configuration and client metadata', () => {
+    const store = new CapturingSocketStore();
+    const config: Required<InitConfigBase> = {
+      api: '',
+      project: 'project',
+      title: 'title',
+      enableSSL: true,
+      messageCapacity: 1000,
+      useSecret: false,
+      secret: '',
+      offline: false,
+      serializeData: false,
+      disabledPlugins: [],
+      dataProcessor: {},
+    };
+    store.getPageSpyConfig = () => config;
+    store.getClient = () => new Client({ ua: 'Client UA' });
+
+    store.updateRoomInfo();
+
+    expect(store.sent).toEqual([
+      {
+        noCache: true,
+        message: expect.objectContaining({
+          type: 'updateRoomInfo',
+          content: {
+            info: {
+              name: 'Client UA',
+              group: 'project',
+              tags: { title: 'title', name: 'Client UA', group: 'project' },
+            },
+          },
+        }),
+      },
+    ]);
   });
 
   it('routes valid incoming interactive messages to listeners', () => {
