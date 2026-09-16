@@ -13,11 +13,16 @@ class TestSocketWrapper extends SocketWrapper {
 
   public sent: string[] = [];
 
+  public sendFailure: unknown = null;
+
   init(): void {
     this.state = SocketState.OPEN;
   }
 
   send(data: string): void {
+    if (this.sendFailure !== null) {
+      throw this.sendFailure;
+    }
     this.sent.push(data);
   }
 
@@ -61,6 +66,10 @@ class TestSocketStore extends SocketStoreBase {
 
   getSentPayloads() {
     return this.socketWrapper.sent;
+  }
+
+  setSendFailure(failure: unknown) {
+    this.socketWrapper.sendFailure = failure;
   }
 
   processMessage(data: string) {
@@ -469,6 +478,30 @@ describe('SocketStoreBase', () => {
       requestId: expect.any(String),
     });
     expect(store.messages).toEqual([]);
+  });
+
+  it('reports non-Error failures while sending messages', () => {
+    const store = new TestSocketStore();
+    const client = { address: 'client', name: 'Client', userId: 'client' };
+    const debuggerConnection = {
+      address: 'debugger',
+      name: 'Debugger',
+      userId: 'Debugger',
+    };
+    const error = jest.spyOn(psLog, 'error').mockImplementation();
+    store.setSocketState(SocketState.OPEN);
+    store.socketConnection = client;
+    store.debuggerConnection = debuggerConnection;
+    store.setSendFailure('transport unavailable');
+
+    store.unicastMessage(
+      { role: 'client', type: 'debug', data: { enabled: true } },
+      debuggerConnection,
+    );
+
+    expect(error).toHaveBeenCalledWith('Incompatible: transport unavailable');
+    expect(store.socketConnection).toBeNull();
+    store.close();
   });
 
   it('schedules reconnects with exponential backoff', () => {

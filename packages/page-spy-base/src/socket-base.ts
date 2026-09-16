@@ -583,8 +583,10 @@ export abstract class SocketStoreBase {
         pkMsg.requestId = getRandomId();
         const dataString = stringifyData(pkMsg);
         this.socketWrapper?.send(dataString);
-      } catch (e) {
-        psLog.error(`Incompatible: ${(e as Error).message}`);
+      } catch (e: unknown) {
+        psLog.error(
+          `Incompatible: ${e instanceof Error ? e.message : String(e)}`,
+        );
         this.connectOffline();
       }
       /* c8 ignore stop */

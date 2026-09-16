@@ -68,8 +68,8 @@ export class NetworkProxyBase {
         req.readyState !== ReqReadyState.DONE,
       );
       this.deferDeleteRequest(id);
-    } catch (e) {
-      psLog.error((e as Error).message);
+    } catch (e: unknown) {
+      psLog.error(e instanceof Error ? e.message : String(e));
     }
   }
 

@@ -3,6 +3,7 @@ import {
   SocketStoreBase,
   SocketWrapper,
   NetworkProxyBase,
+  psLog,
   RequestItem,
   ReqReadyState,
 } from 'page-spy-base/src';
@@ -128,5 +129,18 @@ describe('Network Proxy Base Exceptions', () => {
 
     jest.advanceTimersByTime(3000);
     expect(base.getRequestMap()[request.id]).toBeUndefined();
+  });
+
+  it('reports non-Error failures from request dispatch', () => {
+    const base = new TestNetworkProxy(socket);
+    const request = new RequestItem('request-id');
+    const error = jest.spyOn(psLog, 'error').mockImplementation();
+    jest.spyOn(socket, 'dispatchEvent').mockImplementation(() => {
+      throw 'dispatch unavailable';
+    });
+
+    base.sendRequest(request.id, request);
+
+    expect(error).toHaveBeenCalledWith('dispatch unavailable');
   });
 });
