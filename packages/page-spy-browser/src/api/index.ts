@@ -67,9 +67,12 @@ export default class Request {
           name,
         };
       })
-      .catch((err) => {
-        /* c8 ignore next */
-        throw Error(`Request create room failed: ${err.message}`);
+      .catch((err: unknown) => {
+        throw Error(
+          `Request create room failed: ${
+            err instanceof Error ? err.message : String(err)
+          }`,
+        );
       });
   }
 

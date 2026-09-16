@@ -39,4 +39,18 @@ describe('Web API utils fn', () => {
     // reset to default
     Config.scriptLink = originLink;
   });
+
+  it('preserves non-Error failures when creating a room', async () => {
+    const config = new Config();
+    config.mergeConfig({ api: 'example.com' });
+    const fetch = jest
+      .spyOn(window, 'fetch')
+      .mockRejectedValue('room service unavailable');
+
+    await expect(new Request(config.get()).createRoom()).rejects.toThrow(
+      'Request create room failed: room service unavailable',
+    );
+
+    fetch.mockRestore();
+  });
 });
