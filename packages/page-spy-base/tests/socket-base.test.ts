@@ -10,11 +10,15 @@ import type { SpySocket } from '@huolala-tech/page-spy-types';
 class TestSocketWrapper extends SocketWrapper {
   public state = SocketState.CLOSED;
 
+  public sent: string[] = [];
+
   init(): void {
     this.state = SocketState.OPEN;
   }
 
-  send(): void {}
+  send(data: string): void {
+    this.sent.push(data);
+  }
 
   close(): void {
     this.state = SocketState.CLOSED;
@@ -44,6 +48,18 @@ class TestSocketStore extends SocketStoreBase {
 
   setSocketState(state: SocketState) {
     this.socketWrapper.state = state;
+  }
+
+  emitOpen() {
+    this.socketWrapper.emitOpen();
+  }
+
+  emitClose() {
+    this.socketWrapper.emitClose();
+  }
+
+  getSentPayloads() {
+    return this.socketWrapper.sent;
   }
 
   processMessage(data: string) {
@@ -349,6 +365,32 @@ describe('SocketStoreBase', () => {
 
     expect(reconnect).toHaveBeenCalledTimes(1);
     expect(store.retryInterval).toBe(3000);
+    jest.useRealTimers();
+  });
+
+  it('initializes the socket, sends heartbeats, and schedules a reconnect on close', async () => {
+    jest.useFakeTimers();
+    const store = new TestSocketStore();
+
+    await store.init('ws://example.com/room');
+    store.emitOpen();
+
+    expect(store.socketUrl).toBe('ws://example.com/room');
+    expect(store.pingTimer).not.toBeNull();
+
+    jest.advanceTimersByTime(5000);
+    expect(JSON.parse(store.getSentPayloads()[0])).toMatchObject({
+      type: 'ping',
+      content: null,
+    });
+
+    store.emitClose();
+    expect(store.socketConnection).toBeNull();
+    expect(store.debuggerConnection).toBeNull();
+    expect(store.retryTimer).not.toBeNull();
+
+    store.close();
+    jest.useRealTimers();
   });
 
   it('stops reconnecting and clears transient state when closed', () => {
