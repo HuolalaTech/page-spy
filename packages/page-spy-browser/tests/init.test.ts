@@ -263,6 +263,21 @@ describe('new PageSpy([config])', () => {
     expect(ins1).toBe(ins2);
   });
 
+  it('Updates room information', () => {
+    sdk = new SDK();
+    const updateRoomInfo = jest.spyOn(socketStore, 'updateRoomInfo');
+
+    sdk.updateRoomInfo({ project: 'next-project', title: 'next-title' });
+
+    expect(sdk.config.get()).toEqual(
+      expect.objectContaining({
+        project: 'next-project',
+        title: 'next-title',
+      }),
+    );
+    expect(updateRoomInfo).toHaveBeenCalledTimes(1);
+  });
+
   // it('PageSpy.prototype.refreshRoomInfo', () => {
   //   jest.useFakeTimers();
 
