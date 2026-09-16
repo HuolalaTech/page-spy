@@ -157,6 +157,31 @@ describe('SocketStoreBase', () => {
     ]);
   });
 
+  it('broadcasts client information when a debugger connects', () => {
+    const store = new CapturingSocketStore();
+    store.getClient = () => new Client({ ua: 'Client UA', sdk: 'browser' });
+
+    store.sendClientInfo();
+
+    expect(store.sent).toEqual([
+      {
+        noCache: true,
+        message: expect.objectContaining({
+          type: 'broadcast',
+          content: {
+            data: expect.objectContaining({
+              type: 'client-info',
+              data: expect.objectContaining({
+                sdk: 'browser',
+                ua: 'Client UA',
+              }),
+            }),
+          },
+        }),
+      },
+    ]);
+  });
+
   it('routes valid incoming interactive messages to listeners', () => {
     const store = new TestSocketStore();
     const listener = jest.fn();
