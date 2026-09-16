@@ -182,6 +182,22 @@ describe('Atom store eviction', () => {
     atom.maxStoreSize = originalMax;
   });
 
+  it('keeps the default store bounded while handling more than 5,000 entries', () => {
+    const entries = Array.from({ length: 5001 }, (_, index) =>
+      atom.add({ index }),
+    );
+    const firstId = entries[0].__atomId;
+    const latestId = entries[entries.length - 1].__atomId;
+
+    if (!firstId || !latestId) {
+      throw new Error('Atom entries must include their storage IDs');
+    }
+
+    expect(Object.keys(atom.getStore())).toHaveLength(atom.maxStoreSize);
+    expect(atom.getOrigin(firstId)).toBeNull();
+    expect(atom.getOrigin(latestId)).toEqual({ index: 5000 });
+  });
+
   it('resetStore clears both store and internal key list', () => {
     atom.add({ a: 1 });
     atom.add({ b: 2 });
