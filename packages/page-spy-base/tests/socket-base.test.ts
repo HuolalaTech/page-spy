@@ -137,4 +137,33 @@ describe('SocketStoreBase', () => {
       }),
     ).toBe(false);
   });
+
+  it('schedules reconnects with exponential backoff', () => {
+    jest.useFakeTimers();
+    const store = new TestSocketStore();
+    const reconnect = jest.spyOn(store, 'tryReconnect').mockImplementation();
+
+    store.connectOffline();
+    jest.advanceTimersByTime(2000);
+
+    expect(reconnect).toHaveBeenCalledTimes(1);
+    expect(store.retryInterval).toBe(3000);
+  });
+
+  it('stops reconnecting and clears transient state when closed', () => {
+    const store = new TestSocketStore();
+    const refreshListener = jest.fn();
+    store.messages.push({
+      type: 'broadcast',
+      content: { data: { role: 'client', type: 'console', data: {} } },
+    });
+    store.addListener('refresh', refreshListener);
+
+    store.close();
+
+    expect(store.connectable).toBe(false);
+    expect(store.messages).toEqual([]);
+    expect(store.events.refresh).toEqual([]);
+    expect(store.getSocket().getState()).toBe(SocketState.CLOSED);
+  });
 });
