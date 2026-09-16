@@ -76,5 +76,10 @@ describe('WebSocketPlugin', () => {
 
     plugin.onReset();
     expect(window.WebSocket).toBe(MockWebSocket);
+    expect(WebSocketPlugin.hasInitd).toBe(false);
+
+    const nextPlugin = new WebSocketPlugin();
+    nextPlugin.onInit(initParams);
+    expect(window.WebSocket).not.toBe(MockWebSocket);
   });
 });
