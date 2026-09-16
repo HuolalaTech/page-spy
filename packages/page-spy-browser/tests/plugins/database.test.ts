@@ -38,7 +38,7 @@ beforeEach(async () => {
   jest.resetAllMocks();
 });
 afterEach(async () => {
-  await window.indexedDB.deleteDatabase('blog');
+  await promisify(window.indexedDB.deleteDatabase('blog'));
 });
 
 describe('Database plugin', () => {
@@ -119,6 +119,7 @@ describe('Database plugin', () => {
     expect(originClear).toHaveBeenCalledTimes(1);
 
     expect(dbTrigger).toHaveBeenCalledTimes(4);
+    db.close();
   });
 
   it('DATABASE_PAGINATION event and REFRESH event', async () => {

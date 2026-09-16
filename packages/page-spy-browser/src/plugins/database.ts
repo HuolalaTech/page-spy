@@ -179,18 +179,19 @@ export class DatabasePlugin implements PageSpyPlugin {
   }
 
   public async getDBData(info: Required<IDBDatabaseInfo>) {
+    let db: IDBDatabase | null = null;
     try {
       const result: DBInfo = {
         name: info.name,
         version: info.version,
         stores: [],
       };
-      const db = await promisify(
-        window.indexedDB.open(info.name, info.version),
-      );
+      db = await promisify(window.indexedDB.open(info.name, info.version));
+      if (!db) return null;
       if (db.objectStoreNames.length) {
-        const storeList = [...db.objectStoreNames].map((i) => {
-          return db.transaction(i, 'readonly').objectStore(i);
+        const transaction = db.transaction.bind(db);
+        const storeList = [...db.objectStoreNames].map((storeName) => {
+          return transaction(storeName, 'readonly').objectStore(storeName);
         });
         result.stores = storeList.map((store) => {
           const { name, keyPath, autoIncrement, indexNames } = store;
@@ -211,6 +212,8 @@ export class DatabasePlugin implements PageSpyPlugin {
         }`,
       );
       return null;
+    } finally {
+      db?.close();
     }
   }
 
@@ -257,7 +260,7 @@ export class DatabasePlugin implements PageSpyPlugin {
 
     let currentIndex = 0;
     const cursorRequest = objStore.openCursor();
-    return new Promise((resolve, reject) => {
+    return new Promise<SpyDatabase.GetTypeDataItem>((resolve, reject) => {
       cursorRequest.addEventListener('success', () => {
         const cursor = cursorRequest.result;
         if (cursor) {
@@ -271,6 +274,8 @@ export class DatabasePlugin implements PageSpyPlugin {
         }
       });
       cursorRequest.addEventListener('error', reject);
+    }).finally(() => {
+      database.close();
     });
   }
 
