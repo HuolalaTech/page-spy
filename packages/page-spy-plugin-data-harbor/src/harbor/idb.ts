@@ -116,7 +116,7 @@ export class IDBHarbor {
   public async drop() {
     try {
       await promisify(window.indexedDB.deleteDatabase(PRIVATE_DB_NAME));
-    } catch (e: any) {
+    } catch {
       //
     }
   }
