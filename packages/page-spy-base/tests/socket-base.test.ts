@@ -38,6 +38,10 @@ class TestSocketStore extends SocketStoreBase {
   setSocketState(state: SocketState) {
     this.socketWrapper.state = state;
   }
+
+  processMessage(data: string) {
+    this.handleMessage({ data });
+  }
 }
 
 describe('SocketWrapper', () => {
@@ -74,6 +78,32 @@ describe('SocketStoreBase', () => {
       from,
       to,
     });
+
+    expect(listener).toHaveBeenCalledWith(
+      expect.objectContaining({ from, to }),
+      expect.any(Function),
+    );
+    store.close();
+  });
+
+  it('routes valid incoming interactive messages to listeners', () => {
+    const store = new TestSocketStore();
+    const listener = jest.fn();
+    const from = { address: 'debugger', name: 'Debugger', userId: 'debugger' };
+    const to = { address: 'client', name: 'Client', userId: 'client' };
+    store.socketConnection = to;
+    store.addListener('debug', listener);
+
+    store.processMessage(
+      JSON.stringify({
+        type: 'message',
+        content: {
+          data: { role: 'debugger', type: 'debug', data: { enabled: true } },
+          from,
+          to,
+        },
+      }),
+    );
 
     expect(listener).toHaveBeenCalledWith(
       expect.objectContaining({ from, to }),
