@@ -235,6 +235,10 @@ class PageSpy {
   }
 
   abort() {
+    if (this.cacheTimer) {
+      clearInterval(this.cacheTimer);
+      this.cacheTimer = null;
+    }
     this.triggerPlugins('onReset');
     socketStore.close();
     PageSpy.instance = null;

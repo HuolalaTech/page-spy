@@ -1,7 +1,6 @@
 import NetworkPlugin from 'page-spy-browser/src/plugins/network';
-import startServer from '../../server/index';
 import data from '../../server/data.json';
-import { atom, Reason } from 'page-spy-base/src';
+import { atom, MAX_SIZE, Reason } from 'page-spy-base/src';
 import { computeRequestMapInfo } from './util';
 import { OnInitParams } from 'packages/page-spy-types';
 import { Config, InitConfig } from 'page-spy-browser/src/config';
@@ -12,13 +11,61 @@ const initParams = {
   socketStore: socket,
   atom,
 } as OnInitParams<InitConfig>;
-const port = 6688;
-const apiPrefix = `http://localhost:${port}`;
-const stopServer = startServer(port);
-afterAll(stopServer);
+const apiPrefix = 'https://example.test';
 
 const originFetch = window.fetch;
-const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
+
+interface MockResponse {
+  body: BodyInit;
+  contentType: string;
+}
+
+const mockResponses: Record<string, MockResponse> = {
+  '/posts': { body: JSON.stringify(data), contentType: 'application/json' },
+  '/plain-text': { body: 'Hello PageSpy', contentType: 'text/plain' },
+  '/html': {
+    body: '<div id="app"><h3>Hello PageSpy</h3></div>',
+    contentType: 'text/html',
+  },
+  '/json': {
+    body: JSON.stringify({ name: 'PageSpy' }),
+    contentType: 'application/json',
+  },
+  '/blob': {
+    body: new Blob(['image'], { type: 'image/png' }),
+    contentType: 'image/png',
+  },
+  '/big-file': {
+    body: new Blob(['x'.repeat(MAX_SIZE + 1)], { type: 'image/jpeg' }),
+    contentType: 'image/jpeg',
+  },
+};
+
+const createResponse = (input: RequestInfo | URL) => {
+  const url = new URL(
+    input instanceof Request ? input.url : input.toString(),
+    window.location.href,
+  );
+  const response = mockResponses[url.pathname] || {
+    body: '',
+    contentType: 'text/plain',
+  };
+
+  return new Response(response.body, {
+    status: 200,
+    headers: { 'content-type': response.contentType },
+  });
+};
+
+const fetchMock = jest.fn<
+  Promise<Response>,
+  [input: RequestInfo | URL, init?: RequestInit]
+>((input) => Promise.resolve(createResponse(input)));
+
+beforeEach(() => {
+  fetchMock.mockClear();
+  window.fetch = fetchMock;
+});
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -36,15 +83,13 @@ describe('window.fetch proxy', () => {
     expect(window.fetch).toBe(undefined);
   });
   it('Wrap fetch request', () => {
-    const fetchSpy = jest.spyOn(window, 'fetch');
-    expect(window.fetch).toBe(fetchSpy);
+    expect(window.fetch).toBe(fetchMock);
 
     new NetworkPlugin().onInit(initParams);
-    expect(window.fetch).not.toBe(fetchSpy);
+    expect(window.fetch).not.toBe(fetchMock);
   });
 
   it('The origin fetch will be called and get response', async () => {
-    const spyFetch = jest.spyOn(window, 'fetch');
     new NetworkPlugin().onInit(initParams);
 
     // fetch(url, init)
@@ -57,13 +102,13 @@ describe('window.fetch proxy', () => {
       credentials: 'include',
     });
     const json1 = await res1.json();
-    expect(spyFetch).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(json1).toEqual(data);
 
     // fetch(new Request())
     const res2 = await fetch(new Request(url));
     const json2 = await res2.json();
-    expect(spyFetch).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(json2).toEqual(data);
   });
 
@@ -102,7 +147,7 @@ describe('window.fetch proxy', () => {
 
     const bigFileUrl = `${apiPrefix}/big-file`;
     await fetch(bigFileUrl);
-    await sleep();
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     const { freezedRequests, size } = computeRequestMapInfo(fetchProxy);
     expect(size).toBe(1);
@@ -126,24 +171,22 @@ describe('window.fetch proxy', () => {
   });
 
   it('The cached request items will be freed when no longer needed', async () => {
+    jest.useFakeTimers();
     const np = new NetworkPlugin();
     np.onInit(initParams);
     const { fetchProxy } = np;
     expect(fetchProxy).not.toBe(null);
     expect(computeRequestMapInfo(fetchProxy).size).toBe(0);
 
-    const res = await fetch(`${apiPrefix}/json`);
-    expect(computeRequestMapInfo(fetchProxy).size).toBe(1);
+    try {
+      await fetch(`${apiPrefix}/json`);
+      await jest.advanceTimersByTimeAsync(0);
+      expect(computeRequestMapInfo(fetchProxy).size).toBe(1);
 
-    /**
-     * The `whatwg-fetch` relies on the setTimeout, the value wouldn't be resolved
-     * if we use `jest.useFakeTimers()`. So here we use the real timer.
-     *
-     * See: {@link https://github.com/jestjs/jest/issues/11103}
-     */
-    await sleep(3500);
-
-    // The previous request item now be freed after 3s.
-    expect(computeRequestMapInfo(fetchProxy).size).toBe(0);
+      jest.advanceTimersByTime(3000);
+      expect(computeRequestMapInfo(fetchProxy).size).toBe(0);
+    } finally {
+      jest.useRealTimers();
+    }
   });
 });

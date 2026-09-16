@@ -49,6 +49,10 @@ import './__mocks__/cookie-store';
 import 'fake-indexeddb/auto';
 import 'core-js/stable/structured-clone';
 
+// The production bundle runs Modernizr's asynchronous IndexedDB capability probe.
+// Keep unit tests deterministic and avoid leaving that probe's test connection open.
+jest.mock('../src/deps/modernizr', () => ({}));
+
 window.Modernizr = {
   addTest(key: string, support: boolean) {
     void 0;

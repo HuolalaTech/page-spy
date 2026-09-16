@@ -6,6 +6,7 @@ import {
   waitFor,
 } from '@testing-library/dom';
 import copy from 'copy-to-clipboard';
+import Request from 'page-spy-browser/src/api';
 import { Toast } from 'page-spy-browser/src/helpers/toast';
 jest.mock('copy-to-clipboard', () =>
   jest.fn().mockImplementation((text: string) => true),
@@ -18,7 +19,16 @@ beforeAll(() => {
     offsetHeight: { value: 1080 },
   });
 });
+beforeEach(() => {
+  jest.spyOn(Request.prototype, 'createRoom').mockResolvedValue({
+    name: 'test-room',
+    address: 'test-address',
+    roomUrl: 'wss://test-room',
+  });
+});
 afterEach(() => {
+  jest.restoreAllMocks();
+  SDK.instance?.abort();
   SDK.instance = null;
   document.documentElement.innerHTML = '';
   jest.useRealTimers();
