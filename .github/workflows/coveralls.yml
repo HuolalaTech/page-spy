@@ -13,20 +13,21 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Use Node.js 16.x
-        uses: actions/setup-node@v3
+      - name: Use Node.js 24.x
+        uses: actions/setup-node@v4
         with:
-          node-version: 16.x
+          node-version: 24.x
 
-      - name: yarn install, yarn test
+      - name: Install, build, test
         # fake-indexeddb using `structureClone` which import in node^18,
         # and we import the polyfill with `import 'core-js/stable/structured-clone'`
         # to resolve it, so here we pass --ignore-engines after `yarn install` to ignore the error.
         run: |
           yarn install --ignore-engines
-          yarn test --coverage
+          yarn lerna run build
+          yarn run coverage
 
       - name: Coveralls
         uses: coverallsapp/github-action@v2
