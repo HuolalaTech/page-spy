@@ -3,9 +3,15 @@ import { SpyNetwork } from '@huolala-tech/page-spy-types';
 import WebNetworkProxyBase from './base';
 
 export class ResourceCollector extends WebNetworkProxyBase {
+  private static closedEventSourceUrls = new Set<string>();
+
   private observer: PerformanceObserver | null = null;
 
   private excluded = /(beacon|fetch|xmlhttprequest)/i;
+
+  public static markEventSourceClosed(url: string) {
+    this.closedEventSourceUrls.add(url);
+  }
 
   constructor() {
     super();
@@ -25,7 +31,13 @@ export class ResourceCollector extends WebNetworkProxyBase {
           duration,
           responseStatus = 0,
         } = e;
-        if (this.excluded.test(initiatorType)) return;
+        if (
+          (initiatorType === 'other' &&
+            ResourceCollector.closedEventSourceUrls.delete(name)) ||
+          this.excluded.test(initiatorType)
+        ) {
+          return;
+        }
 
         const id = getRandomId();
         this.createRequest(id);
@@ -57,6 +69,7 @@ export class ResourceCollector extends WebNetworkProxyBase {
   }
 
   reset() {
+    ResourceCollector.closedEventSourceUrls.clear();
     this.observer?.disconnect();
     this.observer = null;
   }
