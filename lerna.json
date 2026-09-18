@@ -8,5 +8,10 @@
       "preid": "beta"
     }
   },
-  "ignoreChanges": ["**/tests/**", "**/*.md", "packages/page-spy-harmony"]
+  "ignoreChanges": [
+    "**/tests/**",
+    "**/*.md",
+    "packages/page-spy-harmony",
+    "packages/page-spy-browser-playground"
+  ]
 }
