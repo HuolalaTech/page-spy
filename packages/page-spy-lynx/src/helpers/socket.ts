@@ -248,9 +248,7 @@ export class LynxWebSocketWrapper extends SocketWrapper {
         } else if (eventName === 'close' || eventName === 'error') {
           this.readyState = SocketState.CLOSED;
         }
-        this.events[eventName].forEach((cb) => {
-          cb(data);
-        });
+        this.emit(eventName, data);
       });
     });
   }

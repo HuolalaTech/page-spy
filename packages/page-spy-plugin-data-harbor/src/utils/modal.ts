@@ -238,9 +238,9 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
         content: resultContent,
         footer: [copyUrlButton],
       });
-    } catch (e: any) {
+    } catch (e: unknown) {
       psLog.error(e);
-      toast.message(e.message);
+      toast.message(e instanceof Error ? e.message : String(e));
     } finally {
       uploadPeriodsButton.disabled = false;
     }
@@ -250,9 +250,9 @@ export const buildModal = ({ plugin, modal, toast }: Params) => {
       downloadPeriodsButton.disabled = true;
       await plugin.onOfflineLog('download-periods', getSelectedPeriod());
       toast.message(i18n.t('success'));
-    } catch (e: any) {
+    } catch (e: unknown) {
       psLog.error(e);
-      toast.message(e.message);
+      toast.message(e instanceof Error ? e.message : String(e));
     } finally {
       downloadPeriodsButton.disabled = false;
     }

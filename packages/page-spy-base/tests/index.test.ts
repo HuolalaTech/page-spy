@@ -1,7 +1,30 @@
 import {
+  formatErrorObj,
+  getAuthSecret,
+  getObjectKeys,
+  getRandomId,
   makePrimitiveValue,
   getValueType,
+  hasOwnProperty,
+  isArray,
   isArrayLike,
+  isBigInt,
+  isClass,
+  isDocument,
+  isFile,
+  isFormData,
+  isHeaders,
+  isNumber,
+  isObjectLike,
+  isPlainObject,
+  isPrototype,
+  isString,
+  isTypedArray,
+  isURL,
+  isURLSearchParams,
+  removeEndSlash,
+  stringifyData,
+  toStringTag,
 } from 'page-spy-base/src';
 
 describe('makePrimitiveValue: convert data to showable string', () => {
@@ -66,4 +89,61 @@ describe('isArrayLike()', () => {
 
   const htmlCollection = document.scripts;
   expect(isArrayLike(htmlCollection)).toBe(true);
+});
+
+describe('general utilities', () => {
+  it('identifies primitive values, objects, and browser built-ins', () => {
+    const file = new File(['PageSpy'], 'page-spy.txt');
+
+    expect(isString('PageSpy')).toBe(true);
+    expect(isNumber(1)).toBe(true);
+    expect(isBigInt(BigInt(1))).toBe(true);
+    expect(isArray([])).toBe(true);
+    expect(isObjectLike({})).toBe(true);
+    expect(isObjectLike(null)).toBe(false);
+    expect(isPlainObject({})).toBe(true);
+    expect(isPlainObject([])).toBe(false);
+    expect(isPrototype(Object.prototype)).toBe(true);
+    expect(isPrototype({})).toBe(false);
+    expect(isTypedArray(new Uint8Array())).toBe(true);
+    expect(isURLSearchParams(new URLSearchParams())).toBe(true);
+    expect(isFormData(new FormData())).toBe(true);
+    expect(isFile(file)).toBe(true);
+    expect(isHeaders(new Headers())).toBe(true);
+    expect(isDocument(document)).toBe(true);
+    expect(isURL(new URL('https://example.com'))).toBe(true);
+    expect(isClass(class PageSpy {})).toBe(true);
+    expect(isClass('PageSpy')).toBe(false);
+  });
+
+  it('formats identifiers and serializable values', () => {
+    const random = jest.spyOn(Math, 'random').mockReturnValue(0.5);
+
+    expect(getRandomId()).toBe('i');
+    expect(getObjectKeys({ first: 1, second: 2 })).toEqual(['first', 'second']);
+    expect(toStringTag([])).toBe('[object Array]');
+    expect(hasOwnProperty({ id: 'request-id' }, 'id')).toBe(true);
+    expect(stringifyData({ value: undefined })).toBe(
+      '{\n  "value": "undefined"\n}',
+    );
+
+    random.mockRestore();
+  });
+
+  it('formats common network helper values', () => {
+    const error = new Error('connection failed');
+    const secret = jest.spyOn(Math, 'random').mockReturnValue(0.42);
+
+    expect(removeEndSlash('https://example.com/')).toBe('https://example.com');
+    expect(removeEndSlash('https://example.com')).toBe('https://example.com');
+    expect(getAuthSecret()).toBe('420000');
+    expect(formatErrorObj(error)).toMatchObject({
+      name: 'Error',
+      message: 'connection failed',
+      stack: expect.any(String),
+    });
+    expect(formatErrorObj({ message: '', stack: '' })).toBeNull();
+
+    secret.mockRestore();
+  });
 });

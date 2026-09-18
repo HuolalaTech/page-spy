@@ -15,9 +15,7 @@ export class WebSocketWrapper extends SocketWrapper {
     const eventNames: WebSocketEvents[] = ['open', 'close', 'error', 'message'];
     eventNames.forEach((eventName) => {
       this.socketInstance!.addEventListener(eventName, (data) => {
-        this.events[eventName].forEach((cb) => {
-          cb(data);
-        });
+        this.emit(eventName, data);
       });
     });
   }

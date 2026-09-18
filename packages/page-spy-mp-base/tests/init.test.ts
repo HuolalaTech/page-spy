@@ -196,6 +196,23 @@ describe('new PageSpy([config])', () => {
     expect(spy).toBeCalled();
   });
 
+  it('Stops the session cache interval on abort', () => {
+    mp.setStorageSync(ROOM_SESSION_KEY, {
+      name: '',
+      address: 'xxxx-address',
+      roomUrl: 'test-room-url',
+      project: '--',
+    });
+    const clearTimer = jest.spyOn(global, 'clearInterval');
+    const instance = new PageSpy({ api: 'test-api.com' });
+    const timer = instance.cacheTimer;
+
+    instance.abort();
+
+    expect(clearTimer).toHaveBeenCalledWith(timer);
+    expect(instance.cacheTimer).toBeNull();
+  });
+
   it('Will get the same instance with duplicate init', () => {
     expect(PageSpy.instance).toBe(null);
 

@@ -24,6 +24,14 @@ const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
 let sdk: SDK | null;
 
 const rootId = '#__pageSpy';
+beforeEach(() => {
+  jest.spyOn(Request.prototype, 'createRoom').mockResolvedValue({
+    name: 'test-room',
+    address: 'test-address',
+    roomUrl: 'wss://test-room',
+  });
+});
+
 afterEach(() => {
   jest.restoreAllMocks();
   jest.useRealTimers();
@@ -253,6 +261,37 @@ describe('new PageSpy([config])', () => {
     const ins2 = new SDK();
 
     expect(ins1).toBe(ins2);
+  });
+
+  it('Updates room information', () => {
+    sdk = new SDK();
+    const updateRoomInfo = jest.spyOn(socketStore, 'updateRoomInfo');
+
+    sdk.updateRoomInfo({ project: 'next-project', title: 'next-title' });
+
+    expect(sdk.config.get()).toEqual(
+      expect.objectContaining({
+        project: 'next-project',
+        title: 'next-title',
+      }),
+    );
+    expect(updateRoomInfo).toHaveBeenCalledTimes(1);
+  });
+
+  it('Aborts the active instance', () => {
+    jest.useFakeTimers();
+    sdk = new SDK();
+    const closeSocket = jest.spyOn(socketStore, 'close');
+    const aborted = jest.fn();
+    sdk.eventBus.addEventListener('core:aborted', aborted);
+    sdk.cacheTimer = setInterval(() => {}, 15 * 1000);
+
+    sdk.abort();
+
+    expect(SDK.instance).toBeNull();
+    expect(sdk.cacheTimer).toBeNull();
+    expect(closeSocket).toHaveBeenCalledTimes(1);
+    expect(aborted).toHaveBeenCalledTimes(1);
   });
 
   // it('PageSpy.prototype.refreshRoomInfo', () => {

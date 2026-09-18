@@ -187,6 +187,9 @@ class PageSpy {
   // avoid deleted by user code
   refreshRoomInfo() {
     /* c8 ignore start */
+    if (this.cacheTimer) {
+      clearInterval(this.cacheTimer);
+    }
     this.saveSession();
     this.cacheTimer = setInterval(() => {
       if (socketStore.getSocket().getState() === SocketState.OPEN) {
@@ -235,6 +238,10 @@ class PageSpy {
   }
 
   abort() {
+    if (this.cacheTimer) {
+      clearInterval(this.cacheTimer);
+      this.cacheTimer = null;
+    }
     this.triggerPlugins('onReset');
     socketStore.close();
     PageSpy.instance = null;

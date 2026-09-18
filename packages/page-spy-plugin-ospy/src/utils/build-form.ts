@@ -245,9 +245,9 @@ export const buildForm = ({ harborPlugin, config }: Params) => {
 
       Toast.show('success', i18n.t('success'));
       modal.close();
-    } catch (e: any) {
+    } catch (e: unknown) {
       submit.textContent = i18n.t('fail');
-      Toast.show('error', e.message);
+      Toast.show('error', e instanceof Error ? e.message : String(e));
     } finally {
       submit.textContent = i18n.t('export');
       submit.disabled = false;

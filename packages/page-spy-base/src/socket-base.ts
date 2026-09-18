@@ -15,6 +15,7 @@ import * as SERVER_MESSAGE_TYPE from './message/server-type';
 import { atom } from './atom';
 import { Client } from './client';
 import { InitConfigBase } from './config';
+import { SOCKET_CONFIG } from './constants';
 
 type InteractiveType = SpyMessage.InteractiveType;
 type InternalMsgType = SpyMessage.InternalMsgType;
@@ -25,8 +26,24 @@ interface GetterMember {
   instanceId: string; // 当前实例的 id
 }
 
-export type WebSocketEvents = keyof WebSocketEventMap;
-type CallbackType = (data?: any) => void;
+/** Platform-neutral event payload emitted by socket wrappers. */
+export interface SocketMessageEvent {
+  data: unknown;
+}
+
+export interface SocketEventPayloadMap {
+  open: { header?: Record<string, string> };
+  close: { code: number; reason: string };
+  error: unknown;
+  message: SocketMessageEvent;
+}
+
+export type WebSocketEvents = keyof SocketEventPayloadMap;
+type SocketEventListeners = {
+  [Event in WebSocketEvents]: Array<
+    (data: SocketEventPayloadMap[Event]) => void
+  >;
+};
 
 // fork WebSocket state
 export enum SocketState {
@@ -36,17 +53,12 @@ export enum SocketState {
   CLOSED = 3,
 }
 
-const HEARTBEAT_INTERVAL = 5000;
-
-// The reconnect interval has an initial time of 2000 ms,
-// for each failed reconnection attempt, the time will be increased by 1.5x,
-// until the attempt number reaches 4, the time will be fixed, which is Math.pow(1.5, 4) * 2000.
-// retry interval
-const INIT_RETRY_INTERVAL = 2000;
-// retry interval time will increase by 1.5x each time.
-const RETRY_TIME_INCR = 1.5;
-// the time increase pow limit.
-const MAX_RETRY_INTERVAL = Math.pow(RETRY_TIME_INCR, 4) * INIT_RETRY_INTERVAL;
+// Caps exponential backoff after SOCKET_CONFIG.MAX_RETRY_ATTEMPTS increases.
+const MAX_RETRY_INTERVAL =
+  Math.pow(
+    SOCKET_CONFIG.RETRY_INTERVAL_MULTIPLIER,
+    SOCKET_CONFIG.MAX_RETRY_ATTEMPTS,
+  ) * SOCKET_CONFIG.INITIAL_RETRY_INTERVAL_MS;
 
 // 封装不同平台的 socket
 export abstract class SocketWrapper {
@@ -54,14 +66,17 @@ export abstract class SocketWrapper {
   abstract send(data: string): void;
   abstract close(data?: {}): void;
   abstract getState(): SocketState;
-  events: Record<WebSocketEvents, CallbackType[]> = {
+  events: SocketEventListeners = {
     open: [],
     close: [],
     error: [],
     message: [],
   };
 
-  protected emit(event: WebSocketEvents, data: any) {
+  protected emit<Event extends WebSocketEvents>(
+    event: Event,
+    data: SocketEventPayloadMap[Event],
+  ) {
     this.events[event].forEach((fun) => {
       fun(data);
     });
@@ -71,19 +86,19 @@ export abstract class SocketWrapper {
     }
   }
 
-  onOpen(fun: (res: { header?: Record<string, string> }) => void) {
+  onOpen(fun: (res: SocketEventPayloadMap['open']) => void) {
     this.events.open.push(fun);
   }
 
-  onClose(fun: (res: { code: number; reason: string }) => void) {
+  onClose(fun: (res: SocketEventPayloadMap['close']) => void) {
     this.events.close.push(fun);
   }
 
-  onError(fun: (msg: string) => void) {
+  onError(fun: (error: SocketEventPayloadMap['error']) => void) {
     this.events.error.push(fun);
   }
 
-  onMessage(fun: (data: string | ArrayBuffer) => void) {
+  onMessage(fun: (event: SocketEventPayloadMap['message']) => void) {
     this.events.message.push(fun);
   }
 
@@ -114,14 +129,14 @@ export abstract class SocketStoreBase {
   // Cache messages only in online mode
   public isOffline = false;
 
-  // Maximum message length,
-  // the 0 meant no limitation.
+  // Maximum message buffer size (0 = unlimited).
+  // When limit is reached, oldest messages are evicted using a sliding window approach.
   public messageCapacity: number = 0;
 
-  // messages store
+  // Message buffer implementing FIFO eviction
   public messages: SpySocket.BroadcastEvent[] = [];
 
-  // pointer to the first valid message in the buffer (avoids O(n) shift)
+  // Index of the first valid message (avoids O(n) array shifts on every eviction)
   protected messageHead: number = 0;
 
   // events center
@@ -139,8 +154,8 @@ export abstract class SocketStoreBase {
     'harbor-clear': [],
   };
 
-  // initial retry interval.
-  public retryInterval = INIT_RETRY_INTERVAL;
+  // Starts at the configured delay and increases with exponential backoff.
+  public retryInterval = SOCKET_CONFIG.INITIAL_RETRY_INTERVAL_MS;
 
   public connectable = true;
 
@@ -179,7 +194,8 @@ export abstract class SocketStoreBase {
   }
 
   // response message filters, to handle some wired messages
-  public static messageFilters: ((data: any) => any)[] = [];
+  public static messageFilters: Array<(data: SocketMessageEvent) => unknown> =
+    [];
 
   constructor() {
     this.addListener('atom-detail', SocketStoreBase.handleResolveAtom);
@@ -225,8 +241,8 @@ export abstract class SocketStoreBase {
       });
       this.socketUrl = url;
       this.socketWrapper?.init(url);
-    } catch (e: any) {
-      psLog.error(e.message);
+    } catch (e: unknown) {
+      psLog.error(e instanceof Error ? e.message : String(e));
     }
   }
 
@@ -238,7 +254,10 @@ export abstract class SocketStoreBase {
     type: InternalMsgType,
     fn: SpyBase.InternalEventCallback,
   ): void;
-  public addListener(type: any, fn: any) {
+  public addListener(
+    type: InteractiveType | InternalMsgType,
+    fn: SpyBase.EventCallback,
+  ) {
     /* c8 ignore next 3 */
     if (!this.events[type]) {
       this.events[type] = [];
@@ -254,7 +273,10 @@ export abstract class SocketStoreBase {
     type: InternalMsgType,
     fn: SpyBase.InternalEventCallback,
   ): void;
-  public removeListener(type: any, fn: any) {
+  public removeListener(
+    type: InteractiveType | InternalMsgType,
+    fn: SpyBase.EventCallback,
+  ) {
     /* c8 ignore next 3 */
     const fns = this.events[type] || [];
     const index = fns.indexOf(fn);
@@ -274,6 +296,10 @@ export abstract class SocketStoreBase {
   public close() {
     this.connectable = false;
     this.clearPing();
+    if (this.retryTimer) {
+      clearTimeout(this.retryTimer);
+      this.retryTimer = null;
+    }
     this.socketWrapper?.close();
     this.messages = [];
     this.messageHead = 0;
@@ -287,7 +313,7 @@ export abstract class SocketStoreBase {
   }
 
   public connectOnline() {
-    this.retryInterval = INIT_RETRY_INTERVAL;
+    this.retryInterval = SOCKET_CONFIG.INITIAL_RETRY_INTERVAL_MS;
     this.updateRoomInfo();
     this.ping();
   }
@@ -303,7 +329,7 @@ export abstract class SocketStoreBase {
     if (!this.connectable) return;
     this.retryTimer = setTimeout(() => {
       if (this.retryInterval < MAX_RETRY_INTERVAL) {
-        this.retryInterval *= RETRY_TIME_INCR;
+        this.retryInterval *= SOCKET_CONFIG.RETRY_INTERVAL_MULTIPLIER;
       }
       this.retryTimer = null;
       this.tryReconnect();
@@ -332,8 +358,8 @@ export abstract class SocketStoreBase {
         // lost connection
         this.connectOffline();
         this.pongTimer = null;
-      }, HEARTBEAT_INTERVAL);
-    }, HEARTBEAT_INTERVAL);
+      }, SOCKET_CONFIG.HEARTBEAT_INTERVAL_MS);
+    }, SOCKET_CONFIG.HEARTBEAT_INTERVAL_MS);
     /* c8 ignore stop */
   }
 
@@ -357,11 +383,24 @@ export abstract class SocketStoreBase {
   }
 
   // get the data which we expected from nested structure of the message
-  protected handleMessage(evt: any) {
-    if (SocketStoreBase.messageFilters.length) {
-      SocketStoreBase.messageFilters.forEach((filter) => {
-        evt = filter(evt);
-      });
+  protected handleMessage(evt: SocketMessageEvent) {
+    const filteredEvent = SocketStoreBase.messageFilters.reduce<unknown>(
+      (currentEvent, filter) => {
+        if (!SocketStoreBase.isSocketMessageEvent(currentEvent)) {
+          return currentEvent;
+        }
+        return filter(currentEvent);
+      },
+      evt,
+    );
+    if (!SocketStoreBase.isSocketMessageEvent(filteredEvent)) {
+      psLog.warn('Failed to parse message, invalid message event received.');
+      return;
+    }
+    const { data: rawData } = filteredEvent;
+    if (typeof rawData !== 'string') {
+      psLog.warn('Failed to parse message, expected string data.');
+      return;
     }
     const {
       CONNECT,
@@ -376,7 +415,7 @@ export abstract class SocketStoreBase {
     } = SERVER_MESSAGE_TYPE;
     let result: SpySocket.Event;
     try {
-      result = JSON.parse(evt.data) as SpySocket.Event;
+      result = JSON.parse(rawData) as SpySocket.Event;
     } catch (e) {
       psLog.warn('Failed to parse message, malformed data received.');
       return;
@@ -404,9 +443,12 @@ export abstract class SocketStoreBase {
         break;
       case MESSAGE:
         const { data, from, to } = result.content;
-        if (to.address === this.socketConnection?.address) {
+        if (
+          to.address === this.socketConnection?.address &&
+          SocketStoreBase.isInteractiveType(data.type)
+        ) {
           this.dispatchEvent(data.type, {
-            source: data,
+            source: data as SpyMessage.MessageItem<InteractiveType>,
             from,
             to,
           });
@@ -433,20 +475,32 @@ export abstract class SocketStoreBase {
     type: SpyMessage.InteractiveType,
     data: SpyBase.InteractiveEvent,
   ): void;
-  public dispatchEvent(type: InternalMsgType, data: any): void;
-  public dispatchEvent(type: any, data: any) {
+  public dispatchEvent(
+    type: 'public-data',
+    data: SpyMessage.MessageItem<SpyMessage.DataType>,
+  ): void;
+  public dispatchEvent(type: 'harbor-clear', data: null): void;
+  public dispatchEvent(
+    type: InteractiveType | InternalMsgType,
+    data:
+      | SpyBase.InteractiveEvent
+      | SpyMessage.MessageItem<SpyMessage.DataType>
+      | null,
+  ) {
     if (['public-data'].includes(type)) {
       this.events['public-data'].forEach((fn) => {
-        (fn as SpyBase.InternalEventCallback)(data);
+        (fn as SpyBase.InternalEventCallback)(
+          data as SpyMessage.MessageItem<SpyMessage.DataType>,
+        );
       });
       return;
     }
     this.events[type]?.forEach((fn) => {
       (fn as SpyBase.InteractiveEventCallback).call(
         this,
-        data,
+        data as SpyBase.InteractiveEvent,
         (d: SpyMessage.MessageItem<SpyMessage.InteractiveType>) => {
-          this.unicastMessage(d, data.from);
+          this.unicastMessage(d, (data as SpyBase.InteractiveEvent).from);
         },
       );
     });
@@ -475,7 +529,7 @@ export abstract class SocketStoreBase {
       const data: SpySocket.UnicastEvent = {
         type: SERVER_MESSAGE_TYPE.MESSAGE,
         content: {
-          data: msg.content.data as any,
+          data: msg.content.data,
           from: this.socketConnection!,
           to: message.from,
         },
@@ -487,7 +541,7 @@ export abstract class SocketStoreBase {
 
   public static handleResolveAtom(
     { source }: SpyBase.InteractiveEvent<string>,
-    reply: (data: any) => void,
+    reply: (data: SpyMessage.MessageItem) => void,
   ) {
     const { type, data } = source;
     if (type === 'atom-detail') {
@@ -499,7 +553,7 @@ export abstract class SocketStoreBase {
 
   public static handleAtomPropertyGetter(
     { source }: SpyBase.InteractiveEvent<GetterMember>,
-    reply: (data: any) => void,
+    reply: (data: SpyMessage.MessageItem) => void,
   ) {
     const { type, data } = source;
     if (type === 'atom-getter') {
@@ -531,20 +585,24 @@ export abstract class SocketStoreBase {
         pkMsg.requestId = getRandomId();
         const dataString = stringifyData(pkMsg);
         this.socketWrapper?.send(dataString);
-      } catch (e) {
-        psLog.error(`Incompatible: ${(e as Error).message}`);
+      } catch (e: unknown) {
+        psLog.error(
+          `Incompatible: ${e instanceof Error ? e.message : String(e)}`,
+        );
         this.connectOffline();
       }
       /* c8 ignore stop */
     }
     const cacheable = this.checkIfCache(msg, noCache);
     if (cacheable) {
+      // FIFO eviction: when buffer is full, advance the head pointer
       if (
         this.messageCapacity !== 0 &&
         this.messages.length - this.messageHead >= this.messageCapacity
       ) {
         this.messageHead += 1;
-        // Periodically compact the array to prevent unbounded growth
+        // Compact the array periodically to prevent unbounded growth
+        // Once half the array is unused, slice it off
         if (this.messageHead > this.messageCapacity) {
           this.messages = this.messages.slice(this.messageHead);
           this.messageHead = 0;
@@ -587,6 +645,27 @@ export abstract class SocketStoreBase {
         data: clientInfo,
       },
       true,
+    );
+  }
+
+  private static isSocketMessageEvent(
+    value: unknown,
+  ): value is SocketMessageEvent {
+    return typeof value === 'object' && value !== null && 'data' in value;
+  }
+
+  private static isInteractiveType(
+    type: SpyMessage.MessageType,
+  ): type is InteractiveType {
+    return (
+      type === 'debug' ||
+      type === 'refresh' ||
+      type === 'atom-detail' ||
+      type.startsWith('atom-detail-') ||
+      type === 'atom-getter' ||
+      type.startsWith('atom-getter-') ||
+      type === 'debugger-online' ||
+      type === 'database-pagination'
     );
   }
 }

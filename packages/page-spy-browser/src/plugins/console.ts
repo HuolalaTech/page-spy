@@ -93,7 +93,8 @@ export default class ConsolePlugin implements PageSpyPlugin {
           logs: [
             {
               type: 'error',
-              value: (err as Error).stack,
+              value:
+                err instanceof Error ? err.stack || err.message : String(err),
             },
           ],
         });

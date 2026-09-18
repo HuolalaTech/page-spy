@@ -32,8 +32,8 @@ export const startUpload = async ({ url, body }: UploadArgs) => {
     }
 
     return result;
-  } catch (e: any) {
-    psLog.error(e.message);
+  } catch (e: unknown) {
+    psLog.error(e instanceof Error ? e.message : String(e));
     return null;
   }
 };

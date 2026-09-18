@@ -243,6 +243,9 @@ class PageSpy {
   }
 
   private refreshRoomInfo() {
+    if (this.cacheTimer) {
+      clearInterval(this.cacheTimer);
+    }
     this.saveSession();
     this.cacheTimer = setInterval(() => {
       if (socketStore.getSocket().getState() === SocketState.OPEN) {

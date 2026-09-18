@@ -1,4 +1,5 @@
 import { IDBFactory } from 'fake-indexeddb';
+import { psLog } from '@huolala-tech/page-spy-base';
 import {
   DatabasePlugin,
   promisify,
@@ -37,7 +38,7 @@ beforeEach(async () => {
   jest.resetAllMocks();
 });
 afterEach(async () => {
-  await window.indexedDB.deleteDatabase('blog');
+  await promisify(window.indexedDB.deleteDatabase('blog'));
 });
 
 describe('Database plugin', () => {
@@ -54,6 +55,25 @@ describe('Database plugin', () => {
     expect(DatabasePlugin.hasInitd).toBe(false);
 
     window.indexedDB.databases = originFn;
+  });
+
+  it('reports non-Error failures while reading database metadata', async () => {
+    const error = jest.spyOn(psLog, 'error').mockImplementation();
+    const open = jest.spyOn(window.indexedDB, 'open').mockImplementation(() => {
+      throw 'database unavailable';
+    });
+
+    try {
+      await expect(
+        new DatabasePlugin().getDBData({ name: 'blog', version: 1 }),
+      ).resolves.toBeNull();
+      expect(error).toHaveBeenCalledWith(
+        'Failed to get indexedDB data, more info: database unavailable',
+      );
+    } finally {
+      open.mockRestore();
+      error.mockRestore();
+    }
   });
 
   it('IDBFactory.prototype.deleteDatabase', async () => {
@@ -99,6 +119,7 @@ describe('Database plugin', () => {
     expect(originClear).toHaveBeenCalledTimes(1);
 
     expect(dbTrigger).toHaveBeenCalledTimes(4);
+    db.close();
   });
 
   it('DATABASE_PAGINATION event and REFRESH event', async () => {

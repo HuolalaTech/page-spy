@@ -133,6 +133,25 @@ describe('transformToAtom: convert data to be descriptive atom object', () => {
     expect(atom.transformToAtom(new Boolean()).type).toBe('atom');
     expect(atom.transformToAtom(Object.prototype).type).toBe('atom');
   });
+
+  it('Serializes complex values inline when serializeData is enabled', () => {
+    const result = atom.transformToAtom({ answer: 42 }, true);
+
+    expect(result).toMatchObject({
+      type: 'json',
+      value: '{"answer":42}',
+    });
+  });
+
+  it('Uses a null placeholder when an inline value is not serializable', () => {
+    const circular: Record<string, unknown> = {};
+    circular.self = circular;
+
+    expect(atom.transformToAtom(circular, true)).toMatchObject({
+      type: 'json',
+      value: null,
+    });
+  });
 });
 
 describe('Atom store eviction', () => {
@@ -163,6 +182,22 @@ describe('Atom store eviction', () => {
     atom.maxStoreSize = originalMax;
   });
 
+  it('keeps the default store bounded while handling more than 5,000 entries', () => {
+    const entries = Array.from({ length: 5001 }, (_, index) =>
+      atom.add({ index }),
+    );
+    const firstId = entries[0].__atomId;
+    const latestId = entries[entries.length - 1].__atomId;
+
+    if (!firstId || !latestId) {
+      throw new Error('Atom entries must include their storage IDs');
+    }
+
+    expect(Object.keys(atom.getStore())).toHaveLength(atom.maxStoreSize);
+    expect(atom.getOrigin(firstId)).toBeNull();
+    expect(atom.getOrigin(latestId)).toEqual({ index: 5000 });
+  });
+
   it('resetStore clears both store and internal key list', () => {
     atom.add({ a: 1 });
     atom.add({ b: 2 });
@@ -174,5 +209,32 @@ describe('Atom store eviction', () => {
     // After reset, adding new items should work correctly
     atom.add({ c: 3 });
     expect(Object.keys(atom.getStore()).length).toBe(1);
+  });
+});
+
+describe('Atom.getOrigin', () => {
+  it('Returns original data by atomId', () => {
+    const data = { foo: 'bar', nested: { value: 123 } };
+    const overview = atom.add(data);
+    const atomId = overview.__atomId!;
+
+    const origin = atom.getOrigin(atomId);
+    expect(origin).toBe(data);
+    expect(origin.foo).toBe('bar');
+    expect(origin.nested.value).toBe(123);
+  });
+
+  it('Returns null for non-existent atomId', () => {
+    const result = atom.getOrigin('non-existent-id');
+    expect(result).toBeNull();
+  });
+
+  it('Returns null after store is reset', () => {
+    const overview = atom.add({ test: 'data' });
+    const atomId = overview.__atomId!;
+
+    atom.resetStore();
+    const result = atom.getOrigin(atomId);
+    expect(result).toBeNull();
   });
 });

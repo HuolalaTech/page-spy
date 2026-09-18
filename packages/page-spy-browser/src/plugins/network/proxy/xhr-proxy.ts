@@ -224,9 +224,9 @@ class XhrProxy extends WebNetworkProxyBase {
             if (blob.size <= MAX_SIZE) {
               try {
                 result.response = await blob2base64Async(blob);
-              } /* c8 ignore start */ catch (e: any) {
+              } /* c8 ignore start */ catch (e: unknown) {
                 result.response = await blob.text();
-                psLog.error(e.message);
+                psLog.error(e instanceof Error ? e.message : String(e));
               } /* c8 ignore stop */
             } else {
               result.response = '[object Blob]';

@@ -272,8 +272,9 @@ export abstract class SocketStoreBase {
     this.clearPing();
     this.socketWrapper?.close();
     this.messages = [];
-    Object.entries(this.events).forEach(([, fns]) => {
-      if (['atom-detail', 'atom-getter', 'debugger-online']) return;
+    Object.entries(this.events).forEach(([evt, fns]) => {
+      if (['atom-detail', 'atom-getter', 'debugger-online'].includes(evt))
+        return;
       fns.splice(0);
     });
   }

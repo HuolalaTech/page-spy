@@ -7,6 +7,7 @@ import {
 } from '@huolala-tech/page-spy-base';
 import { OnInitParams, PageSpyPlugin } from '@huolala-tech/page-spy-types';
 import WebNetworkProxyBase from './proxy/base';
+import { ResourceCollector } from './proxy/resource-collector';
 import { InitConfig } from '../../config';
 
 const OriginEventSource = window.EventSource;
@@ -62,7 +63,9 @@ export default class EventSourcePlugin
         req.startTime = Date.now();
 
         const es = new OriginEventSource(url, eventSourceInitDict);
+        let hasOpened = false;
         es.addEventListener('open', () => {
+          hasOpened = true;
           req.readyState = ReqReadyState.OPENED;
           req.endTime = Date.now();
           req.costTime = req.endTime - req.startTime;
@@ -85,6 +88,16 @@ export default class EventSourcePlugin
           req.costTime = req.endTime - req.startTime;
           _sseProxy.sendRequestItem(id, req);
         });
+
+        const close = es.close.bind(es);
+        es.close = () => {
+          if (hasOpened) {
+            // EventSource uses "other" as its Resource Timing initiator type.
+            // Its request was already emitted by EventSourcePlugin, so skip the timing entry.
+            ResourceCollector.markEventSourceClosed(req.url);
+          }
+          close();
+        };
 
         // eslint-disable-next-line no-constructor-return
         return es;

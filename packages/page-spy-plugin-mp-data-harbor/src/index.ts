@@ -186,8 +186,8 @@ export default class MPDataHarborPlugin implements PageSpyPlugin {
         this.harbor.clear();
         this.$socketStore?.dispatchEvent('harbor-clear', null);
       }
-    } catch (e: any) {
-      psLog.error(e);
+    } catch (e: unknown) {
+      psLog.error(e instanceof Error ? e.message : String(e));
     }
     return debugUrl;
   }

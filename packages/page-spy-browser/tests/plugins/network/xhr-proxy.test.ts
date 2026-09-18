@@ -1,7 +1,6 @@
 import NetworkPlugin from 'page-spy-browser/src/plugins/network';
-import startServer from '../../server/index';
 import data from '../../server/data.json';
-import { atom, Reason } from 'page-spy-base/src';
+import { atom, MAX_SIZE, Reason } from 'page-spy-base/src';
 import { computeRequestMapInfo } from './util';
 import { OnInitParams } from 'packages/page-spy-types';
 import { Config, InitConfig } from 'page-spy-browser/src/config';
@@ -12,22 +11,93 @@ const initParams = {
   socketStore: socket,
   atom,
 } as OnInitParams<InitConfig>;
-const port = 6677;
-const apiPrefix = `http://localhost:${port}`;
-const stopServer = startServer(port);
-afterAll(stopServer);
+const apiPrefix = 'https://example.test';
 
-const sleep = (t = 100) => new Promise((r) => setTimeout(r, t));
+const waitForTasks = () => new Promise((resolve) => setTimeout(resolve, 0));
 
-const spyOpen = jest.spyOn(XMLHttpRequest.prototype, 'open');
-const spySetHeader = jest.spyOn(XMLHttpRequest.prototype, 'setRequestHeader');
-const spySend = jest.spyOn(XMLHttpRequest.prototype, 'send');
+const textResponses: Record<string, string> = {
+  '/posts': JSON.stringify(data),
+  '/plain-text': 'Hello PageSpy',
+  '/html': '<div id="app"><h3>Hello PageSpy</h3></div>',
+  '/json': JSON.stringify({ name: 'PageSpy' }),
+};
+
+const createResponse = (xhr: XMLHttpRequest) => {
+  const path = new URL(xhr.pageSpyRequestUrl, window.location.href).pathname;
+  const body = textResponses[path] || JSON.stringify({ name: 'PageSpy' });
+
+  if (path === '/blob') {
+    if (xhr.responseType === 'arraybuffer') {
+      return new Uint8Array([1, 2, 3]).buffer;
+    }
+    return new Blob(['image'], { type: 'image/png' });
+  }
+  if (path === '/big-file') {
+    return new Blob(['x'.repeat(MAX_SIZE + 1)], { type: 'image/jpeg' });
+  }
+  if (xhr.responseType === 'json') {
+    return JSON.parse(body);
+  }
+  if (xhr.responseType === 'document') {
+    return new DOMParser().parseFromString(body, 'text/html');
+  }
+  return body;
+};
+
+const mockXhrResponse = (xhr: XMLHttpRequest) => {
+  const response = createResponse(xhr);
+  Object.defineProperties(xhr, {
+    status: { configurable: true, value: 200 },
+    statusText: { configurable: true, value: 'OK' },
+    response: { configurable: true, value: response },
+    responseText: {
+      configurable: true,
+      value:
+        typeof response === 'string'
+          ? response
+          : textResponses[
+              new URL(xhr.pageSpyRequestUrl, window.location.href).pathname
+            ] || '',
+    },
+  });
+  [
+    XMLHttpRequest.HEADERS_RECEIVED,
+    XMLHttpRequest.LOADING,
+    XMLHttpRequest.DONE,
+  ].forEach((readyState) => {
+    Object.defineProperty(xhr, 'readyState', {
+      configurable: true,
+      value: readyState,
+    });
+    xhr.dispatchEvent(new Event('readystatechange'));
+  });
+  xhr.dispatchEvent(new Event('load'));
+};
+
+let spyOpen: jest.SpyInstance;
+let spySetHeader: jest.SpyInstance;
+let spySend: jest.SpyInstance;
 
 const {
   open: originOpen,
   setRequestHeader: originSetRequestHeader,
   send: originSend,
 } = window.XMLHttpRequest.prototype;
+beforeEach(() => {
+  spyOpen = jest.spyOn(XMLHttpRequest.prototype, 'open');
+  spySetHeader = jest.spyOn(XMLHttpRequest.prototype, 'setRequestHeader');
+  spySend = jest
+    .spyOn(XMLHttpRequest.prototype, 'send')
+    .mockImplementation(function send(this: XMLHttpRequest) {
+      Promise.resolve().then(() => mockXhrResponse(this));
+    });
+  jest
+    .spyOn(XMLHttpRequest.prototype, 'getAllResponseHeaders')
+    .mockReturnValue('content-type: image/png');
+  jest
+    .spyOn(XMLHttpRequest.prototype, 'getResponseHeader')
+    .mockReturnValue('image/png');
+});
 afterEach(() => {
   jest.restoreAllMocks();
   window.XMLHttpRequest.prototype.open = originOpen;
@@ -55,22 +125,24 @@ describe('XMLHttpRequest proxy', () => {
     expect(XMLHttpRequest.prototype.send).not.toBe(spySend);
   });
 
-  it("The origin's method will be called and get the response", (done) => {
+  it("The origin's method will be called and get the response", async () => {
     new NetworkPlugin().onInit(initParams);
 
     const api = `${apiPrefix}/posts`;
     const xhr = new XMLHttpRequest();
     xhr.open('GET', api);
     xhr.setRequestHeader('X-Name', 'PageSpy');
-    xhr.send();
-
     expect(spyOpen).toHaveBeenCalled();
     expect(spySetHeader).toHaveBeenCalled();
+    const loaded = new Promise<void>((resolve) => {
+      xhr.onload = () => {
+        expect(JSON.parse(xhr.response)).toEqual(data);
+        resolve();
+      };
+    });
+    xhr.send();
     expect(spySend).toHaveBeenCalled();
-    xhr.onload = () => {
-      expect(JSON.parse(xhr.response)).toEqual(data);
-      done();
-    };
+    await loaded;
   });
 
   it('Request different type response', () => {
@@ -125,8 +197,8 @@ describe('XMLHttpRequest proxy', () => {
     xhr5.open('GET', `${apiPrefix}/blob`);
     xhr5.send();
 
-    return Promise.all([xhr1_ps, xhr2_ps, xhr3_ps, xhr4_ps, xhr5_ps])
-      .then(([ins1, ins2, ins3, ins4, ins5]) => {
+    return Promise.all([xhr1_ps, xhr2_ps, xhr3_ps, xhr4_ps, xhr5_ps]).then(
+      ([ins1, ins2, ins3, ins4, ins5]) => {
         expect(ins1.responseText).toEqual(
           expect.stringContaining('Hello PageSpy'),
         );
@@ -137,17 +209,15 @@ describe('XMLHttpRequest proxy', () => {
         );
         const title = doc.querySelector('#app');
         expect(title).toBeInstanceOf(HTMLDivElement);
-        expect(ins4).toEqual({
+        expect(ins4.response).toEqual({
           name: 'PageSpy',
         });
         expect(ins5.status).toBe(200);
-      })
-      .catch((e) => {
-        console.log('XHR execute failed: ', e.message);
-      });
+      },
+    );
   });
 
-  it('Big response entity will not be converted to base64 by PageSpy', (done) => {
+  it('Big response entity will not be converted to base64 by PageSpy', async () => {
     const np = new NetworkPlugin();
     np.onInit(initParams);
     const { xhrProxy } = np;
@@ -159,19 +229,22 @@ describe('XMLHttpRequest proxy', () => {
     xhr.open('GET', bigFileUrl);
     xhr.responseType = 'blob';
     xhr.send();
-    xhr.addEventListener('readystatechange', async () => {
-      if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
-          await sleep();
-          const { freezedRequests, size } = computeRequestMapInfo(xhrProxy!);
-          expect(size).toBe(1);
-          const current = Object.values(freezedRequests)[0];
-          expect(current?.response).toBe('[object Blob]');
-          expect(current?.responseReason).toBe(Reason.EXCEED_SIZE);
-          done();
+    const loaded = new Promise<void>((resolve) => {
+      xhr.addEventListener('readystatechange', async () => {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            await waitForTasks();
+            const { freezedRequests, size } = computeRequestMapInfo(xhrProxy!);
+            expect(size).toBe(1);
+            const current = Object.values(freezedRequests)[0];
+            expect(current?.response).toBe('[object Blob]');
+            expect(current?.responseReason).toBe(Reason.EXCEED_SIZE);
+            resolve();
+          }
         }
-      }
+      });
     });
+    await loaded;
   });
 
   it('The SDK record the request information', () => {
@@ -190,7 +263,8 @@ describe('XMLHttpRequest proxy', () => {
     expect(computeRequestMapInfo(xhrProxy).size).toBe(count);
   });
 
-  it('The cached request items will be freed when no longer needed', () => {
+  it('The cached request items will be freed when no longer needed', async () => {
+    jest.useFakeTimers();
     const np = new NetworkPlugin();
     np.onInit(initParams);
     const { xhrProxy } = np;
@@ -202,12 +276,14 @@ describe('XMLHttpRequest proxy', () => {
     xhr.send();
 
     expect(computeRequestMapInfo(xhrProxy).size).toBe(1);
-    xhr.addEventListener('readystatechange', async () => {
-      if (xhr.readyState === 4) {
-        await sleep(3500);
-        // The previous request item now be freed after 3s.
-        expect(computeRequestMapInfo(xhrProxy).size).toBe(0);
-      }
-    });
+    try {
+      await jest.advanceTimersByTimeAsync(0);
+      expect(computeRequestMapInfo(xhrProxy).size).toBe(1);
+
+      jest.advanceTimersByTime(3000);
+      expect(computeRequestMapInfo(xhrProxy).size).toBe(0);
+    } finally {
+      jest.useRealTimers();
+    }
   });
 });

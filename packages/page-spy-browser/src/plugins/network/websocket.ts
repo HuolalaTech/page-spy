@@ -178,5 +178,6 @@ export default class WebSocketPlugin
 
   public onReset() {
     window.WebSocket = OriginWebSocket;
+    WebSocketPlugin.hasInitd = false;
   }
 }

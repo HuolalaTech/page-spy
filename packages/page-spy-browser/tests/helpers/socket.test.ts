@@ -163,4 +163,16 @@ describe('Socket store', () => {
     // SDK should still be functional after malformed message
     expect(client.getSocket().getState()).toBe(SocketState.OPEN);
   });
+
+  it('Invalid message event payloads should not crash the SDK', () => {
+    expect(() => {
+      // @ts-ignore - accessing protected method for testing
+      client.handleMessage({ data: { invalid: true } });
+    }).not.toThrow();
+
+    expect(() => {
+      // @ts-ignore - accessing protected method for testing
+      client.handleMessage({ data: new ArrayBuffer(0) });
+    }).not.toThrow();
+  });
 });

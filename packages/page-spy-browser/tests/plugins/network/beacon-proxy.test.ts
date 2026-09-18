@@ -1,5 +1,4 @@
 import NetworkPlugin from 'page-spy-browser/src/plugins/network';
-import startServer from '../../server/index';
 import { computeRequestMapInfo } from './util';
 import { OnInitParams } from 'packages/page-spy-types';
 import { Config, InitConfig } from 'page-spy-browser/src/config';
@@ -11,10 +10,7 @@ const initParams = {
   socketStore: socket,
   atom,
 } as OnInitParams<InitConfig>;
-const port = 6699;
-const apiPrefix = `http://localhost:${port}`;
-const stopServer = startServer(port);
-afterAll(stopServer);
+const apiPrefix = 'https://example.test';
 
 const { sendBeacon: originSendBeacon } = window.navigator;
 afterEach(() => {

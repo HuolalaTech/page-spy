@@ -58,7 +58,8 @@ export type BroadcastEvent = EventConstructor<
 export type UnicastEvent = EventConstructor<
   'message',
   {
-    data: MessageItem<InteractiveType>;
+    // Carries interactive commands and replayed broadcast messages from the offline buffer.
+    data: MessageItem<DataType | InteractiveType>;
     from: Connection;
     to: Connection;
   }
