@@ -1,6 +1,6 @@
 {
   "name": "@huolala-tech/page-spy-lynx",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "An SDK of PageSpy for debugging Lynx app",
   "license": "MIT",
   "main": "dist/esm/index.min.js",
@@ -31,8 +31,8 @@
     "clean": "rimraf node_modules .turbo dist"
   },
   "dependencies": {
-    "@huolala-tech/page-spy-base": "^2.3.0",
-    "@huolala-tech/page-spy-types": "^2.3.0"
+    "@huolala-tech/page-spy-base": "^2.4.0",
+    "@huolala-tech/page-spy-types": "^2.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
