@@ -1,4 +1,5 @@
 import { z, ZodError } from 'zod';
+import type { InitConfigBase } from '@huolala-tech/page-spy-types';
 import { DataItem as ConsoleData } from '@huolala-tech/page-spy-types/lib/console';
 import { DataItem as StorageData } from '@huolala-tech/page-spy-types/lib/storage';
 import { DataItem as PageData } from '@huolala-tech/page-spy-types/lib/page';
@@ -109,9 +110,38 @@ const baseSchema = z
 
 /**
  * Base configuration type for PageSpy initialization.
- * Platform-specific packages can extend this with additional options.
+ *
+ * The type contract is defined in `page-spy-types` so plugin authors don't
+ * need to depend on this package. It is re-exported here for backward
+ * compatibility. The zod schema below is the runtime validation of the same
+ * shape; a compile-time assertion keeps both in sync.
  */
-export type InitConfigBase = z.infer<typeof baseSchema>;
+export type { InitConfigBase };
+
+// Drift check: the zod-inferred shape and the contract must stay mutually
+// assignable in both directions. Adding/removing a field or changing a
+// field's type on either side breaks one of the constraints and fails
+// compilation.
+//
+// Two normalization steps are required:
+// 1. zod infers optional properties as `x?: T | undefined` while the contract
+//    uses `x?: T`. `Normalize` strips the optional modifier and `undefined`
+//    from both sides so the two notations compare equal.
+// 2. After normalization every property is required, so an extra or missing
+//    field on either side breaks assignability in one direction. Plain
+//    (un-normalized) assignability would silently allow extra optional fields.
+type AssertTrue<T extends true> = T;
+type Normalize<T> = { [K in keyof T]-?: Exclude<T[K], undefined> };
+type Schema = Normalize<z.infer<typeof baseSchema>>;
+type Contract = Normalize<InitConfigBase>;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type _schemaMatchesContract = AssertTrue<
+  [Schema] extends [Contract] ? true : false
+>;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type _contractMatchesSchema = AssertTrue<
+  [Contract] extends [Schema] ? true : false
+>;
 
 /**
  * Extends the base configuration schema with platform-specific fields.

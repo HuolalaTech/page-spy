@@ -1,6 +1,12 @@
-import { SocketStoreBase, InitConfigBase } from '@huolala-tech/page-spy-base';
-import { Modal } from './modal';
-import { Toast } from './toast';
+import type { SocketStoreType } from './base';
+import type { InitConfigBase } from './config';
+import type { Client } from './client';
+import type { Modal } from './modal';
+import type { Toast } from './toast';
+
+export type { InitConfigBase } from './config';
+export type { SocketStoreType } from './base';
+export type { Client } from './client';
 
 export interface UpdateConfig {
   title?: string;
@@ -23,7 +29,7 @@ export interface OnInitParams<T extends InitConfigBase> extends CommonParams {
    * Wrap the origin websocket instance, plugin developers can
    * communicate with Web / API by it.
    */
-  socketStore: SocketStoreBase;
+  socketStore: SocketStoreType;
 
   /**
    * The atom instance to store js object info.
@@ -48,7 +54,7 @@ export interface OnMountedParams<T extends InitConfigBase>
 
   // Wrap the origin socket instance, plugin developers can
   // communicate with Web / API by it.
-  socketStore: SocketStoreBase;
+  socketStore: SocketStoreType;
 }
 
 export type PluginOrder = 'pre' | 'post';

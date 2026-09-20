@@ -110,7 +110,7 @@ export abstract class SocketWrapper {
   }
 }
 
-export abstract class SocketStoreBase {
+export abstract class SocketStoreBase implements SpyBase.SocketStoreType {
   public socketUrl: string = '';
 
   public socketConnection: SpySocket.Connection | null = null;

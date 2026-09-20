@@ -6,8 +6,11 @@ import { SpyClient } from '@huolala-tech/page-spy-types';
  *
  * Collects and formats client environment information (OS, browser, framework, etc.)
  * to be sent to the debugging server.
+ *
+ * Implements the `SpyClient.Client` contract from page-spy-types so plugins
+ * only need to depend on the types package.
  */
-export class Client {
+export class Client implements SpyClient.Client {
   /**
    * Creates a new Client instance.
    *

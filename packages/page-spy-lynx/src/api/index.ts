@@ -1,4 +1,4 @@
-import type { Client } from '@huolala-tech/page-spy-base';
+import type { Client } from '@huolala-tech/page-spy-types';
 import { getRandomId, isURL } from '@huolala-tech/page-spy-base';
 import { Config, InitConfig } from '../config';
 import { getGlobal, joinQuery } from '../utils';

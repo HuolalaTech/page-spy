@@ -19,8 +19,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "dependencies": {
-    "@huolala-tech/page-spy-base": "^2.3.0"
   }
 }

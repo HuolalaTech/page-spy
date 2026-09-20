@@ -3,14 +3,11 @@ import type {
   SpyMessage,
   PageSpyPlugin,
   PluginOrder,
+  SocketStoreType,
+  Client,
 } from '@huolala-tech/page-spy-types';
 import { removeEndSlash, InitConfigBase } from '@huolala-tech/page-spy-base';
-import {
-  type Client,
-  type SocketStoreBase,
-  psLog,
-  type MPPluginInitParams,
-} from '@huolala-tech/page-spy-mp-base';
+import { psLog, type MPPluginInitParams } from '@huolala-tech/page-spy-mp-base';
 import { MemoryHarbor } from './harbor/memoryHarbor';
 import { saveData } from './utils/upload';
 import {
@@ -61,7 +58,7 @@ export default class MPDataHarborPlugin implements PageSpyPlugin {
 
   public isPaused = false;
 
-  public $socketStore: SocketStoreBase | null = null;
+  public $socketStore: SocketStoreType | null = null;
 
   public $pageSpyConfig: InitConfigBase | null = null;
 
@@ -90,8 +87,8 @@ export default class MPDataHarborPlugin implements PageSpyPlugin {
     MPDataHarborPlugin.hasInited = true;
     setMPSDK(mp);
     this.$pageSpyConfig = config;
-    this.$socketStore = socketStore as any; // TODO: fix this type issue
-    this.client = client;
+    this.$socketStore = socketStore;
+    this.client = client ?? null;
 
     const { api, enableSSL, offline } = config;
     if (!offline && !api) {

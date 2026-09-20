@@ -5,9 +5,10 @@ import type {
   PageSpyPlugin,
   PluginOrder,
   OnMountedParams,
+  SocketStoreType,
 } from '@huolala-tech/page-spy-types';
 import { psLog, removeEndSlash } from '@huolala-tech/page-spy-base';
-import type { SocketStoreBase, RequestItem } from '@huolala-tech/page-spy-base';
+import type { RequestItem } from '@huolala-tech/page-spy-base';
 import type { InitConfig } from '@huolala-tech/page-spy-browser/dist/types/config';
 import {
   BlobHarbor,
@@ -85,7 +86,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
   private periodTimer: ReturnType<typeof setInterval> | null = null;
 
-  public $socketStore: SocketStoreBase | null = null;
+  public $socketStore: SocketStoreType | null = null;
 
   public $pageSpyConfig: InitConfig | null = null;
 
@@ -129,7 +130,7 @@ export default class DataHarborPlugin implements PageSpyPlugin {
 
     this.initPeriodTimer();
 
-    this.$socketStore.addListener('public-data', (message) => {
+    socketStore.addListener('public-data', (message) => {
       if (this.isPaused || !this.isCaredPublicData(message)) return;
 
       const data = makeData(message.type as DataType, message.data);

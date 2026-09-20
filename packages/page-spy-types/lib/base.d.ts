@@ -22,3 +22,24 @@ export type InternalEventCallback = (data: MessageItem<DataType>) => void;
 export type EventType = InteractiveType | InternalMsgType;
 
 export type EventCallback = InteractiveEventCallback | InternalEventCallback;
+
+/**
+ * The public contract of the socket store passed to plugins via
+ * `OnInitParams.socketStore` / `OnMountedParams.socketStore`.
+ * Implemented by `SocketStoreBase` in page-spy-base.
+ */
+export interface SocketStoreType {
+  addListener(type: InteractiveType, fn: InteractiveEventCallback): void;
+  addListener(type: InternalMsgType, fn: InternalEventCallback): void;
+
+  removeListener(type: InteractiveType, fn: InteractiveEventCallback): void;
+  removeListener(type: InternalMsgType, fn: InternalEventCallback): void;
+
+  dispatchEvent(
+    type: InteractiveType | InternalMsgType,
+    data: InteractiveEvent,
+  ): void;
+  dispatchEvent(type: InternalMsgType, data: any): void;
+
+  broadcastMessage(message: MessageItem<DataType>, noCache?: boolean): void;
+}

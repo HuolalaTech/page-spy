@@ -1,6 +1,6 @@
 import { psLog, makeMessage } from '@huolala-tech/page-spy-base';
-import type { Client } from '@huolala-tech/page-spy-base';
 import type {
+  Client,
   SpyStorage,
   PageSpyPlugin,
   OnInitParams,
@@ -51,7 +51,7 @@ export default class StoragePlugin implements PageSpyPlugin {
     StoragePlugin.hasInitd = true;
 
     this.$pageSpyConfig = config;
-    this.client = client;
+    this.client = client ?? null;
     this.initStorageProxy();
     this.listenRefreshEvent();
   }

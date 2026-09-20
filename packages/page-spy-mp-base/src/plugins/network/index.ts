@@ -16,7 +16,8 @@ export default class NetworkPlugin implements PageSpyPlugin {
     NetworkPlugin.hasInitd = true;
     NetworkProxyBase.dataProcessor = config.dataProcessor.network;
 
-    this.requestProxy = new RequestProxy({ client });
+    // `client` is always provided by the PageSpy runtime.
+    this.requestProxy = new RequestProxy({ client: client! });
   }
 
   public onReset() {

@@ -1,6 +1,6 @@
-import { type Client } from '@huolala-tech/page-spy-base';
 import { makeMessage } from '@huolala-tech/page-spy-base';
 import type {
+  Client,
   SpySystem,
   PageSpyPlugin,
   OnInitParams,
@@ -26,7 +26,7 @@ export default class SystemPlugin implements PageSpyPlugin {
     SystemPlugin.hasInitd = true;
 
     this.$pageSpyConfig = config;
-    this.client = client;
+    this.client = client ?? null;
     this.onceInitPublicData();
 
     socketStore.addListener('refresh', ({ source }, reply) => {

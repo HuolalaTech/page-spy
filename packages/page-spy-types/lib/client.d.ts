@@ -77,3 +77,15 @@ export interface DataItem {
   // Plugins enabled in PageSpy SDK
   plugins?: string[];
 }
+
+/**
+ * The public contract of the client info holder passed to plugins via
+ * `OnInitParams.client`. Implemented by `Client` in page-spy-base.
+ */
+export interface Client {
+  info: ClientInfo;
+  rawInfo?: Record<string, any>;
+  plugins: string[];
+  makeClientInfoMsg(): DataItem;
+  getName(): string;
+}

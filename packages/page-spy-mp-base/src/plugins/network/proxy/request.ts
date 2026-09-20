@@ -6,7 +6,7 @@ import {
   ReqReadyState,
   toLowerKeys,
 } from '@huolala-tech/page-spy-base';
-import type { Client } from '@huolala-tech/page-spy-base';
+import type { Client } from '@huolala-tech/page-spy-types';
 import MPNetworkProxyBase from './base';
 import { MPNetworkAPI } from '../../../types';
 import { getOriginMPSDK } from '../../../helpers/mp-api';

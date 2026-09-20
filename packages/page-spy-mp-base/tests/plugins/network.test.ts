@@ -1,7 +1,7 @@
 import NetworkPlugin from 'page-spy-mp-base/src/plugins/network';
 import { computeRequestMapInfo } from './util';
 import { OnInitParams } from 'packages/page-spy-types';
-import { atom } from 'page-spy-base/src';
+import { atom, Client } from 'page-spy-base/src';
 import { Config, InitConfig } from 'page-spy-mp-base/src/config';
 import socket from 'page-spy-mp-base/src/helpers/socket';
 import { mp } from '../setup';
@@ -10,7 +10,7 @@ const initParams = {
   config: new Config().mergeConfig({ api: 'example.com' }),
   socketStore: socket,
   atom,
-  client: {},
+  client: new Client(),
 } as OnInitParams<InitConfig>;
 const port = 6688;
 const apiPrefix = `http://localhost:${port}`;

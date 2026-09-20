@@ -1,6 +1,6 @@
-import type { SocketStoreBase } from '@huolala-tech/page-spy-base';
 import { makeMessage, InitConfigBase } from '@huolala-tech/page-spy-base';
 import type {
+  SocketStoreType,
   SpyStorage,
   PageSpyPlugin,
   OnInitParams,
@@ -24,7 +24,7 @@ export default class RNAsyncStoragePlugin implements PageSpyPlugin {
 
   public static originFunctions = {} as typeof AsyncStorage;
 
-  public $socketStore: SocketStoreBase | null = null;
+  public $socketStore: SocketStoreType | null = null;
 
   public $pageSpyConfig: InitConfigBase | null = null;
 
