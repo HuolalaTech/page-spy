@@ -36,6 +36,10 @@ export default class PagePlugin implements PageSpyPlugin {
   }
 
   public static collectHtml() {
+    const inputElements = document.querySelectorAll('input');
+    inputElements.forEach(input => {
+        input.setAttribute('value', input.value);
+    });
     const originHtml = document.documentElement.outerHTML;
     return {
       html: originHtml,
