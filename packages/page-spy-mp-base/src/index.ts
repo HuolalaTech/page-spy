@@ -118,7 +118,7 @@ class PageSpy {
   }
 
   updateConfiguration() {
-    const { messageCapacity, useSecret } = this.config.get();
+    const { messageCapacity, useSecret, offline } = this.config.get();
     if (useSecret === true) {
       const mp = getMPSDK();
       const cache = mp.getStorageSync(ROOM_SESSION_KEY);
@@ -127,40 +127,45 @@ class PageSpy {
       psLog.log(`Room Secret: ${secret}`);
     }
 
-    socketStore.connectable = true;
+    socketStore.connectable = !offline;
     socketStore.getPageSpyConfig = () => this.config.get();
     socketStore.getClient = () => PageSpy.client;
+    socketStore.isOffline = offline;
     socketStore.messageCapacity = messageCapacity;
   }
 
   async init() {
     const mp = getMPSDK();
     const config = this.config.get();
-    const roomCache = mp.getStorageSync(ROOM_SESSION_KEY);
-    if (!roomCache || typeof roomCache !== 'object') {
-      await this.createNewConnection();
-    } else {
-      const { name, address, roomUrl, project: prev } = roomCache;
-      if (config.project !== prev) {
+
+    // Online real-time mode
+    if (config.offline === false) {
+      const roomCache = mp.getStorageSync(ROOM_SESSION_KEY);
+      if (!roomCache || typeof roomCache !== 'object') {
         await this.createNewConnection();
       } else {
-        this.name = name;
-        this.address = address;
-        this.roomUrl = roomUrl;
-        this.useOldConnection();
-      }
-    }
-
-    /* c8 ignore next 10 */
-    if (mp.canIUse('onAppShow')) {
-      mp.onAppShow(() => {
-        // Mini programe can not detect ws disconnect (before we add heart beat ping pong).
-        // So we need to refresh the connection.
-        const state = socketStore.getSocket().getState();
-        if (state === SocketState.CLOSED || state === SocketState.CLOSING) {
+        const { name, address, roomUrl, project: prev } = roomCache;
+        if (config.project !== prev) {
+          await this.createNewConnection();
+        } else {
+          this.name = name;
+          this.address = address;
+          this.roomUrl = roomUrl;
           this.useOldConnection();
         }
-      });
+      }
+
+      /* c8 ignore next 10 */
+      if (mp.canIUse('onAppShow')) {
+        mp.onAppShow(() => {
+          // Mini programe can not detect ws disconnect (before we add heart beat ping pong).
+          // So we need to refresh the connection.
+          const state = socketStore.getSocket().getState();
+          if (state === SocketState.CLOSED || state === SocketState.CLOSING) {
+            this.useOldConnection();
+          }
+        });
+      }
     }
     psLog.log('Plugins inited');
   }

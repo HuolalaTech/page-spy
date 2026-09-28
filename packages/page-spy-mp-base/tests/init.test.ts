@@ -225,4 +225,62 @@ describe('new PageSpy([config])', () => {
   });
 });
 
+describe('Offline mode', () => {
+  it('Neither creates nor reuses a connection', async () => {
+    const createSpy = jest.spyOn(PageSpy.prototype, 'createNewConnection');
+    const reuseSpy = jest.spyOn(PageSpy.prototype, 'useOldConnection');
+
+    new PageSpy({ api: 'test-api.com', offline: true });
+    await sleep();
+
+    expect(createSpy).not.toHaveBeenCalled();
+    expect(reuseSpy).not.toHaveBeenCalled();
+    expect(mp.getStorageSync(ROOM_SESSION_KEY)).toBeFalsy();
+  });
+
+  it('Ignores the cached room', async () => {
+    mp.setStorageSync(ROOM_SESSION_KEY, {
+      name: '',
+      address: 'xxxx-address',
+      roomUrl: 'test-room-url',
+      project: '--',
+    });
+    const reuseSpy = jest.spyOn(PageSpy.prototype, 'useOldConnection');
+
+    new PageSpy({ api: 'test-api.com', offline: true });
+    await sleep();
+
+    expect(reuseSpy).not.toHaveBeenCalled();
+  });
+
+  it('Does not register the reconnect on app show', async () => {
+    const onAppShow = jest.spyOn(mp, 'onAppShow');
+
+    new PageSpy({ api: 'test-api.com', offline: true });
+    await sleep();
+
+    expect(onAppShow).not.toHaveBeenCalled();
+  });
+
+  it('Marks the socket store as offline', () => {
+    new PageSpy({ api: 'test-api.com', offline: true });
+
+    expect(socket.connectable).toBe(false);
+    expect(socket.isOffline).toBe(true);
+  });
+
+  it('Keeps the online behavior by default', async () => {
+    const createSpy = jest.spyOn(PageSpy.prototype, 'createNewConnection');
+    const onAppShow = jest.spyOn(mp, 'onAppShow');
+
+    new PageSpy({ api: 'test-api.com' });
+
+    expect(socket.connectable).toBe(true);
+    expect(socket.isOffline).toBe(false);
+    await sleep();
+    expect(createSpy).toHaveBeenCalledTimes(1);
+    expect(onAppShow).toHaveBeenCalledTimes(1);
+  });
+});
+
 export {};
